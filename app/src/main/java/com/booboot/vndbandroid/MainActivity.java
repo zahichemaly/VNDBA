@@ -1,6 +1,5 @@
 package com.booboot.vndbandroid;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -41,8 +40,9 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-        goToFragment(R.id.nav_camera);
+        
+        navigationView.getMenu().getItem(0).setChecked(true);
+        onNavigationItemSelected(navigationView.getMenu().getItem(0));
     }
 
     @Override
@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private boolean goToFragment(int id) {
-        TestFragment nextFrag = new TestFragment();
+        PlayingFragment nextFrag = new PlayingFragment();
         Bundle args = new Bundle();
 
         if (id == R.id.nav_camera) {
