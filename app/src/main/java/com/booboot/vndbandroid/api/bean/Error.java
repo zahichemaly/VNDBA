@@ -1,4 +1,4 @@
-package com.booboot.vndbandroid.api;
+package com.booboot.vndbandroid.api.bean;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

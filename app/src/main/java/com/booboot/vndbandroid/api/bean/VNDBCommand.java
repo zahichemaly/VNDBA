@@ -1,5 +1,6 @@
-package com.booboot.vndbandroid.api;
+package com.booboot.vndbandroid.api.bean;
 
+import java.lang.*;
 import java.util.HashMap;
 
 /**

@@ -1,20 +1,22 @@
-package com.booboot.vndbandroid;
+package com.booboot.vndbandroid.activity;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.settings.SettingsManager;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -92,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private boolean goToFragment(int id) {
-        PlayingFragment nextFrag = new PlayingFragment();
+        VNListFragment nextFrag = new VNListFragment();
         Bundle args = new Bundle();
 
         if (id == R.id.nav_camera) {
@@ -109,6 +111,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             args.putInt("ARG", 6);
         }
 
+        Log.d("D", "Plop ?");
         nextFrag.setArguments(args);
         getFragmentManager().beginTransaction().replace(R.id.fragment_container, nextFrag, "FRAGMENT").addToBackStack(null).commit();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

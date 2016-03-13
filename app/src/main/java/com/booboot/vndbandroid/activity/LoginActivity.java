@@ -1,12 +1,10 @@
-package com.booboot.vndbandroid;
+package com.booboot.vndbandroid.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.ActionMode;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -14,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.util.Callback;
 
 import com.booboot.vndbandroid.api.VNDBServer;

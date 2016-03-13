@@ -1,4 +1,4 @@
-package com.booboot.vndbandroid;
+package com.booboot.vndbandroid.activity;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -9,18 +9,16 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.booboot.vndbandroid.R;
 import com.dexafree.materialList.card.Card;
 import com.dexafree.materialList.card.CardProvider;
 import com.dexafree.materialList.card.OnActionClickListener;
 import com.dexafree.materialList.card.action.TextViewAction;
 import com.dexafree.materialList.view.MaterialListView;
 import com.squareup.picasso.RequestCreator;
-
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.Socket;
 
 /**
  * Created by od on 09/03/2016.
@@ -31,6 +29,7 @@ public class PlayingFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.playing_fragment, container, false);
 
+        Log.d("D", "Creating a new Playing Fragment...");
         MaterialListView mListView = (MaterialListView) rootView.findViewById(R.id.material_listview);
         Card card = new Card.Builder(getActivity())
                 .withProvider(new CardProvider())
@@ -78,4 +77,5 @@ public class PlayingFragment extends Fragment {
 
         return rootView;
     }
+
 }

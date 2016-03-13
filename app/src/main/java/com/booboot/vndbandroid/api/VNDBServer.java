@@ -1,16 +1,13 @@
 package com.booboot.vndbandroid.api;
 
 import android.content.Context;
-import android.telecom.Call;
 import android.util.Log;
-import android.widget.Toast;
 
+import com.booboot.vndbandroid.api.bean.*;
+import com.booboot.vndbandroid.api.bean.Error;
 import com.booboot.vndbandroid.settings.SettingsManager;
 import com.booboot.vndbandroid.util.Callback;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -75,7 +72,7 @@ public class VNDBServer {
                 VNDBCommand response = sendCommand("login", Login.create(1, "test", 0.1, username, password));
                 if (response instanceof Ok) {
                     successCallback.call();
-                } else if (response instanceof Error) {
+                } else if (response instanceof com.booboot.vndbandroid.api.bean.Error) {
                     if (((Error) response).getId().equals("auth")) {
                         errorCallback.message = "Incorrect username/password combination. Please verify your login information, or create an account if you don't have one.";
                         errorCallback.call();
@@ -121,6 +118,7 @@ public class VNDBServer {
             while (read != 10 && read != 4 && read > -1) {
                 response.append((char) read);
                 read = in.read();
+                Log.e("D", response.toString());
             }
         } catch (IOException ioe) {
             errorCallback.message = "An error occurred while receiving the response from the API. Please try again later.";
