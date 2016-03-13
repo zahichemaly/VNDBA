@@ -25,6 +25,12 @@ public class VNDBServer {
     public final static String HOST = "api.vndb.org";
     public final static int PORT = 19534;
     public final static char EOM = 0x04;
+
+    public final static int PROTOCOL = 1;
+    public final static String CLIENT = "VNDB_ANDROID";
+    public final static double CLIENTVER = 0.1;
+
+    private static boolean mutex = true;
     private static Socket socket;
     private static OutputStream out;
     private static InputStreamReader in;
@@ -69,10 +75,10 @@ public class VNDBServer {
                 String username = SettingsManager.getUsername(context).toLowerCase();
                 String password = SettingsManager.getPassword(context);
                 /* [IMPORTANT] Remember to always put the username in lowercase here */
-                VNDBCommand response = sendCommand("login", Login.create(1, "test", 0.1, username, password));
+                VNDBCommand response = sendCommand("login", Login.create(PROTOCOL, CLIENT, CLIENTVER, username, password));
                 if (response instanceof Ok) {
                     successCallback.call();
-                } else if (response instanceof com.booboot.vndbandroid.api.bean.Error) {
+                } else if (response instanceof Error) {
                     if (((Error) response).getId().equals("auth")) {
                         errorCallback.message = "Incorrect username/password combination. Please verify your login information, or create an account if you don't have one.";
                         errorCallback.call();
@@ -85,11 +91,41 @@ public class VNDBServer {
         }.start();
     }
 
+    public static void get(final String type, final String flags, final String filters, final Options options, final Context context, final Callback successCallback, final Callback errorCallback) {
+        while (!mutex)
+            try { Thread.sleep(50); } catch (InterruptedException ie) { return; }
+        mutex = false;
+
+        new Thread() {
+            public void run() {
+                init(context, successCallback, errorCallback);
+                StringBuilder command = new StringBuilder();
+                command.append("get ");
+                command.append(type);
+                command.append(' ');
+                command.append(flags);
+                command.append(' ');
+                command.append(filters);
+                VNDBCommand results = sendCommand(command.toString(), options);
+                if (results instanceof Error) {
+                    errorCallback.message = ((Error) results).getMsg();
+                    errorCallback.call();
+                } else if (results instanceof Results) {
+                    successCallback.results = (Results) results;
+                    successCallback.call();
+                }
+
+                mutex = true;
+            }
+        }.start();
+    }
+
     public static VNDBCommand sendCommand(String command, VNDBCommand params) {
         StringBuilder query = new StringBuilder();
         try {
             query.append(command);
-            query.append(mapper.writeValueAsString(params));
+            if (params != null)
+                query.append(mapper.writeValueAsString(params));
             query.append(EOM);
         } catch (JsonProcessingException jpe) {
             errorCallback.message = "Unable to process the query to the API as JSON. Aborting operation.";
@@ -98,6 +134,7 @@ public class VNDBServer {
         }
 
         try {
+            Log.e("D", query.toString());
             out.write(query.toString().getBytes("UTF-8"));
         } catch (UnsupportedEncodingException uee) {
             errorCallback.message = "Tried to send a query to the API with a wrong encoding. Aborting operation.";
@@ -115,10 +152,10 @@ public class VNDBServer {
         StringBuilder response = new StringBuilder();
         try {
             int read = in.read();
-            while (read != 10 && read != 4 && read > -1) {
+            while (read != 4 && read > -1) {
                 response.append((char) read);
                 read = in.read();
-                Log.e("D", response.toString());
+                // Log.e("D", response.toString());
             }
         } catch (IOException ioe) {
             errorCallback.message = "An error occurred while receiving the response from the API. Please try again later.";

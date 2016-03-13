@@ -12,6 +12,7 @@ public abstract class VNDBCommand {
     static {
         CLASSES.put("login", Login.class);
         CLASSES.put("error", Error.class);
+        CLASSES.put("results", Results.class);
     }
 
     public static Class getClass(String command) {

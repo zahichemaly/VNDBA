@@ -55,25 +55,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private void login() {
         VNDBServer.login(this, new Callback() {
             @Override
-            public void call() {
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                    }
-                });
+            public void config() {
+                startActivity(new Intent(LoginActivity.this, MainActivity.class));
             }
         }, new Callback() {
             @Override
-            public void call() {
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        SettingsManager.setUsername(LoginActivity.this, null);
-                        SettingsManager.setPassword(LoginActivity.this, null);
-                        Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
-                    }
-                });
+            public void config() {
+                SettingsManager.setUsername(LoginActivity.this, null);
+                SettingsManager.setPassword(LoginActivity.this, null);
+                Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
             }
         });
     }
