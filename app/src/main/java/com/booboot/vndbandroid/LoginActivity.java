@@ -38,6 +38,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         loginButton.setOnClickListener(this);
         loginUsername = (EditText) findViewById(R.id.loginUsername);
         loginPassword = (EditText) findViewById(R.id.loginPassword);
+
+        if (SettingsManager.getUsername(this) != null && SettingsManager.getPassword(this) != null) {
+            login();
+        }
     }
 
     @Override
@@ -45,27 +49,33 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if (v.getId() == R.id.loginButton) {
             SettingsManager.setUsername(this, loginUsername.getText().toString());
             SettingsManager.setPassword(this, loginPassword.getText().toString());
-            VNDBServer.login(this, new Callback() {
-                @Override
-                public void call() {
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                        }
-                    });
-                }
-            }, new Callback() {
-                @Override
-                public void call() {
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
-                        }
-                    });
-                }
-            });
+            login();
         }
+    }
+
+    private void login() {
+        VNDBServer.login(this, new Callback() {
+            @Override
+            public void call() {
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                    }
+                });
+            }
+        }, new Callback() {
+            @Override
+            public void call() {
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        SettingsManager.setUsername(LoginActivity.this, null);
+                        SettingsManager.setPassword(LoginActivity.this, null);
+                        Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        });
     }
 }
