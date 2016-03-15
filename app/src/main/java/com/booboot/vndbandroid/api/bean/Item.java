@@ -1,5 +1,8 @@
 package com.booboot.vndbandroid.api.bean;
 
+import android.graphics.drawable.Drawable;
+
+import com.booboot.vndbandroid.util.Bitmap;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.List;
@@ -20,7 +23,7 @@ public class Item extends VNDBCommand {
     private int length;
     private String description;
     private Links links;
-    private String image;
+    private Drawable image;
     private boolean image_nsfw;
     private List<Anime> anime;
     private List<Relation> relations;
@@ -153,12 +156,12 @@ public class Item extends VNDBCommand {
         this.links = links;
     }
 
-    public String getImage() {
+    public Drawable getImage() {
         return image;
     }
 
     public void setImage(String image) {
-        this.image = image;
+        this.image = Bitmap.drawableFromUrl(image);
     }
 
     public boolean isImage_nsfw() {

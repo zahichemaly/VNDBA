@@ -62,39 +62,28 @@ public class PlayingFragment extends Fragment {
                         @Override
                         protected void config() {
                             for (final Item vn : results.getItems()) {
-                                new Thread() {
+                                CardProvider cardProvider = new Card.Builder(getActivity())
+                                        .withProvider(new CardProvider())
+                                        .setLayout(R.layout.vn_card_layout)
+                                        .setTitle(vn.getTitle())
+                                        .setSubtitle(vn.getOriginal())
+                                        .setSubtitleColor(Color.BLACK)
+                                        .setTitleGravity(Gravity.END)
+                                        .setSubtitleGravity(Gravity.END)
+                                        .setDescription(vn.getReleased())
+                                        .setDescriptionGravity(Gravity.END);
+
+                                cardProvider = cardProvider.setDrawable(vn.getImage());
+                                // .setDrawable(R.drawable.sample_0)
+                                Card card = cardProvider.setDrawableConfiguration(new CardProvider.OnImageConfigListener() {
                                     @Override
-                                    public void run() {
-                                        final Drawable image = drawableFromUrl(vn.getImage());
-                                        new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                CardProvider cardProvider = new Card.Builder(getActivity())
-                                                        .withProvider(new CardProvider())
-                                                        .setLayout(R.layout.vn_card_layout)
-                                                        .setTitle(vn.getTitle())
-                                                        .setSubtitle(vn.getOriginal())
-                                                        .setSubtitleColor(Color.BLACK)
-                                                        .setTitleGravity(Gravity.END)
-                                                        .setSubtitleGravity(Gravity.END)
-                                                        .setDescription(vn.getReleased())
-                                                        .setDescriptionGravity(Gravity.END);
-
-                                                cardProvider = cardProvider.setDrawable(image);
-                                                // .setDrawable(R.drawable.sample_0)
-                                                Card card = cardProvider.setDrawableConfiguration(new CardProvider.OnImageConfigListener() {
-                                                    @Override
-                                                    public void onImageConfigure(@NonNull RequestCreator requestCreator) {
-                                                        requestCreator.fit();
-                                                    }
-                                                }).endConfig().build();
-
-                                                materialListView.getAdapter().add(card);
-                                                materialListView.scrollToPosition(0);
-                                            }
-                                        });
+                                    public void onImageConfigure(@NonNull RequestCreator requestCreator) {
+                                        requestCreator.fit();
                                     }
-                                }.start();
+                                }).endConfig().build();
+
+                                materialListView.getAdapter().add(card);
+                                materialListView.scrollToPosition(0);
                             }
                         }
                     }, new Callback() {
@@ -115,18 +104,5 @@ public class PlayingFragment extends Fragment {
         });
 
         return rootView;
-    }
-
-    public Drawable drawableFromUrl(String url) {
-        try {
-            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-            connection.connect();
-            InputStream input = connection.getInputStream();
-            Bitmap x = BitmapFactory.decodeStream(input);
-            return new BitmapDrawable(getActivity().getResources(), x);
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-            return null;
-        }
     }
 }
