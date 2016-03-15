@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.booboot.vndbandroid.api.bean.*;
 import com.booboot.vndbandroid.api.bean.Error;
+import com.booboot.vndbandroid.json.JSON;
 import com.booboot.vndbandroid.settings.SettingsManager;
 import com.booboot.vndbandroid.util.Callback;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -35,12 +36,7 @@ public class VNDBServer {
     private static OutputStream out;
     private static InputStreamReader in;
     private static Context context;
-    private static ObjectMapper mapper = new ObjectMapper();
     private static Callback successCallback, errorCallback;
-
-    static {
-        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-    }
 
     private static void init(Context c, Callback sc, Callback ec) {
         context = c;
@@ -125,7 +121,7 @@ public class VNDBServer {
         try {
             query.append(command);
             if (params != null)
-                query.append(mapper.writeValueAsString(params));
+                query.append(JSON.mapper.writeValueAsString(params));
             query.append(EOM);
         } catch (JsonProcessingException jpe) {
             errorCallback.message = "Unable to process the query to the API as JSON. Aborting operation.";
@@ -177,7 +173,7 @@ public class VNDBServer {
         try {
             String command = response.substring(0, delimiterIndex).trim();
             String params = response.substring(delimiterIndex, response.length()).replace(EOM + "", "");
-            return (VNDBCommand) mapper.readValue(params, VNDBCommand.getClass(command));
+            return (VNDBCommand) JSON.mapper.readValue(params, VNDBCommand.getClass(command));
         } catch (IOException ioe) {
             errorCallback.message = "An error occurred while decoding the response from the API. Aborting operation.";
             errorCallback.call();
