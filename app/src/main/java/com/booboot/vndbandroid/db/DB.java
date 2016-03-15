@@ -9,8 +9,8 @@ import com.booboot.vndbandroid.json.JSON;
 import com.booboot.vndbandroid.util.Callback;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by od on 15/03/2016.
@@ -22,14 +22,17 @@ public class DB {
         VNDBServer.get("vnlist", "basic", "(uid = 0)", null, context, new Callback() {
             @Override
             public void config() {
-                List<Integer> ids = new ArrayList<>();
+                final Map<Integer, Item> ids = new HashMap<>();
                 for (Item vnlistItem : results.getItems()) {
-                    ids.add(vnlistItem.getVn());
+                    ids.put(vnlistItem.getVn(), vnlistItem);
                 }
                 try {
-                    VNDBServer.get("vn", "basic,details", "(id = " + JSON.mapper.writeValueAsString(ids) + ")", null, context, new Callback() {
+                    VNDBServer.get("vn", "basic,details", "(id = " + JSON.mapper.writeValueAsString(ids.keySet()) + ")", null, context, new Callback() {
                         @Override
                         protected void config() {
+                            for (Item vn : results.getItems()) {
+                                vn.setStatus(ids.get(vn.getId()).getStatus());
+                            }
                             DB.results = results;
                             successCallback.call();
                         }

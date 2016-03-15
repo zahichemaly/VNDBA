@@ -2,9 +2,11 @@ package com.booboot.vndbandroid.util;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.os.Bundle;
 import android.support.v13.app.FragmentStatePagerAdapter;
 
 import com.booboot.vndbandroid.activity.PlayingFragment;
+import com.booboot.vndbandroid.api.bean.Status;
 
 /**
  * Created by od on 13/03/2016.
@@ -19,26 +21,34 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
+        Bundle args = new Bundle();
+        PlayingFragment tab = null;
 
         switch (position) {
             case 0:
-                PlayingFragment tab1 = new PlayingFragment();
-                return tab1;
+                tab = new PlayingFragment();
+                args.putInt(PlayingFragment.STATUS_ARG, Status.PLAYING);
+                break;
             case 1:
-                PlayingFragment tab2 = new PlayingFragment();
-                return tab2;
+                tab = new PlayingFragment();
+                args.putInt(PlayingFragment.STATUS_ARG, Status.FINISHED);
+                break;
             case 2:
-                PlayingFragment tab3 = new PlayingFragment();
-                return tab3;
+                tab = new PlayingFragment();
+                args.putInt(PlayingFragment.STATUS_ARG, Status.STALLED);
+                break;
             case 3:
-                PlayingFragment tab4 = new PlayingFragment();
-                return tab4;
+                tab = new PlayingFragment();
+                args.putInt(PlayingFragment.STATUS_ARG, Status.DROPPED);
+                break;
             case 4:
-                PlayingFragment tab5 = new PlayingFragment();
-                return tab5;
-            default:
-                return null;
+                tab = new PlayingFragment();
+                args.putInt(PlayingFragment.STATUS_ARG, Status.UNKNOWN);
+                break;
         }
+
+        tab.setArguments(args);
+        return tab;
     }
 
     @Override
