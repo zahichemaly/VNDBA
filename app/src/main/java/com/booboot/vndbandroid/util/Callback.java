@@ -1,7 +1,9 @@
 package com.booboot.vndbandroid.util;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+import android.widget.Toast;
 
 import com.booboot.vndbandroid.api.bean.Results;
 
@@ -21,5 +23,14 @@ public abstract class Callback {
                 config();
             }
         });
+    }
+
+    public static Callback errorCallback(final Context context) {
+        return new Callback() {
+            @Override
+            public void config() {
+                Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+            }
+        };
     }
 }

@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.Item;
+import com.booboot.vndbandroid.db.DB;
 import com.booboot.vndbandroid.json.JSON;
 import com.booboot.vndbandroid.util.Callback;
 import com.dexafree.materialList.card.Card;
@@ -50,58 +51,23 @@ public class PlayingFragment extends Fragment {
         Log.d("D", "Creating a new Playing Fragment...");
         materialListView = (MaterialListView) rootView.findViewById(R.id.materialListView);
 
-        VNDBServer.get("vnlist", "basic", "(uid = 0)", null, getActivity(), new Callback() {
-            @Override
-            public void config() {
-                List<Integer> ids = new ArrayList<>();
-                for (Item vnlistItem : results.getItems()) {
-                    ids.add(vnlistItem.getVn());
-                }
-                try {
-                    VNDBServer.get("vn", "basic,details", "(id = " + JSON.mapper.writeValueAsString(ids) + ")", null, getActivity(), new Callback() {
-                        @Override
-                        protected void config() {
-                            for (final Item vn : results.getItems()) {
-                                CardProvider cardProvider = new Card.Builder(getActivity())
-                                        .withProvider(new CardProvider())
-                                        .setLayout(R.layout.vn_card_layout)
-                                        .setTitle(vn.getTitle())
-                                        .setSubtitle(vn.getOriginal())
-                                        .setSubtitleColor(Color.BLACK)
-                                        .setTitleGravity(Gravity.END)
-                                        .setSubtitleGravity(Gravity.END)
-                                        .setDescription(vn.getReleased())
-                                        .setDescriptionGravity(Gravity.END);
+        for (final Item vn : DB.results.getItems()) {
+            Card card = new Card.Builder(getActivity())
+                    .withProvider(new CardProvider())
+                    .setLayout(R.layout.vn_card_layout)
+                    .setTitle(vn.getTitle())
+                    .setSubtitle(vn.getOriginal())
+                    .setSubtitleColor(Color.BLACK)
+                    .setTitleGravity(Gravity.END)
+                    .setSubtitleGravity(Gravity.END)
+                    .setDescription(vn.getReleased())
+                    .setDescriptionGravity(Gravity.END)
+                    .setDrawable(vn.getImage())
+                    .endConfig().build();
 
-                                cardProvider = cardProvider.setDrawable(vn.getImage());
-                                // .setDrawable(R.drawable.sample_0)
-                                Card card = cardProvider.setDrawableConfiguration(new CardProvider.OnImageConfigListener() {
-                                    @Override
-                                    public void onImageConfigure(@NonNull RequestCreator requestCreator) {
-                                        requestCreator.fit();
-                                    }
-                                }).endConfig().build();
-
-                                materialListView.getAdapter().add(card);
-                                materialListView.scrollToPosition(0);
-                            }
-                        }
-                    }, new Callback() {
-                        @Override
-                        protected void config() {
-                            Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
-                        }
-                    });
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, new Callback() {
-            @Override
-            public void config() {
-                Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
-            }
-        });
+            materialListView.getAdapter().add(card);
+            materialListView.scrollToPosition(0);
+        }
 
         return rootView;
     }

@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.booboot.vndbandroid.R;
+import com.booboot.vndbandroid.db.DB;
 import com.booboot.vndbandroid.util.Callback;
 
 import com.booboot.vndbandroid.api.VNDBServer;
@@ -56,7 +57,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         VNDBServer.login(this, new Callback() {
             @Override
             public void config() {
-                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                DB.loadData(LoginActivity.this, new Callback() {
+                    @Override
+                    protected void config() {
+                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                    }
+                });
             }
         }, new Callback() {
             @Override
