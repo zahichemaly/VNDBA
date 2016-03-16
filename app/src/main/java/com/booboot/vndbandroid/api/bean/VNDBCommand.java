@@ -1,12 +1,13 @@
 package com.booboot.vndbandroid.api.bean;
 
+import java.io.Serializable;
 import java.lang.*;
 import java.util.HashMap;
 
 /**
  * Created by od on 12/03/2016.
  */
-public abstract class VNDBCommand {
+public abstract class VNDBCommand implements Serializable {
     private final static HashMap<String, Class> CLASSES = new HashMap<>();
 
     static {

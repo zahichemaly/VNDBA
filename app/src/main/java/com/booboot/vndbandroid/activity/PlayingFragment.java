@@ -1,6 +1,7 @@
 package com.booboot.vndbandroid.activity;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,6 +16,7 @@ import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.db.DB;
 import com.dexafree.materialList.card.Card;
 import com.dexafree.materialList.card.CardProvider;
+import com.dexafree.materialList.listeners.RecyclerItemClickListener;
 import com.dexafree.materialList.view.MaterialListView;
 
 /**
@@ -22,6 +24,7 @@ import com.dexafree.materialList.view.MaterialListView;
  */
 public class PlayingFragment extends Fragment {
     public final static String STATUS_ARG = "STATUS";
+    public final static String VN_ARG = "VN";
     private MaterialListView materialListView;
     private int status;
 
@@ -49,10 +52,30 @@ public class PlayingFragment extends Fragment {
                     .setDescriptionGravity(Gravity.END)
                     .setDrawable(vn.getImage())
                     .endConfig().build();
+            card.setTag(vn);
 
             materialListView.getAdapter().add(card);
             materialListView.scrollToPosition(0);
         }
+
+
+        materialListView.addOnItemTouchListener(new RecyclerItemClickListener.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(Card card, int position) {
+                Log.d("CARD_TYPE", card.getTag() + "");
+
+                Intent intent = new Intent(getActivity(), VNDetailsActivity.class);
+                intent.putExtra(VN_ARG, (Item) card.getTag());
+                // intent.putExtra(VN_ARG, Integer.parseInt(card.getTag().toString()));
+                startActivity(intent);
+            }
+
+            @Override
+            public void onItemLongClick(Card card, int position) {
+                Log.d("LONG_CLICK", card.getProvider().getTitle());
+            }
+        });
 
         return rootView;
     }
