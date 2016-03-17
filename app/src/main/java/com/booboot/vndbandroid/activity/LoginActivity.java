@@ -10,6 +10,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.booboot.vndbandroid.R;
@@ -23,6 +25,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private Button loginButton;
     private EditText loginUsername;
     private EditText loginPassword;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +41,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         loginButton.setOnClickListener(this);
         loginUsername = (EditText) findViewById(R.id.loginUsername);
         loginPassword = (EditText) findViewById(R.id.loginPassword);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         if (SettingsManager.getUsername(this) != null && SettingsManager.getPassword(this) != null) {
             login();
@@ -54,6 +58,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void login() {
+        progressBar.setVisibility(View.VISIBLE);
         VNDBServer.login(this, new Callback() {
             @Override
             public void config() {
@@ -70,6 +75,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 SettingsManager.setUsername(LoginActivity.this, null);
                 SettingsManager.setPassword(LoginActivity.this, null);
                 Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
+                progressBar.setVisibility(View.INVISIBLE);
             }
         });
     }
