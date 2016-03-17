@@ -131,6 +131,7 @@ public class VNDBServer {
 
         try {
             Log.e("D", query.toString());
+            if (in.ready()) while (in.read() > -1);
             out.write(query.toString().getBytes("UTF-8"));
         } catch (UnsupportedEncodingException uee) {
             errorCallback.message = "Tried to send a query to the API with a wrong encoding. Aborting operation.";
