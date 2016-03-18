@@ -63,11 +63,8 @@ public class PlayingFragment extends Fragment {
 
             @Override
             public void onItemClick(Card card, int position) {
-                Log.d("CARD_TYPE", card.getTag() + "");
-
                 Intent intent = new Intent(getActivity(), VNDetailsActivity.class);
                 intent.putExtra(VN_ARG, (Item) card.getTag());
-                // intent.putExtra(VN_ARG, Integer.parseInt(card.getTag().toString()));
                 startActivity(intent);
             }
 
