@@ -1,11 +1,17 @@
 package com.booboot.vndbandroid.activity;
 
+import android.app.Dialog;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.WindowManager;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,16 +20,13 @@ import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.util.Bitmap;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 public class VNDetailsActivity extends AppCompatActivity {
     private ActionBar actionBar;
     private Item vn;
-    private ImageView cover;
+    private ImageButton image;
     private TextView title;
     private TextView subtitle;
     private TextView supportingText;
@@ -41,7 +44,7 @@ public class VNDetailsActivity extends AppCompatActivity {
         vn = (Item) getIntent().getSerializableExtra(PlayingFragment.VN_ARG);
         initExpandableListView();
 
-        cover = (ImageView) findViewById(R.id.image);
+        image = (ImageButton) findViewById(R.id.image);
         title = (TextView) findViewById(R.id.title);
         subtitle = (TextView) findViewById(R.id.subtitle);
         supportingText = (TextView) findViewById(R.id.supportingText);
@@ -52,9 +55,38 @@ public class VNDetailsActivity extends AppCompatActivity {
 
         new Thread() {
             public void run() {
-                cover.setImageDrawable(Bitmap.drawableFromUrl(vn.getImage()));
+                image.setImageDrawable(Bitmap.drawableFromUrl(vn.getImage()));
             }
         }.start();
+        image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Dialog dialog = new Dialog(VNDetailsActivity.this);
+                dialog.setContentView(R.layout.act_lightbox);
+                dialog.setCancelable(true);
+
+                final ImageView lightbox = (ImageView) dialog.findViewById(R.id.lightboxView);
+                new Thread() {
+                    public void run() {
+                        lightbox.setImageDrawable(Bitmap.drawableFromUrl(vn.getImage()));
+                    }
+                }.start();
+
+                WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
+                params.width = WindowManager.LayoutParams.MATCH_PARENT;
+                params.height = WindowManager.LayoutParams.MATCH_PARENT;
+                dialog.getWindow().setAttributes(params);
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                dialog.setCanceledOnTouchOutside(true);
+                lightbox.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
+            }
+        });
         title.setText(vn.getTitle());
         subtitle.setText(vn.getOriginal());
         supportingText.setText(vn.getReleased());
