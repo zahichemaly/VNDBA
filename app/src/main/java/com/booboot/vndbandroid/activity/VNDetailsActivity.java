@@ -5,9 +5,12 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.PopupMenu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.FrameLayout;
@@ -27,9 +30,9 @@ public class VNDetailsActivity extends AppCompatActivity {
     private ActionBar actionBar;
     private Item vn;
     private ImageButton image;
-    private TextView title;
-    private TextView subtitle;
-    private TextView supportingText;
+    private Button statusButton;
+    private Button wishlistButton;
+    private Button votesButton;
 
     ExpandableListView expandableListView;
     ExpandableListAdapter expandableListAdapter;
@@ -45,9 +48,9 @@ public class VNDetailsActivity extends AppCompatActivity {
         initExpandableListView();
 
         image = (ImageButton) findViewById(R.id.image);
-        title = (TextView) findViewById(R.id.title);
-        subtitle = (TextView) findViewById(R.id.subtitle);
-        supportingText = (TextView) findViewById(R.id.supportingText);
+        statusButton = (Button) findViewById(R.id.statusButton);
+        wishlistButton = (Button) findViewById(R.id.wishlistButton);
+        votesButton = (Button) findViewById(R.id.votesButton);
 
         actionBar = getSupportActionBar();
         actionBar.setTitle(vn.getTitle());
@@ -87,10 +90,6 @@ public class VNDetailsActivity extends AppCompatActivity {
                 dialog.show();
             }
         });
-        title.setText(vn.getTitle());
-        subtitle.setText(vn.getOriginal());
-        supportingText.setText(vn.getReleased());
-
     }
 
     private void initExpandableListView() {
@@ -112,6 +111,30 @@ public class VNDetailsActivity extends AppCompatActivity {
             public void onGroupCollapse(int groupPosition) {
             }
         });
+    }
+
+    public void showStatusPopup(View v) {
+        PopupMenu popup = new PopupMenu(this, v);
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.status, popup.getMenu());
+        popup.setOnMenuItemClickListener(new ChangeVNListener(statusButton));
+        popup.show();
+    }
+
+    public void showWishlistPopup(View v) {
+        PopupMenu popup = new PopupMenu(this, v);
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.wishlist, popup.getMenu());
+        popup.setOnMenuItemClickListener(new ChangeVNListener(wishlistButton));
+        popup.show();
+    }
+
+    public void showVotesPopup(View v) {
+        PopupMenu popup = new PopupMenu(this, v);
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.votes, popup.getMenu());
+        popup.setOnMenuItemClickListener(new ChangeVNListener(votesButton));
+        popup.show();
     }
 
     @Override
