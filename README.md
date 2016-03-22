@@ -5,5 +5,5 @@ This project is an open-source Android client for the Visual Novel Database (VND
 ## Current work in progress screenshot
 <p align="center">
   <img src="http://image.noelshack.com/fichiers/2016/10/1457887784-2016-03-13-16-39-49.png" width="45%"/>
-  <img src="http://image.noelshack.com/fichiers/2016/11/1458339723-2016-03-18-22-14-55.png" width="45%"/>
+  <img src="http://image.noelshack.com/fichiers/2016/11/1458472614-2016-03-20-11-15-13.png" width="45%"/>
 </p>
