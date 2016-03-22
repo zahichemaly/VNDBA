@@ -37,7 +37,7 @@ public class PlayingFragment extends Fragment {
         Log.d("D", "Creating a new Playing Fragment...");
         materialListView = (MaterialListView) rootView.findViewById(R.id.materialListView);
 
-        for (final Item vn : DB.results.getItems()) {
+        for (final Item vn : DB.results.values()) {
             if (vn.getStatus() != status) continue;
 
             Card card = new Card.Builder(getActivity())

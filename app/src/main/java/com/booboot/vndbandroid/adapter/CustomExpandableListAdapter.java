@@ -1,12 +1,8 @@
-package com.booboot.vndbandroid.activity;
+package com.booboot.vndbandroid.adapter;
 
 /**
  * Created by od on 18/03/2016.
  */
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.SortedMap;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -17,6 +13,9 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
+
+import java.util.LinkedHashMap;
+import java.util.List;
 
 public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
 

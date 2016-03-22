@@ -1,4 +1,4 @@
-package com.booboot.vndbandroid.util;
+package com.booboot.vndbandroid.adapter;
 
 import android.app.Fragment;
 import android.app.FragmentManager;

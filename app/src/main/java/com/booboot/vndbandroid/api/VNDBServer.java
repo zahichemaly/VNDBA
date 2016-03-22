@@ -74,23 +74,13 @@ public class VNDBServer {
                 VNDBCommand response = sendCommand("login", Login.create(PROTOCOL, CLIENT, CLIENTVER, username, password));
                 if (response instanceof Ok) {
                     successCallback.call();
-                } else if (response instanceof Error) {
-                    if (((Error) response).getId().equals("auth")) {
-                        errorCallback.message = "Incorrect username/password combination. Please verify your login information, or create an account if you don't have one.";
-                        errorCallback.call();
-                    } else if (((Error) response).getId().equals("loggedin")) {
-                        errorCallback.message = "You are already logged in.";
-                        errorCallback.call();
-                    }
                 }
             }
         }.start();
     }
 
     public static void get(final String type, final String flags, final String filters, final Options options, final Context context, final Callback successCallback, final Callback errorCallback) {
-        while (!mutex)
-            try { Thread.sleep(50); } catch (InterruptedException ie) { return; }
-        mutex = false;
+        if (!takeMutex()) return;
 
         new Thread() {
             public void run() {
@@ -103,15 +93,34 @@ public class VNDBServer {
                 command.append(' ');
                 command.append(filters);
                 VNDBCommand results = sendCommand(command.toString(), options);
-                if (results instanceof Error) {
-                    errorCallback.message = ((Error) results).getMsg();
-                    errorCallback.call();
-                } else if (results instanceof Results) {
+                if (results instanceof Results) {
                     successCallback.results = (Results) results;
                     successCallback.call();
                 }
 
-                mutex = true;
+                freeMutex();
+            }
+        }.start();
+    }
+
+    public static void set(final String type, final int id, final Fields fields, final Context context, final Callback successCallback, final Callback errorCallback) {
+        if (!takeMutex()) return;
+
+        new Thread() {
+            public void run() {
+                init(context, successCallback, errorCallback);
+                StringBuilder command = new StringBuilder();
+                command.append("set ");
+                command.append(type);
+                command.append(' ');
+                command.append(id);
+                command.append(' ');
+                VNDBCommand results = sendCommand(command.toString(), fields);
+                if (results instanceof Ok) {
+                    if (successCallback != null) successCallback.call();
+                }
+
+                freeMutex();
             }
         }.start();
     }
@@ -142,7 +151,14 @@ public class VNDBServer {
             errorCallback.call();
             return null;
         }
-        return getResponse();
+
+        VNDBCommand response = getResponse();
+        if (response instanceof Error) {
+            errorCallback.message = ((Error) response).getId() + " : " + ((Error) response).getMsg();
+            errorCallback.call();
+        }
+
+        return response;
     }
 
     private static VNDBCommand getResponse() {
@@ -189,5 +205,20 @@ public class VNDBServer {
             socket.close();
         } catch (IOException ioe) {
         }
+    }
+
+    private static boolean takeMutex() {
+        while (!mutex)
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException ie) {
+                return false;
+            }
+        mutex = false;
+        return true;
+    }
+
+    private static void freeMutex() {
+        mutex = true;
     }
 }

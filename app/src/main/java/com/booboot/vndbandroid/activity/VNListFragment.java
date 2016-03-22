@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.booboot.vndbandroid.R;
-import com.booboot.vndbandroid.util.PagerAdapter;
+import com.booboot.vndbandroid.adapter.PagerAdapter;
 
 /**
  * Created by od on 13/03/2016.

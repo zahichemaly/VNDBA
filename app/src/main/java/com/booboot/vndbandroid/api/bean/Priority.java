@@ -1,0 +1,11 @@
+package com.booboot.vndbandroid.api.bean;
+
+/**
+ * Created by od on 15/03/2016.
+ */
+public class Priority {
+    public final static int HIGH = 0;
+    public final static int MEDIUM = 1;
+    public final static int LOW = 2;
+    public final static int BLACKLIST= 3;
+}

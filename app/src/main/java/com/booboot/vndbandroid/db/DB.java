@@ -10,13 +10,15 @@ import com.booboot.vndbandroid.util.Callback;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.SortedMap;
 
 /**
  * Created by od on 15/03/2016.
  */
 public class DB {
-    public static Results results;
+    public static LinkedHashMap<Integer, Item> results = new LinkedHashMap<>();
 
     public static void loadData(final Context context, final Callback successCallback) {
         VNDBServer.get("vnlist", "basic", "(uid = 0)", null, context, new Callback() {
@@ -32,8 +34,8 @@ public class DB {
                         protected void config() {
                             for (Item vn : results.getItems()) {
                                 vn.setStatus(ids.get(vn.getId()).getStatus());
+                                DB.results.put(vn.getId(), vn);
                             }
-                            DB.results = results;
                             successCallback.call();
                         }
                     }, Callback.errorCallback(context));
