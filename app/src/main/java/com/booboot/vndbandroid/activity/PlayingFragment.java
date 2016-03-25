@@ -4,7 +4,6 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -28,7 +27,6 @@ public class PlayingFragment extends Fragment {
     private MaterialListView materialListView;
     private int status;
 
-    @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.playing_fragment, container, false);
@@ -37,7 +35,7 @@ public class PlayingFragment extends Fragment {
         Log.d("D", "Creating a new Playing Fragment...");
         materialListView = (MaterialListView) rootView.findViewById(R.id.materialListView);
 
-        for (final Item vn : DB.results.values()) {
+        for (final Item vn : DB.vnlist.values()) {
             if (vn.getStatus() != status) continue;
 
             Card card = new Card.Builder(getActivity())

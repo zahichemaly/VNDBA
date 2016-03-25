@@ -26,6 +26,7 @@ import com.booboot.vndbandroid.api.bean.Fields;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Priority;
 import com.booboot.vndbandroid.api.bean.Status;
+import com.booboot.vndbandroid.api.bean.Vote;
 import com.booboot.vndbandroid.db.DB;
 import com.booboot.vndbandroid.json.JSON;
 import com.booboot.vndbandroid.util.Bitmap;
@@ -39,6 +40,9 @@ import java.util.List;
 public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
     private ActionBar actionBar;
     private Item vn;
+    private Item wishlistVn;
+    private Item votelistVn;
+
     private ImageButton image;
     private Button statusButton;
     private Button wishlistButton;
@@ -58,6 +62,9 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
         setContentView(R.layout.vn_details);
 
         vn = (Item) getIntent().getSerializableExtra(PlayingFragment.VN_ARG);
+        wishlistVn = DB.wishlist.get(vn.getId());
+        votelistVn = DB.votelist.get(vn.getId());
+
         initExpandableListView();
 
         image = (ImageButton) findViewById(R.id.image);
@@ -70,6 +77,8 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         statusButton.setText(Status.toString(vn.getStatus()));
+        wishlistButton.setText(Priority.toString(wishlistVn != null ? wishlistVn.getPriority() : -1));
+        votesButton.setText(Vote.toString(votelistVn != null ? votelistVn.getVote() : -1));
 
         new Thread() {
             public void run() {

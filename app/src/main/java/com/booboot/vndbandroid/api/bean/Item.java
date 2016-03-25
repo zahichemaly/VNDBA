@@ -32,6 +32,24 @@ public class Item extends VNDBCommand {
     private int status;
     private int added;
     private String notes;
+    private int vote;
+    private int priority;
+
+    public int getVote() {
+        return vote;
+    }
+
+    public void setVote(int vote) {
+        this.vote = vote;
+    }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
 
     public int getVn() {
         return vn;
