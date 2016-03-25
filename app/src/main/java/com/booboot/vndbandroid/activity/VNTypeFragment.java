@@ -12,31 +12,38 @@ import android.view.ViewGroup;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.api.bean.Item;
+import com.booboot.vndbandroid.api.bean.ListType;
 import com.booboot.vndbandroid.db.DB;
 import com.dexafree.materialList.card.Card;
 import com.dexafree.materialList.card.CardProvider;
 import com.dexafree.materialList.listeners.RecyclerItemClickListener;
 import com.dexafree.materialList.view.MaterialListView;
 
+import java.util.LinkedHashMap;
+
 /**
  * Created by od on 09/03/2016.
  */
-public class PlayingFragment extends Fragment {
-    public final static String STATUS_ARG = "STATUS";
+public class VNTypeFragment extends Fragment {
+    public final static String TAB_VALUE_ARG = "STATUS";
     public final static String VN_ARG = "VN";
     private MaterialListView materialListView;
-    private int status;
+
+    private int tabValue;
+    private int type;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.playing_fragment, container, false);
-        status = getArguments().getInt(STATUS_ARG);
+        tabValue = getArguments().getInt(TAB_VALUE_ARG);
+        type = getArguments().getInt(VNListFragment.LIST_TYPE_ARG);
 
-        Log.d("D", "Creating a new Playing Fragment...");
         materialListView = (MaterialListView) rootView.findViewById(R.id.materialListView);
 
-        for (final Item vn : DB.vnlist.values()) {
-            if (vn.getStatus() != status) continue;
+        for (final Item vn : getList().values()) {
+            if (type == ListType.VNLIST && vn.getStatus() != tabValue) continue;
+            if (type == ListType.VOTELIST && vn.getVote() / 10 != tabValue && vn.getVote() / 10 != tabValue - 1) continue;
+            if (type == ListType.WISHLIST && vn.getPriority() != tabValue) continue;
 
             Card card = new Card.Builder(getActivity())
                     .withProvider(new CardProvider())
@@ -73,5 +80,12 @@ public class PlayingFragment extends Fragment {
         });
 
         return rootView;
+    }
+
+    public LinkedHashMap<Integer,Item> getList() {
+        if (type == ListType.VNLIST) return DB.vnlist;
+        if (type == ListType.VOTELIST) return DB.votelist;
+        if (type == ListType.WISHLIST) return DB.wishlist;
+        return null;
     }
 }

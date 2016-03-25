@@ -7,8 +7,6 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
-import android.telecom.Call;
-import android.util.Log;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -61,7 +59,7 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.vn_details);
 
-        vn = (Item) getIntent().getSerializableExtra(PlayingFragment.VN_ARG);
+        vn = (Item) getIntent().getSerializableExtra(VNTypeFragment.VN_ARG);
         wishlistVn = DB.wishlist.get(vn.getId());
         votelistVn = DB.votelist.get(vn.getId());
 

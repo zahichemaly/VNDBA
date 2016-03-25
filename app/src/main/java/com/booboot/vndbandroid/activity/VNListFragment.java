@@ -10,11 +10,13 @@ import android.view.ViewGroup;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.adapter.PagerAdapter;
+import com.booboot.vndbandroid.api.bean.ListType;
 
 /**
  * Created by od on 13/03/2016.
  */
 public class VNListFragment extends Fragment implements TabLayout.OnTabSelectedListener {
+    public final static String LIST_TYPE_ARG = "LIST_TYPE";
     ViewPager viewPager;
 
     @Override
@@ -22,14 +24,35 @@ public class VNListFragment extends Fragment implements TabLayout.OnTabSelectedL
         View inflatedView = inflater.inflate(R.layout.vn_list, container, false);
 
         final TabLayout tabLayout = (TabLayout) inflatedView.findViewById(R.id.tabLayout);
-        tabLayout.addTab(tabLayout.newTab().setText("Playing"));
-        tabLayout.addTab(tabLayout.newTab().setText("Finished"));
-        tabLayout.addTab(tabLayout.newTab().setText("Stalled"));
-        tabLayout.addTab(tabLayout.newTab().setText("Dropped"));
-        tabLayout.addTab(tabLayout.newTab().setText("Unknown"));
+        int type = getArguments().getInt(LIST_TYPE_ARG);
+        switch (type) {
+            case ListType.VNLIST:
+                tabLayout.addTab(tabLayout.newTab().setText("Playing"));
+                tabLayout.addTab(tabLayout.newTab().setText("Finished"));
+                tabLayout.addTab(tabLayout.newTab().setText("Stalled"));
+                tabLayout.addTab(tabLayout.newTab().setText("Dropped"));
+                tabLayout.addTab(tabLayout.newTab().setText("Unknown"));
+                break;
+
+            case ListType.VOTELIST:
+                tabLayout.addTab(tabLayout.newTab().setText("10 - 9"));
+                tabLayout.addTab(tabLayout.newTab().setText("8 - 7"));
+                tabLayout.addTab(tabLayout.newTab().setText("6 - 5"));
+                tabLayout.addTab(tabLayout.newTab().setText("4 - 3"));
+                tabLayout.addTab(tabLayout.newTab().setText("2 - 1"));
+                break;
+
+            case ListType.WISHLIST:
+                tabLayout.addTab(tabLayout.newTab().setText("High"));
+                tabLayout.addTab(tabLayout.newTab().setText("Medium"));
+                tabLayout.addTab(tabLayout.newTab().setText("Low"));
+                tabLayout.addTab(tabLayout.newTab().setText("Blacklist"));
+                break;
+        }
+
         viewPager = (ViewPager) inflatedView.findViewById(R.id.viewpager);
 
-        viewPager.setAdapter(new PagerAdapter(getFragmentManager(), tabLayout.getTabCount()));
+        viewPager.setAdapter(new PagerAdapter(getFragmentManager(), tabLayout.getTabCount(), type));
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setOnTabSelectedListener(this);
 
