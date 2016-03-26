@@ -1,7 +1,6 @@
 package com.booboot.vndbandroid.api.bean;
 
 import java.io.Serializable;
-import java.lang.*;
 import java.util.HashMap;
 
 /**

@@ -12,12 +12,18 @@ public class Status {
 
     public static String toString(int status) {
         switch (status) {
-            case 0: return "Unknown";
-            case 1: return "Playing";
-            case 2: return "Finished";
-            case 3: return "Stalled";
-            case 4: return "Dropped";
-            default: return "-";
+            case 0:
+                return "Unknown";
+            case 1:
+                return "Playing";
+            case 2:
+                return "Finished";
+            case 3:
+                return "Stalled";
+            case 4:
+                return "Dropped";
+            default:
+                return "-";
         }
     }
 }

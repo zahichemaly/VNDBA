@@ -3,14 +3,17 @@ package com.booboot.vndbandroid.api;
 import android.content.Context;
 import android.util.Log;
 
-import com.booboot.vndbandroid.api.bean.*;
 import com.booboot.vndbandroid.api.bean.Error;
+import com.booboot.vndbandroid.api.bean.Fields;
+import com.booboot.vndbandroid.api.bean.Login;
+import com.booboot.vndbandroid.api.bean.Ok;
+import com.booboot.vndbandroid.api.bean.Options;
+import com.booboot.vndbandroid.api.bean.Results;
+import com.booboot.vndbandroid.api.bean.VNDBCommand;
 import com.booboot.vndbandroid.json.JSON;
 import com.booboot.vndbandroid.settings.SettingsManager;
 import com.booboot.vndbandroid.util.Callback;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -140,7 +143,7 @@ public class VNDBServer {
 
         try {
             Log.e("D", query.toString());
-            if (in.ready()) while (in.read() > -1);
+            if (in.ready()) while (in.read() > -1) ;
             out.write(query.toString().getBytes("UTF-8"));
         } catch (UnsupportedEncodingException uee) {
             errorCallback.message = "Tried to send a query to the API with a wrong encoding. Aborting operation.";
@@ -175,7 +178,7 @@ public class VNDBServer {
             errorCallback.call();
             return null;
         }
-        Log.e("D", "Server: " + response.toString());
+        log(response.toString());
 
         int delimiterIndex = response.indexOf("{");
         if (delimiterIndex < 0) {
@@ -220,5 +223,21 @@ public class VNDBServer {
 
     private static void freeMutex() {
         mutex = true;
+    }
+
+    private static void log(String sb) {
+        if (sb.length() > 4000) {
+            int chunkCount = sb.length() / 4000;     // integer division
+            for (int i = 0; i <= chunkCount; i++) {
+                int max = 4000 * (i + 1);
+                if (max >= sb.length()) {
+                    Log.e("D", sb.substring(4000 * i));
+                } else {
+                    Log.e("D", sb.substring(4000 * i, max));
+                }
+            }
+        } else {
+            Log.e("D", sb);
+        }
     }
 }

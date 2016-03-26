@@ -2,8 +2,6 @@ package com.booboot.vndbandroid.api.bean;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import java.util.List;
-
 /**
  * Created by od on 12/03/2016.
  */

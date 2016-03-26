@@ -11,11 +11,16 @@ public class Priority {
 
     public static String toString(int priority) {
         switch (priority) {
-            case 0: return "High";
-            case 1: return "Medium";
-            case 2: return "Low";
-            case 3: return "Blacklist";
-            default: return "Not on my wishlist";
+            case 0:
+                return "High";
+            case 1:
+                return "Medium";
+            case 2:
+                return "Low";
+            case 3:
+                return "Blacklist";
+            default:
+                return "Not on my wishlist";
         }
     }
 }

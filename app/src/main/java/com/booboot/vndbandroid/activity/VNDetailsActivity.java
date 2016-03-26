@@ -1,8 +1,6 @@
 package com.booboot.vndbandroid.activity;
 
-import android.app.Dialog;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -10,25 +8,26 @@ import android.support.v7.widget.PopupMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.adapter.CustomExpandableListAdapter;
+import com.booboot.vndbandroid.adapter.VNDetailsElement;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.Fields;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Priority;
+import com.booboot.vndbandroid.api.bean.Screen;
 import com.booboot.vndbandroid.api.bean.Status;
 import com.booboot.vndbandroid.api.bean.Vote;
 import com.booboot.vndbandroid.db.DB;
 import com.booboot.vndbandroid.json.JSON;
 import com.booboot.vndbandroid.util.Bitmap;
 import com.booboot.vndbandroid.util.Callback;
+import com.booboot.vndbandroid.util.Lightbox;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import java.util.ArrayList;
@@ -49,10 +48,8 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
 
     private boolean shouldRecreateActivity = false;
 
-    ExpandableListView expandableListView;
-    ExpandableListAdapter expandableListAdapter;
-    List<String> expandableListTitle;
-    LinkedHashMap<String, List<String>> expandableListDetail;
+    private ExpandableListView expandableListView;
+    private ExpandableListAdapter expandableListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,41 +80,14 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
                 image.setImageDrawable(Bitmap.drawableFromUrl(vn.getImage()));
             }
         }.start();
-        image.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Dialog dialog = new Dialog(VNDetailsActivity.this);
-                dialog.setContentView(R.layout.act_lightbox);
-                dialog.setCancelable(true);
 
-                final ImageView lightbox = (ImageView) dialog.findViewById(R.id.lightboxView);
-                new Thread() {
-                    public void run() {
-                        lightbox.setImageDrawable(Bitmap.drawableFromUrl(vn.getImage()));
-                    }
-                }.start();
-
-                WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
-                params.width = WindowManager.LayoutParams.MATCH_PARENT;
-                params.height = WindowManager.LayoutParams.MATCH_PARENT;
-                dialog.getWindow().setAttributes(params);
-                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                dialog.setCanceledOnTouchOutside(true);
-                lightbox.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
-                dialog.show();
-            }
-        });
+        Lightbox.set(this, image, vn.getImage());
     }
 
     private void initExpandableListView() {
         expandableListView = (ExpandableListView) findViewById(R.id.expandableListView);
-        expandableListDetail = getExpandableListData();
-        expandableListTitle = new ArrayList<>(expandableListDetail.keySet());
+        LinkedHashMap<String, VNDetailsElement> expandableListDetail = getExpandableListData();
+        List<String> expandableListTitle = new ArrayList<>(expandableListDetail.keySet());
         expandableListAdapter = new CustomExpandableListAdapter(this, expandableListTitle, expandableListDetail);
         expandableListView.addHeaderView(getLayoutInflater().inflate(R.layout.vn_details_header, null));
         expandableListView.setAdapter(expandableListAdapter);
@@ -288,11 +258,16 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
         return super.onOptionsItemSelected(item);
     }
 
-    public LinkedHashMap<String, List<String>> getExpandableListData() {
-        LinkedHashMap<String, List<String>> expandableListDetail = new LinkedHashMap<>();
+    public LinkedHashMap<String, VNDetailsElement> getExpandableListData() {
+        LinkedHashMap<String, VNDetailsElement> expandableListDetail = new LinkedHashMap<>();
 
         List<String> description = new ArrayList<>();
         description.add(vn.getDescription());
+
+        List<String> screenshots = new ArrayList<>();
+        for (Screen screenshot : vn.getScreens()) {
+            screenshots.add(screenshot.getImage());
+        }
 
         List<String> platforms = new ArrayList<>();
         for (String platform : vn.getPlatforms())
@@ -302,9 +277,10 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
         for (String language : vn.getLanguages())
             languages.add(language);
 
-        expandableListDetail.put("Description", description);
-        expandableListDetail.put("Platforms", platforms);
-        expandableListDetail.put("Languages", languages);
+        expandableListDetail.put("Description", new VNDetailsElement(description, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put("Screenshots", new VNDetailsElement(screenshots, VNDetailsElement.TYPE_IMAGES));
+        expandableListDetail.put("Platforms", new VNDetailsElement(platforms, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put("Languages", new VNDetailsElement(languages, VNDetailsElement.TYPE_TEXT));
 
         return expandableListDetail;
     }

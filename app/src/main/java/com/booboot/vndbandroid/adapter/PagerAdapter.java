@@ -5,8 +5,8 @@ import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v13.app.FragmentStatePagerAdapter;
 
-import com.booboot.vndbandroid.activity.VNTypeFragment;
 import com.booboot.vndbandroid.activity.VNListFragment;
+import com.booboot.vndbandroid.activity.VNTypeFragment;
 import com.booboot.vndbandroid.api.bean.ListType;
 import com.booboot.vndbandroid.api.bean.Priority;
 import com.booboot.vndbandroid.api.bean.Status;

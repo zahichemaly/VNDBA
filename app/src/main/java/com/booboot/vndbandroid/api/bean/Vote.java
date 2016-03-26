@@ -5,6 +5,6 @@ package com.booboot.vndbandroid.api.bean;
  */
 public class Vote {
     public static String toString(int vote) {
-        return vote < 10 ? "Not voted yet" : (vote / 10) +  " / 10";
+        return vote < 10 ? "Not voted yet" : (vote / 10) + " / 10";
     }
 }

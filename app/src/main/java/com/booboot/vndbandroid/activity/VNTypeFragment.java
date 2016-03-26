@@ -42,7 +42,8 @@ public class VNTypeFragment extends Fragment {
 
         for (final Item vn : getList().values()) {
             if (type == ListType.VNLIST && vn.getStatus() != tabValue) continue;
-            if (type == ListType.VOTELIST && vn.getVote() / 10 != tabValue && vn.getVote() / 10 != tabValue - 1) continue;
+            if (type == ListType.VOTELIST && vn.getVote() / 10 != tabValue && vn.getVote() / 10 != tabValue - 1)
+                continue;
             if (type == ListType.WISHLIST && vn.getPriority() != tabValue) continue;
 
             Card card = new Card.Builder(getActivity())
@@ -82,7 +83,7 @@ public class VNTypeFragment extends Fragment {
         return rootView;
     }
 
-    public LinkedHashMap<Integer,Item> getList() {
+    public LinkedHashMap<Integer, Item> getList() {
         if (type == ListType.VNLIST) return DB.vnlist;
         if (type == ListType.VOTELIST) return DB.votelist;
         if (type == ListType.WISHLIST) return DB.wishlist;

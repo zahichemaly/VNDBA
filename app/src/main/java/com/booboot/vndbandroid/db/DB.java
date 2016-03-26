@@ -50,7 +50,7 @@ public class DB {
                                 mergedIds.addAll(votelistIds.keySet());
                                 mergedIds.addAll(wishlistIds.keySet());
                                 try {
-                                    VNDBServer.get("vn", "basic,details", "(id = " + JSON.mapper.writeValueAsString(mergedIds) + ")", null, context, new Callback() {
+                                    VNDBServer.get("vn", "basic,details,screens", "(id = " + JSON.mapper.writeValueAsString(mergedIds) + ")", null, context, new Callback() {
                                         @Override
                                         protected void config() {
                                             for (Item vn : results.getItems()) {
