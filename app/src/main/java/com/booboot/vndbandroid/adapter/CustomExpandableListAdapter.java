@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.util.Lightbox;
+import com.booboot.vndbandroid.util.Pixels;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.LinkedHashMap;
@@ -66,7 +67,7 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
             case R.layout.list_item_images:
                 final ImageButton expandedListImage = (ImageButton) convertView.findViewById(R.id.expandedListImage);
                 ImageLoader.getInstance().displayImage(expandedListText, expandedListImage);
-                convertView.setMinimumHeight(250);
+                convertView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Pixels.px(100, context)));
                 Lightbox.set(context, expandedListImage, expandedListText);
                 break;
 
