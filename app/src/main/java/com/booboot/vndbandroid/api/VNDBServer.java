@@ -195,6 +195,7 @@ public class VNDBServer {
             String params = response.substring(delimiterIndex, response.length()).replace(EOM + "", "");
             return (VNDBCommand) JSON.mapper.readValue(params, VNDBCommand.getClass(command));
         } catch (IOException ioe) {
+            ioe.printStackTrace();
             errorCallback.message = "An error occurred while decoding the response from the API. Aborting operation.";
             errorCallback.call();
             return null;

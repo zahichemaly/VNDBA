@@ -66,7 +66,7 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
             case R.layout.list_item_images:
                 final ImageButton expandedListImage = (ImageButton) convertView.findViewById(R.id.expandedListImage);
                 ImageLoader.getInstance().displayImage(expandedListText, expandedListImage);
-                convertView.setMinimumHeight(400);
+                convertView.setMinimumHeight(250);
                 Lightbox.set(context, expandedListImage, expandedListText);
                 break;
 

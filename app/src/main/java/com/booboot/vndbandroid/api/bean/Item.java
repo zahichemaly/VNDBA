@@ -2,6 +2,8 @@ package com.booboot.vndbandroid.api.bean;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -24,7 +26,7 @@ public class Item extends VNDBCommand {
     private boolean image_nsfw;
     private List<Anime> anime;
     private List<Relation> relations;
-    private List<Tag> tags;
+    private List<List<Number>> tags;
     private double popularity;
     private double rating;
     private int votecount;
@@ -203,11 +205,17 @@ public class Item extends VNDBCommand {
         this.relations = relations;
     }
 
-    public List<Tag> getTags() {
+    public List<List<Number>> getTags() {
         return tags;
     }
 
-    public void setTags(List<Tag> tags) {
+    public void setTags(List<List<Number>> tags) {
+        Collections.sort(tags, new Comparator<List<Number>>() {
+            @Override
+            public int compare(List<Number> lhs, List<Number> rhs) {
+                return new Double(rhs.get(1).doubleValue()).compareTo(new Double(lhs.get(1).doubleValue()));
+            }
+        });
         this.tags = tags;
     }
 

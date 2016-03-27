@@ -18,10 +18,12 @@ import com.booboot.vndbandroid.adapter.CustomExpandableListAdapter;
 import com.booboot.vndbandroid.adapter.VNDetailsElement;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.Fields;
+import com.booboot.vndbandroid.api.bean.Genre;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Priority;
 import com.booboot.vndbandroid.api.bean.Screen;
 import com.booboot.vndbandroid.api.bean.Status;
+import com.booboot.vndbandroid.api.bean.Tag;
 import com.booboot.vndbandroid.api.bean.Vote;
 import com.booboot.vndbandroid.db.DB;
 import com.booboot.vndbandroid.json.JSON;
@@ -264,6 +266,14 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
         List<String> description = new ArrayList<>();
         description.add(vn.getDescription());
 
+        List<String> genres = new ArrayList<>();
+        for (List<Number> tag : vn.getTags()) {
+            String tagName = Tag.getTags(this).get(tag.get(0).intValue()).getName();
+            if (Genre.contains(tagName)) {
+                genres.add(tagName);
+            }
+        }
+
         List<String> screenshots = new ArrayList<>();
         for (Screen screenshot : vn.getScreens()) {
             screenshots.add(screenshot.getImage());
@@ -278,6 +288,7 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
             languages.add(language);
 
         expandableListDetail.put("Description", new VNDetailsElement(description, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put("Genres", new VNDetailsElement(genres, VNDetailsElement.TYPE_TEXT));
         expandableListDetail.put("Screenshots", new VNDetailsElement(screenshots, VNDetailsElement.TYPE_IMAGES));
         expandableListDetail.put("Platforms", new VNDetailsElement(platforms, VNDetailsElement.TYPE_TEXT));
         expandableListDetail.put("Languages", new VNDetailsElement(languages, VNDetailsElement.TYPE_TEXT));
