@@ -21,6 +21,7 @@ import com.booboot.vndbandroid.api.bean.Fields;
 import com.booboot.vndbandroid.api.bean.Genre;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Language;
+import com.booboot.vndbandroid.api.bean.Platform;
 import com.booboot.vndbandroid.api.bean.Priority;
 import com.booboot.vndbandroid.api.bean.Screen;
 import com.booboot.vndbandroid.api.bean.Status;
@@ -281,8 +282,11 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
         }
 
         List<String> platforms = new ArrayList<>();
-        for (String platform : vn.getPlatforms())
-            platforms.add(platform);
+        List<Integer> platforms_images = new ArrayList<>();
+        for (String platform : vn.getPlatforms()) {
+            platforms.add(Platform.FULL_TEXT.get(platform));
+            platforms_images.add(Platform.IMAGES.get(platform));
+        }
 
         List<String> languages = new ArrayList<>();
         List<Integer> languages_flags = new ArrayList<>();
@@ -294,7 +298,7 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
         expandableListDetail.put("Description", new VNDetailsElement(null, description, VNDetailsElement.TYPE_TEXT));
         expandableListDetail.put("Genres", new VNDetailsElement(null, genres, VNDetailsElement.TYPE_TEXT));
         expandableListDetail.put("Screenshots", new VNDetailsElement(null, screenshots, VNDetailsElement.TYPE_IMAGES));
-        expandableListDetail.put("Platforms", new VNDetailsElement(null, platforms, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put("Platforms", new VNDetailsElement(platforms_images, platforms, VNDetailsElement.TYPE_TEXT));
         expandableListDetail.put("Languages", new VNDetailsElement(languages_flags, languages, VNDetailsElement.TYPE_TEXT));
 
         return expandableListDetail;
