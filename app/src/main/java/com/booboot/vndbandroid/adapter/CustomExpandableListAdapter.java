@@ -38,6 +38,14 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
         return this.expandableListDetail.get(this.expandableListTitle.get(listPosition)).getData().get(expandedListPosition);
     }
 
+    public Integer getLeftImage(int listPosition, int expandedListPosition) {
+        return this.expandableListDetail.get(this.expandableListTitle.get(listPosition)).getLeftImages().get(expandedListPosition);
+    }
+
+    public List<Integer> getLeftImages(int listPosition) {
+        return this.expandableListDetail.get(this.expandableListTitle.get(listPosition)).getLeftImages();
+    }
+
     public int getChildLayout(int listPosition) {
         int type = this.expandableListDetail.get(this.expandableListTitle.get(listPosition)).getType();
         if (type == VNDetailsElement.TYPE_TEXT) return R.layout.list_item_text;
@@ -60,8 +68,15 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
 
         switch (layout) {
             case R.layout.list_item_text:
-                TextView expandedListTextView = (TextView) convertView.findViewById(R.id.expandedListItem);
-                expandedListTextView.setText(expandedListText);
+                ImageButton itemLeftImage = (ImageButton) convertView.findViewById(R.id.itemLeftImage);
+                TextView itemLeftText = (TextView) convertView.findViewById(R.id.itemLeftText);
+                itemLeftText.setText(expandedListText);
+
+                if (getLeftImages(listPosition) != null) {
+                    itemLeftImage.setImageResource(getLeftImage(listPosition, expandedListPosition));
+                } else {
+                    itemLeftImage.setVisibility(View.GONE);
+                }
                 break;
 
             case R.layout.list_item_images:

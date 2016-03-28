@@ -20,6 +20,7 @@ import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.Fields;
 import com.booboot.vndbandroid.api.bean.Genre;
 import com.booboot.vndbandroid.api.bean.Item;
+import com.booboot.vndbandroid.api.bean.Language;
 import com.booboot.vndbandroid.api.bean.Priority;
 import com.booboot.vndbandroid.api.bean.Screen;
 import com.booboot.vndbandroid.api.bean.Status;
@@ -284,14 +285,17 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
             platforms.add(platform);
 
         List<String> languages = new ArrayList<>();
-        for (String language : vn.getLanguages())
-            languages.add(language);
+        List<Integer> languages_flags = new ArrayList<>();
+        for (String language : vn.getLanguages()) {
+            languages.add(Language.FULL_TEXT.get(language));
+            languages_flags.add(Language.FLAGS.get(language));
+        }
 
-        expandableListDetail.put("Description", new VNDetailsElement(description, VNDetailsElement.TYPE_TEXT));
-        expandableListDetail.put("Genres", new VNDetailsElement(genres, VNDetailsElement.TYPE_TEXT));
-        expandableListDetail.put("Screenshots", new VNDetailsElement(screenshots, VNDetailsElement.TYPE_IMAGES));
-        expandableListDetail.put("Platforms", new VNDetailsElement(platforms, VNDetailsElement.TYPE_TEXT));
-        expandableListDetail.put("Languages", new VNDetailsElement(languages, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put("Description", new VNDetailsElement(null, description, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put("Genres", new VNDetailsElement(null, genres, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put("Screenshots", new VNDetailsElement(null, screenshots, VNDetailsElement.TYPE_IMAGES));
+        expandableListDetail.put("Platforms", new VNDetailsElement(null, platforms, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put("Languages", new VNDetailsElement(languages_flags, languages, VNDetailsElement.TYPE_TEXT));
 
         return expandableListDetail;
     }
