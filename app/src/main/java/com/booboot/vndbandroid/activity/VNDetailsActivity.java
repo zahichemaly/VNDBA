@@ -17,6 +17,7 @@ import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.adapter.CustomExpandableListAdapter;
 import com.booboot.vndbandroid.adapter.VNDetailsElement;
 import com.booboot.vndbandroid.api.VNDBServer;
+import com.booboot.vndbandroid.api.bean.Category;
 import com.booboot.vndbandroid.api.bean.Fields;
 import com.booboot.vndbandroid.api.bean.Genre;
 import com.booboot.vndbandroid.api.bean.Item;
@@ -39,6 +40,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
+    public final static String TITLE_DESCRIPTION = "Description";
+    public final static String TITLE_GENRES = "Genres";
+    public final static String TITLE_SCREENSHOTS = "Screenshots";
+    public final static String TITLE_TAGS = "Tags";
+    public final static String TITLE_PLATFORMS = "Platforms";
+    public final static String TITLE_LANGUAGES = "Languages";
+
     private ActionBar actionBar;
     private Item vn;
     private Item wishlistVn;
@@ -276,6 +284,26 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
             }
         }
 
+        List<String> tags = new ArrayList<>();
+        List<Integer> tags_images = new ArrayList<>();
+        List<String> alreadyProcessedTags = new ArrayList<>();
+        for (List<Number> cat : vn.getTags()) {
+            String currentCategory = Tag.getTags(this).get(cat.get(0).intValue()).getCat();
+            if (!alreadyProcessedTags.contains(currentCategory)) {
+                alreadyProcessedTags.add(currentCategory);
+                tags.add("<b>" + Category.CATEGORIES.get(currentCategory) + " :</b>");
+                tags_images.add(-1);
+                for (List<Number> tag : vn.getTags()) {
+                    String tagCat = Tag.getTags(this).get(tag.get(0).intValue()).getCat();
+                    if (tagCat.equals(currentCategory)) {
+                        String tagName = Tag.getTags(this).get(tag.get(0).intValue()).getName();
+                        tags.add(tagName);
+                        tags_images.add(Tag.getScoreImage(tag));
+                    }
+                }
+            }
+        }
+
         List<String> screenshots = new ArrayList<>();
         for (Screen screenshot : vn.getScreens()) {
             screenshots.add(screenshot.getImage());
@@ -295,11 +323,12 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
             languages_flags.add(Language.FLAGS.get(language));
         }
 
-        expandableListDetail.put("Description", new VNDetailsElement(null, description, VNDetailsElement.TYPE_TEXT));
-        expandableListDetail.put("Genres", new VNDetailsElement(null, genres, VNDetailsElement.TYPE_TEXT));
-        expandableListDetail.put("Screenshots", new VNDetailsElement(null, screenshots, VNDetailsElement.TYPE_IMAGES));
-        expandableListDetail.put("Platforms", new VNDetailsElement(platforms_images, platforms, VNDetailsElement.TYPE_TEXT));
-        expandableListDetail.put("Languages", new VNDetailsElement(languages_flags, languages, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put(TITLE_DESCRIPTION, new VNDetailsElement(null, description, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put(TITLE_GENRES, new VNDetailsElement(null, genres, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put(TITLE_SCREENSHOTS, new VNDetailsElement(null, screenshots, VNDetailsElement.TYPE_IMAGES));
+        expandableListDetail.put(TITLE_TAGS, new VNDetailsElement(tags_images, tags, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put(TITLE_PLATFORMS, new VNDetailsElement(platforms_images, platforms, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put(TITLE_LANGUAGES, new VNDetailsElement(languages_flags, languages, VNDetailsElement.TYPE_TEXT));
 
         return expandableListDetail;
     }

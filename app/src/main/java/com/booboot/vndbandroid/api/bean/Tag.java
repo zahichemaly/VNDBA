@@ -2,6 +2,7 @@ package com.booboot.vndbandroid.api.bean;
 
 import android.content.Context;
 
+import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.json.JSON;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -108,5 +109,13 @@ public class Tag extends VNDBCommand {
 
     public void setMeta(boolean meta) {
         this.meta = meta;
+    }
+
+    public static Integer getScoreImage(List<Number> tag) {
+        float score = tag.get(1).floatValue();
+        if (score >= 2) return R.drawable.score_green;
+        if (score >= 1) return R.drawable.score_light_green;
+        if (score >= 0) return R.drawable.score_yellow;
+        return R.drawable.score_red;
     }
 }
