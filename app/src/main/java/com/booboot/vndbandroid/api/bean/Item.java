@@ -287,4 +287,17 @@ public class Item extends VNDBCommand {
                 return -1;
         }
     }
+
+    public Integer getPopularityImage() {
+        if (popularity >= 60) return R.drawable.score_green;
+        if (popularity >= 40) return R.drawable.score_light_green;
+        if (popularity >= 20) return R.drawable.score_yellow;
+        if (popularity >= 10) return R.drawable.score_light_orange;
+        if (popularity >= 1) return R.drawable.score_orange;
+        else return R.drawable.score_red;
+    }
+
+    public Integer getRatingImage() {
+        return Vote.getImage(rating);
+    }
 }

@@ -49,6 +49,7 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
     public final static String TITLE_DESCRIPTION = "Description";
     public final static String TITLE_GENRES = "Genres";
     public final static String TITLE_SCREENSHOTS = "Screenshots";
+    public final static String TITLE_STATS = "Stats";
     public final static String TITLE_TAGS = "Tags";
     public final static String TITLE_PLATFORMS = "Platforms";
     public final static String TITLE_LANGUAGES = "Languages";
@@ -354,6 +355,16 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
             screenshots.add(screenshot.getImage());
         }
 
+        List<String> statLeft = new ArrayList<>();
+        List<String> statRight = new ArrayList<>();
+        List<Integer> statRightImages = new ArrayList<>();
+        statLeft.add("Popularity");
+        statRight.add(vn.getPopularity() + "%");
+        statRightImages.add(vn.getPopularityImage());
+        statLeft.add("Rating");
+        statRight.add(vn.getRating() + " (" + Vote.getName(vn.getRating()) + ")<br>" + vn.getVotecount() + " votes total");
+        statRightImages.add(vn.getRatingImage());
+
         List<String> platforms = new ArrayList<>();
         List<Integer> platforms_images = new ArrayList<>();
         for (String platform : vn.getPlatforms()) {
@@ -372,6 +383,7 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
         expandableListDetail.put(TITLE_DESCRIPTION, new VNDetailsElement(null, description, null, null, VNDetailsElement.TYPE_TEXT));
         expandableListDetail.put(TITLE_GENRES, new VNDetailsElement(null, genres, null, null, VNDetailsElement.TYPE_TEXT));
         expandableListDetail.put(TITLE_SCREENSHOTS, new VNDetailsElement(null, screenshots, null, null, VNDetailsElement.TYPE_IMAGES));
+        expandableListDetail.put(TITLE_STATS, new VNDetailsElement(null, statLeft, statRight, statRightImages, VNDetailsElement.TYPE_TEXT));
         expandableListDetail.put(TITLE_TAGS, new VNDetailsElement(tags_images, tags, null, null, VNDetailsElement.TYPE_TEXT));
         expandableListDetail.put(TITLE_PLATFORMS, new VNDetailsElement(platforms_images, platforms, null, null, VNDetailsElement.TYPE_TEXT));
         expandableListDetail.put(TITLE_LANGUAGES, new VNDetailsElement(languages_flags, languages, null, null, VNDetailsElement.TYPE_TEXT));
