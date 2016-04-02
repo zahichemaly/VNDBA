@@ -1,5 +1,6 @@
 package com.booboot.vndbandroid.api.bean;
 
+import com.booboot.vndbandroid.R;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.Collections;
@@ -252,4 +253,38 @@ public class Item extends VNDBCommand {
     }
 
     private List<Screen> screens;
+
+    public String getLengthString() {
+        switch (length) {
+            case 1:
+                return "Very short (< 2 hours)";
+            case 2:
+                return "Short (2 - 10 hours)";
+            case 3:
+                return "Medium (10 - 30 hours)";
+            case 4:
+                return "Long (30 - 50 hours)";
+            case 5:
+                return "Very long (> 50 hours)";
+            default:
+                return "Unknown";
+        }
+    }
+
+    public int getLengthImage() {
+        switch (length) {
+            case 1:
+                return R.drawable.score_green;
+            case 2:
+                return R.drawable.score_light_green;
+            case 3:
+                return R.drawable.score_yellow;
+            case 4:
+                return R.drawable.score_orange;
+            case 5:
+                return R.drawable.score_red;
+            default:
+                return -1;
+        }
+    }
 }

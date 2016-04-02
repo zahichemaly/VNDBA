@@ -7,7 +7,7 @@ package com.booboot.vndbandroid.adapter;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.text.Html;
-import android.util.Log;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +16,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
-import com.booboot.vndbandroid.activity.VNDetailsActivity;
 import com.booboot.vndbandroid.util.Lightbox;
 import com.booboot.vndbandroid.util.Pixels;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -38,15 +37,25 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public Object getChild(int listPosition, int expandedListPosition) {
-        return this.expandableListDetail.get(expandableListTitle.get(listPosition)).getData().get(expandedListPosition);
+        return expandableListDetail.get(expandableListTitle.get(listPosition)).getLeftData().get(expandedListPosition);
     }
 
     public List<Integer> getLeftImages(int listPosition) {
-        return this.expandableListDetail.get(expandableListTitle.get(listPosition)).getLeftImages();
+        return expandableListDetail.get(expandableListTitle.get(listPosition)).getLeftImages();
+    }
+
+    public List<Integer> getRightImages(int listPosition) {
+        return expandableListDetail.get(expandableListTitle.get(listPosition)).getRightImages();
+    }
+
+    public Object getRightChild(int listPosition, int expandedListPosition) {
+        List<String> rightData = expandableListDetail.get(expandableListTitle.get(listPosition)).getRightData();
+        if (rightData == null || rightData.size() <= expandedListPosition) return null;
+        return rightData.get(expandedListPosition);
     }
 
     public int getChildLayout(int listPosition) {
-        int type = this.expandableListDetail.get(expandableListTitle.get(listPosition)).getType();
+        int type = expandableListDetail.get(expandableListTitle.get(listPosition)).getType();
         if (type == VNDetailsElement.TYPE_TEXT) return R.layout.list_item_text;
         if (type == VNDetailsElement.TYPE_IMAGES) return R.layout.list_item_images;
         return -1;
@@ -59,7 +68,8 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getChildView(int listPosition, final int expandedListPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-        final String expandedListText = (String) getChild(listPosition, expandedListPosition);
+        final String leftText = (String) getChild(listPosition, expandedListPosition);
+        final String rightText = (String) getRightChild(listPosition, expandedListPosition);
         final int layout = getChildLayout(listPosition);
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         convertView = layoutInflater.inflate(layout, null);
@@ -68,7 +78,16 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
             case R.layout.list_item_text:
                 ImageButton itemLeftImage = (ImageButton) convertView.findViewById(R.id.itemLeftImage);
                 TextView itemLeftText = (TextView) convertView.findViewById(R.id.itemLeftText);
-                itemLeftText.setText(Html.fromHtml(expandedListText));
+                TextView itemRightText = (TextView) convertView.findViewById(R.id.itemRightText);
+                ImageButton itemRightImage = (ImageButton) convertView.findViewById(R.id.itemRightImage);
+
+                itemLeftText.setText(Html.fromHtml(leftText));
+
+                if (rightText == null) itemRightText.setVisibility(View.GONE);
+                else {
+                    itemRightText.setMovementMethod(LinkMovementMethod.getInstance());
+                    itemRightText.setText(Html.fromHtml(rightText));
+                }
 
                 int leftImage;
                 if (getLeftImages(listPosition) != null && (leftImage = getLeftImages(listPosition).get(expandedListPosition)) > 0) {
@@ -76,13 +95,20 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
                 } else {
                     itemLeftImage.setVisibility(View.GONE);
                 }
+
+                int rightImage;
+                if (getRightImages(listPosition) != null && (rightImage = getRightImages(listPosition).get(expandedListPosition)) > 0) {
+                    itemRightImage.setImageResource(rightImage);
+                } else {
+                    itemRightImage.setVisibility(View.GONE);
+                }
                 break;
 
             case R.layout.list_item_images:
                 final ImageButton expandedListImage = (ImageButton) convertView.findViewById(R.id.expandedListImage);
-                ImageLoader.getInstance().displayImage(expandedListText, expandedListImage);
+                ImageLoader.getInstance().displayImage(leftText, expandedListImage);
                 convertView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Pixels.px(100, context)));
-                Lightbox.set(context, expandedListImage, expandedListText);
+                Lightbox.set(context, expandedListImage, leftText);
                 break;
         }
 
@@ -91,7 +117,7 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int listPosition) {
-        return this.expandableListDetail.get(expandableListTitle.get(listPosition)).getData().size();
+        return expandableListDetail.get(expandableListTitle.get(listPosition)).getLeftData().size();
     }
 
     @Override

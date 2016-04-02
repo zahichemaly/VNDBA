@@ -22,6 +22,7 @@ import com.booboot.vndbandroid.api.bean.Fields;
 import com.booboot.vndbandroid.api.bean.Genre;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Language;
+import com.booboot.vndbandroid.api.bean.Links;
 import com.booboot.vndbandroid.api.bean.Platform;
 import com.booboot.vndbandroid.api.bean.Priority;
 import com.booboot.vndbandroid.api.bean.Screen;
@@ -35,11 +36,16 @@ import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.Lightbox;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 
 public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
+    public final static String TITLE_INFORMATION = "Information";
     public final static String TITLE_DESCRIPTION = "Description";
     public final static String TITLE_GENRES = "Genres";
     public final static String TITLE_SCREENSHOTS = "Screenshots";
@@ -273,6 +279,45 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
     public LinkedHashMap<String, VNDetailsElement> getExpandableListData() {
         LinkedHashMap<String, VNDetailsElement> expandableListDetail = new LinkedHashMap<>();
 
+        List<String> infoLeft = new ArrayList<>();
+        List<String> infoRight = new ArrayList<>();
+        List<Integer> infoRightImages = new ArrayList<>();
+        infoLeft.add("Title");
+        infoRight.add(vn.getTitle());
+        infoRightImages.add(-1);
+        if (vn.getOriginal() != null) {
+            infoLeft.add("Original title");
+            infoRight.add(vn.getOriginal());
+            infoRightImages.add(-1);
+        }
+
+        try {
+            infoLeft.add("Released date");
+            Date released = new SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(vn.getReleased());
+            infoRight.add(new SimpleDateFormat("d MMMM yyyy", Locale.US).format(released));
+            infoRightImages.add(-1);
+        } catch (ParseException e) {
+        }
+
+        if (vn.getAliases() != null) {
+            infoLeft.add("Aliases");
+            infoRight.add(vn.getAliases().replace("\n", "<br>"));
+            infoRightImages.add(-1);
+        }
+
+        infoLeft.add("Length");
+        infoRight.add(vn.getLengthString());
+        infoRightImages.add(vn.getLengthImage());
+
+        infoLeft.add("Links");
+        Links links = vn.getLinks();
+        String htmlLinks = "";
+        if (links.getWikipedia() != null) htmlLinks += "<a href=\"" + Links.WIKIPEDIA + links.getWikipedia() + "\">Wikipedia</a>";
+        if (links.getEncubed() != null) htmlLinks += "<br><a href=\"" + Links.ENCUBED + links.getEncubed() + "\">Encubed</a>";
+        if (links.getRenai() != null) htmlLinks += "<br><a href=\"" + Links.RENAI + links.getRenai() + "\">Renai</a>";
+        infoRight.add(htmlLinks);
+        infoRightImages.add(-1);
+
         List<String> description = new ArrayList<>();
         description.add(vn.getDescription());
 
@@ -323,12 +368,13 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
             languages_flags.add(Language.FLAGS.get(language));
         }
 
-        expandableListDetail.put(TITLE_DESCRIPTION, new VNDetailsElement(null, description, VNDetailsElement.TYPE_TEXT));
-        expandableListDetail.put(TITLE_GENRES, new VNDetailsElement(null, genres, VNDetailsElement.TYPE_TEXT));
-        expandableListDetail.put(TITLE_SCREENSHOTS, new VNDetailsElement(null, screenshots, VNDetailsElement.TYPE_IMAGES));
-        expandableListDetail.put(TITLE_TAGS, new VNDetailsElement(tags_images, tags, VNDetailsElement.TYPE_TEXT));
-        expandableListDetail.put(TITLE_PLATFORMS, new VNDetailsElement(platforms_images, platforms, VNDetailsElement.TYPE_TEXT));
-        expandableListDetail.put(TITLE_LANGUAGES, new VNDetailsElement(languages_flags, languages, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put(TITLE_INFORMATION, new VNDetailsElement(null, infoLeft, infoRight, infoRightImages, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put(TITLE_DESCRIPTION, new VNDetailsElement(null, description, null, null, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put(TITLE_GENRES, new VNDetailsElement(null, genres, null, null, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put(TITLE_SCREENSHOTS, new VNDetailsElement(null, screenshots, null, null, VNDetailsElement.TYPE_IMAGES));
+        expandableListDetail.put(TITLE_TAGS, new VNDetailsElement(tags_images, tags, null, null, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put(TITLE_PLATFORMS, new VNDetailsElement(platforms_images, platforms, null, null, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put(TITLE_LANGUAGES, new VNDetailsElement(languages_flags, languages, null, null, VNDetailsElement.TYPE_TEXT));
 
         return expandableListDetail;
     }

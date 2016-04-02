@@ -12,23 +12,27 @@ public class VNDetailsElement {
     public final static int TYPE_TEXT_IMAGES = 92;
 
     private List<Integer> leftImages = new ArrayList<>();
+    private List<Integer> rightImages = new ArrayList<>();
 
-    private List<String> data = new ArrayList<>();
+    private List<String> leftData = new ArrayList<>();
+    private List<String> rightData = new ArrayList<>();
     private int type;
 
-    public VNDetailsElement(List<Integer> leftImages, List<String> data, int type) {
+    public VNDetailsElement(List<Integer> leftImages, List<String> leftData, List<String> rightData, List<Integer> rightImages, int type) {
         this.leftImages = leftImages;
-        this.data = data;
+        this.leftData = leftData;
+        this.rightData = rightData;
+        this.rightImages = rightImages;
+
         this.type = type;
     }
 
-    public List<String> getData() {
-
-        return data;
+    public List<String> getLeftData() {
+        return leftData;
     }
 
-    public void setData(List<String> data) {
-        this.data = data;
+    public void setLeftData(List<String> leftData) {
+        this.leftData = leftData;
     }
 
     public int getType() {
@@ -47,4 +51,19 @@ public class VNDetailsElement {
         this.leftImages = leftImages;
     }
 
+    public List<String> getRightData() {
+        return rightData;
+    }
+
+    public void setRightData(List<String> rightData) {
+        this.rightData = rightData;
+    }
+
+    public List<Integer> getRightImages() {
+        return rightImages;
+    }
+
+    public void setRightImages(List<Integer> rightImages) {
+        this.rightImages = rightImages;
+    }
 }

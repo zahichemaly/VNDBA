@@ -242,25 +242,17 @@ public class MaterialListAdapter extends RecyclerView.Adapter<MaterialListAdapte
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             String filterString = constraint.toString().trim().toLowerCase();
-
             FilterResults results = new FilterResults();
 
             int count = cardList.size();
             final ArrayList<Card> nlist = new ArrayList<>(count);
 
-            String filterableString;
-
-            Log.d("D", "SEARCH : " + filterString);
-
             for (int i = 0; i < count; i++) {
-                filterableString = cardList.get(i).getProvider().getTitle();
-                Log.d("D", "TITLE : " + filterableString);
+                String filterableString = cardList.get(i).getProvider().getTitle();
                 if (filterableString.trim().toLowerCase().contains(filterString)) {
                     nlist.add(cardList.get(i));
                 }
             }
-            Log.d("D", "ORIGINAL LIST : " + cardList);
-            Log.d("D", "FILTERED LIST : " + nlist);
 
             results.values = nlist;
             results.count = nlist.size();

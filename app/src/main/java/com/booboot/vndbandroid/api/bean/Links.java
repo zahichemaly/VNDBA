@@ -7,6 +7,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Links extends VNDBCommand {
+    public final static String WIKIPEDIA = "https://en.wikipedia.org/wiki/";
+    public final static String ENCUBED = "http://novelnews.net/tag/";
+    public final static String RENAI = "http://renai.us/game/";
+
     private String wikipedia;
     private String encubed;
     private String renai;
