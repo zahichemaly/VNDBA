@@ -1,5 +1,7 @@
 package com.booboot.vndbandroid.activity;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -11,14 +13,21 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.api.bean.ListType;
 import com.booboot.vndbandroid.settings.SettingsManager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    private SearchView searchView;
+    private List<VNTypeFragment> activeFragments = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +63,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        } else if (!searchView.isIconified()) {
+            searchView.setIconified(true);
         } else {
             super.onBackPressed();
         }
@@ -62,6 +73,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
+
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchView = (SearchView) menu.findItem(R.id.action_filter).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setQueryHint("Filter your VN list...");
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String search) {
+                for (VNTypeFragment activeFragment : activeFragments) {
+                    activeFragment.getMaterialListView().getAdapter().getFilter().filter(search.toString());
+                }
+                return true;
+            }
+        });
+
+        int searchIconId = searchView.getContext().getResources().getIdentifier("android:id/search_button", null, null);
+        ImageView searchIcon = (ImageView) searchView.findViewById(searchIconId);
+        searchIcon.setImageResource(R.drawable.ic_action_filter);
+
         return true;
     }
 
@@ -108,5 +143,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void addActiveFragment(VNTypeFragment fragment) {
+        this.activeFragments.add(fragment);
+    }
+
+    public void removeActiveFragment(VNTypeFragment fragment) {
+        this.activeFragments.remove(fragment);
+    }
+
+    public SearchView getSearchView() {
+        return searchView;
     }
 }

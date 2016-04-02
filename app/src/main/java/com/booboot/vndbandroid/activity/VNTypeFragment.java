@@ -14,10 +14,10 @@ import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.ListType;
 import com.booboot.vndbandroid.db.DB;
+import com.booboot.vndbandroid.lib.materiallistview.MaterialListView;
 import com.dexafree.materialList.card.Card;
 import com.dexafree.materialList.card.CardProvider;
 import com.dexafree.materialList.listeners.RecyclerItemClickListener;
-import com.dexafree.materialList.view.MaterialListView;
 
 import java.util.LinkedHashMap;
 
@@ -27,7 +27,9 @@ import java.util.LinkedHashMap;
 public class VNTypeFragment extends Fragment {
     public final static String TAB_VALUE_ARG = "STATUS";
     public final static String VN_ARG = "VN";
+
     private MaterialListView materialListView;
+    private MainActivity activity;
 
     private int tabValue;
     private int type;
@@ -35,6 +37,7 @@ public class VNTypeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.playing_fragment, container, false);
+
         tabValue = getArguments().getInt(TAB_VALUE_ARG);
         type = getArguments().getInt(VNListFragment.LIST_TYPE_ARG);
 
@@ -64,7 +67,6 @@ public class VNTypeFragment extends Fragment {
             materialListView.scrollToPosition(0);
         }
 
-
         materialListView.addOnItemTouchListener(new RecyclerItemClickListener.OnItemClickListener() {
 
             @Override
@@ -80,6 +82,8 @@ public class VNTypeFragment extends Fragment {
             }
         });
 
+        initFilter();
+
         return rootView;
     }
 
@@ -88,5 +92,23 @@ public class VNTypeFragment extends Fragment {
         if (type == ListType.VOTELIST) return DB.votelist;
         if (type == ListType.WISHLIST) return DB.wishlist;
         return null;
+    }
+
+    private void initFilter() {
+        activity = ((MainActivity) getActivity());
+
+        activity.addActiveFragment(this);
+        if (activity.getSearchView() != null)
+            materialListView.getAdapter().getFilter().filter(activity.getSearchView().getQuery());
+    }
+
+    public MaterialListView getMaterialListView() {
+        return materialListView;
+    }
+
+    @Override
+    public void onDestroy() {
+        activity.removeActiveFragment(this);
+        super.onDestroy();
     }
 }
