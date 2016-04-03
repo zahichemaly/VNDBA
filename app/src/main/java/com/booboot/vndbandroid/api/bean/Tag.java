@@ -3,7 +3,7 @@ package com.booboot.vndbandroid.api.bean;
 import android.content.Context;
 
 import com.booboot.vndbandroid.R;
-import com.booboot.vndbandroid.json.JSON;
+import com.booboot.vndbandroid.util.JSON;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
 

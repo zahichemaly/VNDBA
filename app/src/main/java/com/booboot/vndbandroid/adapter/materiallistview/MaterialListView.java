@@ -1,4 +1,4 @@
-package com.booboot.vndbandroid.lib.materiallistview;
+package com.booboot.vndbandroid.adapter.materiallistview;
 
 import android.content.Context;
 import android.content.res.Configuration;

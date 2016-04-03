@@ -1,4 +1,4 @@
-package com.booboot.vndbandroid.settings;
+package com.booboot.vndbandroid.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;

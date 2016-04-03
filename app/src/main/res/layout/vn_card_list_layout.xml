@@ -15,7 +15,7 @@
     tools:showIn="@layout/app_bar_main"
     >
 
-    <com.booboot.vndbandroid.lib.materiallistview.MaterialListView
+    <com.booboot.vndbandroid.adapter.materiallistview.MaterialListView
         android:id="@+id/materialListView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"

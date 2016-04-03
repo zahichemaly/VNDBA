@@ -1,4 +1,4 @@
-package com.booboot.vndbandroid.adapter;
+package com.booboot.vndbandroid.adapter.vndetails;
 
 /**
  * Created by od on 18/03/2016.
@@ -23,13 +23,13 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
+public class VNExpandableListAdapter extends BaseExpandableListAdapter {
 
     private Context context;
     private List<String> expandableListTitle;
     private LinkedHashMap<String, VNDetailsElement> expandableListDetail;
 
-    public CustomExpandableListAdapter(Context context, List<String> expandableListTitle, LinkedHashMap<String, VNDetailsElement> expandableListDetail) {
+    public VNExpandableListAdapter(Context context, List<String> expandableListTitle, LinkedHashMap<String, VNDetailsElement> expandableListDetail) {
         this.context = context;
         this.expandableListTitle = expandableListTitle;
         this.expandableListDetail = expandableListDetail;

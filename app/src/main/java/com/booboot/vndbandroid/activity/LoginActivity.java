@@ -14,7 +14,7 @@ import android.widget.Toast;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.db.DB;
-import com.booboot.vndbandroid.settings.SettingsManager;
+import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Callback;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;

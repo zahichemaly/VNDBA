@@ -1,4 +1,4 @@
-package com.booboot.vndbandroid.adapter;
+package com.booboot.vndbandroid.adapter.vndetails;
 
 import java.util.ArrayList;
 import java.util.List;

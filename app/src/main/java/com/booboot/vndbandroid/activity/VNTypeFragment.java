@@ -14,7 +14,7 @@ import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.ListType;
 import com.booboot.vndbandroid.db.DB;
-import com.booboot.vndbandroid.lib.materiallistview.MaterialListView;
+import com.booboot.vndbandroid.adapter.materiallistview.MaterialListView;
 import com.dexafree.materialList.card.Card;
 import com.dexafree.materialList.card.CardProvider;
 import com.dexafree.materialList.listeners.RecyclerItemClickListener;
@@ -36,7 +36,7 @@ public class VNTypeFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.playing_fragment, container, false);
+        View rootView = inflater.inflate(R.layout.vn_card_list_layout, container, false);
 
         tabValue = getArguments().getInt(TAB_VALUE_ARG);
         type = getArguments().getInt(VNListFragment.LIST_TYPE_ARG);

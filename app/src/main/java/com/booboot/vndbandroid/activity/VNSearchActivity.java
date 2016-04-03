@@ -13,26 +13,24 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.SearchView;
-import android.widget.Toast;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.Item;
-import com.booboot.vndbandroid.api.bean.ListType;
 import com.booboot.vndbandroid.api.bean.Options;
-import com.booboot.vndbandroid.lib.materiallistview.MaterialListView;
+import com.booboot.vndbandroid.adapter.materiallistview.MaterialListView;
 import com.booboot.vndbandroid.util.Callback;
 import com.dexafree.materialList.card.Card;
 import com.dexafree.materialList.card.CardProvider;
 import com.dexafree.materialList.listeners.RecyclerItemClickListener;
 
-public class SearchableActivity extends AppCompatActivity {
+public class VNSearchActivity extends AppCompatActivity {
     private MaterialListView materialListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.playing_fragment);
+        setContentView(R.layout.vn_card_list_layout);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled(false);
@@ -64,14 +62,14 @@ public class SearchableActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 searchView.clearFocus();
-                VNDBServer.get("vn", "basic,details,screens,tags,stats", "(search ~ \"" + query.trim() + "\")", Options.create(1, 25, null, false), SearchableActivity.this, new Callback() {
+                VNDBServer.get("vn", "basic,details,screens,tags,stats", "(search ~ \"" + query.trim() + "\")", Options.create(1, 25, null, false), VNSearchActivity.this, new Callback() {
                     @Override
                     protected void config() {
                         materialListView.getAdapter().clearAll();
 
                         Log.d("D", results.getItems().size() + "");
                         for (final Item vn : results.getItems()) {
-                            Card card = new Card.Builder(SearchableActivity.this)
+                            Card card = new Card.Builder(VNSearchActivity.this)
                                     .withProvider(new CardProvider())
                                     .setLayout(R.layout.vn_card_layout)
                                     .setTitle(vn.getTitle())
@@ -93,7 +91,7 @@ public class SearchableActivity extends AppCompatActivity {
 
                             @Override
                             public void onItemClick(Card card, int position) {
-                                Intent intent = new Intent(SearchableActivity.this, VNDetailsActivity.class);
+                                Intent intent = new Intent(VNSearchActivity.this, VNDetailsActivity.class);
                                 intent.putExtra(VNTypeFragment.VN_ARG, (Item) card.getTag());
                                 startActivity(intent);
                             }
@@ -104,7 +102,7 @@ public class SearchableActivity extends AppCompatActivity {
                             }
                         });
                     }
-                }, Callback.errorCallback(SearchableActivity.this));
+                }, Callback.errorCallback(VNSearchActivity.this));
 
                 return true;
             }

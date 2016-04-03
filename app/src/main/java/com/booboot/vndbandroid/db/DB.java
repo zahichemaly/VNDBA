@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.Item;
-import com.booboot.vndbandroid.json.JSON;
+import com.booboot.vndbandroid.util.JSON;
 import com.booboot.vndbandroid.util.Callback;
 import com.fasterxml.jackson.core.JsonProcessingException;
 

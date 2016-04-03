@@ -1,4 +1,4 @@
-package com.booboot.vndbandroid.adapter;
+package com.booboot.vndbandroid.adapter.tabs;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -14,11 +14,11 @@ import com.booboot.vndbandroid.api.bean.Status;
 /**
  * Created by od on 13/03/2016.
  */
-public class PagerAdapter extends FragmentStatePagerAdapter {
+public class VNTabsAdapter extends FragmentStatePagerAdapter {
     private int numOfTabs;
     private int type;
 
-    public PagerAdapter(FragmentManager fm, int numOfTabs, int type) {
+    public VNTabsAdapter(FragmentManager fm, int numOfTabs, int type) {
         super(fm);
         this.numOfTabs = numOfTabs;
         this.type = type;

@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.booboot.vndbandroid.R;
-import com.booboot.vndbandroid.adapter.PagerAdapter;
+import com.booboot.vndbandroid.adapter.tabs.VNTabsAdapter;
 import com.booboot.vndbandroid.api.bean.ListType;
 
 /**
@@ -52,7 +52,7 @@ public class VNListFragment extends Fragment implements TabLayout.OnTabSelectedL
 
         viewPager = (ViewPager) inflatedView.findViewById(R.id.viewpager);
 
-        viewPager.setAdapter(new PagerAdapter(getFragmentManager(), tabLayout.getTabCount(), type));
+        viewPager.setAdapter(new VNTabsAdapter(getFragmentManager(), tabLayout.getTabCount(), type));
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setOnTabSelectedListener(this);
 

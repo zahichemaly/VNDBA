@@ -14,8 +14,8 @@ import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 
 import com.booboot.vndbandroid.R;
-import com.booboot.vndbandroid.adapter.CustomExpandableListAdapter;
-import com.booboot.vndbandroid.adapter.VNDetailsElement;
+import com.booboot.vndbandroid.adapter.vndetails.VNExpandableListAdapter;
+import com.booboot.vndbandroid.adapter.vndetails.VNDetailsElement;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.Category;
 import com.booboot.vndbandroid.api.bean.Fields;
@@ -107,7 +107,7 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
         expandableListView = (ExpandableListView) findViewById(R.id.expandableListView);
         LinkedHashMap<String, VNDetailsElement> expandableListDetail = getExpandableListData();
         List<String> expandableListTitle = new ArrayList<>(expandableListDetail.keySet());
-        expandableListAdapter = new CustomExpandableListAdapter(this, expandableListTitle, expandableListDetail);
+        expandableListAdapter = new VNExpandableListAdapter(this, expandableListTitle, expandableListDetail);
         expandableListView.addHeaderView(getLayoutInflater().inflate(R.layout.vn_details_header, null));
         expandableListView.setAdapter(expandableListAdapter);
 

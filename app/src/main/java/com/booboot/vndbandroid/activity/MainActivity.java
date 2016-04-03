@@ -20,7 +20,7 @@ import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.api.bean.ListType;
-import com.booboot.vndbandroid.settings.SettingsManager;
+import com.booboot.vndbandroid.util.SettingsManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         switch (id) {
             case R.id.action_search:
-                startActivity(new Intent(MainActivity.this, SearchableActivity.class));
+                startActivity(new Intent(MainActivity.this, VNSearchActivity.class));
                 return true;
         }
 
