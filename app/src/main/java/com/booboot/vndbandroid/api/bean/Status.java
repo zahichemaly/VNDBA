@@ -23,7 +23,7 @@ public class Status {
             case 4:
                 return "Dropped";
             default:
-                return "-";
+                return "Not on my VN list";
         }
     }
 }

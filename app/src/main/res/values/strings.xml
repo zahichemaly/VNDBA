@@ -7,5 +7,5 @@
     <string name="action_settings">Settings</string>
     <string name="action_search">Search</string>
     <string name="action_filter">Filter</string>
-    <string name="search_hint">Filter...</string>
+    <string name="search_hint">Search on VNDB...</string>
 </resources>

@@ -23,7 +23,7 @@ public class DB {
     public static LinkedHashMap<Integer, Item> wishlist = new LinkedHashMap<>();
 
     public static void loadData(final Context context, final Callback successCallback) {
-
+        DB.vnlist.clear();
         VNDBServer.get("vnlist", "basic", "(uid = 0)", null, context, new Callback() {
             @Override
             public void config() {
@@ -32,6 +32,7 @@ public class DB {
                     vnlistIds.put(vnlistItem.getVn(), vnlistItem);
                 }
 
+                DB.votelist.clear();
                 VNDBServer.get("votelist", "basic", "(uid = 0)", null, context, new Callback() {
                     @Override
                     protected void config() {
@@ -39,6 +40,7 @@ public class DB {
                             votelistIds.put(votelistItem.getVn(), votelistItem);
                         }
 
+                        DB.wishlist.clear();
                         VNDBServer.get("wishlist", "basic", "(uid = 0)", null, context, new Callback() {
                             @Override
                             protected void config() {

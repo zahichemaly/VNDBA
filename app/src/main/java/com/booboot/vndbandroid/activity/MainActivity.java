@@ -2,6 +2,7 @@ package com.booboot.vndbandroid.activity;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -9,7 +10,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -105,12 +105,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.action_filter:
-                Log.d("D", "ACTION FILTER");
-                return true;
-
             case R.id.action_search:
-                Log.d("D", "ACTION SEARCH");
+                startActivity(new Intent(MainActivity.this, SearchableActivity.class));
                 return true;
         }
 

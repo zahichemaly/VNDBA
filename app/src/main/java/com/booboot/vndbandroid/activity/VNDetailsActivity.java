@@ -30,11 +30,9 @@ import com.booboot.vndbandroid.api.bean.Status;
 import com.booboot.vndbandroid.api.bean.Tag;
 import com.booboot.vndbandroid.api.bean.Vote;
 import com.booboot.vndbandroid.db.DB;
-import com.booboot.vndbandroid.json.JSON;
 import com.booboot.vndbandroid.util.Bitmap;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.Lightbox;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -56,6 +54,7 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
 
     private ActionBar actionBar;
     private Item vn;
+    private Item vnlistVn;
     private Item wishlistVn;
     private Item votelistVn;
 
@@ -76,6 +75,7 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
         setContentView(R.layout.vn_details);
 
         vn = (Item) getIntent().getSerializableExtra(VNTypeFragment.VN_ARG);
+        vnlistVn = DB.vnlist.get(vn.getId());
         wishlistVn = DB.wishlist.get(vn.getId());
         votelistVn = DB.votelist.get(vn.getId());
 
@@ -90,7 +90,7 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
         actionBar.setTitle(vn.getTitle());
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        statusButton.setText(Status.toString(vn.getStatus()));
+        statusButton.setText(Status.toString(vnlistVn != null ? vnlistVn.getStatus() : -1));
         wishlistButton.setText(Priority.toString(wishlistVn != null ? wishlistVn.getPriority() : -1));
         votesButton.setText(Vote.toString(votelistVn != null ? votelistVn.getVote() : -1));
 
@@ -127,7 +127,6 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         popupButton.setText(item.getTitle());
-        JSON.mapper.setSerializationInclusion(Include.NON_NULL);
         String type;
         Fields fields = new Fields();
 

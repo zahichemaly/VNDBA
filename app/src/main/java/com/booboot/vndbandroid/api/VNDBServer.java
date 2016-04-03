@@ -95,6 +95,7 @@ public class VNDBServer {
                 command.append(flags);
                 command.append(' ');
                 command.append(filters);
+                command.append(' ');
                 VNDBCommand results = sendCommand(command.toString(), options);
                 if (results instanceof Results) {
                     successCallback.results = (Results) results;
