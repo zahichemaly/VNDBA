@@ -28,11 +28,15 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private SearchView searchView;
     private List<VNTypeFragment> activeFragments = new ArrayList<>();
+    public static MainActivity instance;
+    private VNListFragment vnlistFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        instance = this;
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -113,7 +117,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -121,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private boolean goToFragment(int id) {
-        VNListFragment nextFrag = new VNListFragment();
+        vnlistFragment = new VNListFragment();
         Bundle args = new Bundle();
 
         if (id == R.id.nav_vnlist) {
@@ -134,8 +137,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             args.putInt("ARG", 5);
         }
 
-        nextFrag.setArguments(args);
-        getFragmentManager().beginTransaction().replace(R.id.fragment_container, nextFrag, "FRAGMENT").addToBackStack(null).commit();
+        vnlistFragment.setArguments(args);
+        getFragmentManager().beginTransaction().replace(R.id.fragment_container, vnlistFragment, "FRAGMENT").addToBackStack(null).commit();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -147,6 +150,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void removeActiveFragment(VNTypeFragment fragment) {
         this.activeFragments.remove(fragment);
+    }
+
+    public VNListFragment getVnlistFragment() {
+        return vnlistFragment;
     }
 
     public SearchView getSearchView() {

@@ -3,6 +3,7 @@ package com.booboot.vndbandroid.activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,6 +58,18 @@ public class VNListFragment extends Fragment implements TabLayout.OnTabSelectedL
         tabLayout.setOnTabSelectedListener(this);
 
         return inflatedView;
+    }
+
+    /**
+     * Refresh the view pager with a little trick : setting the adapter to null then back to its value.
+     * Don't forget to remember the previous page.
+     */
+    public void refresh() {
+        int currentPage = viewPager.getCurrentItem();
+        PagerAdapter adapter = viewPager.getAdapter();
+        viewPager.setAdapter(null);
+        viewPager.setAdapter(adapter);
+        viewPager.setCurrentItem(currentPage);
     }
 
     @Override
