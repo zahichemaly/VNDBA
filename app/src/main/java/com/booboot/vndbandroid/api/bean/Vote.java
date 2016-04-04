@@ -7,7 +7,7 @@ import com.booboot.vndbandroid.R;
  */
 public class Vote {
     public static String toString(int vote) {
-        return vote < 10 ? "Not voted yet" : (vote / 10) + " / 10";
+        return vote < 10 ? "Not on my votelist" : (vote / 10) + " (" + getName(vote / 10) + ")";
     }
 
     public static String getName(double vote) {
