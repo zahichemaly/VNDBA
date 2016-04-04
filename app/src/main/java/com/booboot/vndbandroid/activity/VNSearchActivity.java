@@ -37,6 +37,8 @@ public class VNSearchActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         materialListView = (MaterialListView) findViewById(R.id.materialListView);
+        /* [Fix] Set the background color to match the default one (not the case by default) */
+        materialListView.getRootView().setBackgroundColor(getResources().getColor(R.color.windowBackground, getTheme()));
     }
 
     @Override
