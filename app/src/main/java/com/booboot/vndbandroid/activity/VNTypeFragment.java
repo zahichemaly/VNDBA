@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -11,10 +12,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.booboot.vndbandroid.R;
+import com.booboot.vndbandroid.adapter.materiallistview.MaterialListView;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.ListType;
 import com.booboot.vndbandroid.db.DB;
-import com.booboot.vndbandroid.adapter.materiallistview.MaterialListView;
+import com.booboot.vndbandroid.util.Callback;
 import com.dexafree.materialList.card.Card;
 import com.dexafree.materialList.card.CardProvider;
 import com.dexafree.materialList.listeners.RecyclerItemClickListener;
@@ -24,11 +26,12 @@ import java.util.LinkedHashMap;
 /**
  * Created by od on 09/03/2016.
  */
-public class VNTypeFragment extends Fragment {
+public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     public final static String TAB_VALUE_ARG = "STATUS";
     public final static String VN_ARG = "VN";
 
     private MaterialListView materialListView;
+    private SwipeRefreshLayout refreshLayout;
     private MainActivity activity;
 
     private int tabValue;
@@ -84,6 +87,10 @@ public class VNTypeFragment extends Fragment {
 
         initFilter();
 
+        refreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refreshLayout);
+        refreshLayout.setOnRefreshListener(this);
+        refreshLayout.setColorSchemeResources(R.color.colorAccent);
+
         return rootView;
     }
 
@@ -110,5 +117,19 @@ public class VNTypeFragment extends Fragment {
     public void onDestroy() {
         activity.removeActiveFragment(this);
         super.onDestroy();
+    }
+
+    @Override
+    public void onRefresh() {
+        DB.loadData(getActivity(), new Callback() {
+            @Override
+            protected void config() {
+                int currentPage = activity.getVnlistFragment().getCurrentPage();
+                activity.goToFragment(activity.getSelectedItem());
+                activity.getVnlistFragment().setCurrentPage(currentPage);
+
+                refreshLayout.setRefreshing(false);
+            }
+        });
     }
 }

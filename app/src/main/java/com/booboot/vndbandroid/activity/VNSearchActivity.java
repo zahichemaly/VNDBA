@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -15,10 +16,10 @@ import android.view.MenuItem;
 import android.widget.SearchView;
 
 import com.booboot.vndbandroid.R;
+import com.booboot.vndbandroid.adapter.materiallistview.MaterialListView;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Options;
-import com.booboot.vndbandroid.adapter.materiallistview.MaterialListView;
 import com.booboot.vndbandroid.util.Callback;
 import com.dexafree.materialList.card.Card;
 import com.dexafree.materialList.card.CardProvider;
@@ -39,6 +40,9 @@ public class VNSearchActivity extends AppCompatActivity {
         materialListView = (MaterialListView) findViewById(R.id.materialListView);
         /* [Fix] Set the background color to match the default one (not the case by default) */
         materialListView.getRootView().setBackgroundColor(getResources().getColor(R.color.windowBackground, getTheme()));
+
+        SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.refreshLayout);
+        refreshLayout.setEnabled(false);
     }
 
     @Override

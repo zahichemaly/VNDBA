@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private List<VNTypeFragment> activeFragments = new ArrayList<>();
     public static MainActivity instance;
     private VNListFragment vnlistFragment;
+    private int selectedItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,9 +124,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return goToFragment(id);
     }
 
-    private boolean goToFragment(int id) {
+    public boolean goToFragment(int id) {
         vnlistFragment = new VNListFragment();
         Bundle args = new Bundle();
+        selectedItem = id;
 
         if (id == R.id.nav_vnlist) {
             args.putInt(VNListFragment.LIST_TYPE_ARG, ListType.VNLIST);
@@ -158,5 +160,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public SearchView getSearchView() {
         return searchView;
+    }
+
+    public int getSelectedItem() {
+        return selectedItem;
     }
 }

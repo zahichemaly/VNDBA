@@ -18,7 +18,8 @@ import com.booboot.vndbandroid.api.bean.ListType;
  */
 public class VNListFragment extends Fragment implements TabLayout.OnTabSelectedListener {
     public final static String LIST_TYPE_ARG = "LIST_TYPE";
-    ViewPager viewPager;
+    private ViewPager viewPager;
+    private int currentPage = -1;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -57,6 +58,8 @@ public class VNListFragment extends Fragment implements TabLayout.OnTabSelectedL
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setOnTabSelectedListener(this);
 
+        if (currentPage >= 0) viewPager.setCurrentItem(currentPage);
+
         return inflatedView;
     }
 
@@ -85,5 +88,13 @@ public class VNListFragment extends Fragment implements TabLayout.OnTabSelectedL
     @Override
     public void onTabReselected(TabLayout.Tab tab) {
 
+    }
+
+    public int getCurrentPage() {
+        return viewPager.getCurrentItem();
+    }
+
+    public void setCurrentPage(int page) {
+        this.currentPage = page;
     }
 }
