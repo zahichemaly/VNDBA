@@ -1,5 +1,8 @@
 package com.booboot.vndbandroid.activity;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -7,10 +10,13 @@ import android.support.v7.widget.PopupMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.adapter.vndetails.VNDetailsElement;
@@ -108,15 +114,24 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
         expandableListView.addHeaderView(getLayoutInflater().inflate(R.layout.vn_details_header, null));
         expandableListView.setAdapter(expandableListAdapter);
 
-        expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+        expandableListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public void onGroupExpand(int groupPosition) {
-            }
-        });
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                if (view.getId() == R.id.list_item_text_layout) {
+                    TextView itemLeftText = (TextView) view.findViewById(R.id.itemLeftText);
+                    TextView itemRightText = (TextView) view.findViewById(R.id.itemRightText);
 
-        expandableListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
-            @Override
-            public void onGroupCollapse(int groupPosition) {
+                    String copiedText = itemLeftText.getText().toString();
+                    if (!itemRightText.getText().toString().isEmpty())
+                        copiedText += " : " + itemRightText.getText().toString();
+
+                    ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData clip = ClipData.newPlainText("CLIPBOARD", copiedText);
+                    clipboard.setPrimaryClip(clip);
+
+                    Toast.makeText(VNDetailsActivity.this, "Element copied to clipboard.", Toast.LENGTH_SHORT).show();
+                }
+                return false;
             }
         });
     }

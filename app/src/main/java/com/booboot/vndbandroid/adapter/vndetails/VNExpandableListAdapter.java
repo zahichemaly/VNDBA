@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
@@ -76,16 +77,17 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
 
         switch (layout) {
             case R.layout.list_item_text:
-                ImageButton itemLeftImage = (ImageButton) convertView.findViewById(R.id.itemLeftImage);
+                ImageView itemLeftImage = (ImageView) convertView.findViewById(R.id.itemLeftImage);
                 TextView itemLeftText = (TextView) convertView.findViewById(R.id.itemLeftText);
                 TextView itemRightText = (TextView) convertView.findViewById(R.id.itemRightText);
-                ImageButton itemRightImage = (ImageButton) convertView.findViewById(R.id.itemRightImage);
+                ImageView itemRightImage = (ImageView) convertView.findViewById(R.id.itemRightImage);
 
                 itemLeftText.setText(Html.fromHtml(leftText));
 
                 if (rightText == null) itemRightText.setVisibility(View.GONE);
                 else {
-                    itemRightText.setMovementMethod(LinkMovementMethod.getInstance());
+                    if (rightText.contains("</a>"))
+                        itemRightText.setMovementMethod(LinkMovementMethod.getInstance());
                     itemRightText.setText(Html.fromHtml(rightText));
                 }
 
@@ -155,6 +157,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public boolean isChildSelectable(int listPosition, int expandedListPosition) {
+        // [TODO] return Preferences.copyToClipboardOnLongClick
         return true;
     }
 }
