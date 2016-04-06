@@ -14,8 +14,8 @@ import android.widget.Toast;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.db.DB;
-import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Callback;
+import com.booboot.vndbandroid.util.SettingsManager;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
@@ -44,8 +44,26 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         loginPassword = (EditText) findViewById(R.id.loginPassword);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
-        if (SettingsManager.getUsername(this) != null && SettingsManager.getPassword(this) != null) {
+        String savedUsername = SettingsManager.getUsername(this);
+        String savedPassword = SettingsManager.getPassword(this);
+        if (savedUsername != null && savedPassword != null) {
+            /* Filling the inputs with saved values (for appearance's sake) */
+            loginUsername.setText(savedUsername);
+            loginPassword.setText(savedPassword);
+
+            /* Disabling the inputs */
+            loginUsername.setEnabled(false);
+            loginPassword.setEnabled(false);
+            loginButton.setEnabled(false);
+            /* Hiding the keyboard */
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
             login();
+        } else {
+            loginUsername.setEnabled(true);
+            loginPassword.setEnabled(true);
+            loginButton.setEnabled(true);
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         }
     }
 
