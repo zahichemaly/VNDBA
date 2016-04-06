@@ -2,10 +2,12 @@ package com.booboot.vndbandroid.db;
 
 import android.content.Context;
 
+import com.booboot.vndbandroid.adapter.dbstats.DatabaseStatisticsAdapter;
 import com.booboot.vndbandroid.api.VNDBServer;
+import com.booboot.vndbandroid.api.bean.DbStats;
 import com.booboot.vndbandroid.api.bean.Item;
-import com.booboot.vndbandroid.util.JSON;
 import com.booboot.vndbandroid.util.Callback;
+import com.booboot.vndbandroid.util.JSON;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.util.HashMap;
@@ -21,6 +23,7 @@ public class DB {
     public static LinkedHashMap<Integer, Item> vnlist = new LinkedHashMap<>();
     public static LinkedHashMap<Integer, Item> votelist = new LinkedHashMap<>();
     public static LinkedHashMap<Integer, Item> wishlist = new LinkedHashMap<>();
+    public static DbStats dbstats;
 
     public static void loadData(final Context context, final Callback successCallback) {
         DB.vnlist.clear();
@@ -83,6 +86,21 @@ public class DB {
                         }, Callback.errorCallback(context));
                     }
                 }, Callback.errorCallback(context));
+            }
+        }, Callback.errorCallback(context));
+    }
+
+    public static void loadStats(final Context context, final Callback successCallback, boolean forceRefresh) {
+        if (DB.dbstats != null && !forceRefresh) {
+            successCallback.call();
+            return;
+        }
+
+        VNDBServer.dbstats(new Callback() {
+            @Override
+            protected void config() {
+                DB.dbstats = dbstats;
+                successCallback.call();
             }
         }, Callback.errorCallback(context));
     }

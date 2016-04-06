@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
 
+import com.booboot.vndbandroid.api.bean.DbStats;
 import com.booboot.vndbandroid.api.bean.Results;
 
 /**
@@ -13,6 +14,7 @@ import com.booboot.vndbandroid.api.bean.Results;
 public abstract class Callback {
     public String message;
     public Results results;
+    public DbStats dbstats;
 
     protected abstract void config();
 

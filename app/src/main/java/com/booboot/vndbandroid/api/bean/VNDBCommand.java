@@ -13,6 +13,7 @@ public abstract class VNDBCommand implements Serializable {
         CLASSES.put("login", Login.class);
         CLASSES.put("error", Error.class);
         CLASSES.put("results", Results.class);
+        CLASSES.put("dbstats", DbStats.class);
     }
 
     public static Class getClass(String command) {

@@ -25,7 +25,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class VNExpandableListAdapter extends BaseExpandableListAdapter {
-
     private Context context;
     private List<String> expandableListTitle;
     private LinkedHashMap<String, VNDetailsElement> expandableListDetail;

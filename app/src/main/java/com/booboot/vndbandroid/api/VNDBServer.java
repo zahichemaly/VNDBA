@@ -3,6 +3,7 @@ package com.booboot.vndbandroid.api;
 import android.content.Context;
 import android.util.Log;
 
+import com.booboot.vndbandroid.api.bean.DbStats;
 import com.booboot.vndbandroid.api.bean.Error;
 import com.booboot.vndbandroid.api.bean.Fields;
 import com.booboot.vndbandroid.api.bean.Login;
@@ -122,6 +123,22 @@ public class VNDBServer {
                 VNDBCommand results = sendCommand(command.toString(), fields);
                 if (results instanceof Ok) {
                     if (successCallback != null) successCallback.call();
+                }
+
+                freeMutex();
+            }
+        }.start();
+    }
+
+    public static void dbstats(final Callback successCallback, final Callback errorCallback) {
+        if (!takeMutex()) return;
+
+        new Thread() {
+            public void run() {
+                VNDBCommand results = sendCommand("dbstats", null);
+                if (results instanceof DbStats) {
+                    successCallback.dbstats = (DbStats) results;
+                    successCallback.call();
                 }
 
                 freeMutex();

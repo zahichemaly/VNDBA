@@ -1,5 +1,6 @@
 package com.booboot.vndbandroid.activity;
 
+import android.app.Fragment;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -29,7 +30,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private SearchView searchView;
     private List<VNTypeFragment> activeFragments = new ArrayList<>();
     public static MainActivity instance;
-    private VNListFragment vnlistFragment;
+    private Fragment directSubfragment;
     private int selectedItem;
 
     @Override
@@ -125,22 +126,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public boolean goToFragment(int id) {
-        vnlistFragment = new VNListFragment();
         Bundle args = new Bundle();
         selectedItem = id;
 
         if (id == R.id.nav_vnlist) {
+            directSubfragment = new VNListFragment();
             args.putInt(VNListFragment.LIST_TYPE_ARG, ListType.VNLIST);
         } else if (id == R.id.nav_votelist) {
+            directSubfragment = new VNListFragment();
             args.putInt(VNListFragment.LIST_TYPE_ARG, ListType.VOTELIST);
         } else if (id == R.id.nav_wishlist) {
+            directSubfragment = new VNListFragment();
             args.putInt(VNListFragment.LIST_TYPE_ARG, ListType.WISHLIST);
+        } else if (id == R.id.nav_stats) {
+            directSubfragment = new DatabaseStatisticsFragment();
+        } else if (id == R.id.nav_settings) {
+            directSubfragment = new VNListFragment();
+            args.putInt("ARG", 5);
         } else if (id == R.id.nav_logout) {
+            directSubfragment = new VNListFragment();
             args.putInt("ARG", 5);
         }
 
-        vnlistFragment.setArguments(args);
-        getFragmentManager().beginTransaction().replace(R.id.fragment_container, vnlistFragment, "FRAGMENT").addToBackStack(null).commit();
+        directSubfragment.setArguments(args);
+        getFragmentManager().beginTransaction().replace(R.id.fragment_container, directSubfragment, "FRAGMENT").addToBackStack(null).commit();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -155,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public VNListFragment getVnlistFragment() {
-        return vnlistFragment;
+        return (VNListFragment) directSubfragment;
     }
 
     public SearchView getSearchView() {
