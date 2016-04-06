@@ -4,24 +4,28 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_vnlist"
-            android:icon="@drawable/ic_menu_gallery"
+            android:icon="@drawable/ic_list_black_48dp"
             android:title="My Visual Novel list"/>
         <item
             android:id="@+id/nav_votelist"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_format_list_numbered_black_48dp"
             android:title="My Votes"/>
 
         <item
             android:id="@+id/nav_wishlist"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/wishlist"
             android:title="My Wishlist"/>
+        <item
+            android:id="@+id/nav_stats"
+            android:icon="@drawable/ic_equalizer_black_48dp"
+            android:title="Database Statitistics"/>
     </group>
 
     <item android:title="My account">
         <menu>
             <item
                 android:id="@+id/nav_logout"
-                android:icon="@drawable/ic_menu_share"
+                android:icon="@drawable/ic_exit_to_app_black_48dp"
                 android:title="Logout"/>
         </menu>
     </item>
