@@ -4,6 +4,8 @@ import android.app.Fragment;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -11,13 +13,16 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.OrientationEventListener;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.api.bean.ListType;
@@ -31,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private List<VNTypeFragment> activeFragments = new ArrayList<>();
     public static MainActivity instance;
     private Fragment directSubfragment;
-    private int selectedItem;
+    public static int selectedItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,8 +61,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         LinearLayout headerBackground = (LinearLayout) header.findViewById(R.id.headerBackground);
         headerBackground.setBackground(getResources().getDrawable(R.drawable.bg_5, getTheme()));
 
-        navigationView.getMenu().getItem(0).setChecked(true);
-        onNavigationItemSelected(navigationView.getMenu().getItem(0));
+        if (selectedItem > 0) {
+            /* When the screen rotates, MainActivity is recreated so we have to go to where we were before (correct menu item and page) ! */
+            int currentPage = VNListFragment.currentPage;
+            goToFragment(selectedItem);
+            VNListFragment.currentPage = currentPage;
+        } else {
+            navigationView.getMenu().getItem(0).setChecked(true);
+            onNavigationItemSelected(navigationView.getMenu().getItem(0));
+        }
 
         String[] perms = {"android.permission.WRITE_EXTERNAL_STORAGE", "android.permission.READ_EXTERNAL_STORAGE"};
         int permsRequestCode = 200;
@@ -122,6 +134,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
+        VNListFragment.currentPage = 0;
         return goToFragment(id);
     }
 
@@ -169,9 +182,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public SearchView getSearchView() {
         return searchView;
-    }
-
-    public int getSelectedItem() {
-        return selectedItem;
     }
 }

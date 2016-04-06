@@ -124,9 +124,9 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
         DB.loadData(getActivity(), new Callback() {
             @Override
             protected void config() {
-                int currentPage = activity.getVnlistFragment().getCurrentPage();
-                activity.goToFragment(activity.getSelectedItem());
-                activity.getVnlistFragment().setCurrentPage(currentPage);
+                int currentPage = VNListFragment.currentPage;
+                activity.goToFragment(MainActivity.selectedItem);
+                VNListFragment.currentPage = currentPage;
 
                 refreshLayout.setRefreshing(false);
             }
