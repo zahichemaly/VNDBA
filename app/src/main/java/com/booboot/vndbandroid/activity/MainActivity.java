@@ -4,25 +4,22 @@ import android.app.Fragment;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.menu.MenuItemImpl;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.OrientationEventListener;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.api.bean.ListType;
@@ -60,6 +57,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         headerUsername.setText(SettingsManager.getUsername(this));
         LinearLayout headerBackground = (LinearLayout) header.findViewById(R.id.headerBackground);
         headerBackground.setBackground(getResources().getDrawable(R.drawable.bg_5, getTheme()));
+
+        FloatingActionButton floatingSearchButton = (FloatingActionButton) findViewById(R.id.floatingSearchButton);
+        floatingSearchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, VNSearchActivity.class));
+            }
+        });
 
         if (selectedItem > 0) {
             /* When the screen rotates, MainActivity is recreated so we have to go to where we were before (correct menu item and page) ! */
@@ -114,6 +119,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int searchIconId = searchView.getContext().getResources().getIdentifier("android:id/search_button", null, null);
         ImageView searchIcon = (ImageView) searchView.findViewById(searchIconId);
         searchIcon.setImageResource(R.drawable.ic_action_filter);
+
+        MenuItemImpl actionSearch = (MenuItemImpl) menu.findItem(R.id.action_search);
+        // [TODO] Set with user's preferences in the future?
+        actionSearch.setVisible(false);
 
         return true;
     }
