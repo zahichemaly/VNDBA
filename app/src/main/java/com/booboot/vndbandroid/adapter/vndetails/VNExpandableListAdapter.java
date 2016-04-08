@@ -14,12 +14,15 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.util.Lightbox;
 import com.booboot.vndbandroid.util.Pixels;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.unnamed.b.atv.model.TreeNode;
+import com.unnamed.b.atv.view.AndroidTreeView;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -58,6 +61,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
         int type = expandableListDetail.get(expandableListTitle.get(listPosition)).getType();
         if (type == VNDetailsElement.TYPE_TEXT) return R.layout.list_item_text;
         if (type == VNDetailsElement.TYPE_IMAGES) return R.layout.list_item_images;
+        if (type == VNDetailsElement.TYPE_CUSTOM) return R.layout.list_item_custom;
         return -1;
     }
 
@@ -111,9 +115,48 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                 convertView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Pixels.px(100, context)));
                 Lightbox.set(context, expandedListImage, leftText);
                 break;
+
+            case R.layout.list_item_custom:
+                TreeNode root = TreeNode.root();
+
+                TreeNode myProfile = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_person, "My Profile")).setViewHolder(new ProfileHolder(context));
+                TreeNode bruce = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_person, "Bruce Wayne")).setViewHolder(new ProfileHolder(context));
+                TreeNode clark = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_person, "Clark Kent")).setViewHolder(new ProfileHolder(context));
+                TreeNode barry = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_person, "Barry Allen")).setViewHolder(new ProfileHolder(context));
+                addProfileData(myProfile);
+                addProfileData(clark);
+                addProfileData(bruce);
+                addProfileData(barry);
+                root.addChildren(myProfile, bruce, barry, clark);
+
+                AndroidTreeView tView = new AndroidTreeView(context, root);
+                tView.setDefaultAnimation(true);
+                tView.setDefaultContainerStyle(R.style.TreeNodeStyleDivided, true);
+                ((LinearLayout)convertView).addView(tView.getView());
+                break;
         }
 
         return convertView;
+    }
+
+    private void addProfileData(TreeNode profile) {
+        TreeNode socialNetworks = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_people, "Social")).setViewHolder(new HeaderHolder(context));
+        TreeNode places = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_place, "Places")).setViewHolder(new HeaderHolder(context));
+
+        TreeNode facebook = new TreeNode(new SocialViewHolder.SocialItem(R.string.ic_post_facebook)).setViewHolder(new SocialViewHolder(context));
+        TreeNode linkedin = new TreeNode(new SocialViewHolder.SocialItem(R.string.ic_post_linkedin)).setViewHolder(new SocialViewHolder(context));
+        TreeNode google = new TreeNode(new SocialViewHolder.SocialItem(R.string.ic_post_gplus)).setViewHolder(new SocialViewHolder(context));
+        TreeNode twitter = new TreeNode(new SocialViewHolder.SocialItem(R.string.ic_post_twitter)).setViewHolder(new SocialViewHolder(context));
+
+        TreeNode lake = new TreeNode(new PlaceHolderHolder.PlaceItem("A rose garden")).setViewHolder(new PlaceHolderHolder(context));
+        TreeNode mountains = new TreeNode(new PlaceHolderHolder.PlaceItem("The white house")).setViewHolder(new PlaceHolderHolder(context));
+
+        TreeNode lake2 = new TreeNode(new PlaceHolderHolder.PlaceItem("A rose fsdfsdfsdf")).setViewHolder(new PlaceHolderHolder(context));
+
+        lake.addChildren(lake2);
+        places.addChildren(lake, mountains);
+        socialNetworks.addChildren(facebook, google, twitter, linkedin);
+        profile.addChildren(socialNetworks, places);
     }
 
     @Override

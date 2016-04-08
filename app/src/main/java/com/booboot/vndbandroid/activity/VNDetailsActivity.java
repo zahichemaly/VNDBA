@@ -42,6 +42,7 @@ import com.booboot.vndbandroid.util.Lightbox;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -54,6 +55,7 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
     public final static String TITLE_SCREENSHOTS = "Screenshots";
     public final static String TITLE_STATS = "Stats";
     public final static String TITLE_TAGS = "Tags";
+    public final static String TITLE_RELATIONS = "Relations";
     public final static String TITLE_PLATFORMS = "Platforms";
     public final static String TITLE_LANGUAGES = "Languages";
 
@@ -450,6 +452,7 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
         expandableListDetail.put(TITLE_SCREENSHOTS, new VNDetailsElement(null, screenshots, null, null, VNDetailsElement.TYPE_IMAGES));
         expandableListDetail.put(TITLE_STATS, new VNDetailsElement(null, statLeft, statRight, statRightImages, VNDetailsElement.TYPE_TEXT));
         expandableListDetail.put(TITLE_TAGS, new VNDetailsElement(tags_images, tags, null, null, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put(TITLE_RELATIONS, new VNDetailsElement(Arrays.asList(1), Arrays.asList("a"), null, null, VNDetailsElement.TYPE_CUSTOM));
         expandableListDetail.put(TITLE_PLATFORMS, new VNDetailsElement(platforms_images, platforms, null, null, VNDetailsElement.TYPE_TEXT));
         expandableListDetail.put(TITLE_LANGUAGES, new VNDetailsElement(languages_flags, languages, null, null, VNDetailsElement.TYPE_TEXT));
 

@@ -9,7 +9,7 @@ import java.util.List;
 public class VNDetailsElement {
     public final static int TYPE_TEXT = 90;
     public final static int TYPE_IMAGES = 91;
-    public final static int TYPE_TEXT_IMAGES = 92;
+    public final static int TYPE_CUSTOM = 92;
 
     private List<Integer> leftImages = new ArrayList<>();
     private List<Integer> rightImages = new ArrayList<>();
