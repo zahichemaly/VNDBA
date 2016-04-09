@@ -21,7 +21,6 @@ import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.VNDetailsActivity;
 import com.booboot.vndbandroid.activity.VNTypeFragment;
 import com.booboot.vndbandroid.api.VNDBServer;
-import com.booboot.vndbandroid.api.bean.Options;
 import com.booboot.vndbandroid.db.DB;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.Lightbox;
@@ -53,6 +52,10 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
 
     public List<Integer> getRightImages(int listPosition) {
         return expandableListDetail.get(expandableListTitle.get(listPosition)).getSecondaryImages();
+    }
+
+    public List<String> getUrlImages(int listPosition) {
+        return expandableListDetail.get(expandableListTitle.get(listPosition)).getUrlImages();
     }
 
     public Object getRightChild(int listPosition, int expandedListPosition) {
@@ -126,26 +129,34 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                 TextView title = (TextView) convertView.findViewById(R.id.title);
                 TextView subtitle = (TextView) convertView.findViewById(R.id.subtitle);
 
-                iconView.setVisibility(View.GONE);
+                if (getUrlImages(listPosition) == null)
+                    iconView.setVisibility(View.GONE);
+                else {
+                    String url = getUrlImages(listPosition).get(expandedListPosition);
+                    ImageLoader.getInstance().displayImage(url, iconView);
+                    Lightbox.set(context, iconView, url);
+                }
                 title.setText(primaryText);
                 subtitle.setText(secondaryText);
 
-                final int vnId = getLeftImages(listPosition).get(expandedListPosition);
-                convertView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        VNDBServer.get("vn", DB.VN_FLAGS, "(id = " + vnId + ")", null, context, new Callback() {
-                            @Override
-                            protected void config() {
-                                if (results.getItems().size() < 1) return;
+                if (getLeftImages(listPosition) != null) {
+                    final int vnId = getLeftImages(listPosition).get(expandedListPosition);
+                    convertView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            VNDBServer.get("vn", DB.VN_FLAGS, "(id = " + vnId + ")", null, context, new Callback() {
+                                @Override
+                                protected void config() {
+                                    if (results.getItems().size() < 1) return;
 
-                                Intent intent = new Intent(context, VNDetailsActivity.class);
-                                intent.putExtra(VNTypeFragment.VN_ARG, results.getItems().get(0));
-                                context.startActivity(intent);
-                            }
-                        }, Callback.errorCallback(context));
-                    }
-                });
+                                    Intent intent = new Intent(context, VNDetailsActivity.class);
+                                    intent.putExtra(VNTypeFragment.VN_ARG, results.getItems().get(0));
+                                    context.startActivity(intent);
+                                }
+                            }, Callback.errorCallback(context));
+                        }
+                    });
+                }
                 break;
         }
 

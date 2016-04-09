@@ -28,6 +28,7 @@ import com.booboot.vndbandroid.api.bean.Genre;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Language;
 import com.booboot.vndbandroid.api.bean.Links;
+import com.booboot.vndbandroid.api.bean.Options;
 import com.booboot.vndbandroid.api.bean.Platform;
 import com.booboot.vndbandroid.api.bean.Priority;
 import com.booboot.vndbandroid.api.bean.Relation;
@@ -36,7 +37,6 @@ import com.booboot.vndbandroid.api.bean.Status;
 import com.booboot.vndbandroid.api.bean.Tag;
 import com.booboot.vndbandroid.api.bean.Vote;
 import com.booboot.vndbandroid.db.DB;
-import com.booboot.vndbandroid.util.Bitmap;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.Lightbox;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -44,8 +44,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -55,6 +53,7 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
     public final static String TITLE_INFORMATION = "Information";
     public final static String TITLE_DESCRIPTION = "Description";
     public final static String TITLE_GENRES = "Genres";
+    public final static String TITLE_CHARACTERS = "Characters";
     public final static String TITLE_SCREENSHOTS = "Screenshots";
     public final static String TITLE_STATS = "Stats";
     public final static String TITLE_TAGS = "Tags";
@@ -67,6 +66,7 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
     private Item vnlistVn;
     private Item wishlistVn;
     private Item votelistVn;
+    private List<Item> characters;
 
     private ImageButton image;
     private Button statusButton;
@@ -83,9 +83,22 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
         setContentView(R.layout.vn_details);
 
         vn = (Item) getIntent().getSerializableExtra(VNTypeFragment.VN_ARG);
+        if (DB.characters.get(vn.getId()) == null) {
+            VNDBServer.get("character", DB.CHARACTER_FLAGS, "(vn = " + vn.getId() + ")", Options.create(1, 25, null, false), this, new Callback() {
+                @Override
+                protected void config() {
+                    DB.characters.put(vn.getId(), results.getItems());
+                    init();
+                }
+            }, Callback.errorCallback(this));
+        } else init();
+    }
+
+    private void init() {
         vnlistVn = DB.vnlist.get(vn.getId());
         wishlistVn = DB.wishlist.get(vn.getId());
         votelistVn = DB.votelist.get(vn.getId());
+        characters = DB.characters.get(vn.getId());
 
         initExpandableListView();
 
@@ -103,7 +116,7 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
         votesButton.setText(Vote.toString(votelistVn != null ? votelistVn.getVote() : -1));
 
         ImageLoader.getInstance().displayImage(vn.getImage(), image);
-        Lightbox.set(this, image, vn.getImage());
+        Lightbox.set(VNDetailsActivity.this, image, vn.getImage());
     }
 
     private void initExpandableListView() {
@@ -395,6 +408,15 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
             }
         }
 
+        List<String> character_images = new ArrayList<>();
+        List<String> character_names = new ArrayList<>();
+        List<String> character_subnames = new ArrayList<>();
+        for (Item character : characters) {
+            character_images.add(character.getImage());
+            character_names.add(character.getName());
+            character_subnames.add(character.getOriginal());
+        }
+
         List<String> tags = new ArrayList<>();
         List<Integer> tags_images = new ArrayList<>();
         List<String> alreadyProcessedTags = new ArrayList<>();
@@ -453,15 +475,16 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
             languages_flags.add(Language.FLAGS.get(language));
         }
 
-        expandableListDetail.put(TITLE_INFORMATION, new VNDetailsElement(null, infoLeft, infoRight, infoRightImages, VNDetailsElement.TYPE_TEXT));
-        expandableListDetail.put(TITLE_DESCRIPTION, new VNDetailsElement(null, description, null, null, VNDetailsElement.TYPE_TEXT));
-        expandableListDetail.put(TITLE_GENRES, new VNDetailsElement(null, genres, null, null, VNDetailsElement.TYPE_TEXT));
-        expandableListDetail.put(TITLE_SCREENSHOTS, new VNDetailsElement(null, screenshots, null, null, VNDetailsElement.TYPE_IMAGES));
-        expandableListDetail.put(TITLE_STATS, new VNDetailsElement(null, statLeft, statRight, statRightImages, VNDetailsElement.TYPE_TEXT));
-        expandableListDetail.put(TITLE_TAGS, new VNDetailsElement(tags_images, tags, null, null, VNDetailsElement.TYPE_TEXT));
-        expandableListDetail.put(TITLE_RELATIONS, new VNDetailsElement(relation_ids, relation_titles, relation_types, null, VNDetailsElement.TYPE_SUBTITLE));
-        expandableListDetail.put(TITLE_PLATFORMS, new VNDetailsElement(platforms_images, platforms, null, null, VNDetailsElement.TYPE_TEXT));
-        expandableListDetail.put(TITLE_LANGUAGES, new VNDetailsElement(languages_flags, languages, null, null, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put(TITLE_INFORMATION, new VNDetailsElement(null, infoLeft, infoRight, infoRightImages, null, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put(TITLE_DESCRIPTION, new VNDetailsElement(null, description, null, null, null, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put(TITLE_GENRES, new VNDetailsElement(null, genres, null, null, null, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put(TITLE_CHARACTERS, new VNDetailsElement(null, character_names, character_subnames, null, character_images, VNDetailsElement.TYPE_SUBTITLE));
+        expandableListDetail.put(TITLE_SCREENSHOTS, new VNDetailsElement(null, screenshots, null, null, null, VNDetailsElement.TYPE_IMAGES));
+        expandableListDetail.put(TITLE_STATS, new VNDetailsElement(null, statLeft, statRight, statRightImages, null, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put(TITLE_TAGS, new VNDetailsElement(tags_images, tags, null, null, null, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put(TITLE_RELATIONS, new VNDetailsElement(relation_ids, relation_titles, relation_types, null, null, VNDetailsElement.TYPE_SUBTITLE));
+        expandableListDetail.put(TITLE_PLATFORMS, new VNDetailsElement(platforms_images, platforms, null, null, null, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put(TITLE_LANGUAGES, new VNDetailsElement(languages_flags, languages, null, null, null, VNDetailsElement.TYPE_TEXT));
 
         return expandableListDetail;
     }

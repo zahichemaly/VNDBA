@@ -39,6 +39,99 @@ public class Item extends VNDBCommand {
     private int vote;
     private int priority;
 
+    /* Character-specific properties */
+    private String name;
+    private String gender;
+    private String bloodt;
+    private int[] birthday;
+    private int bust;
+    private int waist;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getBloodt() {
+        return bloodt;
+    }
+
+    public void setBloodt(String bloodt) {
+        this.bloodt = bloodt;
+    }
+
+    public int[] getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(int[] birthday) {
+        this.birthday = birthday;
+    }
+
+    public int getBust() {
+        return bust;
+    }
+
+    public void setBust(int bust) {
+        this.bust = bust;
+    }
+
+    public int getWaist() {
+        return waist;
+    }
+
+    public void setWaist(int waist) {
+        this.waist = waist;
+    }
+
+    public int getHip() {
+        return hip;
+    }
+
+    public void setHip(int hip) {
+        this.hip = hip;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public int getWeight() {
+        return weight;
+    }
+
+    public void setWeight(int weight) {
+        this.weight = weight;
+    }
+
+    public List<int[]> getTraits() {
+        return traits;
+    }
+
+    public void setTraits(List<int[]> traits) {
+        this.traits = traits;
+    }
+
+    private int hip;
+    private int height;
+    private int weight;
+    private List<int[]> traits;
+
     public int getVote() {
         return vote;
     }
