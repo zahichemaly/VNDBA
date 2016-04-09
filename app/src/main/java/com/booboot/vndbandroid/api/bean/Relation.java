@@ -2,7 +2,9 @@ package com.booboot.vndbandroid.api.bean;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  * Created by od on 12/03/2016.
@@ -10,8 +12,10 @@ import java.util.LinkedHashMap;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Relation extends VNDBCommand {
     public final static LinkedHashMap<String, String> TYPES = new LinkedHashMap<>();
+    public static List<String> TYPES_KEY;
 
     static {
+        /* Keep the order here : a VN's relations are sorted in the same order as below */
         TYPES.put("seq", "Sequel");
         TYPES.put("preq", "Prequel");
         TYPES.put("ser", "Same series");
@@ -22,6 +26,8 @@ public class Relation extends VNDBCommand {
         TYPES.put("alt", "Alternative version");
         TYPES.put("fan", "Fandisc");
         TYPES.put("orig", "Original game");
+
+        TYPES_KEY = new ArrayList<>(Relation.TYPES.keySet());
     }
 
     private int id;

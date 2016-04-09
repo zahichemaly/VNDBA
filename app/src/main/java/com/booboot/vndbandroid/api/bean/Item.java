@@ -207,7 +207,7 @@ public class Item extends VNDBCommand {
         Collections.sort(relations, new Comparator<Relation>() {
             @Override
             public int compare(Relation lhs, Relation rhs) {
-                return Integer.valueOf(new ArrayList<>(Relation.TYPES.keySet()).indexOf(lhs.getRelation())).compareTo(Integer.valueOf(new ArrayList<>(Relation.TYPES.keySet()).indexOf(rhs.getRelation())));
+                return Integer.valueOf(Relation.TYPES_KEY.indexOf(lhs.getRelation())).compareTo(Relation.TYPES_KEY.indexOf(rhs.getRelation()));
             }
         });
         this.relations = relations;
@@ -221,7 +221,7 @@ public class Item extends VNDBCommand {
         Collections.sort(tags, new Comparator<List<Number>>() {
             @Override
             public int compare(List<Number> lhs, List<Number> rhs) {
-                return new Double(rhs.get(1).doubleValue()).compareTo(new Double(lhs.get(1).doubleValue()));
+                return Double.valueOf(rhs.get(1).doubleValue()).compareTo(lhs.get(1).doubleValue());
             }
         });
         this.tags = tags;
