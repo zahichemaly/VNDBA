@@ -15,7 +15,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
  * Created by od on 26/03/2016.
  */
 public class Lightbox {
-    public static void set(final Context context, ImageButton image, final String url) {
+    public static void set(final Context context, ImageView image, final String url) {
         image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

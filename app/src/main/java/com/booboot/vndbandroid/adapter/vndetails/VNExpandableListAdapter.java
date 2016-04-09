@@ -18,11 +18,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
+import com.booboot.vndbandroid.adapter.vndetails.treeview.AndroidTreeView;
+import com.booboot.vndbandroid.adapter.vndetails.treeview.ArrowExpandSelectableHeaderHolder;
+import com.booboot.vndbandroid.adapter.vndetails.treeview.TreeNode;
 import com.booboot.vndbandroid.util.Lightbox;
 import com.booboot.vndbandroid.util.Pixels;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.unnamed.b.atv.model.TreeNode;
-import com.unnamed.b.atv.view.AndroidTreeView;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -119,44 +120,34 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
             case R.layout.list_item_custom:
                 TreeNode root = TreeNode.root();
 
-                TreeNode myProfile = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_person, "My Profile")).setViewHolder(new ProfileHolder(context));
-                TreeNode bruce = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_person, "Bruce Wayne")).setViewHolder(new ProfileHolder(context));
-                TreeNode clark = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_person, "Clark Kent")).setViewHolder(new ProfileHolder(context));
-                TreeNode barry = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_person, "Barry Allen")).setViewHolder(new ProfileHolder(context));
-                addProfileData(myProfile);
-                addProfileData(clark);
-                addProfileData(bruce);
-                addProfileData(barry);
-                root.addChildren(myProfile, bruce, barry, clark);
+                TreeNode s1 = new TreeNode(new ArrowExpandSelectableHeaderHolder.IconTreeItem("https://s.vndb.org/cv/37/28337.jpg", "Folder with very long name ")).setViewHolder(
+                        new ArrowExpandSelectableHeaderHolder(context));
+                TreeNode s2 = new TreeNode(new ArrowExpandSelectableHeaderHolder.IconTreeItem("https://s.vndb.org/cv/35/13835.jpg", "Another folder with very long name")).setViewHolder(
+                        new ArrowExpandSelectableHeaderHolder(context));
+
+                fillFolder(s1);
+                fillFolder(s2);
+
+                root.addChildren(s1, s2);
 
                 AndroidTreeView tView = new AndroidTreeView(context, root);
-                tView.setDefaultAnimation(true);
-                tView.setDefaultContainerStyle(R.style.TreeNodeStyleDivided, true);
-                ((LinearLayout)convertView).addView(tView.getView());
+                tView.setDefaultContainerStyle(R.style.TreeNodeStyleCustom);
+                tView.setDefaultViewHolder(ArrowExpandSelectableHeaderHolder.class);
+                ((LinearLayout) convertView).addView(tView.getView());
+                tView.setUseAutoToggle(false);
                 break;
         }
 
         return convertView;
     }
 
-    private void addProfileData(TreeNode profile) {
-        TreeNode socialNetworks = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_people, "Social")).setViewHolder(new HeaderHolder(context));
-        TreeNode places = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_place, "Places")).setViewHolder(new HeaderHolder(context));
-
-        TreeNode facebook = new TreeNode(new SocialViewHolder.SocialItem(R.string.ic_post_facebook)).setViewHolder(new SocialViewHolder(context));
-        TreeNode linkedin = new TreeNode(new SocialViewHolder.SocialItem(R.string.ic_post_linkedin)).setViewHolder(new SocialViewHolder(context));
-        TreeNode google = new TreeNode(new SocialViewHolder.SocialItem(R.string.ic_post_gplus)).setViewHolder(new SocialViewHolder(context));
-        TreeNode twitter = new TreeNode(new SocialViewHolder.SocialItem(R.string.ic_post_twitter)).setViewHolder(new SocialViewHolder(context));
-
-        TreeNode lake = new TreeNode(new PlaceHolderHolder.PlaceItem("A rose garden")).setViewHolder(new PlaceHolderHolder(context));
-        TreeNode mountains = new TreeNode(new PlaceHolderHolder.PlaceItem("The white house")).setViewHolder(new PlaceHolderHolder(context));
-
-        TreeNode lake2 = new TreeNode(new PlaceHolderHolder.PlaceItem("A rose fsdfsdfsdf")).setViewHolder(new PlaceHolderHolder(context));
-
-        lake.addChildren(lake2);
-        places.addChildren(lake, mountains);
-        socialNetworks.addChildren(facebook, google, twitter, linkedin);
-        profile.addChildren(socialNetworks, places);
+    private void fillFolder(TreeNode folder) {
+        TreeNode currentNode = folder;
+        for (int i = 0; i < 8; i++) {
+            TreeNode file = new TreeNode(new ArrowExpandSelectableHeaderHolder.IconTreeItem("https://s.vndb.org/cv/37/28337.jpg", "Very Very Very Very Very Very Very Very Very Very Very Very Very Very Very Very long name for folder" + " " + i));
+            currentNode.addChild(file);
+            currentNode = file;
+        }
     }
 
     @Override
