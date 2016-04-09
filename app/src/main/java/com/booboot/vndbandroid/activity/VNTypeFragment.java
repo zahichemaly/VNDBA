@@ -71,7 +71,6 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
         }
 
         materialListView.addOnItemTouchListener(new RecyclerItemClickListener.OnItemClickListener() {
-
             @Override
             public void onItemClick(Card card, int position) {
                 Intent intent = new Intent(getActivity(), VNDetailsActivity.class);

@@ -10,29 +10,30 @@ public class VNDetailsElement {
     public final static int TYPE_TEXT = 90;
     public final static int TYPE_IMAGES = 91;
     public final static int TYPE_CUSTOM = 92;
+    public final static int TYPE_SUBTITLE = 93;
 
-    private List<Integer> leftImages = new ArrayList<>();
-    private List<Integer> rightImages = new ArrayList<>();
+    private List<Integer> primaryImages = new ArrayList<>();
+    private List<Integer> secondaryImages = new ArrayList<>();
 
-    private List<String> leftData = new ArrayList<>();
-    private List<String> rightData = new ArrayList<>();
+    private List<String> primaryData = new ArrayList<>();
+    private List<String> secondaryData = new ArrayList<>();
     private int type;
 
-    public VNDetailsElement(List<Integer> leftImages, List<String> leftData, List<String> rightData, List<Integer> rightImages, int type) {
-        this.leftImages = leftImages;
-        this.leftData = leftData;
-        this.rightData = rightData;
-        this.rightImages = rightImages;
+    public VNDetailsElement(List<Integer> primaryImages, List<String> primaryData, List<String> secondaryData, List<Integer> secondaryImages, int type) {
+        this.primaryImages = primaryImages;
+        this.primaryData = primaryData;
+        this.secondaryData = secondaryData;
+        this.secondaryImages = secondaryImages;
 
         this.type = type;
     }
 
-    public List<String> getLeftData() {
-        return leftData;
+    public List<String> getPrimaryData() {
+        return primaryData;
     }
 
-    public void setLeftData(List<String> leftData) {
-        this.leftData = leftData;
+    public void setPrimaryData(List<String> primaryData) {
+        this.primaryData = primaryData;
     }
 
     public int getType() {
@@ -43,27 +44,27 @@ public class VNDetailsElement {
         this.type = type;
     }
 
-    public List<Integer> getLeftImages() {
-        return leftImages;
+    public List<Integer> getPrimaryImages() {
+        return primaryImages;
     }
 
-    public void setLeftImages(List<Integer> leftImages) {
-        this.leftImages = leftImages;
+    public void setPrimaryImages(List<Integer> primaryImages) {
+        this.primaryImages = primaryImages;
     }
 
-    public List<String> getRightData() {
-        return rightData;
+    public List<String> getSecondaryData() {
+        return secondaryData;
     }
 
-    public void setRightData(List<String> rightData) {
-        this.rightData = rightData;
+    public void setSecondaryData(List<String> secondaryData) {
+        this.secondaryData = secondaryData;
     }
 
-    public List<Integer> getRightImages() {
-        return rightImages;
+    public List<Integer> getSecondaryImages() {
+        return secondaryImages;
     }
 
-    public void setRightImages(List<Integer> rightImages) {
-        this.rightImages = rightImages;
+    public void setSecondaryImages(List<Integer> secondaryImages) {
+        this.secondaryImages = secondaryImages;
     }
 }

@@ -30,6 +30,7 @@ import com.booboot.vndbandroid.api.bean.Language;
 import com.booboot.vndbandroid.api.bean.Links;
 import com.booboot.vndbandroid.api.bean.Platform;
 import com.booboot.vndbandroid.api.bean.Priority;
+import com.booboot.vndbandroid.api.bean.Relation;
 import com.booboot.vndbandroid.api.bean.Screen;
 import com.booboot.vndbandroid.api.bean.Status;
 import com.booboot.vndbandroid.api.bean.Tag;
@@ -38,11 +39,13 @@ import com.booboot.vndbandroid.db.DB;
 import com.booboot.vndbandroid.util.Bitmap;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.Lightbox;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -99,12 +102,7 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
         wishlistButton.setText(Priority.toString(wishlistVn != null ? wishlistVn.getPriority() : -1));
         votesButton.setText(Vote.toString(votelistVn != null ? votelistVn.getVote() : -1));
 
-        new Thread() {
-            public void run() {
-                image.setImageDrawable(Bitmap.drawableFromUrl(vn.getImage()));
-            }
-        }.start();
-
+        ImageLoader.getInstance().displayImage(vn.getImage(), image);
         Lightbox.set(this, image, vn.getImage());
     }
 
@@ -417,6 +415,15 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
             }
         }
 
+        List<Integer> relation_ids = new ArrayList<>();
+        List<String> relation_titles = new ArrayList<>();
+        List<String> relation_types = new ArrayList<>();
+        for (Relation relation : vn.getRelations()) {
+            relation_titles.add(relation.getTitle());
+            relation_types.add(Relation.TYPES.get(relation.getRelation()));
+            relation_ids.add(relation.getId());
+        }
+
         List<String> screenshots = new ArrayList<>();
         for (Screen screenshot : vn.getScreens()) {
             screenshots.add(screenshot.getImage());
@@ -452,7 +459,7 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
         expandableListDetail.put(TITLE_SCREENSHOTS, new VNDetailsElement(null, screenshots, null, null, VNDetailsElement.TYPE_IMAGES));
         expandableListDetail.put(TITLE_STATS, new VNDetailsElement(null, statLeft, statRight, statRightImages, VNDetailsElement.TYPE_TEXT));
         expandableListDetail.put(TITLE_TAGS, new VNDetailsElement(tags_images, tags, null, null, VNDetailsElement.TYPE_TEXT));
-        expandableListDetail.put(TITLE_RELATIONS, new VNDetailsElement(Arrays.asList(1), Arrays.asList("a"), null, null, VNDetailsElement.TYPE_CUSTOM));
+        expandableListDetail.put(TITLE_RELATIONS, new VNDetailsElement(relation_ids, relation_titles, relation_types, null, VNDetailsElement.TYPE_SUBTITLE));
         expandableListDetail.put(TITLE_PLATFORMS, new VNDetailsElement(platforms_images, platforms, null, null, VNDetailsElement.TYPE_TEXT));
         expandableListDetail.put(TITLE_LANGUAGES, new VNDetailsElement(languages_flags, languages, null, null, VNDetailsElement.TYPE_TEXT));
 

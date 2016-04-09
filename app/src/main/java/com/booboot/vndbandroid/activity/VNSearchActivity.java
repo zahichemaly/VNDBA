@@ -20,6 +20,7 @@ import com.booboot.vndbandroid.adapter.materiallistview.MaterialListView;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Options;
+import com.booboot.vndbandroid.db.DB;
 import com.booboot.vndbandroid.util.Callback;
 import com.dexafree.materialList.card.Card;
 import com.dexafree.materialList.card.CardProvider;
@@ -68,7 +69,7 @@ public class VNSearchActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 searchView.clearFocus();
-                VNDBServer.get("vn", "basic,details,screens,tags,stats", "(search ~ \"" + query.trim() + "\")", Options.create(1, 25, null, false), VNSearchActivity.this, new Callback() {
+                VNDBServer.get("vn", DB.VN_FLAGS, "(search ~ \"" + query.trim() + "\")", Options.create(1, 25, null, false), VNSearchActivity.this, new Callback() {
                     @Override
                     protected void config() {
                         materialListView.getAdapter().clearAll();
@@ -94,7 +95,6 @@ public class VNSearchActivity extends AppCompatActivity {
                         }
 
                         materialListView.addOnItemTouchListener(new RecyclerItemClickListener.OnItemClickListener() {
-
                             @Override
                             public void onItemClick(Card card, int position) {
                                 Intent intent = new Intent(VNSearchActivity.this, VNDetailsActivity.class);

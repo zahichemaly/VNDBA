@@ -6,6 +6,7 @@ import com.booboot.vndbandroid.adapter.dbstats.DatabaseStatisticsAdapter;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.DbStats;
 import com.booboot.vndbandroid.api.bean.Item;
+import com.booboot.vndbandroid.api.bean.Options;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.JSON;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -23,6 +24,8 @@ public class DB {
     public static LinkedHashMap<Integer, Item> vnlist = new LinkedHashMap<>();
     public static LinkedHashMap<Integer, Item> votelist = new LinkedHashMap<>();
     public static LinkedHashMap<Integer, Item> wishlist = new LinkedHashMap<>();
+
+    public final static String VN_FLAGS = "basic,details,screens,tags,stats,relations";
     public static DbStats dbstats;
 
     public static void loadData(final Context context, final Callback successCallback) {
@@ -55,7 +58,7 @@ public class DB {
                                 mergedIds.addAll(votelistIds.keySet());
                                 mergedIds.addAll(wishlistIds.keySet());
                                 try {
-                                    VNDBServer.get("vn", "basic,details,screens,tags,stats", "(id = " + JSON.mapper.writeValueAsString(mergedIds) + ")", null, context, new Callback() {
+                                    VNDBServer.get("vn", VN_FLAGS, "(id = " + JSON.mapper.writeValueAsString(mergedIds) + ")", Options.create(1, 25, null, false), context, new Callback() {
                                         @Override
                                         protected void config() {
                                             for (Item vn : results.getItems()) {

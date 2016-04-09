@@ -3,6 +3,7 @@ package com.booboot.vndbandroid.api.bean;
 import com.booboot.vndbandroid.R;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -203,6 +204,12 @@ public class Item extends VNDBCommand {
     }
 
     public void setRelations(List<Relation> relations) {
+        Collections.sort(relations, new Comparator<Relation>() {
+            @Override
+            public int compare(Relation lhs, Relation rhs) {
+                return Integer.valueOf(new ArrayList<>(Relation.TYPES.keySet()).indexOf(lhs.getRelation())).compareTo(Integer.valueOf(new ArrayList<>(Relation.TYPES.keySet()).indexOf(rhs.getRelation())));
+            }
+        });
         this.relations = relations;
     }
 

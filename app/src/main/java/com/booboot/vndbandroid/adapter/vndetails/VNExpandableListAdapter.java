@@ -5,6 +5,7 @@ package com.booboot.vndbandroid.adapter.vndetails;
  */
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -14,13 +15,15 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
-import com.booboot.vndbandroid.adapter.vndetails.treeview.AndroidTreeView;
-import com.booboot.vndbandroid.adapter.vndetails.treeview.ArrowExpandSelectableHeaderHolder;
-import com.booboot.vndbandroid.adapter.vndetails.treeview.TreeNode;
+import com.booboot.vndbandroid.activity.VNDetailsActivity;
+import com.booboot.vndbandroid.activity.VNTypeFragment;
+import com.booboot.vndbandroid.api.VNDBServer;
+import com.booboot.vndbandroid.api.bean.Options;
+import com.booboot.vndbandroid.db.DB;
+import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.Lightbox;
 import com.booboot.vndbandroid.util.Pixels;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -41,19 +44,19 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public Object getChild(int listPosition, int expandedListPosition) {
-        return expandableListDetail.get(expandableListTitle.get(listPosition)).getLeftData().get(expandedListPosition);
+        return expandableListDetail.get(expandableListTitle.get(listPosition)).getPrimaryData().get(expandedListPosition);
     }
 
     public List<Integer> getLeftImages(int listPosition) {
-        return expandableListDetail.get(expandableListTitle.get(listPosition)).getLeftImages();
+        return expandableListDetail.get(expandableListTitle.get(listPosition)).getPrimaryImages();
     }
 
     public List<Integer> getRightImages(int listPosition) {
-        return expandableListDetail.get(expandableListTitle.get(listPosition)).getRightImages();
+        return expandableListDetail.get(expandableListTitle.get(listPosition)).getSecondaryImages();
     }
 
     public Object getRightChild(int listPosition, int expandedListPosition) {
-        List<String> rightData = expandableListDetail.get(expandableListTitle.get(listPosition)).getRightData();
+        List<String> rightData = expandableListDetail.get(expandableListTitle.get(listPosition)).getSecondaryData();
         if (rightData == null || rightData.size() <= expandedListPosition) return null;
         return rightData.get(expandedListPosition);
     }
@@ -63,6 +66,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
         if (type == VNDetailsElement.TYPE_TEXT) return R.layout.list_item_text;
         if (type == VNDetailsElement.TYPE_IMAGES) return R.layout.list_item_images;
         if (type == VNDetailsElement.TYPE_CUSTOM) return R.layout.list_item_custom;
+        if (type == VNDetailsElement.TYPE_SUBTITLE) return R.layout.list_item_subtitle;
         return -1;
     }
 
@@ -73,8 +77,8 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getChildView(int listPosition, final int expandedListPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-        final String leftText = (String) getChild(listPosition, expandedListPosition);
-        final String rightText = (String) getRightChild(listPosition, expandedListPosition);
+        final String primaryText = (String) getChild(listPosition, expandedListPosition);
+        final String secondaryText = (String) getRightChild(listPosition, expandedListPosition);
         final int layout = getChildLayout(listPosition);
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         convertView = layoutInflater.inflate(layout, null);
@@ -86,13 +90,13 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                 TextView itemRightText = (TextView) convertView.findViewById(R.id.itemRightText);
                 ImageView itemRightImage = (ImageView) convertView.findViewById(R.id.itemRightImage);
 
-                itemLeftText.setText(Html.fromHtml(leftText));
+                itemLeftText.setText(Html.fromHtml(primaryText));
 
-                if (rightText == null) itemRightText.setVisibility(View.GONE);
+                if (secondaryText == null) itemRightText.setVisibility(View.GONE);
                 else {
-                    if (rightText.contains("</a>"))
+                    if (secondaryText.contains("</a>"))
                         itemRightText.setMovementMethod(LinkMovementMethod.getInstance());
-                    itemRightText.setText(Html.fromHtml(rightText));
+                    itemRightText.setText(Html.fromHtml(secondaryText));
                 }
 
                 int leftImage;
@@ -112,47 +116,45 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
 
             case R.layout.list_item_images:
                 final ImageButton expandedListImage = (ImageButton) convertView.findViewById(R.id.expandedListImage);
-                ImageLoader.getInstance().displayImage(leftText, expandedListImage);
+                ImageLoader.getInstance().displayImage(primaryText, expandedListImage);
                 convertView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Pixels.px(100, context)));
-                Lightbox.set(context, expandedListImage, leftText);
+                Lightbox.set(context, expandedListImage, primaryText);
                 break;
 
-            case R.layout.list_item_custom:
-                TreeNode root = TreeNode.root();
+            case R.layout.list_item_subtitle:
+                ImageView iconView = (ImageView) convertView.findViewById(R.id.iconView);
+                TextView title = (TextView) convertView.findViewById(R.id.title);
+                TextView subtitle = (TextView) convertView.findViewById(R.id.subtitle);
 
-                TreeNode s1 = new TreeNode(new ArrowExpandSelectableHeaderHolder.IconTreeItem("https://s.vndb.org/cv/37/28337.jpg", "Folder with very long name ")).setViewHolder(
-                        new ArrowExpandSelectableHeaderHolder(context));
-                TreeNode s2 = new TreeNode(new ArrowExpandSelectableHeaderHolder.IconTreeItem("https://s.vndb.org/cv/35/13835.jpg", "Another folder with very long name")).setViewHolder(
-                        new ArrowExpandSelectableHeaderHolder(context));
+                iconView.setVisibility(View.GONE);
+                title.setText(primaryText);
+                subtitle.setText(secondaryText);
 
-                fillFolder(s1);
-                fillFolder(s2);
+                final int vnId = getLeftImages(listPosition).get(expandedListPosition);
+                convertView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        VNDBServer.get("vn", DB.VN_FLAGS, "(id = " + vnId + ")", null, context, new Callback() {
+                            @Override
+                            protected void config() {
+                                if (results.getItems().size() < 1) return;
 
-                root.addChildren(s1, s2);
-
-                AndroidTreeView tView = new AndroidTreeView(context, root);
-                tView.setDefaultContainerStyle(R.style.TreeNodeStyleCustom);
-                tView.setDefaultViewHolder(ArrowExpandSelectableHeaderHolder.class);
-                ((LinearLayout) convertView).addView(tView.getView());
-                tView.setUseAutoToggle(false);
+                                Intent intent = new Intent(context, VNDetailsActivity.class);
+                                intent.putExtra(VNTypeFragment.VN_ARG, results.getItems().get(0));
+                                context.startActivity(intent);
+                            }
+                        }, Callback.errorCallback(context));
+                    }
+                });
                 break;
         }
 
         return convertView;
     }
 
-    private void fillFolder(TreeNode folder) {
-        TreeNode currentNode = folder;
-        for (int i = 0; i < 8; i++) {
-            TreeNode file = new TreeNode(new ArrowExpandSelectableHeaderHolder.IconTreeItem("https://s.vndb.org/cv/37/28337.jpg", "Very Very Very Very Very Very Very Very Very Very Very Very Very Very Very Very long name for folder" + " " + i));
-            currentNode.addChild(file);
-            currentNode = file;
-        }
-    }
-
     @Override
     public int getChildrenCount(int listPosition) {
-        return expandableListDetail.get(expandableListTitle.get(listPosition)).getLeftData().size();
+        return expandableListDetail.get(expandableListTitle.get(listPosition)).getPrimaryData().size();
     }
 
     @Override
