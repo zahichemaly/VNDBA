@@ -12,21 +12,13 @@ public class VNDetailsElement {
     public final static int TYPE_CUSTOM = 92;
     public final static int TYPE_SUBTITLE = 93;
 
+    private int type;
     private List<Integer> primaryImages = new ArrayList<>();
     private List<Integer> secondaryImages = new ArrayList<>();
     private List<String> urlImages = new ArrayList<>();
 
-    public List<String> getUrlImages() {
-        return urlImages;
-    }
-
-    public void setUrlImages(List<String> urlImages) {
-        this.urlImages = urlImages;
-    }
-
     private List<String> primaryData = new ArrayList<>();
     private List<String> secondaryData = new ArrayList<>();
-    private int type;
 
     public VNDetailsElement(List<Integer> primaryImages, List<String> primaryData, List<String> secondaryData, List<Integer> secondaryImages, List<String> urlImages, int type) {
         this.primaryImages = primaryImages;
@@ -76,5 +68,13 @@ public class VNDetailsElement {
 
     public void setSecondaryImages(List<Integer> secondaryImages) {
         this.secondaryImages = secondaryImages;
+    }
+
+    public List<String> getUrlImages() {
+        return urlImages;
+    }
+
+    public void setUrlImages(List<String> urlImages) {
+        this.urlImages = urlImages;
     }
 }

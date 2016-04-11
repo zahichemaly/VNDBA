@@ -3,7 +3,6 @@ package com.booboot.vndbandroid.api.bean;
 import com.booboot.vndbandroid.R;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -60,7 +59,7 @@ public class Item extends VNDBCommand {
     }
 
     public void setGender(String gender) {
-        this.gender = gender;
+        this.gender = gender == null ? gender : gender.toUpperCase();
     }
 
     public String getBloodt() {
@@ -68,7 +67,7 @@ public class Item extends VNDBCommand {
     }
 
     public void setBloodt(String bloodt) {
-        this.bloodt = bloodt;
+        this.bloodt = bloodt == null ? bloodt : bloodt.toUpperCase();
     }
 
     public int[] getBirthday() {

@@ -488,4 +488,8 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
 
         return expandableListDetail;
     }
+
+    public List<Item> getCharacters() {
+        return characters;
+    }
 }
