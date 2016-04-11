@@ -44,6 +44,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -76,6 +77,7 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
 
     private ExpandableListView expandableListView;
     private ExpandableListAdapter expandableListAdapter;
+    private VNDetailsElement characterElement;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,22 +85,17 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
         setContentView(R.layout.vn_details);
 
         vn = (Item) getIntent().getSerializableExtra(VNTypeFragment.VN_ARG);
-        if (DB.characters.get(vn.getId()) == null) {
-            VNDBServer.get("character", DB.CHARACTER_FLAGS, "(vn = " + vn.getId() + ")", Options.create(1, 25, null, false), this, new Callback() {
-                @Override
-                protected void config() {
-                    DB.characters.put(vn.getId(), results.getItems());
-                    init();
-                }
-            }, Callback.errorCallback(this));
-        } else init();
+        initCharacters();
+        init();
     }
 
     private void init() {
         vnlistVn = DB.vnlist.get(vn.getId());
         wishlistVn = DB.wishlist.get(vn.getId());
         votelistVn = DB.votelist.get(vn.getId());
-        characters = DB.characters.get(vn.getId());
+        if (DB.characters.get(vn.getId()) != null) {
+            characters = DB.characters.get(vn.getId());
+        }
 
         initExpandableListView();
 
@@ -147,6 +144,42 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
                 return false;
             }
         });
+
+        /* Disables click on certain elements if they have finished loading */
+        expandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+            public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
+                if(parent.getExpandableListAdapter().getChildrenCount(groupPosition) < 1) {
+                    Toast.makeText(VNDetailsActivity.this, "Nothing to show here yet...", Toast.LENGTH_SHORT).show();
+                    return true;
+                } else
+                    return false;
+            }
+        });
+    }
+
+    private void initCharacters() {
+        if (DB.characters.get(vn.getId()) == null) {
+            VNDBServer.get("character", DB.CHARACTER_FLAGS, "(vn = " + vn.getId() + ")", Options.create(1, 25, null, false), this, new Callback() {
+                @Override
+                protected void config() {
+                    DB.characters.put(vn.getId(), results.getItems());
+                    characters = results.getItems();
+
+                    List<String> character_images = new ArrayList<>();
+                    List<String> character_names = new ArrayList<>();
+                    List<String> character_subnames = new ArrayList<>();
+                    for (Item character : characters) {
+                        character_images.add(character.getImage());
+                        character_names.add(character.getName());
+                        character_subnames.add(character.getOriginal());
+                    }
+
+                    characterElement.setPrimaryData(character_names);
+                    characterElement.setSecondaryData(character_subnames);
+                    characterElement.setUrlImages(character_images);
+                }
+            }, Callback.errorCallback(this));
+        }
     }
 
     @Override
@@ -408,13 +441,18 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
             }
         }
 
-        List<String> character_images = new ArrayList<>();
-        List<String> character_names = new ArrayList<>();
-        List<String> character_subnames = new ArrayList<>();
-        for (Item character : characters) {
-            character_images.add(character.getImage());
-            character_names.add(character.getName());
-            character_subnames.add(character.getOriginal());
+        if (characters == null) {
+            characterElement = new VNDetailsElement(null, new ArrayList<String>(), null, null, null, VNDetailsElement.TYPE_SUBTITLE);
+        } else {
+            List<String> character_images = new ArrayList<>();
+            List<String> character_names = new ArrayList<>();
+            List<String> character_subnames = new ArrayList<>();
+            for (Item character : characters) {
+                character_images.add(character.getImage());
+                character_names.add(character.getName());
+                character_subnames.add(character.getOriginal());
+            }
+            characterElement = new VNDetailsElement(null, character_names, character_subnames, null, character_images, VNDetailsElement.TYPE_SUBTITLE);
         }
 
         List<String> tags = new ArrayList<>();
@@ -478,7 +516,7 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
         expandableListDetail.put(TITLE_INFORMATION, new VNDetailsElement(null, infoLeft, infoRight, infoRightImages, null, VNDetailsElement.TYPE_TEXT));
         expandableListDetail.put(TITLE_DESCRIPTION, new VNDetailsElement(null, description, null, null, null, VNDetailsElement.TYPE_TEXT));
         expandableListDetail.put(TITLE_GENRES, new VNDetailsElement(null, genres, null, null, null, VNDetailsElement.TYPE_TEXT));
-        expandableListDetail.put(TITLE_CHARACTERS, new VNDetailsElement(null, character_names, character_subnames, null, character_images, VNDetailsElement.TYPE_SUBTITLE));
+        expandableListDetail.put(TITLE_CHARACTERS, characterElement);
         expandableListDetail.put(TITLE_SCREENSHOTS, new VNDetailsElement(null, screenshots, null, null, null, VNDetailsElement.TYPE_IMAGES));
         expandableListDetail.put(TITLE_STATS, new VNDetailsElement(null, statLeft, statRight, statRightImages, null, VNDetailsElement.TYPE_TEXT));
         expandableListDetail.put(TITLE_TAGS, new VNDetailsElement(tags_images, tags, null, null, null, VNDetailsElement.TYPE_TEXT));
