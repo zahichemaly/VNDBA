@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.VNDetailsActivity;
+import com.booboot.vndbandroid.factory.VNDetailsFactory;
 import com.booboot.vndbandroid.activity.VNTypeFragment;
 import com.booboot.vndbandroid.adapter.doublelist.DoubleListAdapter;
 import com.booboot.vndbandroid.adapter.doublelist.DoubleListElement;
@@ -137,7 +138,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                 subtitle.setText(secondaryText);
 
                 switch ((String) getGroup(listPosition)) {
-                    case VNDetailsActivity.TITLE_RELATIONS:
+                    case VNDetailsFactory.TITLE_RELATIONS:
                         final int vnId = getElement(listPosition).getPrimaryImages().get(expandedListPosition);
                         convertView.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -156,7 +157,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                         });
                         break;
 
-                    case VNDetailsActivity.TITLE_CHARACTERS:
+                    case VNDetailsFactory.TITLE_CHARACTERS:
                         final Item character = ((VNDetailsActivity) context).getCharacters().get(expandedListPosition);
                         final LinkedHashMap<String, DoubleListElement> characterData = new LinkedHashMap<>();
                         characterData.put("Description", new DoubleListElement("Description", character.getDescription(), true));
