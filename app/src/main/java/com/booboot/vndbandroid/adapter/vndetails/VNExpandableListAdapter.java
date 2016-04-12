@@ -13,17 +13,17 @@ import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.VNDetailsActivity;
 import com.booboot.vndbandroid.activity.VNTypeFragment;
+import com.booboot.vndbandroid.adapter.doublelist.DoubleListAdapter;
+import com.booboot.vndbandroid.adapter.doublelist.DoubleListElement;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.db.DB;
@@ -32,7 +32,6 @@ import com.booboot.vndbandroid.util.Lightbox;
 import com.booboot.vndbandroid.util.Pixels;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -159,15 +158,17 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
 
                     case VNDetailsActivity.TITLE_CHARACTERS:
                         final Item character = ((VNDetailsActivity) context).getCharacters().get(expandedListPosition);
-                        final LinkedHashMap<String, String> characterData = new LinkedHashMap<>();
-                        characterData.put("Description", character.getDescription());
-                        characterData.put("Gender", character.getGender());
-                        characterData.put("Blood type", character.getBloodt());
-                        characterData.put("Aliases", character.getAliases());
-                        characterData.put("Height", character.getHeight() + "cm");
-                        characterData.put("Weight", character.getWeight() + "kg");
-                        characterData.put("Bust-Waist-Hips", character.getBust() + "-" + character.getWaist() + "-" + character.getHip() + "cm");
-                        characterData.put("Birthday", character.getBirthday().toString());
+                        final LinkedHashMap<String, DoubleListElement> characterData = new LinkedHashMap<>();
+                        characterData.put("Description", new DoubleListElement("Description", character.getDescription(), true));
+                        characterData.put("Gender", new DoubleListElement("Gender", character.getGender(), false));
+                        characterData.put("Blood type", new DoubleListElement("Blood type", character.getBloodt(), false));
+                        characterData.put("Aliases", new DoubleListElement("Aliases", character.getAliases(), false));
+                        characterData.put("Height", new DoubleListElement("Height", character.getHeight() + "cm", false));
+                        characterData.put("Weight", new DoubleListElement("Weight", character.getWeight() + "kg", false));
+                        characterData.put("Bust-Waist-Hips", new DoubleListElement("Bust-Waist-Hips", character.getBust() + "-" + character.getWaist() + "-" + character.getHip() + "cm", false));
+                        characterData.put("Birthday", new DoubleListElement("Birthday", character.getBirthday().toString(), false));
+
+                        final DoubleListElement[] elements = characterData.values().toArray(new DoubleListElement[characterData.keySet().size()]);
 
                         convertView.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -175,46 +176,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                                 View view = layoutInflater.inflate(R.layout.character_dialog, null);
                                 ListView listView = (ListView) view.findViewById(R.id.listView);
 
-                                listView.setAdapter(new BaseAdapter() {
-                                    @Override
-                                    public int getCount() {
-                                        return characterData.keySet().size();
-                                    }
-
-                                    @Override
-                                    public Object getItem(int position) {
-                                        return characterData.get(position);
-                                    }
-
-                                    @Override
-                                    public long getItemId(int position) {
-                                        return position;
-                                    }
-
-                                    @Override
-                                    public View getView(int position, View convertView, ViewGroup parent) {
-                                        if (convertView == null) {
-                                            final LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                                            convertView = layoutInflater.inflate(R.layout.list_item_text, null);
-                                        }
-                                        convertView.findViewById(R.id.itemLeftImage).setVisibility(View.GONE);
-                                        convertView.findViewById(R.id.itemRightImage).setVisibility(View.GONE);
-                                        TextView itemLeftText = (TextView) convertView.findViewById(R.id.itemLeftText);
-                                        TextView itemRightText = (TextView) convertView.findViewById(R.id.itemRightText);
-
-                                        String title = new ArrayList<>(characterData.keySet()).get(position);
-                                        if (title.equals("Description")) {
-                                            itemLeftText.setVisibility(View.GONE);
-                                            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) ((LinearLayout) itemRightText.getParent()).getLayoutParams();
-                                            params.setMarginStart(Pixels.px(15, context));
-                                            itemRightText.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
-                                        }
-                                        itemLeftText.setPadding(Pixels.px(15, context), itemLeftText.getPaddingTop(), itemLeftText.getPaddingRight(), itemLeftText.getPaddingBottom());
-                                        itemLeftText.setText(title);
-                                        itemRightText.setText(characterData.get(title));
-                                        return convertView;
-                                    }
-                                });
+                                listView.setAdapter(new DoubleListAdapter(context, elements));
 
                                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
                                 dialogBuilder.setView(view);
