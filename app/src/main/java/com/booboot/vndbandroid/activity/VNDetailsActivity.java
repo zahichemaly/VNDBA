@@ -23,7 +23,6 @@ import com.booboot.vndbandroid.adapter.vndetails.VNDetailsElement;
 import com.booboot.vndbandroid.adapter.vndetails.VNExpandableListAdapter;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.Category;
-import com.booboot.vndbandroid.api.bean.Fields;
 import com.booboot.vndbandroid.api.bean.Genre;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Language;
@@ -37,6 +36,7 @@ import com.booboot.vndbandroid.api.bean.Status;
 import com.booboot.vndbandroid.api.bean.Tag;
 import com.booboot.vndbandroid.api.bean.Vote;
 import com.booboot.vndbandroid.db.DB;
+import com.booboot.vndbandroid.listener.VNDetailsListener;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.Lightbox;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -44,13 +44,12 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 
-public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
+public class VNDetailsActivity extends AppCompatActivity {
     public final static String TITLE_INFORMATION = "Information";
     public final static String TITLE_DESCRIPTION = "Description";
     public final static String TITLE_GENRES = "Genres";
@@ -73,7 +72,8 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
     private Button statusButton;
     private Button wishlistButton;
     private Button votesButton;
-    private Button popupButton;
+
+    private VNDetailsListener listener;
 
     private ExpandableListView expandableListView;
     private ExpandableListAdapter expandableListAdapter;
@@ -85,6 +85,8 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
         setContentView(R.layout.vn_details);
 
         vn = (Item) getIntent().getSerializableExtra(VNTypeFragment.VN_ARG);
+        listener = new VNDetailsListener(this, vn);
+
         initCharacters();
         init();
     }
@@ -148,7 +150,7 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
         /* Disables click on certain elements if they have finished loading */
         expandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
             public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
-                if(parent.getExpandableListAdapter().getChildrenCount(groupPosition) < 1) {
+                if (parent.getExpandableListAdapter().getChildrenCount(groupPosition) < 1) {
                     Toast.makeText(VNDetailsActivity.this, "Nothing to show here yet...", Toast.LENGTH_SHORT).show();
                     return true;
                 } else
@@ -182,180 +184,12 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
         }
     }
 
-    @Override
-    public boolean onMenuItemClick(MenuItem item) {
-        popupButton.setText(item.getTitle());
-        String type;
-        Fields fields = new Fields();
-
-        switch (item.getItemId()) {
-            case R.id.item_playing:
-                type = "vnlist";
-                fields.setStatus(Status.PLAYING);
-                vn.setStatus(Status.PLAYING);
-                DB.vnlist.put(vn.getId(), vn);
-                break;
-
-            case R.id.item_finished:
-                type = "vnlist";
-                fields.setStatus(Status.FINISHED);
-                vn.setStatus(Status.FINISHED);
-                DB.vnlist.put(vn.getId(), vn);
-                break;
-
-            case R.id.item_stalled:
-                type = "vnlist";
-                fields.setStatus(Status.STALLED);
-                vn.setStatus(Status.STALLED);
-                DB.vnlist.put(vn.getId(), vn);
-
-                break;
-            case R.id.item_dropped:
-                type = "vnlist";
-                fields.setStatus(Status.DROPPED);
-                vn.setStatus(Status.DROPPED);
-                DB.vnlist.put(vn.getId(), vn);
-                break;
-
-            case R.id.item_unknown:
-                type = "vnlist";
-                fields.setStatus(Status.UNKNOWN);
-                vn.setStatus(Status.UNKNOWN);
-                DB.vnlist.put(vn.getId(), vn);
-                break;
-
-            case R.id.item_no_status:
-                type = "vnlist";
-                fields = null;
-                DB.vnlist.remove(vn.getId());
-                break;
-
-            case R.id.item_high:
-                type = "wishlist";
-                fields.setPriority(Priority.HIGH);
-                vn.setPriority(Priority.HIGH);
-                DB.wishlist.put(vn.getId(), vn);
-                break;
-
-            case R.id.item_medium:
-                type = "wishlist";
-                fields.setPriority(Priority.MEDIUM);
-                vn.setPriority(Priority.MEDIUM);
-                DB.wishlist.put(vn.getId(), vn);
-                break;
-
-            case R.id.item_low:
-                type = "wishlist";
-                fields.setPriority(Priority.LOW);
-                vn.setPriority(Priority.LOW);
-                DB.wishlist.put(vn.getId(), vn);
-                break;
-
-            case R.id.item_blacklist:
-                type = "wishlist";
-                fields.setPriority(Priority.BLACKLIST);
-                vn.setPriority(Priority.BLACKLIST);
-                DB.wishlist.put(vn.getId(), vn);
-                break;
-
-            case R.id.item_no_wishlist:
-                type = "wishlist";
-                fields = null;
-                DB.wishlist.remove(vn.getId());
-                break;
-
-            case R.id.item_10:
-                type = "votelist";
-                fields.setVote(100);
-                vn.setVote(100);
-                DB.votelist.put(vn.getId(), vn);
-                break;
-
-            case R.id.item_9:
-                type = "votelist";
-                fields.setVote(90);
-                vn.setVote(90);
-                DB.votelist.put(vn.getId(), vn);
-                break;
-
-            case R.id.item_8:
-                type = "votelist";
-                fields.setVote(80);
-                vn.setVote(80);
-                DB.votelist.put(vn.getId(), vn);
-                break;
-
-            case R.id.item_7:
-                type = "votelist";
-                fields.setVote(70);
-                vn.setVote(70);
-                DB.votelist.put(vn.getId(), vn);
-                break;
-
-            case R.id.item_6:
-                type = "votelist";
-                fields.setVote(60);
-                vn.setVote(60);
-                DB.votelist.put(vn.getId(), vn);
-                break;
-
-            case R.id.item_5:
-                type = "votelist";
-                fields.setVote(50);
-                vn.setVote(50);
-                DB.votelist.put(vn.getId(), vn);
-                break;
-
-            case R.id.item_4:
-                type = "votelist";
-                fields.setVote(40);
-                vn.setVote(40);
-                DB.votelist.put(vn.getId(), vn);
-                break;
-
-            case R.id.item_3:
-                type = "votelist";
-                fields.setVote(30);
-                vn.setVote(30);
-                DB.votelist.put(vn.getId(), vn);
-                break;
-
-            case R.id.item_2:
-                type = "votelist";
-                fields.setVote(20);
-                vn.setVote(20);
-                DB.votelist.put(vn.getId(), vn);
-                break;
-
-            case R.id.item_1:
-                type = "votelist";
-                fields.setVote(10);
-                vn.setVote(10);
-                DB.votelist.put(vn.getId(), vn);
-                break;
-
-            case R.id.item_no_vote:
-                type = "votelist";
-                fields = null;
-                DB.votelist.remove(vn.getId());
-                break;
-
-            default:
-                return false;
-        }
-
-        VNDBServer.set(type, vn.getId(), fields, this, null, Callback.errorCallback(this));
-        MainActivity.instance.getVnlistFragment().refresh();
-
-        return true;
-    }
-
     public void showStatusPopup(View v) {
         PopupMenu popup = new PopupMenu(this, v);
         MenuInflater inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.status, popup.getMenu());
-        popup.setOnMenuItemClickListener(this);
-        popupButton = statusButton;
+        popup.setOnMenuItemClickListener(listener);
+        listener.setPopupButton(statusButton);
         popup.show();
     }
 
@@ -363,8 +197,8 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
         PopupMenu popup = new PopupMenu(this, v);
         MenuInflater inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.wishlist, popup.getMenu());
-        popup.setOnMenuItemClickListener(this);
-        popupButton = wishlistButton;
+        popup.setOnMenuItemClickListener(listener);
+        listener.setPopupButton(wishlistButton);
         popup.show();
     }
 
@@ -372,8 +206,8 @@ public class VNDetailsActivity extends AppCompatActivity implements PopupMenu.On
         PopupMenu popup = new PopupMenu(this, v);
         MenuInflater inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.votes, popup.getMenu());
-        popup.setOnMenuItemClickListener(this);
-        popupButton = votesButton;
+        popup.setOnMenuItemClickListener(listener);
+        listener.setPopupButton(votesButton);
         popup.show();
     }
 
