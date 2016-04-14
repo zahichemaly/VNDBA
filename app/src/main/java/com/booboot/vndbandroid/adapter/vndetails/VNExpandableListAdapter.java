@@ -21,13 +21,14 @@ import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.VNDetailsActivity;
-import com.booboot.vndbandroid.factory.VNDetailsFactory;
 import com.booboot.vndbandroid.activity.VNTypeFragment;
 import com.booboot.vndbandroid.adapter.doublelist.DoubleListAdapter;
 import com.booboot.vndbandroid.adapter.doublelist.DoubleListElement;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.db.DB;
+import com.booboot.vndbandroid.factory.CharacterDataFactory;
+import com.booboot.vndbandroid.factory.VNDetailsFactory;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.Lightbox;
 import com.booboot.vndbandroid.util.Pixels;
@@ -159,17 +160,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
 
                     case VNDetailsFactory.TITLE_CHARACTERS:
                         final Item character = ((VNDetailsActivity) context).getCharacters().get(expandedListPosition);
-                        final LinkedHashMap<String, DoubleListElement> characterData = new LinkedHashMap<>();
-                        characterData.put("Description", new DoubleListElement("Description", character.getDescription(), true));
-                        characterData.put("Gender", new DoubleListElement("Gender", character.getGender(), false));
-                        characterData.put("Blood type", new DoubleListElement("Blood type", character.getBloodt(), false));
-                        characterData.put("Aliases", new DoubleListElement("Aliases", character.getAliases(), false));
-                        characterData.put("Height", new DoubleListElement("Height", character.getHeight() + "cm", false));
-                        characterData.put("Weight", new DoubleListElement("Weight", character.getWeight() + "kg", false));
-                        characterData.put("Bust-Waist-Hips", new DoubleListElement("Bust-Waist-Hips", character.getBust() + "-" + character.getWaist() + "-" + character.getHip() + "cm", false));
-                        characterData.put("Birthday", new DoubleListElement("Birthday", character.getBirthday().toString(), false));
-
-                        final DoubleListElement[] elements = characterData.values().toArray(new DoubleListElement[characterData.keySet().size()]);
+                        final DoubleListElement[] elements = CharacterDataFactory.getData(context, character);
 
                         convertView.setOnClickListener(new View.OnClickListener() {
                             @Override

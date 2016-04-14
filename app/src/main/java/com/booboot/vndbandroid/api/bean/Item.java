@@ -45,6 +45,10 @@ public class Item extends VNDBCommand {
     private int[] birthday;
     private int bust;
     private int waist;
+    private int hip;
+    private int height;
+    private int weight;
+    private List<int[]> traits;
 
     public String getName() {
         return name;
@@ -125,11 +129,6 @@ public class Item extends VNDBCommand {
     public void setTraits(List<int[]> traits) {
         this.traits = traits;
     }
-
-    private int hip;
-    private int height;
-    private int weight;
-    private List<int[]> traits;
 
     public int getVote() {
         return vote;

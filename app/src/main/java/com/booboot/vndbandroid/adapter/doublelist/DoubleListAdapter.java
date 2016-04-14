@@ -1,6 +1,7 @@
 package com.booboot.vndbandroid.adapter.doublelist;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,12 +51,19 @@ public class DoubleListAdapter extends BaseAdapter {
         TextView itemRightText = (TextView) convertView.findViewById(R.id.itemRightText);
 
         DoubleListElement element = elements[position];
+
         if (element.isDisplayRightTextOnly()) {
             itemLeftText.setVisibility(View.GONE);
             LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) ((LinearLayout) itemRightText.getParent()).getLayoutParams();
             params.setMarginStart(Pixels.px(15, context));
             itemRightText.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
+        } else {
+            itemLeftText.setVisibility(View.VISIBLE);
+            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) ((LinearLayout) itemRightText.getParent()).getLayoutParams();
+            params.setMarginStart(Pixels.px(30, context));
+            itemRightText.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
         }
+
         itemLeftText.setPadding(Pixels.px(15, context), itemLeftText.getPaddingTop(), itemLeftText.getPaddingRight(), itemLeftText.getPaddingBottom());
         itemLeftText.setText(element.getLeftText());
         itemRightText.setText(element.getRightText());
