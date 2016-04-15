@@ -7,8 +7,11 @@ import com.booboot.vndbandroid.adapter.doublelist.DoubleListElement;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Trait;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.TreeMap;
 
 /**
@@ -23,20 +26,34 @@ public class CharacterDataFactory {
      * [...]
      * Contains an O(n) algorithm that fetches all the character's traits grouped by their parents.
      *
-     * @param context because Android
+     * @param context   because Android
      * @param character character we want to display the info and traits
      * @return DoubleListElement[] array to be given to a DoubleListAdapter
      */
     public static DoubleListElement[] getData(Context context, Item character) {
         final List<DoubleListElement> characterData = new ArrayList<>();
         characterData.add(new DoubleListElement("Description", character.getDescription(), true));
-        characterData.add(new DoubleListElement("Gender", character.getGender(), false));
-        characterData.add(new DoubleListElement("Blood type", character.getBloodt(), false));
-        characterData.add(new DoubleListElement("Aliases", character.getAliases(), false));
-        characterData.add(new DoubleListElement("Height", character.getHeight() + "cm", false));
-        characterData.add(new DoubleListElement("Weight", character.getWeight() + "kg", false));
-        characterData.add(new DoubleListElement("Bust-Waist-Hips", character.getBust() + "-" + character.getWaist() + "-" + character.getHip() + "cm", false));
-        characterData.add(new DoubleListElement("Birthday", character.getBirthday().toString(), false));
+        if (character.getOriginal() != null)
+            characterData.add(new DoubleListElement("Original name", character.getOriginal(), false));
+        if (character.getGender() != null)
+            characterData.add(new DoubleListElement("Gender", character.getGender(), false));
+        if (character.getBloodt() != null)
+            characterData.add(new DoubleListElement("Blood type", character.getBloodt(), false));
+        if (character.getAliases() != null)
+            characterData.add(new DoubleListElement("Aliases", character.getAliases(), false));
+        if (character.getHeight() > 0)
+            characterData.add(new DoubleListElement("Height", character.getHeight() + "cm", false));
+        if (character.getWeight() > 0)
+            characterData.add(new DoubleListElement("Weight", character.getWeight() + "kg", false));
+        if (character.getBust() > 0)
+            characterData.add(new DoubleListElement("Bust-Waist-Hips", character.getBust() + "-" + character.getWaist() + "-" + character.getHip() + "cm", false));
+        if (character.getBirthday() != null) {
+            Calendar birthday = Calendar.getInstance();
+            birthday.set(Calendar.YEAR, 2000);
+            birthday.set(Calendar.DAY_OF_MONTH, character.getBirthday()[0]);
+            birthday.set(Calendar.MONTH, character.getBirthday()[1]);
+            characterData.add(new DoubleListElement("Birthday", new SimpleDateFormat("MMMM d", Locale.US).format(birthday.getTime()), false));
+        }
 
         /* TreeMap to automatically sort traits by id (to display them in the same order as the website) */
         TreeMap<Integer, List<Trait>> characterTraits = new TreeMap<>();
