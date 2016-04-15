@@ -11,9 +11,9 @@ import com.booboot.vndbandroid.api.bean.Ok;
 import com.booboot.vndbandroid.api.bean.Options;
 import com.booboot.vndbandroid.api.bean.Results;
 import com.booboot.vndbandroid.api.bean.VNDBCommand;
+import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.JSON;
 import com.booboot.vndbandroid.util.SettingsManager;
-import com.booboot.vndbandroid.util.Callback;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.io.IOException;

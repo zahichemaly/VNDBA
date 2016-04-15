@@ -27,7 +27,7 @@ public class DB {
     public static LinkedHashMap<Integer, List<Item>> characters = new LinkedHashMap<>();
 
     public final static String VN_FLAGS = "basic,details,screens,tags,stats,relations";
-    public final static String CHARACTER_FLAGS = "basic,details,meas,traits";
+    public final static String CHARACTER_FLAGS = "basic,details,meas,traits,vns";
     public static DbStats dbstats;
     private static String mergedIdsString;
 

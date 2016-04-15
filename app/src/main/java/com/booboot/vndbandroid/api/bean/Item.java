@@ -3,8 +3,10 @@ package com.booboot.vndbandroid.api.bean;
 import com.booboot.vndbandroid.R;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -39,6 +41,20 @@ public class Item extends VNDBCommand {
     private int priority;
 
     /* Character-specific properties */
+    public final static LinkedHashMap<String, String> ROLES = new LinkedHashMap<>();
+    public static List<String> ROLES_KEY;
+    public final static int ROLE_INDEX = 3;
+
+    static {
+        /* Keep the order here : characters' roles are sorted in the same order as below */
+        ROLES.put("main", "Protagonist");
+        ROLES.put("primary", "Main character");
+        ROLES.put("side", "Side character");
+        ROLES.put("appears", "Makes an appearance");
+
+        ROLES_KEY = new ArrayList<>(ROLES.keySet());
+    }
+
     private String name;
     private String gender;
     private String bloodt;
@@ -49,6 +65,7 @@ public class Item extends VNDBCommand {
     private int height;
     private int weight;
     private List<int[]> traits;
+    private List<Object[]> vns;
 
     public String getName() {
         return name;
@@ -397,5 +414,13 @@ public class Item extends VNDBCommand {
 
     public Integer getRatingImage() {
         return Vote.getImage(rating);
+    }
+
+    public List<Object[]> getVns() {
+        return vns;
+    }
+
+    public void setVns(List<Object[]> vns) {
+        this.vns = vns;
     }
 }

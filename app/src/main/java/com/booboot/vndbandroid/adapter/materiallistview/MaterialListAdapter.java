@@ -76,12 +76,9 @@ public class MaterialListAdapter extends RecyclerView.Adapter<MaterialListAdapte
     /**
      * Add a Card at a specific position with or without a scroll animation.
      *
-     * @param position
-     *         of the card to insert.
-     * @param card
-     *         to insert.
-     * @param scroll
-     *         will trigger an animation if it is set to <code>true</code> otherwise not.
+     * @param position of the card to insert.
+     * @param card     to insert.
+     * @param scroll   will trigger an animation if it is set to <code>true</code> otherwise not.
      */
     public void add(final int position, @NonNull final Card card, final boolean scroll) {
         cardList.add(position, card);
@@ -93,10 +90,8 @@ public class MaterialListAdapter extends RecyclerView.Adapter<MaterialListAdapte
     /**
      * Add a Card at a specific position.
      *
-     * @param position
-     *         of the card to insert.
-     * @param card
-     *         to insert.
+     * @param position of the card to insert.
+     * @param card     to insert.
      */
     public void add(final int position, @NonNull final Card card) {
         add(position, card, true);
@@ -105,8 +100,7 @@ public class MaterialListAdapter extends RecyclerView.Adapter<MaterialListAdapte
     /**
      * Add a Card at the start.
      *
-     * @param card
-     *         to add at the start.
+     * @param card to add at the start.
      */
     public void addAtStart(@NonNull final Card card) {
         add(0, card);
@@ -115,8 +109,7 @@ public class MaterialListAdapter extends RecyclerView.Adapter<MaterialListAdapte
     /**
      * Add a Card.
      *
-     * @param card
-     *         to add.
+     * @param card to add.
      */
     public void add(@NonNull final Card card) {
         add(cardList.size(), card);
@@ -125,8 +118,7 @@ public class MaterialListAdapter extends RecyclerView.Adapter<MaterialListAdapte
     /**
      * Add all Cards.
      *
-     * @param cards
-     *         to add.
+     * @param cards to add.
      */
     public void addAll(@NonNull final Card... cards) {
         addAll(Arrays.asList(cards));
@@ -135,8 +127,7 @@ public class MaterialListAdapter extends RecyclerView.Adapter<MaterialListAdapte
     /**
      * Add all Cards.
      *
-     * @param cards
-     *         to add.
+     * @param cards to add.
      */
     public void addAll(@NonNull final Collection<Card> cards) {
         int index = 0;
@@ -148,10 +139,8 @@ public class MaterialListAdapter extends RecyclerView.Adapter<MaterialListAdapte
     /**
      * Remove a Card withProvider or without an animation.
      *
-     * @param card
-     *         to remove.
-     * @param animate
-     *         {@code true} to animate the remove process or {@code false} otherwise.
+     * @param card    to remove.
+     * @param animate {@code true} to animate the remove process or {@code false} otherwise.
      */
     public void remove(@NonNull final Card card, boolean animate) {
         if (card.isDismissible()) {
@@ -204,8 +193,7 @@ public class MaterialListAdapter extends RecyclerView.Adapter<MaterialListAdapte
     /**
      * Get a Card at the specified position.
      *
-     * @param position
-     *         of the Card.
+     * @param position of the Card.
      * @return the Card or {@code null} if the position is outside of the list range.
      */
     @Nullable
@@ -219,8 +207,7 @@ public class MaterialListAdapter extends RecyclerView.Adapter<MaterialListAdapte
     /**
      * Get the position of a specified Card.
      *
-     * @param card
-     *         to get the position of.
+     * @param card to get the position of.
      * @return the position.
      */
     public int getPosition(@NonNull Card card) {

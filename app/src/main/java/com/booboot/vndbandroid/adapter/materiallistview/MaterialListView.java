@@ -16,7 +16,6 @@ import com.dexafree.materialList.listeners.OnDismissCallback;
 import com.dexafree.materialList.listeners.RecyclerItemClickListener;
 import com.dexafree.materialList.listeners.SwipeDismissRecyclerViewTouchListener;
 
-
 public class MaterialListView extends RecyclerView {
 
     private static final int DEFAULT_COLUMNS_PORTRAIT = 1;
@@ -29,7 +28,8 @@ public class MaterialListView extends RecyclerView {
     private int mColumnCountLandscape = DEFAULT_COLUMNS_LANDSCAPE;
     private int mColumnCountPortrait = DEFAULT_COLUMNS_PORTRAIT;
     private final AdapterDataObserver mEmptyViewObserver = new AdapterDataObserver() {
-        @Override public void onChanged() {
+        @Override
+        public void onChanged() {
             super.onChanged();
             checkIfEmpty();
         }
@@ -213,6 +213,7 @@ public class MaterialListView extends RecyclerView {
 
     public interface OnAdapterItemsChanged {
         void onAddItem(final int position, boolean scroll);
+
         void onRemoveItem();
     }
 }

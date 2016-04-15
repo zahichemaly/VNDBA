@@ -47,7 +47,7 @@ public class CharacterDataFactory {
             characterData.add(new DoubleListElement("Weight", character.getWeight() + "kg", false));
         if (character.getBust() > 0)
             characterData.add(new DoubleListElement("Bust-Waist-Hips", character.getBust() + "-" + character.getWaist() + "-" + character.getHip() + "cm", false));
-        if (character.getBirthday() != null) {
+        if (character.getBirthday() != null && character.getBirthday()[0] > 0 && character.getBirthday()[1] > 0) {
             Calendar birthday = Calendar.getInstance();
             birthday.set(Calendar.YEAR, 2000);
             birthday.set(Calendar.DAY_OF_MONTH, character.getBirthday()[0]);

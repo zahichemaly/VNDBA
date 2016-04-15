@@ -27,7 +27,7 @@ public class Relation extends VNDBCommand {
         TYPES.put("fan", "Fandisc");
         TYPES.put("orig", "Original game");
 
-        TYPES_KEY = new ArrayList<>(Relation.TYPES.keySet());
+        TYPES_KEY = new ArrayList<>(TYPES.keySet());
     }
 
     private int id;

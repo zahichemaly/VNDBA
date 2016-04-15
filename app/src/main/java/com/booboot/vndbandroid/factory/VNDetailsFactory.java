@@ -17,6 +17,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -89,15 +90,8 @@ public class VNDetailsFactory {
         if (activity.getCharacters() == null) {
             activity.setCharacterElement(new VNDetailsElement(null, new ArrayList<String>(), null, null, null, VNDetailsElement.TYPE_SUBTITLE));
         } else {
-            List<String> character_images = new ArrayList<>();
-            List<String> character_names = new ArrayList<>();
-            List<String> character_subnames = new ArrayList<>();
-            for (Item character : activity.getCharacters()) {
-                character_images.add(character.getImage());
-                character_names.add(character.getName());
-                character_subnames.add(character.getOriginal());
-            }
-            activity.setCharacterElement(new VNDetailsElement(null, character_names, character_subnames, null, character_images, VNDetailsElement.TYPE_SUBTITLE));
+            HashMap<String, List<String>> characters = getCharacters(activity);
+            activity.setCharacterElement(new VNDetailsElement(null, characters.get("character_names"), characters.get("character_subnames"), null, characters.get("character_images"), VNDetailsElement.TYPE_SUBTITLE));
         }
 
         List<String> tags = new ArrayList<>();
@@ -170,5 +164,22 @@ public class VNDetailsFactory {
         expandableListDetail.put(TITLE_LANGUAGES, new VNDetailsElement(languages_flags, languages, null, null, null, VNDetailsElement.TYPE_TEXT));
 
         return expandableListDetail;
+    }
+
+    public static HashMap<String, List<String>> getCharacters(VNDetailsActivity activity) {
+        List<String> character_images = new ArrayList<>();
+        List<String> character_names = new ArrayList<>();
+        List<String> character_subnames = new ArrayList<>();
+        for (Item character : activity.getCharacters()) {
+            character_images.add(character.getImage());
+            character_names.add(character.getName());
+            character_subnames.add(Item.ROLES.get(character.getVns().get(0)[Item.ROLE_INDEX].toString()));
+        }
+
+        HashMap<String, List<String>> res = new HashMap<>();
+        res.put("character_images", character_images);
+        res.put("character_names", character_names);
+        res.put("character_subnames", character_subnames);
+        return res;
     }
 }

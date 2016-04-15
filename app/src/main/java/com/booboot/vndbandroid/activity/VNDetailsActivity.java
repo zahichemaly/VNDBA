@@ -35,6 +35,9 @@ import com.booboot.vndbandroid.util.Lightbox;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -142,21 +145,24 @@ public class VNDetailsActivity extends AppCompatActivity {
             VNDBServer.get("character", DB.CHARACTER_FLAGS, "(vn = " + vn.getId() + ")", Options.create(1, 25, null, false), this, new Callback() {
                 @Override
                 protected void config() {
-                    DB.characters.put(vn.getId(), results.getItems());
                     characters = results.getItems();
+                     /* Sorting the characters with their role (Protagonist then main characters etc.) */
+                    Collections.sort(characters, new Comparator<Item>() {
+                        @Override
+                        public int compare(Item lhs, Item rhs) {
+                            if (lhs.getVns() == null || lhs.getVns().size() < 1 || lhs.getVns().get(0).length < 1 || rhs.getVns() == null || rhs.getVns().size() < 1 || rhs.getVns().get(0).length < 1)
+                                return 0;
+                            String leftRole = (String) lhs.getVns().get(0)[Item.ROLE_INDEX];
+                            String rightRole = (String) rhs.getVns().get(0)[Item.ROLE_INDEX];
+                            return Integer.valueOf(Item.ROLES_KEY.indexOf(leftRole)).compareTo(Item.ROLES_KEY.indexOf(rightRole));
+                        }
+                    });
+                    DB.characters.put(vn.getId(), characters);
 
-                    List<String> character_images = new ArrayList<>();
-                    List<String> character_names = new ArrayList<>();
-                    List<String> character_subnames = new ArrayList<>();
-                    for (Item character : characters) {
-                        character_images.add(character.getImage());
-                        character_names.add(character.getName());
-                        character_subnames.add(character.getOriginal());
-                    }
-
-                    characterElement.setPrimaryData(character_names);
-                    characterElement.setSecondaryData(character_subnames);
-                    characterElement.setUrlImages(character_images);
+                    HashMap<String, List<String>> characters = VNDetailsFactory.getCharacters(VNDetailsActivity.this);
+                    characterElement.setPrimaryData(characters.get("character_names"));
+                    characterElement.setSecondaryData(characters.get("character_subnames"));
+                    characterElement.setUrlImages(characters.get("character_images"));
                 }
             }, Callback.errorCallback(this));
         }
