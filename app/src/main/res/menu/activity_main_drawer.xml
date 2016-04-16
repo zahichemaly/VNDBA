@@ -1,38 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_vnlist"
             android:icon="@drawable/ic_list"
-            android:title="My Visual Novel list"/>
+            android:title="@string/my_visual_novel_list"
+            app:actionLayout="@layout/menu_counter"/>
         <item
             android:id="@+id/nav_votelist"
             android:icon="@drawable/ic_format_list_numbered"
-            android:title="My Votes"/>
+            android:title="@string/my_votes"
+            app:actionLayout="@layout/menu_counter"/>
 
         <item
             android:id="@+id/nav_wishlist"
             android:icon="@drawable/wishlist"
-            android:title="My Wishlist"/>
+            android:title="@string/my_wishlist"
+            app:actionLayout="@layout/menu_counter"/>
         <item
             android:id="@+id/nav_stats"
             android:icon="@drawable/ic_equalizer"
-            android:title="Database Statitistics"/>
+            android:title="@string/database_statitistics"/>
     </group>
 
-    <item android:title="My account">
+    <item
+        android:id="@+id/accountTitle"
+        android:title="@string/my_account">
         <menu>
             <group android:checkableBehavior="single">
                 <item
                     android:id="@+id/nav_settings"
                     android:icon="@drawable/ic_settings"
-                    android:title="Preferences"/>
+                    android:title="@string/preferences"/>
 
                 <item
                     android:id="@+id/nav_logout"
                     android:icon="@drawable/ic_logout"
-                    android:title="Logout"/>
+                    android:title="@string/logout"/>
             </group>
         </menu>
     </item>

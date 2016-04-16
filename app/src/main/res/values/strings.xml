@@ -10,6 +10,13 @@
     <string name="search_hint">Search on VNDB...</string>
     <string name="pref_key_theme">theme_selection</string>
     <string name="close">Close</string>
+    <string name="my_account">My account</string>
+    <string name="my_visual_novel_list">My Visual Novel list</string>
+    <string name="my_votes">My Votes</string>
+    <string name="my_wishlist">My Wishlist</string>
+    <string name="database_statitistics">Database Statitistics</string>
+    <string name="preferences">Preferences</string>
+    <string name="logout">Logout</string>
 
     <string-array name="background_pref_titles">
         <item>Default (orange)</item>

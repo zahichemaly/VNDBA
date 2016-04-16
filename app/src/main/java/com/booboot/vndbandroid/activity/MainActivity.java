@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -27,6 +28,7 @@ import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.api.bean.ListType;
+import com.booboot.vndbandroid.db.DB;
 import com.booboot.vndbandroid.util.SettingsManager;
 
 import java.util.ArrayList;
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static MainActivity instance;
     private Fragment directSubfragment;
     public static int selectedItem;
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         int[][] states = new int[][]{
                 new int[]{android.R.attr.state_checked}, // selected
@@ -70,9 +73,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setItemTextColor(new ColorStateList(states, colors));
         navigationView.setItemIconTintList(new ColorStateList(states, colors));
 
+        navigationView.getMenu().findItem(R.id.accountTitle).setTitle(SettingsManager.getUsername(this));
         View header = navigationView.getHeaderView(0);
-        TextView headerUsername = (TextView) header.findViewById(R.id.headerUsername);
-        headerUsername.setText(SettingsManager.getUsername(this));
         LinearLayout headerBackground = (LinearLayout) header.findViewById(R.id.headerBackground);
         headerBackground.setBackground(getResources().getDrawable(SettingsManager.getWallpaper(this), getTheme()));
 
@@ -95,6 +97,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             navigationView.getMenu().getItem(0).setChecked(true);
             onNavigationItemSelected(navigationView.getMenu().getItem(0));
         }
+
+        updateMenuCounters();
 
         String[] perms = {"android.permission.WRITE_EXTERNAL_STORAGE", "android.permission.READ_EXTERNAL_STORAGE"};
         int permsRequestCode = 200;
@@ -216,5 +220,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         TypedValue colorAttribute = new TypedValue();
         context.getTheme().resolveAttribute(resid, colorAttribute, true);
         return colorAttribute.data;
+    }
+
+    public void updateMenuCounters() {
+        setMenuCounter(R.id.nav_vnlist, DB.vnlist.size());
+        setMenuCounter(R.id.nav_wishlist, DB.wishlist.size());
+        setMenuCounter(R.id.nav_votelist, DB.votelist.size());
+    }
+
+    private void setMenuCounter(@IdRes int itemId, int count) {
+        TextView view = (TextView) navigationView.getMenu().findItem(itemId).getActionView();
+        view.setText(count > 0 ? String.valueOf(count) : null);
     }
 }
