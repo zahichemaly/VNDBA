@@ -1,6 +1,5 @@
 package com.booboot.vndbandroid.activity;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.SearchManager;
 import android.content.Context;
@@ -196,7 +195,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         directSubfragment.setArguments(args);
         getFragmentManager().beginTransaction().replace(R.id.fragment_container, directSubfragment, "FRAGMENT").addToBackStack(null).commit();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+        if (drawer != null)
+            drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 

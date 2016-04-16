@@ -7,7 +7,9 @@ import com.booboot.vndbandroid.api.bean.DbStats;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Options;
 import com.booboot.vndbandroid.util.Callback;
+import com.booboot.vndbandroid.util.IPredicate;
 import com.booboot.vndbandroid.util.JSON;
+import com.booboot.vndbandroid.util.Predicate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.util.HashMap;
@@ -111,5 +113,32 @@ public class DB {
                 successCallback.call();
             }
         }, Callback.errorCallback(context));
+    }
+
+    public static int getStatusNumber(final int status) {
+        return Predicate.filter(vnlist.values(), new IPredicate<Item>() {
+            @Override
+            public boolean apply(Item element) {
+                return element.getStatus() == status;
+            }
+        }).size();
+    }
+
+    public static int getWishNumber(final int priority) {
+        return Predicate.filter(wishlist.values(), new IPredicate<Item>() {
+            @Override
+            public boolean apply(Item element) {
+                return element.getPriority() == priority;
+            }
+        }).size();
+    }
+
+    public static int getVoteNumber(final int vote) {
+        return Predicate.filter(votelist.values(), new IPredicate<Item>() {
+            @Override
+            public boolean apply(Item element) {
+                return element.getVote() / 10 == vote || element.getVote() / 10 == vote - 1;
+            }
+        }).size();
     }
 }

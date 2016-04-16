@@ -207,6 +207,8 @@ public class VNDetailsActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
+                /* Refreshing tabs' counter upon leaving (may have made changes in this activity) */
+                MainActivity.instance.getVnlistFragment().refreshTitles();
                 finish();
                 break;
         }

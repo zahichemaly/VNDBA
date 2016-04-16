@@ -34,14 +34,13 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
     private SwipeRefreshLayout refreshLayout;
     private MainActivity activity;
 
-    private int tabValue;
     private int type;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.vn_card_list_layout, container, false);
 
-        tabValue = getArguments().getInt(TAB_VALUE_ARG);
+        int tabValue = getArguments().getInt(TAB_VALUE_ARG);
         type = getArguments().getInt(VNListFragment.LIST_TYPE_ARG);
 
         materialListView = (MaterialListView) rootView.findViewById(R.id.materialListView);
