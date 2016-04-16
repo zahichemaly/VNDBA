@@ -1,9 +1,12 @@
 package com.booboot.vndbandroid.activity;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -13,6 +16,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.menu.MenuItemImpl;
 import android.support.v7.widget.Toolbar;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTheme(SettingsManager.getNoActionBarTheme(this));
         setContentView(R.layout.activity_main);
         instance = this;
 
@@ -46,25 +51,40 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+        if (drawer != null) {
+            drawer.setDrawerListener(toggle);
+        }
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        int[][] states = new int[][]{
+                new int[]{android.R.attr.state_checked}, // selected
+                new int[]{-android.R.attr.state_checked}, // not selected
+        };
+
+        int[] colors = new int[]{
+                getThemeColor(this, R.attr.colorAccent),
+                Color.BLACK
+        };
+        navigationView.setItemTextColor(new ColorStateList(states, colors));
+        navigationView.setItemIconTintList(new ColorStateList(states, colors));
 
         View header = navigationView.getHeaderView(0);
         TextView headerUsername = (TextView) header.findViewById(R.id.headerUsername);
         headerUsername.setText(SettingsManager.getUsername(this));
         LinearLayout headerBackground = (LinearLayout) header.findViewById(R.id.headerBackground);
-        headerBackground.setBackground(getResources().getDrawable(R.drawable.bg_5, getTheme()));
+        headerBackground.setBackground(getResources().getDrawable(SettingsManager.getWallpaper(this), getTheme()));
 
         FloatingActionButton floatingSearchButton = (FloatingActionButton) findViewById(R.id.floatingSearchButton);
-        floatingSearchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, VNSearchActivity.class));
-            }
-        });
+        if (floatingSearchButton != null) {
+            floatingSearchButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivity(new Intent(MainActivity.this, VNSearchActivity.class));
+                }
+            });
+        }
 
         if (selectedItem > 0) {
             /* When the screen rotates, MainActivity is recreated so we have to go to where we were before (correct menu item and page) ! */
@@ -163,8 +183,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_stats) {
             directSubfragment = new DatabaseStatisticsFragment();
         } else if (id == R.id.nav_settings) {
-            directSubfragment = new VNListFragment();
-            args.putInt("ARG", 5);
+            directSubfragment = new PreferencesFragment();
         } else if (id == R.id.nav_logout) {
             directSubfragment = new VNListFragment();
             args.putInt("ARG", 5);
@@ -191,5 +210,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public SearchView getSearchView() {
         return searchView;
+    }
+
+    public static int getThemeColor(Context context, int resid) {
+        TypedValue colorAttribute = new TypedValue();
+        context.getTheme().resolveAttribute(resid, colorAttribute, true);
+        return colorAttribute.data;
     }
 }

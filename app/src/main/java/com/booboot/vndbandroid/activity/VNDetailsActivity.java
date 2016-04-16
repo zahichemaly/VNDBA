@@ -3,10 +3,12 @@ package com.booboot.vndbandroid.activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
+import android.util.TypedValue;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,6 +34,7 @@ import com.booboot.vndbandroid.factory.VNDetailsFactory;
 import com.booboot.vndbandroid.listener.VNDetailsListener;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.Lightbox;
+import com.booboot.vndbandroid.util.SettingsManager;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
@@ -63,6 +66,7 @@ public class VNDetailsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTheme(SettingsManager.getTheme(this));
         setContentView(R.layout.vn_details);
 
         vn = (Item) getIntent().getSerializableExtra(VNTypeFragment.VN_ARG);
@@ -94,6 +98,10 @@ public class VNDetailsActivity extends AppCompatActivity {
         statusButton.setText(Status.toString(vnlistVn != null ? vnlistVn.getStatus() : -1));
         wishlistButton.setText(Priority.toString(wishlistVn != null ? wishlistVn.getPriority() : -1));
         votesButton.setText(Vote.toString(votelistVn != null ? votelistVn.getVote() : -1));
+
+        statusButton.setBackgroundTintList(ColorStateList.valueOf(MainActivity.getThemeColor(this, R.attr.colorPrimaryDark)));
+        wishlistButton.setBackgroundTintList(ColorStateList.valueOf(MainActivity.getThemeColor(this, R.attr.colorPrimaryDark)));
+        votesButton.setBackgroundTintList(ColorStateList.valueOf(MainActivity.getThemeColor(this, R.attr.colorPrimaryDark)));
 
         ImageLoader.getInstance().displayImage(vn.getImage(), image);
         Lightbox.set(VNDetailsActivity.this, image, vn.getImage());

@@ -7,6 +7,7 @@ package com.booboot.vndbandroid.adapter.vndetails;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Typeface;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -20,6 +21,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
+import com.booboot.vndbandroid.activity.MainActivity;
 import com.booboot.vndbandroid.activity.VNDetailsActivity;
 import com.booboot.vndbandroid.activity.VNTypeFragment;
 import com.booboot.vndbandroid.adapter.doublelist.DoubleListAdapter;
@@ -166,8 +168,9 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                             @Override
                             public void onClick(View v) {
                                 View view = layoutInflater.inflate(R.layout.character_dialog, null);
-                                ListView listView = (ListView) view.findViewById(R.id.listView);
+                                view.findViewById(R.id.closeButton).setBackgroundTintList(ColorStateList.valueOf(MainActivity.getThemeColor(context, R.attr.colorPrimaryDark)));
 
+                                ListView listView = (ListView) view.findViewById(R.id.listView);
                                 listView.setAdapter(new DoubleListAdapter(context, elements));
 
                                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);

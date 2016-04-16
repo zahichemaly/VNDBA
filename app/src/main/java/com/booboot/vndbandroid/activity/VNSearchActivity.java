@@ -22,6 +22,7 @@ import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Options;
 import com.booboot.vndbandroid.db.DB;
 import com.booboot.vndbandroid.util.Callback;
+import com.booboot.vndbandroid.util.SettingsManager;
 import com.dexafree.materialList.card.Card;
 import com.dexafree.materialList.card.CardProvider;
 import com.dexafree.materialList.listeners.RecyclerItemClickListener;
@@ -32,6 +33,7 @@ public class VNSearchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTheme(SettingsManager.getTheme(this));
         setContentView(R.layout.vn_card_list_layout);
 
         ActionBar actionBar = getSupportActionBar();

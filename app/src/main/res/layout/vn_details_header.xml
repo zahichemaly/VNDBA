@@ -22,7 +22,6 @@
             android:id="@+id/statusButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/colorPrimaryDark"
             android:textColor="@color/white"
             android:text="Playing"
             android:onClick="showStatusPopup"/>
@@ -31,7 +30,6 @@
             android:id="@+id/wishlistButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/colorPrimaryDark"
             android:textColor="@color/white"
             android:text="Not on my wishlist"
             android:onClick="showWishlistPopup"/>

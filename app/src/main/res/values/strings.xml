@@ -8,4 +8,53 @@
     <string name="action_search">Search</string>
     <string name="action_filter">Filter</string>
     <string name="search_hint">Search on VNDB...</string>
+    <string name="pref_key_theme">theme_selection</string>
+    <string name="close">Close</string>
+
+    <string-array name="background_pref_titles">
+        <item>Default (orange)</item>
+        <item>AIR (sky blue)</item>
+        <item>Angelic Serenade (dark blue)</item>
+        <item>Eien no Aselia (falu red)</item>
+        <item>Ever17 (bondi blue)</item>
+        <item>Fate/stay night (pale carmine)</item>
+        <item>Fate/stay night (seal brown)</item>
+        <item>Gekkou no Carnevale (black)</item>
+        <item>Higanbana no Saku Yoru Ni (maroon)</item>
+        <item>Higurashi no Naku Koro ni (orange)</item>
+        <item>Jingai Makyo (peach-orange)</item>
+        <item>Little Busters! (lemon chiffon)</item>
+        <item>Little Busters! (pink)</item>
+        <item>Neon (black)</item>
+        <item>Primitive Link (pale chestnut)</item>
+        <item>Saya no Uta (dark scarlet)</item>
+        <item>Seinarukana (white)</item>
+        <item>Sora no Iro, Mizu no Iro (turquoise)</item>
+        <item>Touhou (grey)</item>
+        <item>Tsukihime (black)</item>
+        <item>Tsukihime (midnight blue)</item>
+    </string-array>
+    <string-array name="background_pref_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+        <item>17</item>
+        <item>18</item>
+        <item>19</item>
+        <item>20</item>
+    </string-array>
 </resources>

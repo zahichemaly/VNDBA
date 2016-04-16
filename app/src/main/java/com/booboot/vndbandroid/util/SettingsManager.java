@@ -3,6 +3,8 @@ package com.booboot.vndbandroid.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.booboot.vndbandroid.R;
+
 /**
  * Created by od on 12/03/2016.
  */
@@ -16,10 +18,19 @@ public class SettingsManager {
         editor = settings.edit();
     }
 
+    public static String getUsername(Context context) {
+        new SettingsManager(context);
+        return settings.getString("USERNAME", null);
+    }
     public static void setUsername(Context context, String username) {
         new SettingsManager(context);
         editor.putString("USERNAME", username);
         editor.commit();
+    }
+
+    public static String getPassword(Context context) {
+        new SettingsManager(context);
+        return settings.getString("PASSWORD", null);
     }
 
     public static void setPassword(Context context, String password) {
@@ -28,13 +39,36 @@ public class SettingsManager {
         editor.commit();
     }
 
-    public static String getUsername(Context context) {
+    public static int getTheme(Context context) {
         new SettingsManager(context);
-        return settings.getString("USERNAME", null);
+        return settings.getInt("THEME", R.style.AppTheme);
     }
 
-    public static String getPassword(Context context) {
+    public static void setTheme(Context context, int theme) {
         new SettingsManager(context);
-        return settings.getString("PASSWORD", null);
+        editor.putInt("THEME", theme);
+        editor.commit();
+    }
+
+    public static int getNoActionBarTheme(Context context) {
+        new SettingsManager(context);
+        return settings.getInt("NO_ACTION_BAR_THEME", R.style.AppTheme_NoActionBar);
+    }
+
+    public static void setNoActionBarTheme(Context context, int theme) {
+        new SettingsManager(context);
+        editor.putInt("NO_ACTION_BAR_THEME", theme);
+        editor.commit();
+    }
+
+    public static int getWallpaper(Context context) {
+        new SettingsManager(context);
+        return settings.getInt("WALLPAPER", R.drawable.bg_0);
+    }
+
+    public static void setWallpaper(Context context, int wallpaper) {
+        new SettingsManager(context);
+        editor.putInt("WALLPAPER", wallpaper);
+        editor.commit();
     }
 }
