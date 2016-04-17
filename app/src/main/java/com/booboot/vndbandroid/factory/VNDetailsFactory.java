@@ -49,13 +49,18 @@ public class VNDetailsFactory {
             infoRightImages.add(-1);
         }
 
-        try {
-            infoLeft.add("Released date");
-            Date released = new SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(activity.getVn().getReleased());
-            infoRight.add(new SimpleDateFormat("d MMMM yyyy", Locale.US).format(released));
-            infoRightImages.add(-1);
-        } catch (ParseException e) {
+        infoLeft.add("Released date");
+        if (activity.getVn().getReleased() == null) {
+            infoRight.add("Unknown");
+        } else {
+            try {
+                Date released = new SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(activity.getVn().getReleased());
+                infoRight.add(new SimpleDateFormat("d MMMM yyyy", Locale.US).format(released));
+            } catch (ParseException e) {
+                infoRight.add(activity.getVn().getReleased());
+            }
         }
+        infoRightImages.add(-1);
 
         if (activity.getVn().getAliases() != null) {
             infoLeft.add("Aliases");

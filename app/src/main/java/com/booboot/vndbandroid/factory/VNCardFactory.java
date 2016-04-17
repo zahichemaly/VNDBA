@@ -27,10 +27,16 @@ public class VNCardFactory {
     public static void buildCard(Context context, Item vn, MaterialListView materialListView) {
         Date released;
         StringBuilder subtitle = new StringBuilder(), description = new StringBuilder();
-        try {
-            released = new SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(vn.getReleased());
-            subtitle.append(new SimpleDateFormat("yyyy", Locale.US).format(released));
-        } catch (ParseException e) {
+
+        if (vn.getReleased() == null) {
+            subtitle.append("Unknown");
+        } else {
+            try {
+                released = new SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(vn.getReleased());
+                subtitle.append(new SimpleDateFormat("yyyy", Locale.US).format(released));
+            } catch (ParseException e) {
+                subtitle.append(vn.getReleased());
+            }
         }
 
         subtitle.append(" • ").append(vn.getLengthString());
