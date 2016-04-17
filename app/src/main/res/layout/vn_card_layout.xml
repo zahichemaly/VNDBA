@@ -38,24 +38,34 @@
                         android:id="@+id/title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxLines="2"
                         android:paddingBottom="12dp"
-                        android:paddingLeft="16dp"
-                        android:paddingRight="16dp"
-                        android:paddingTop="24dp"
-                        tools:text="Title"
-                        android:textSize="18sp"/>
+                        android:paddingLeft="14dp"
+                        android:paddingRight="14dp"
+                        android:paddingTop="10dp"
+                        android:singleLine="false"
+                        android:textSize="16sp"
+                        tools:text="Title"/>
 
                     <TextView
                         android:id="@+id/subtitle"
-                        style="@style/Material_Card_Subtitle_16dp"
-                        android:textSize="13sp"
-                        tools:text="Subtitle"/>
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        android:textSize="13sp"/>
                 </LinearLayout>
+
+                <include layout="@layout/card_divider"/>
 
                 <TextView
                     android:id="@+id/supportingText"
-                    style="@style/Material_Card_Supporting_Text_24dp"
-                    tools:text="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam"/>
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="3"
+                    android:singleLine="false"/>
             </LinearLayout>
         </LinearLayout>
 
