@@ -69,7 +69,7 @@ public class VNSearchActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 searchView.clearFocus();
-                VNDBServer.get("vn", DB.VN_FLAGS, "(search ~ \"" + query.trim() + "\")", Options.create(1, 25, null, false), VNSearchActivity.this, new Callback() {
+                VNDBServer.get("vn", DB.VN_FLAGS, "(search ~ \"" + query.trim() + "\")", Options.create(1, 25, null, false), false, VNSearchActivity.this, new Callback() {
                     @Override
                     protected void config() {
                         materialListView.getAdapter().clearAll();

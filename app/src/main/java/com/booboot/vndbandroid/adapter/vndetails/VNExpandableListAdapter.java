@@ -146,7 +146,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                         convertView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                VNDBServer.get("vn", DB.VN_FLAGS, "(id = " + vnId + ")", null, context, new Callback() {
+                                VNDBServer.get("vn", DB.VN_FLAGS, "(id = " + vnId + ")", null, false, context, new Callback() {
                                     @Override
                                     protected void config() {
                                         if (results.getItems().size() < 1) return;

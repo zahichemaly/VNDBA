@@ -35,7 +35,7 @@ public class DB {
 
     public static void loadData(final Context context, final Callback successCallback) {
         DB.vnlist.clear();
-        VNDBServer.get("vnlist", "basic", "(uid = 0)", null, context, new Callback() {
+        VNDBServer.get("vnlist", "basic", "(uid = 0)", Options.create(1, 25, null, false), true, context, new Callback() {
             @Override
             public void config() {
                 final Map<Integer, Item> vnlistIds = new HashMap<>(), votelistIds = new HashMap<>(), wishlistIds = new HashMap<>();
@@ -44,7 +44,7 @@ public class DB {
                 }
 
                 DB.votelist.clear();
-                VNDBServer.get("votelist", "basic", "(uid = 0)", null, context, new Callback() {
+                VNDBServer.get("votelist", "basic", "(uid = 0)", Options.create(1, 25, null, false), true, context, new Callback() {
                     @Override
                     protected void config() {
                         for (Item votelistItem : results.getItems()) {
@@ -52,7 +52,7 @@ public class DB {
                         }
 
                         DB.wishlist.clear();
-                        VNDBServer.get("wishlist", "basic", "(uid = 0)", null, context, new Callback() {
+                        VNDBServer.get("wishlist", "basic", "(uid = 0)", Options.create(1, 25, null, false), true, context, new Callback() {
                             @Override
                             protected void config() {
                                 for (Item wishlistItem : results.getItems()) {
@@ -67,7 +67,7 @@ public class DB {
                                 } catch (JsonProcessingException e) {
                                     e.printStackTrace();
                                 }
-                                VNDBServer.get("vn", VN_FLAGS, "(id = " + mergedIdsString + ")", Options.create(1, 25, null, false), context, new Callback() {
+                                VNDBServer.get("vn", VN_FLAGS, "(id = " + mergedIdsString + ")", Options.create(1, 25, null, false), true, context, new Callback() {
                                     @Override
                                     protected void config() {
                                         for (Item vn : results.getItems()) {

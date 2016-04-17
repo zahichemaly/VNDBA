@@ -83,7 +83,7 @@ public class VNDBServer {
         }.start();
     }
 
-    public static void get(final String type, final String flags, final String filters, final Options options, final Context context, final Callback successCallback, final Callback errorCallback) {
+    public static void get(final String type, final String flags, final String filters, final Options options, final boolean fetchAllPages, final Context context, final Callback successCallback, final Callback errorCallback) {
         if (!takeMutex()) return;
 
         new Thread() {
@@ -97,7 +97,13 @@ public class VNDBServer {
                 command.append(' ');
                 command.append(filters);
                 command.append(' ');
-                VNDBCommand results = sendCommand(command.toString(), options);
+                VNDBCommand results;
+                do {
+                    results = sendCommand(command.toString(), options);
+                    if (options == null) break;
+                    options.setPage(options.getPage() + 1);
+                } while (fetchAllPages && results instanceof Results && ((Results) results).isMore());
+
                 if (results instanceof Results) {
                     successCallback.results = (Results) results;
                     successCallback.call();

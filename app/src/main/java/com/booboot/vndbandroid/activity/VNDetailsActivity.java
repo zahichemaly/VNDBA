@@ -150,7 +150,7 @@ public class VNDetailsActivity extends AppCompatActivity {
 
     private void initCharacters() {
         if (DB.characters.get(vn.getId()) == null) {
-            VNDBServer.get("character", DB.CHARACTER_FLAGS, "(vn = " + vn.getId() + ")", Options.create(1, 25, null, false), this, new Callback() {
+            VNDBServer.get("character", DB.CHARACTER_FLAGS, "(vn = " + vn.getId() + ")", Options.create(1, 25, null, false), true, this, new Callback() {
                 @Override
                 protected void config() {
                     characters = results.getItems();
