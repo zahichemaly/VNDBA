@@ -8,6 +8,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,6 +17,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.menu.MenuItemImpl;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,6 +28,7 @@ import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
+import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.ListType;
 import com.booboot.vndbandroid.db.DB;
 import com.booboot.vndbandroid.util.SettingsManager;
@@ -174,6 +177,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Bundle args = new Bundle();
         selectedItem = id;
 
+        Log.e("D", "Goiing to fragment n°" + id);
         if (id == R.id.nav_vnlist) {
             directSubfragment = new VNListFragment();
             args.putInt(VNListFragment.LIST_TYPE_ARG, ListType.VNLIST);
@@ -188,8 +192,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_settings) {
             directSubfragment = new PreferencesFragment();
         } else if (id == R.id.nav_logout) {
-            directSubfragment = new VNListFragment();
-            args.putInt("ARG", 5);
+            VNDBServer.close();
+            LoginActivity.instance.enableAll();
+            selectedItem = 0;
+            finish();
+            return true;
         }
 
         directSubfragment.setArguments(args);

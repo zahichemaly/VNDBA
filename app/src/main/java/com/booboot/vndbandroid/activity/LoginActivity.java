@@ -3,6 +3,7 @@ package com.booboot.vndbandroid.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -20,6 +21,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
+    public static LoginActivity instance;
     private Button loginButton;
     private EditText loginUsername;
     private EditText loginPassword;
@@ -29,6 +31,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
+
+        instance = this;
 
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this).build();
         ImageLoader.getInstance().init(config);
@@ -51,18 +55,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             loginUsername.setText(savedUsername);
             loginPassword.setText(savedPassword);
 
-            /* Disabling the inputs */
-            loginUsername.setEnabled(false);
-            loginPassword.setEnabled(false);
-            loginButton.setEnabled(false);
-            /* Hiding the keyboard */
-            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
             login();
         } else {
-            loginUsername.setEnabled(true);
-            loginPassword.setEnabled(true);
-            loginButton.setEnabled(true);
+            enableAll();
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         }
     }
@@ -77,7 +72,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void login() {
-        progressBar.setVisibility(View.VISIBLE);
+        disableAll();
         VNDBServer.login(this, new Callback() {
             @Override
             public void config() {
@@ -97,5 +92,22 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 progressBar.setVisibility(View.INVISIBLE);
             }
         });
+    }
+
+    public void enableAll() {
+        progressBar.setVisibility(View.INVISIBLE);
+        loginUsername.setEnabled(true);
+        loginPassword.setEnabled(true);
+        loginButton.setEnabled(true);
+    }
+
+    public void disableAll() {
+        /* Disabling the inputs */
+        loginUsername.setEnabled(false);
+        loginPassword.setEnabled(false);
+        loginButton.setEnabled(false);
+        /* Hiding the keyboard */
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        progressBar.setVisibility(View.VISIBLE);
     }
 }
