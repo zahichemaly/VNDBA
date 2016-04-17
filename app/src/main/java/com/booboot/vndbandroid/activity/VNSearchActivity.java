@@ -3,13 +3,11 @@ package com.booboot.vndbandroid.activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,10 +19,10 @@ import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Options;
 import com.booboot.vndbandroid.db.DB;
+import com.booboot.vndbandroid.factory.VNCardFactory;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.dexafree.materialList.card.Card;
-import com.dexafree.materialList.card.CardProvider;
 import com.dexafree.materialList.listeners.RecyclerItemClickListener;
 
 public class VNSearchActivity extends AppCompatActivity {
@@ -76,24 +74,8 @@ public class VNSearchActivity extends AppCompatActivity {
                     protected void config() {
                         materialListView.getAdapter().clearAll();
 
-                        Log.d("D", results.getItems().size() + "");
                         for (final Item vn : results.getItems()) {
-                            Card card = new Card.Builder(VNSearchActivity.this)
-                                    .withProvider(new CardProvider())
-                                    .setLayout(R.layout.vn_card_layout)
-                                    .setTitle(vn.getTitle())
-                                    .setSubtitle(vn.getOriginal())
-                                    .setSubtitleColor(Color.BLACK)
-                                    .setTitleGravity(Gravity.END)
-                                    .setSubtitleGravity(Gravity.END)
-                                    .setDescription(vn.getReleased())
-                                    .setDescriptionGravity(Gravity.END)
-                                    .setDrawable(vn.getImage())
-                                    .endConfig().build();
-                            card.setTag(vn);
-
-                            materialListView.getAdapter().add(card);
-                            materialListView.scrollToPosition(0);
+                            VNCardFactory.buildCard(VNSearchActivity.this, vn, materialListView);
                         }
 
                         materialListView.addOnItemTouchListener(new RecyclerItemClickListener.OnItemClickListener() {

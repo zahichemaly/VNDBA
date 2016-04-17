@@ -1,6 +1,7 @@
 package com.booboot.vndbandroid.activity;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import com.booboot.vndbandroid.api.bean.Priority;
 import com.booboot.vndbandroid.api.bean.Status;
 import com.booboot.vndbandroid.api.bean.Vote;
 import com.booboot.vndbandroid.db.DB;
+import com.booboot.vndbandroid.factory.VNCardFactory;
 import com.booboot.vndbandroid.util.Callback;
 import com.dexafree.materialList.card.Card;
 import com.dexafree.materialList.card.CardProvider;
@@ -58,45 +60,7 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
                 continue;
             if (type == ListType.WISHLIST && vn.getPriority() != tabValue) continue;
 
-            Date released;
-            StringBuilder subtitle = new StringBuilder(), description = new StringBuilder();
-            try {
-                released = new SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(vn.getReleased());
-                subtitle.append(new SimpleDateFormat("yyyy", Locale.US).format(released));
-            } catch (ParseException e) {
-            }
-
-            subtitle.append(" • ").append(vn.getLengthString());
-
-            if (DB.vnlist.get(vn.getId()) != null)
-                description.append(Status.toString(DB.vnlist.get(vn.getId()).getStatus())).append("\n");
-            else description.append("Not on your VN list\n");
-            if (DB.wishlist.get(vn.getId()) != null)
-                description.append(Priority.toString(DB.wishlist.get(vn.getId()).getPriority())).append("\n");
-            else description.append("Not on your wishlist\n");
-            if (DB.votelist.get(vn.getId()) != null) {
-                int vote = DB.votelist.get(vn.getId()).getVote() / 10;
-                description.append(vote).append(" (").append(Vote.getName(vote)).append(")\n");
-            } else description.append("Not voted yet\n");
-
-            Card card = new Card.Builder(getActivity())
-                    .withProvider(new CardProvider())
-                    .setLayout(R.layout.vn_card_layout)
-                    .setTitle(vn.getTitle())
-                    .setSubtitle(subtitle.toString())
-                    .setSubtitleColor(Color.GRAY)
-                    .setTitleGravity(Gravity.CENTER)
-                    .setSubtitleGravity(Gravity.CENTER)
-                    .setDescription(description.toString())
-                    .setDescriptionGravity(Gravity.CENTER)
-                    // .setDescriptionColor(getActivity().getResources().getColor(R.color.dark_blue, getActivity().getTheme()))
-                    .setDescriptionColor(MainActivity.getThemeColor(getActivity(), R.attr.colorPrimaryDark))
-                    .setDrawable(vn.getImage())
-                    .endConfig().build();
-            card.setTag(vn);
-
-            materialListView.getAdapter().add(card);
-            materialListView.scrollToPosition(0);
+            VNCardFactory.buildCard(getActivity(), vn, materialListView);
         }
 
         materialListView.addOnItemTouchListener(new RecyclerItemClickListener.OnItemClickListener() {
