@@ -1,15 +1,22 @@
 package com.booboot.vndbandroid.activity;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.booboot.vndbandroid.R;
@@ -21,11 +28,13 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
+    public final static String VNDB_REGISTER = "https://vndb.org/u/register";
     public static LoginActivity instance;
     private Button loginButton;
     private EditText loginUsername;
     private EditText loginPassword;
     private ProgressBar progressBar;
+    private TextView signupTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +51,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
 
+        signupTextView = (TextView) findViewById(R.id.signupTextView);
+        initSignup();
         loginButton = (Button) findViewById(R.id.loginButton);
         loginButton.setOnClickListener(this);
         loginUsername = (EditText) findViewById(R.id.loginUsername);
@@ -60,6 +71,28 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             enableAll();
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         }
+    }
+
+    private void initSignup() {
+        SpannableString ss = new SpannableString("Don't have a VNDB account yet? Sign up here.");
+        ClickableSpan clickableSpan = new ClickableSpan() {
+            @Override
+            public void onClick(View textView) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(VNDB_REGISTER));
+                startActivity(browserIntent);
+            }
+
+            @Override
+            public void updateDrawState(TextPaint ds) {
+                super.updateDrawState(ds);
+                ds.setUnderlineText(false);
+            }
+        };
+        ss.setSpan(clickableSpan, ss.toString().indexOf("Sign up here"), ss.toString().length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        signupTextView.setText(ss);
+        signupTextView.setMovementMethod(LinkMovementMethod.getInstance());
+        signupTextView.setHighlightColor(Color.TRANSPARENT);
     }
 
     @Override
