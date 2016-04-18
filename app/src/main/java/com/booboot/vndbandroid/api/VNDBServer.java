@@ -1,6 +1,7 @@
 package com.booboot.vndbandroid.api;
 
 import android.content.Context;
+import android.system.ErrnoException;
 import android.util.Log;
 
 import com.booboot.vndbandroid.api.bean.DbStats;
@@ -21,6 +22,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 
 /**
@@ -173,7 +175,11 @@ public class VNDBServer {
             errorCallback.message = "Tried to send a query to the API with a wrong encoding. Aborting operation.";
             errorCallback.call();
             return null;
-        } catch (IOException ioe) {
+        } catch (SocketException se) {
+            errorCallback.message = "You don't seem to have an Internet connection. Please check your connection or try again later.";
+            errorCallback.call();
+            return null;
+        }catch (IOException ioe) {
             errorCallback.message = "An error occurred while sending a query to the API. Please try again later.";
             errorCallback.call();
             return null;

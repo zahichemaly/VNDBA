@@ -89,7 +89,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 SettingsManager.setUsername(LoginActivity.this, null);
                 SettingsManager.setPassword(LoginActivity.this, null);
                 Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
-                progressBar.setVisibility(View.INVISIBLE);
+                enableAll();
             }
         });
     }
