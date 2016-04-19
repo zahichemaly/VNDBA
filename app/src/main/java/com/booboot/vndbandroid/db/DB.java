@@ -12,6 +12,7 @@ import com.booboot.vndbandroid.util.JSON;
 import com.booboot.vndbandroid.util.Predicate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -89,6 +90,7 @@ public class DB {
                                             }
                                         }
 
+                                        saveAllPersistently(context);
                                         successCallback.call();
                                     }
                                 }, Callback.errorCallback(context));
@@ -98,6 +100,15 @@ public class DB {
                 }, Callback.errorCallback(context));
             }
         }, Callback.errorCallback(context));
+    }
+
+    private static void saveAllPersistently(Context context) {
+        File vnlistFile = new File(context.getFilesDir(), "vnlist.data");
+        File votelistFile = new File(context.getFilesDir(), "votelist.data");
+        File wishlistFile = new File(context.getFilesDir(), "wishlist.data");
+        File charactersFile = new File(context.getFilesDir(), "characters.data");
+
+        // [TODO] Deserialize fields to files with Jackson
     }
 
     public static void loadStats(final Context context, final Callback successCallback, boolean forceRefresh) {
