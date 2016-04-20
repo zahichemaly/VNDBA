@@ -101,10 +101,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         updateMenuCounters();
-
-        String[] perms = {"android.permission.WRITE_EXTERNAL_STORAGE", "android.permission.READ_EXTERNAL_STORAGE"};
-        int permsRequestCode = 200;
-        requestPermissions(perms, permsRequestCode);
     }
 
     @Override
@@ -177,7 +173,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Bundle args = new Bundle();
         selectedItem = id;
 
-        Log.e("D", "Goiing to fragment n°" + id);
         if (id == R.id.nav_vnlist) {
             directSubfragment = new VNListFragment();
             args.putInt(VNListFragment.LIST_TYPE_ARG, ListType.VNLIST);
