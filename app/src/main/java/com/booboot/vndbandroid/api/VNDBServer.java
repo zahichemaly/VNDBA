@@ -1,7 +1,6 @@
 package com.booboot.vndbandroid.api;
 
 import android.content.Context;
-import android.system.ErrnoException;
 import android.util.Log;
 
 import com.booboot.vndbandroid.api.bean.DbStats;
@@ -99,12 +98,18 @@ public class VNDBServer {
                 command.append(' ');
                 command.append(filters);
                 command.append(' ');
-                VNDBCommand results;
+                VNDBCommand results = null, pageResults;
                 do {
-                    results = sendCommand(command.toString(), options);
+                    pageResults = sendCommand(command.toString(), options);
+                    if (results == null)
+                        results = pageResults;
+                    /* If there there's more than 1 page, we add the current page items to the overall results, to avoid overwriting the results of the previous pages */
+                    else if (results instanceof Results && pageResults instanceof Results)
+                        ((Results) results).getItems().addAll(((Results) pageResults).getItems());
+
                     if (options == null) break;
                     options.setPage(options.getPage() + 1);
-                } while (fetchAllPages && results instanceof Results && ((Results) results).isMore());
+                } while (fetchAllPages && pageResults instanceof Results && ((Results) pageResults).isMore());
 
                 if (results instanceof Results) {
                     successCallback.results = (Results) results;
@@ -179,7 +184,7 @@ public class VNDBServer {
             errorCallback.message = "You don't seem to have an Internet connection. Please check your connection or try again later.";
             errorCallback.call();
             return null;
-        }catch (IOException ioe) {
+        } catch (IOException ioe) {
             errorCallback.message = "An error occurred while sending a query to the API. Please try again later.";
             errorCallback.call();
             return null;
