@@ -11,13 +11,28 @@ public class Options extends VNDBCommand {
     private int results;
     private String sort;
     private boolean reverse;
+    private boolean fetchAllPages;
+    private boolean useCacheIfError;
 
-    public static Options create(int page, int results, String sort, boolean reverse) {
+    public static Options create(boolean fetchAllPages, boolean useCacheIfError) {
+        Options options = new Options();
+        options.page = 1;
+        options.results = 25;
+        options.sort = null;
+        options.reverse = false;
+        options.fetchAllPages = fetchAllPages;
+        options.useCacheIfError = useCacheIfError;
+        return options;
+    }
+
+    public static Options create(int page, int results, String sort, boolean reverse, boolean fetchAllPages, boolean useCacheIfError) {
         Options options = new Options();
         options.page = page;
         options.results = results;
         options.sort = sort;
         options.reverse = reverse;
+        options.fetchAllPages = fetchAllPages;
+        options.useCacheIfError = useCacheIfError;
         return options;
     }
 
@@ -51,5 +66,21 @@ public class Options extends VNDBCommand {
 
     public void setReverse(boolean reverse) {
         this.reverse = reverse;
+    }
+
+    public void setFetchAllPages(boolean fetchAllPages) {
+        this.fetchAllPages = fetchAllPages;
+    }
+
+    public boolean isFetchAllPages() {
+        return fetchAllPages;
+    }
+
+    public boolean isUseCacheIfError() {
+        return useCacheIfError;
+    }
+
+    public void setUseCacheIfError(boolean useCacheIfError) {
+        this.useCacheIfError = useCacheIfError;
     }
 }
