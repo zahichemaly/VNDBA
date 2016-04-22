@@ -18,7 +18,7 @@ import com.booboot.vndbandroid.adapter.materiallistview.MaterialListView;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Options;
-import com.booboot.vndbandroid.db.DB;
+import com.booboot.vndbandroid.db.Cache;
 import com.booboot.vndbandroid.factory.VNCardFactory;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.SettingsManager;
@@ -69,7 +69,7 @@ public class VNSearchActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 searchView.clearFocus();
-                VNDBServer.get("vn", DB.VN_FLAGS, "(search ~ \"" + query.trim() + "\")", Options.create(1, 25, null, false), false, VNSearchActivity.this, new Callback() {
+                VNDBServer.get("vn", Cache.VN_FLAGS, "(search ~ \"" + query.trim() + "\")", Options.create(false, false), VNSearchActivity.this, new Callback() {
                     @Override
                     protected void config() {
                         materialListView.getAdapter().clearAll();

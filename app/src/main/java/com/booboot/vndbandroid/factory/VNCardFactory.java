@@ -11,7 +11,7 @@ import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Priority;
 import com.booboot.vndbandroid.api.bean.Status;
 import com.booboot.vndbandroid.api.bean.Vote;
-import com.booboot.vndbandroid.db.DB;
+import com.booboot.vndbandroid.db.Cache;
 import com.dexafree.materialList.card.Card;
 import com.dexafree.materialList.card.CardProvider;
 
@@ -41,14 +41,14 @@ public class VNCardFactory {
 
         subtitle.append(" • ").append(vn.getLengthString());
 
-        if (DB.vnlist.get(vn.getId()) != null)
-            description.append(Status.toString(DB.vnlist.get(vn.getId()).getStatus())).append("\n");
+        if (Cache.vnlist.get(vn.getId()) != null)
+            description.append(Status.toString(Cache.vnlist.get(vn.getId()).getStatus())).append("\n");
         else description.append("Not on your VN list\n");
-        if (DB.wishlist.get(vn.getId()) != null)
-            description.append(Priority.toString(DB.wishlist.get(vn.getId()).getPriority())).append("\n");
+        if (Cache.wishlist.get(vn.getId()) != null)
+            description.append(Priority.toString(Cache.wishlist.get(vn.getId()).getPriority())).append("\n");
         else description.append("Not on your wishlist\n");
-        if (DB.votelist.get(vn.getId()) != null) {
-            int vote = DB.votelist.get(vn.getId()).getVote() / 10;
+        if (Cache.votelist.get(vn.getId()) != null) {
+            int vote = Cache.votelist.get(vn.getId()).getVote() / 10;
             description.append(vote).append(" (").append(Vote.getName(vote)).append(")\n");
         } else description.append("Not voted yet\n");
 

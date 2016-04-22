@@ -11,7 +11,7 @@ import android.widget.ListView;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.adapter.doublelist.DoubleListAdapter;
 import com.booboot.vndbandroid.adapter.doublelist.DoubleListElement;
-import com.booboot.vndbandroid.db.DB;
+import com.booboot.vndbandroid.db.Cache;
 import com.booboot.vndbandroid.util.Callback;
 
 /**
@@ -36,19 +36,19 @@ public class DatabaseStatisticsFragment extends Fragment implements SwipeRefresh
     }
 
     public void refresh(boolean forceRefresh) {
-        DB.loadStats(getActivity(), new Callback() {
+        Cache.loadStats(getActivity(), new Callback() {
             @Override
             protected void config() {
                 DoubleListElement[] elements = new DoubleListElement[]{
-                        new DoubleListElement("Visual Novels", DB.dbstats.getVn() + "", false),
-                        new DoubleListElement("Releases", DB.dbstats.getReleases() + "", false),
-                        new DoubleListElement("Producers", DB.dbstats.getProducers() + "", false),
-                        new DoubleListElement("Characters", DB.dbstats.getChars() + "", false),
-                        new DoubleListElement("VN Tags", DB.dbstats.getTags() + "", false),
-                        new DoubleListElement("Character Traits", DB.dbstats.getTraits() + "", false),
-                        new DoubleListElement("Users", DB.dbstats.getUsers() + "", false),
-                        new DoubleListElement("Threads", DB.dbstats.getThreads() + "", false),
-                        new DoubleListElement("Posts", DB.dbstats.getPosts() + "", false)
+                        new DoubleListElement("Visual Novels", Cache.dbstats.getVn() + "", false),
+                        new DoubleListElement("Releases", Cache.dbstats.getReleases() + "", false),
+                        new DoubleListElement("Producers", Cache.dbstats.getProducers() + "", false),
+                        new DoubleListElement("Characters", Cache.dbstats.getChars() + "", false),
+                        new DoubleListElement("VN Tags", Cache.dbstats.getTags() + "", false),
+                        new DoubleListElement("Character Traits", Cache.dbstats.getTraits() + "", false),
+                        new DoubleListElement("Users", Cache.dbstats.getUsers() + "", false),
+                        new DoubleListElement("Threads", Cache.dbstats.getThreads() + "", false),
+                        new DoubleListElement("Posts", Cache.dbstats.getPosts() + "", false)
                 };
 
                 listView.setAdapter(new DoubleListAdapter(DatabaseStatisticsFragment.this.getActivity(), elements));

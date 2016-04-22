@@ -6,12 +6,15 @@ import android.util.Log;
 import com.booboot.vndbandroid.api.bean.DbStats;
 import com.booboot.vndbandroid.api.bean.Error;
 import com.booboot.vndbandroid.api.bean.Fields;
+import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Login;
 import com.booboot.vndbandroid.api.bean.Ok;
 import com.booboot.vndbandroid.api.bean.Options;
 import com.booboot.vndbandroid.api.bean.Results;
 import com.booboot.vndbandroid.api.bean.VNDBCommand;
+import com.booboot.vndbandroid.db.Cache;
 import com.booboot.vndbandroid.util.Callback;
+import com.booboot.vndbandroid.util.ConnectionReceiver;
 import com.booboot.vndbandroid.util.JSON;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -23,6 +26,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 /**
  * Created by od on 12/03/2016.
@@ -42,11 +46,13 @@ public class VNDBServer {
     private static InputStreamReader in;
     private static Context context;
     private static Callback successCallback, errorCallback;
+    private static boolean useCacheIfError;
 
-    private static void init(Context c, Callback sc, Callback ec) {
+    private static void init(Context c, Callback sc, Callback ec, boolean ucie) {
         context = c;
         successCallback = sc;
         errorCallback = ec;
+        useCacheIfError = ucie;
     }
 
     private static boolean connect() {
@@ -57,8 +63,15 @@ public class VNDBServer {
             in = new InputStreamReader(socket.getInputStream());
             return true;
         } catch (UnknownHostException uhe) {
-            errorCallback.message = "Unable to reach the server " + HOST + ". Please try again later.";
-            errorCallback.call();
+            if (!useCacheIfError || !Cache.loadFromCache(context)) {
+                errorCallback.message = "Unable to reach the server " + HOST + ". Please try again later.";
+                errorCallback.call();
+            } else {
+                Results results = new Results();
+                results.setItems(new ArrayList<Item>());
+                successCallback.results = results;
+                successCallback.call();
+            }
             return false;
         } catch (IOException ioe) {
             errorCallback.message = "An error occurred during the connection to the server. Please try again later.";
@@ -70,12 +83,10 @@ public class VNDBServer {
     public static void login(final Context context, final Callback successCallback, final Callback errorCallback) {
         new Thread() {
             public void run() {
-                init(context, successCallback, errorCallback);
+                init(context, successCallback, errorCallback, true);
                 if (!connect()) return;
-                /* [IMPORTANT] Always put this character at the end of a message */
-                String username = SettingsManager.getUsername(context).toLowerCase();
+                String username = SettingsManager.getUsername(context).toLowerCase().trim();
                 String password = SettingsManager.getPassword(context);
-                /* [IMPORTANT] Remember to always put the username in lowercase here */
                 VNDBCommand response = sendCommand("login", Login.create(PROTOCOL, CLIENT, CLIENTVER, username, password));
                 if (response instanceof Ok) {
                     successCallback.call();
@@ -84,12 +95,12 @@ public class VNDBServer {
         }.start();
     }
 
-    public static void get(final String type, final String flags, final String filters, final Options options, final boolean fetchAllPages, final Context context, final Callback successCallback, final Callback errorCallback) {
+    public static void get(final String type, final String flags, final String filters, final Options options, final Context context, final Callback successCallback, final Callback errorCallback) {
         if (!takeMutex()) return;
 
         new Thread() {
             public void run() {
-                init(context, successCallback, errorCallback);
+                init(context, successCallback, errorCallback, options.isUseCacheIfError());
                 StringBuilder command = new StringBuilder();
                 command.append("get ");
                 command.append(type);
@@ -107,11 +118,11 @@ public class VNDBServer {
                     else if (results instanceof Results && pageResults instanceof Results)
                         ((Results) results).getItems().addAll(((Results) pageResults).getItems());
 
-                    if (options == null) break;
+                    if (options == null || pageResults == null) break;
                     options.setPage(options.getPage() + 1);
-                } while (fetchAllPages && pageResults instanceof Results && ((Results) pageResults).isMore());
+                } while (options.isFetchAllPages() && pageResults instanceof Results && ((Results) pageResults).isMore());
 
-                if (results instanceof Results) {
+                if (results instanceof Results && pageResults != null) {
                     successCallback.results = (Results) results;
                     successCallback.call();
                 }
@@ -126,7 +137,7 @@ public class VNDBServer {
 
         new Thread() {
             public void run() {
-                init(context, successCallback, errorCallback);
+                init(context, successCallback, errorCallback, false);
                 StringBuilder command = new StringBuilder();
                 command.append("set ");
                 command.append(type);
@@ -174,6 +185,16 @@ public class VNDBServer {
 
         try {
             Log.e("D", query.toString());
+            if (in == null) {
+                /* If we are inside the application without connection and the connection just worked again, we have to reconnect on the fly */
+                VNDBServer.close();
+                if (!connect()) return null;
+                String username = SettingsManager.getUsername(context).toLowerCase().trim();
+                String password = SettingsManager.getPassword(context);
+                VNDBCommand response = sendCommand("login", Login.create(PROTOCOL, CLIENT, CLIENTVER, username, password));
+                if (!(response instanceof Ok)) return null;
+            }
+
             if (in.ready()) while (in.read() > -1) ;
             out.write(query.toString().getBytes("UTF-8"));
         } catch (UnsupportedEncodingException uee) {
@@ -181,8 +202,18 @@ public class VNDBServer {
             errorCallback.call();
             return null;
         } catch (SocketException se) {
-            errorCallback.message = "You don't seem to have an Internet connection. Please check your connection or try again later.";
-            errorCallback.call();
+            se.printStackTrace();
+            VNDBServer.close();
+
+            if (!useCacheIfError || !Cache.loadFromCache(context)) {
+                errorCallback.message = ConnectionReceiver.CONNECTION_ERROR_MESSAGE;
+                errorCallback.call();
+            } else {
+                Results results = new Results();
+                results.setItems(new ArrayList<Item>());
+                successCallback.results = results;
+                successCallback.call();
+            }
             return null;
         } catch (IOException ioe) {
             errorCallback.message = "An error occurred while sending a query to the API. Please try again later.";
@@ -222,6 +253,7 @@ public class VNDBServer {
             else {
                 errorCallback.message = "An error occurred while decoding the response from the API. Aborting operation.";
                 errorCallback.call();
+                return null;
             }
         }
 
@@ -239,10 +271,20 @@ public class VNDBServer {
 
     public static void close() {
         try {
-            in.close();
-            out.close();
-            socket.close();
+            if (in != null) {
+                in.close();
+                in = null;
+            }
+            if (out != null) {
+                out.close();
+                out = null;
+            }
+            if (socket != null) {
+                socket.close();
+                socket = null;
+            }
         } catch (IOException ioe) {
+            ioe.printStackTrace();
         }
     }
 

@@ -21,7 +21,7 @@ import android.widget.Toast;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.api.VNDBServer;
-import com.booboot.vndbandroid.db.DB;
+import com.booboot.vndbandroid.db.Cache;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -109,7 +109,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         VNDBServer.login(this, new Callback() {
             @Override
             public void config() {
-                DB.loadData(LoginActivity.this, new Callback() {
+                Cache.loadData(LoginActivity.this, new Callback() {
                     @Override
                     protected void config() {
                         startActivity(new Intent(LoginActivity.this, MainActivity.class));

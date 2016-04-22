@@ -28,7 +28,7 @@ import com.booboot.vndbandroid.adapter.doublelist.DoubleListAdapter;
 import com.booboot.vndbandroid.adapter.doublelist.DoubleListElement;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.Item;
-import com.booboot.vndbandroid.db.DB;
+import com.booboot.vndbandroid.db.Cache;
 import com.booboot.vndbandroid.factory.CharacterDataFactory;
 import com.booboot.vndbandroid.factory.VNDetailsFactory;
 import com.booboot.vndbandroid.util.Callback;
@@ -146,7 +146,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                         convertView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                VNDBServer.get("vn", DB.VN_FLAGS, "(id = " + vnId + ")", null, false, context, new Callback() {
+                                VNDBServer.get("vn", Cache.VN_FLAGS, "(id = " + vnId + ")", null, context, new Callback() {
                                     @Override
                                     protected void config() {
                                         if (results.getItems().size() < 1) return;

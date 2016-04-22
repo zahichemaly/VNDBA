@@ -1,13 +1,10 @@
 package com.booboot.vndbandroid.activity;
 
 import android.app.Fragment;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,21 +13,13 @@ import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.adapter.materiallistview.MaterialListView;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.ListType;
-import com.booboot.vndbandroid.api.bean.Priority;
-import com.booboot.vndbandroid.api.bean.Status;
-import com.booboot.vndbandroid.api.bean.Vote;
-import com.booboot.vndbandroid.db.DB;
+import com.booboot.vndbandroid.db.Cache;
 import com.booboot.vndbandroid.factory.VNCardFactory;
 import com.booboot.vndbandroid.util.Callback;
 import com.dexafree.materialList.card.Card;
-import com.dexafree.materialList.card.CardProvider;
 import com.dexafree.materialList.listeners.RecyclerItemClickListener;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.Locale;
 
 /**
  * Created by od on 09/03/2016.
@@ -87,9 +76,9 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
     }
 
     public LinkedHashMap<Integer, Item> getList() {
-        if (type == ListType.VNLIST) return DB.vnlist;
-        if (type == ListType.VOTELIST) return DB.votelist;
-        if (type == ListType.WISHLIST) return DB.wishlist;
+        if (type == ListType.VNLIST) return Cache.vnlist;
+        if (type == ListType.VOTELIST) return Cache.votelist;
+        if (type == ListType.WISHLIST) return Cache.wishlist;
         return null;
     }
 
@@ -113,7 +102,7 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
     @Override
     public void onRefresh() {
-        DB.loadData(getActivity(), new Callback() {
+        Cache.loadData(getActivity(), new Callback() {
             @Override
             protected void config() {
                 int currentPage = VNListFragment.currentPage;

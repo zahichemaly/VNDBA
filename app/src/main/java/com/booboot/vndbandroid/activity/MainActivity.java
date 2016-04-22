@@ -8,7 +8,6 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -17,7 +16,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.menu.MenuItemImpl;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,7 +28,7 @@ import android.widget.TextView;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.ListType;
-import com.booboot.vndbandroid.db.DB;
+import com.booboot.vndbandroid.db.Cache;
 import com.booboot.vndbandroid.util.SettingsManager;
 
 import java.util.ArrayList;
@@ -188,6 +186,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             directSubfragment = new PreferencesFragment();
         } else if (id == R.id.nav_logout) {
             VNDBServer.close();
+            Cache.clearCache(this);
             LoginActivity.instance.enableAll();
             selectedItem = 0;
             finish();
@@ -225,9 +224,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void updateMenuCounters() {
-        setMenuCounter(R.id.nav_vnlist, DB.vnlist.size());
-        setMenuCounter(R.id.nav_wishlist, DB.wishlist.size());
-        setMenuCounter(R.id.nav_votelist, DB.votelist.size());
+        setMenuCounter(R.id.nav_vnlist, Cache.vnlist.size());
+        setMenuCounter(R.id.nav_wishlist, Cache.wishlist.size());
+        setMenuCounter(R.id.nav_votelist, Cache.votelist.size());
     }
 
     private void setMenuCounter(@IdRes int itemId, int count) {

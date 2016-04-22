@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
-import android.util.TypedValue;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,7 +28,7 @@ import com.booboot.vndbandroid.api.bean.Options;
 import com.booboot.vndbandroid.api.bean.Priority;
 import com.booboot.vndbandroid.api.bean.Status;
 import com.booboot.vndbandroid.api.bean.Vote;
-import com.booboot.vndbandroid.db.DB;
+import com.booboot.vndbandroid.db.Cache;
 import com.booboot.vndbandroid.factory.VNDetailsFactory;
 import com.booboot.vndbandroid.listener.VNDetailsListener;
 import com.booboot.vndbandroid.util.Callback;
@@ -77,11 +76,11 @@ public class VNDetailsActivity extends AppCompatActivity {
     }
 
     private void init() {
-        vnlistVn = DB.vnlist.get(vn.getId());
-        wishlistVn = DB.wishlist.get(vn.getId());
-        votelistVn = DB.votelist.get(vn.getId());
-        if (DB.characters.get(vn.getId()) != null) {
-            characters = DB.characters.get(vn.getId());
+        vnlistVn = Cache.vnlist.get(vn.getId());
+        wishlistVn = Cache.wishlist.get(vn.getId());
+        votelistVn = Cache.votelist.get(vn.getId());
+        if (Cache.characters.get(vn.getId()) != null) {
+            characters = Cache.characters.get(vn.getId());
         }
 
         initExpandableListView();
@@ -149,28 +148,35 @@ public class VNDetailsActivity extends AppCompatActivity {
     }
 
     private void initCharacters() {
-        if (DB.characters.get(vn.getId()) == null) {
-            VNDBServer.get("character", DB.CHARACTER_FLAGS, "(vn = " + vn.getId() + ")", Options.create(1, 25, null, false), true, this, new Callback() {
+        if (Cache.characters.get(vn.getId()) == null) {
+            VNDBServer.get("character", Cache.CHARACTER_FLAGS, "(vn = " + vn.getId() + ")", Options.create(true, true), this, new Callback() {
                 @Override
                 protected void config() {
-                    characters = results.getItems();
-                     /* Sorting the characters with their role (Protagonist then main characters etc.) */
-                    Collections.sort(characters, new Comparator<Item>() {
-                        @Override
-                        public int compare(Item lhs, Item rhs) {
-                            if (lhs.getVns() == null || lhs.getVns().size() < 1 || lhs.getVns().get(0).length < 1 || rhs.getVns() == null || rhs.getVns().size() < 1 || rhs.getVns().get(0).length < 1)
-                                return 0;
-                            String leftRole = (String) lhs.getVns().get(0)[Item.ROLE_INDEX];
-                            String rightRole = (String) rhs.getVns().get(0)[Item.ROLE_INDEX];
-                            return Integer.valueOf(Item.ROLES_KEY.indexOf(leftRole)).compareTo(Item.ROLES_KEY.indexOf(rightRole));
-                        }
-                    });
-                    DB.characters.put(vn.getId(), characters);
+                    if (results.getItems().isEmpty()) {
+                        characters = Cache.characters.get(vn.getId());
+                    } else {
+                        characters = results.getItems();
+                        /* Sorting the characters with their role (Protagonist then main characters etc.) */
+                        Collections.sort(characters, new Comparator<Item>() {
+                            @Override
+                            public int compare(Item lhs, Item rhs) {
+                                if (lhs.getVns() == null || lhs.getVns().size() < 1 || lhs.getVns().get(0).length < 1 || rhs.getVns() == null || rhs.getVns().size() < 1 || rhs.getVns().get(0).length < 1)
+                                    return 0;
+                                String leftRole = (String) lhs.getVns().get(0)[Item.ROLE_INDEX];
+                                String rightRole = (String) rhs.getVns().get(0)[Item.ROLE_INDEX];
+                                return Integer.valueOf(Item.ROLES_KEY.indexOf(leftRole)).compareTo(Item.ROLES_KEY.indexOf(rightRole));
+                            }
+                        });
+                        Cache.characters.put(vn.getId(), characters);
+                        Cache.saveToCache(VNDetailsActivity.this, Cache.CHARACTERS_CACHE, Cache.characters);
+                    }
 
-                    HashMap<String, List<String>> characters = VNDetailsFactory.getCharacters(VNDetailsActivity.this);
-                    characterElement.setPrimaryData(characters.get("character_names"));
-                    characterElement.setSecondaryData(characters.get("character_subnames"));
-                    characterElement.setUrlImages(characters.get("character_images"));
+                    if (characters == null) return;
+
+                    HashMap<String, List<String>> characterElementMap = VNDetailsFactory.getCharacters(VNDetailsActivity.this);
+                    characterElement.setPrimaryData(characterElementMap.get("character_names"));
+                    characterElement.setSecondaryData(characterElementMap.get("character_subnames"));
+                    characterElement.setUrlImages(characterElementMap.get("character_images"));
                 }
             }, Callback.errorCallback(this));
         }
@@ -209,6 +215,9 @@ public class VNDetailsActivity extends AppCompatActivity {
             case android.R.id.home:
                 /* Refreshing tabs' counter upon leaving (may have made changes in this activity) */
                 MainActivity.instance.getVnlistFragment().refreshTitles();
+                Cache.saveToCache(this, Cache.VNLIST_CACHE, Cache.vnlist);
+                Cache.saveToCache(this, Cache.VOTELIST_CACHE, Cache.votelist);
+                Cache.saveToCache(this, Cache.WISHLIST_CACHE, Cache.wishlist);
                 finish();
                 break;
         }
