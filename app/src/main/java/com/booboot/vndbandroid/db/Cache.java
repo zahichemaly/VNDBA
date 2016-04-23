@@ -38,6 +38,7 @@ public class Cache {
     public final static String VOTELIST_CACHE = "votelist.data";
     public final static String WISHLIST_CACHE = "wishlist.data";
     public final static String CHARACTERS_CACHE = "characters.data";
+    public final static String DBSTATS_CACHE = "dbstats.data";
 
     public static DbStats dbstats;
     private static String mergedIdsString;
@@ -149,6 +150,17 @@ public class Cache {
         return true;
     }
 
+    public static void loadStatsFromCache(Context context) {
+        File dbstatsFile = new File(context.getFilesDir(), DBSTATS_CACHE);
+        if (dbstatsFile.exists()) {
+            try {
+                dbstats = JSON.mapper.readValue(dbstatsFile, DbStats.class);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public static void clearCache(Context context) {
         File vnlistFile = new File(context.getFilesDir(), VNLIST_CACHE);
         File votelistFile = new File(context.getFilesDir(), VOTELIST_CACHE);
@@ -171,6 +183,7 @@ public class Cache {
             @Override
             protected void config() {
                 Cache.dbstats = dbstats;
+                saveToCache(context, DBSTATS_CACHE, dbstats);
                 successCallback.call();
             }
         }, Callback.errorCallback(context));

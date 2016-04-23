@@ -159,9 +159,14 @@ public class VNDBServer {
 
         new Thread() {
             public void run() {
+                init(context, successCallback, errorCallback, false);
                 VNDBCommand results = sendCommand("dbstats", null);
                 if (results instanceof DbStats) {
                     successCallback.dbstats = (DbStats) results;
+                    successCallback.call();
+                } else {
+                    Cache.loadStatsFromCache(context);
+                    successCallback.dbstats = Cache.dbstats;
                     successCallback.call();
                 }
 
@@ -240,6 +245,7 @@ public class VNDBServer {
                 // Log.e("D", response.toString());
             }
         } catch (IOException ioe) {
+            ioe.printStackTrace();
             errorCallback.message = "An error occurred while receiving the response from the API. Please try again later.";
             errorCallback.call();
             return null;

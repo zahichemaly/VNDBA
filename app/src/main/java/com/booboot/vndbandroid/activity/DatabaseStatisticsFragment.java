@@ -39,6 +39,11 @@ public class DatabaseStatisticsFragment extends Fragment implements SwipeRefresh
         Cache.loadStats(getActivity(), new Callback() {
             @Override
             protected void config() {
+                if (Cache.dbstats == null) {
+                    refreshLayout.setRefreshing(false);
+                    return;
+                }
+
                 DoubleListElement[] elements = new DoubleListElement[]{
                         new DoubleListElement("Visual Novels", Cache.dbstats.getVn() + "", false),
                         new DoubleListElement("Releases", Cache.dbstats.getReleases() + "", false),
