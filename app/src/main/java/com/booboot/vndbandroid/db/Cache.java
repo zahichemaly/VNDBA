@@ -1,6 +1,7 @@
 package com.booboot.vndbandroid.db;
 
 import android.content.Context;
+import android.provider.Settings;
 
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.DbStats;
@@ -10,11 +11,15 @@ import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.IPredicate;
 import com.booboot.vndbandroid.util.JSON;
 import com.booboot.vndbandroid.util.Predicate;
+import com.booboot.vndbandroid.util.SettingsManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -39,6 +44,18 @@ public class Cache {
     public final static String WISHLIST_CACHE = "wishlist.data";
     public final static String CHARACTERS_CACHE = "characters.data";
     public final static String DBSTATS_CACHE = "dbstats.data";
+
+    public final static String[] SORT_OPTIONS = new String[]{
+            "ID",
+            "Title",
+            "Release date",
+            "Length",
+            "Popularity",
+            "Rating",
+            "Status",
+            "Vote",
+            "Wish"
+    };
 
     public static DbStats dbstats;
     private static String mergedIdsString;
@@ -99,6 +116,7 @@ public class Cache {
                                             }
                                         }
 
+                                        sortAll(context);
                                         saveToCache(context, VNLIST_CACHE, vnlist);
                                         saveToCache(context, VOTELIST_CACHE, votelist);
                                         saveToCache(context, WISHLIST_CACHE, wishlist);
@@ -147,6 +165,7 @@ public class Cache {
             return false;
         }
 
+        sortAll(context);
         return true;
     }
 
@@ -187,6 +206,66 @@ public class Cache {
                 successCallback.call();
             }
         }, Callback.errorCallback(context));
+    }
+
+    public static void sortAll(Context context) {
+        sort(context, vnlist);
+        sort(context, votelist);
+        sort(context, wishlist);
+    }
+
+    public static void sort(final Context context, LinkedHashMap<Integer, Item> list) {
+        List<Map.Entry<Integer, Item>> entries = new ArrayList<>(list.entrySet());
+        Collections.sort(entries, new Comparator<Map.Entry<Integer, Item>>() {
+            public int compare(Map.Entry<Integer, Item> a, Map.Entry<Integer, Item> b) {
+                Map.Entry<Integer, Item> first = a, second = b;
+                if (SettingsManager.getReverseSort(context)) {
+                    // Reverse sort : swapping a and b
+                    first = b;
+                    second = a;
+                }
+
+                switch (SettingsManager.getSort(context)) {
+                    case 1:
+                        return first.getValue().getTitle().compareTo(second.getValue().getTitle());
+                    case 2:
+                        return first.getValue().getReleased().compareTo(second.getValue().getReleased());
+                    case 3:
+                        return Integer.valueOf(first.getValue().getLength()).compareTo(second.getValue().getLength());
+                    case 4:
+                        return Double.valueOf(first.getValue().getPopularity()).compareTo(second.getValue().getPopularity());
+                    case 5:
+                        return Double.valueOf(first.getValue().getRating()).compareTo(second.getValue().getRating());
+                    case 6:
+                        Item vnlistA = Cache.vnlist.get(first.getKey());
+                        Item vnlistB = Cache.vnlist.get(second.getKey());
+                        if (vnlistA == null && vnlistB == null) return 0;
+                        if (vnlistA == null) return 1;
+                        if (vnlistB == null) return -1;
+                        return Integer.valueOf(vnlistA.getStatus()).compareTo(vnlistB.getStatus());
+                    case 7:
+                        Item votelistA = Cache.votelist.get(first.getKey());
+                        Item votelistB = Cache.votelist.get(second.getKey());
+                        if (votelistA == null && votelistB == null) return 0;
+                        if (votelistA == null) return 1;
+                        if (votelistB == null) return -1;
+                        return Integer.valueOf(votelistA.getVote()).compareTo(votelistB.getVote());
+                    case 8:
+                        Item wishlistA = Cache.wishlist.get(first.getKey());
+                        Item wishlistB = Cache.wishlist.get(second.getKey());
+                        if (wishlistA == null && wishlistB == null) return 0;
+                        if (wishlistA == null) return 1;
+                        if (wishlistB == null) return -1;
+                        return Integer.valueOf(wishlistA.getPriority()).compareTo(wishlistB.getPriority());
+                    default:
+                        return Integer.valueOf(first.getValue().getId()).compareTo(second.getValue().getId());
+                }
+            }
+        });
+        list.clear();
+        for (Map.Entry<Integer, Item> entry : entries) {
+            list.put(entry.getKey(), entry.getValue());
+        }
     }
 
     public static int getStatusNumber(final int status) {

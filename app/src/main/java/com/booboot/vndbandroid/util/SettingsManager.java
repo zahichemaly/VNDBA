@@ -71,4 +71,26 @@ public class SettingsManager {
         editor.putInt("WALLPAPER", wallpaper);
         editor.commit();
     }
+
+    public static int getSort(Context context) {
+        new SettingsManager(context);
+        return settings.getInt("SORT", 0);
+    }
+
+    public static void setSort(Context context, int sort) {
+        new SettingsManager(context);
+        editor.putInt("SORT", sort);
+        editor.commit();
+    }
+
+    public static boolean getReverseSort(Context context) {
+        new SettingsManager(context);
+        return settings.getBoolean("REVERSE_SORT", false);
+    }
+
+    public static void setReverseSort(Context context, boolean reverse) {
+        new SettingsManager(context);
+        editor.putBoolean("REVERSE_SORT", reverse);
+        editor.commit();
+    }
 }

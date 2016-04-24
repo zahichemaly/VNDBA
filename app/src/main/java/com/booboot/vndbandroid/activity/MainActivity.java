@@ -21,6 +21,8 @@ import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
@@ -30,6 +32,7 @@ import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.ListType;
 import com.booboot.vndbandroid.db.Cache;
+import com.booboot.vndbandroid.util.Pixels;
 import com.booboot.vndbandroid.util.SettingsManager;
 
 import java.util.ArrayList;
@@ -147,24 +150,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void onCreateSortMenu(MenuItem item) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        String[] choices = new String[]{
-                "ID",
-                "Release date",
-                "Language",
-                "..."
-        };
-        // [TODO] Replace 0 with index of selected item in Preferences
+        LinearLayout linearLayout = new LinearLayout(this);
+        final CheckBox reverseCheckbox = new CheckBox(this);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        reverseCheckbox.setLayoutParams(layoutParams);
+        reverseCheckbox.setPadding(Pixels.px(20, this), reverseCheckbox.getPaddingTop(), reverseCheckbox.getPaddingRight(), reverseCheckbox.getPaddingBottom());
+        reverseCheckbox.setText("Reverse order");
+        reverseCheckbox.setChecked(SettingsManager.getReverseSort(this));
+
+        linearLayout.setLayoutParams(layoutParams);
+        linearLayout.setPadding(Pixels.px(20, this), reverseCheckbox.getPaddingTop(), reverseCheckbox.getPaddingRight(), reverseCheckbox.getPaddingBottom());
+        linearLayout.addView(reverseCheckbox);
+
         builder.setTitle("Sort VN list by :")
-                .setSingleChoiceItems(choices, 0, new DialogInterface.OnClickListener() {
+                .setSingleChoiceItems(Cache.SORT_OPTIONS, SettingsManager.getSort(this), new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // [TODO] Save selected item in Preferences
-                        // [TODO] Sort VNs with the selected item
+                    public void onClick(DialogInterface dialog, final int which) {
+                        SettingsManager.setReverseSort(MainActivity.this, reverseCheckbox.isChecked());
+                        SettingsManager.setSort(MainActivity.this, which);
+                        Cache.sort(MainActivity.this, Cache.vnlist);
+                        goToFragment(MainActivity.selectedItem);
                         dialog.dismiss();
                     }
                 });
 
-        builder.create().show();
+        AlertDialog alertDialog = builder.create();
+
+        alertDialog.show();
+        alertDialog.getListView().addFooterView(linearLayout);
     }
 
     @Override
