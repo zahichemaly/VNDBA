@@ -1,8 +1,10 @@
 package com.booboot.vndbandroid.activity;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -14,7 +16,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.menu.MenuItemImpl;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -117,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
 
+        /* Filter */
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         searchView = (SearchView) menu.findItem(R.id.action_filter).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
@@ -140,11 +142,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ImageView searchIcon = (ImageView) searchView.findViewById(searchIconId);
         searchIcon.setImageResource(R.drawable.ic_action_filter);
 
-        MenuItemImpl actionSearch = (MenuItemImpl) menu.findItem(R.id.action_search);
-        // [TODO] Set with user's preferences in the future?
-        actionSearch.setVisible(false);
-
         return true;
+    }
+
+    public void onCreateSortMenu(MenuItem item) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        String[] choices = new String[]{
+                "ID",
+                "Release date",
+                "Language",
+                "..."
+        };
+        // [TODO] Replace 0 with index of selected item in Preferences
+        builder.setTitle("Sort VN list by :")
+                .setSingleChoiceItems(choices, 0, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // [TODO] Save selected item in Preferences
+                        // [TODO] Sort VNs with the selected item
+                        dialog.dismiss();
+                    }
+                });
+
+        builder.create().show();
     }
 
     @Override
@@ -233,4 +253,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         TextView view = (TextView) navigationView.getMenu().findItem(itemId).getActionView();
         view.setText(count > 0 ? String.valueOf(count) : null);
     }
+
 }

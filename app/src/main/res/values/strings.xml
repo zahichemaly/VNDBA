@@ -17,6 +17,7 @@
     <string name="database_statitistics">Database Statitistics</string>
     <string name="preferences">Preferences</string>
     <string name="logout">Logout</string>
+    <string name="action_sort">Sort</string>
 
     <string-array name="background_pref_titles">
         <item>Default (orange)</item>
