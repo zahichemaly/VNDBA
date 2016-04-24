@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     public void onClick(DialogInterface dialog, final int which) {
                         SettingsManager.setReverseSort(MainActivity.this, reverseCheckbox.isChecked());
                         SettingsManager.setSort(MainActivity.this, which);
-                        Cache.sort(MainActivity.this, Cache.vnlist);
+                        Cache.sortAll(MainActivity.this);
                         goToFragment(MainActivity.selectedItem);
                         dialog.dismiss();
                     }
