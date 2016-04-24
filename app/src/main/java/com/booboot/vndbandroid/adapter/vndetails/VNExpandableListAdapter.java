@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -28,6 +29,7 @@ import com.booboot.vndbandroid.adapter.doublelist.DoubleListAdapter;
 import com.booboot.vndbandroid.adapter.doublelist.DoubleListElement;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.Item;
+import com.booboot.vndbandroid.api.bean.Links;
 import com.booboot.vndbandroid.db.Cache;
 import com.booboot.vndbandroid.factory.CharacterDataFactory;
 import com.booboot.vndbandroid.factory.VNDetailsFactory;
@@ -130,9 +132,9 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                 TextView title = (TextView) convertView.findViewById(R.id.title);
                 TextView subtitle = (TextView) convertView.findViewById(R.id.subtitle);
 
-                if (getElement(listPosition).getUrlImages() == null)
+                if (getElement(listPosition).getUrlImages() == null) {
                     iconView.setVisibility(View.GONE);
-                else {
+                } else {
                     String url = getElement(listPosition).getUrlImages().get(expandedListPosition);
                     ImageLoader.getInstance().displayImage(url, iconView);
                     Lightbox.set(context, iconView, url);
@@ -184,6 +186,17 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                                         dialog.dismiss();
                                     }
                                 });
+                            }
+                        });
+                        break;
+
+                    case VNDetailsFactory.TITLE_ANIME:
+                        final int id = getElement(listPosition).getPrimaryImages().get(expandedListPosition);
+                        convertView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(Links.ANIDB + id));
+                                context.startActivity(browserIntent);
                             }
                         });
                         break;

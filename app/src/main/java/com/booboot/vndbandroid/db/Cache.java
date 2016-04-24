@@ -36,7 +36,7 @@ public class Cache {
     public static LinkedHashMap<Integer, Item> wishlist = new LinkedHashMap<>();
     public static LinkedHashMap<Integer, List<Item>> characters = new LinkedHashMap<>();
 
-    public final static String VN_FLAGS = "basic,details,screens,tags,stats,relations";
+    public final static String VN_FLAGS = "basic,details,screens,tags,stats,relations,anime";
     public final static String CHARACTER_FLAGS = "basic,details,meas,traits,vns";
 
     public final static String VNLIST_CACHE = "vnlist.data";
