@@ -1,7 +1,6 @@
 package com.booboot.vndbandroid.db;
 
 import android.content.Context;
-import android.provider.Settings;
 
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.DbStats;
@@ -35,14 +34,17 @@ public class Cache {
     public static LinkedHashMap<Integer, Item> votelist = new LinkedHashMap<>();
     public static LinkedHashMap<Integer, Item> wishlist = new LinkedHashMap<>();
     public static LinkedHashMap<Integer, List<Item>> characters = new LinkedHashMap<>();
+    public static LinkedHashMap<Integer, List<Item>> releases = new LinkedHashMap<>();
 
     public final static String VN_FLAGS = "basic,details,screens,tags,stats,relations,anime";
     public final static String CHARACTER_FLAGS = "basic,details,meas,traits,vns";
+    public final static String RELEASE_FLAGS = "basic,details,producers";
 
     public final static String VNLIST_CACHE = "vnlist.data";
     public final static String VOTELIST_CACHE = "votelist.data";
     public final static String WISHLIST_CACHE = "wishlist.data";
     public final static String CHARACTERS_CACHE = "characters.data";
+    public final static String RELEASES_CACHE = "releases.data";
     public final static String DBSTATS_CACHE = "dbstats.data";
 
     public final static String[] SORT_OPTIONS = new String[]{
@@ -145,6 +147,7 @@ public class Cache {
         File votelistFile = new File(context.getFilesDir(), VOTELIST_CACHE);
         File wishlistFile = new File(context.getFilesDir(), WISHLIST_CACHE);
         File charactersFile = new File(context.getFilesDir(), CHARACTERS_CACHE);
+        File releasesFile = new File(context.getFilesDir(), RELEASES_CACHE);
 
         if (!vnlistFile.exists() || !votelistFile.exists() || !wishlistFile.exists())
             return false;
@@ -158,6 +161,10 @@ public class Cache {
             });
             if (charactersFile.exists()) {
                 characters = JSON.mapper.readValue(charactersFile, new TypeReference<LinkedHashMap<Integer, List<Item>>>() {
+                });
+            }
+            if (releasesFile.exists()) {
+                releases = JSON.mapper.readValue(releasesFile, new TypeReference<LinkedHashMap<Integer, List<Item>>>() {
                 });
             }
         } catch (IOException e) {
@@ -185,11 +192,13 @@ public class Cache {
         File votelistFile = new File(context.getFilesDir(), VOTELIST_CACHE);
         File wishlistFile = new File(context.getFilesDir(), WISHLIST_CACHE);
         File charactersFile = new File(context.getFilesDir(), CHARACTERS_CACHE);
+        File releasesFile = new File(context.getFilesDir(), RELEASES_CACHE);
 
         if (vnlistFile.exists()) vnlistFile.delete();
         if (votelistFile.exists()) votelistFile.delete();
         if (wishlistFile.exists()) wishlistFile.delete();
         if (charactersFile.exists()) charactersFile.delete();
+        if (releasesFile.exists()) releasesFile.delete();
     }
 
     public static void loadStats(final Context context, final Callback successCallback, boolean forceRefresh) {

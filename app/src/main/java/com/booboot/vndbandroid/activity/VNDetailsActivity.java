@@ -39,7 +39,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -50,6 +49,7 @@ public class VNDetailsActivity extends AppCompatActivity {
     private Item wishlistVn;
     private Item votelistVn;
     private List<Item> characters;
+    private LinkedHashMap<String, List<Item>> releases;
 
     private ImageButton image;
     private Button statusButton;
@@ -61,6 +61,7 @@ public class VNDetailsActivity extends AppCompatActivity {
     private ExpandableListView expandableListView;
     private ExpandableListAdapter expandableListAdapter;
     private VNDetailsElement characterElement;
+    private VNDetailsElement releaseElement;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +73,7 @@ public class VNDetailsActivity extends AppCompatActivity {
         listener = new VNDetailsListener(this, vn);
 
         initCharacters();
+        initReleases();
         init();
     }
 
@@ -81,6 +83,9 @@ public class VNDetailsActivity extends AppCompatActivity {
         votelistVn = Cache.votelist.get(vn.getId());
         if (Cache.characters.get(vn.getId()) != null) {
             characters = Cache.characters.get(vn.getId());
+        }
+        if (Cache.releases.get(vn.getId()) != null) {
+            groupReleasesByLanguage(Cache.releases.get(vn.getId()));
         }
 
         initExpandableListView();
@@ -173,12 +178,58 @@ public class VNDetailsActivity extends AppCompatActivity {
 
                     if (characters == null) return;
 
-                    HashMap<String, List<String>> characterElementMap = VNDetailsFactory.getCharacters(VNDetailsActivity.this);
-                    characterElement.setPrimaryData(characterElementMap.get("character_names"));
-                    characterElement.setSecondaryData(characterElementMap.get("character_subnames"));
-                    characterElement.setUrlImages(characterElementMap.get("character_images"));
+                    VNDetailsFactory.CharacterElementWrapper characterElementWrapper = VNDetailsFactory.getCharacters(VNDetailsActivity.this);
+                    characterElement.setPrimaryData(characterElementWrapper.character_names);
+                    characterElement.setSecondaryData(characterElementWrapper.character_subnames);
+                    characterElement.setUrlImages(characterElementWrapper.character_images);
                 }
             }, Callback.errorCallback(this));
+        }
+    }
+
+    private void initReleases() {
+        if (Cache.releases.get(vn.getId()) == null) {
+            VNDBServer.get("release", Cache.RELEASE_FLAGS, "(vn = " + vn.getId() + ")", Options.create(1, 25, "released", false, true, true), this, new Callback() {
+                @Override
+                protected void config() {
+                    List<Item> releasesList;
+                    if (results.getItems().isEmpty()) {
+                        releasesList = Cache.releases.get(vn.getId());
+                    } else {
+                        releasesList = results.getItems();
+                        Cache.releases.put(vn.getId(), releasesList);
+                        Cache.saveToCache(VNDetailsActivity.this, Cache.RELEASES_CACHE, Cache.releases);
+                    }
+
+                    if (releasesList == null) return;
+                    groupReleasesByLanguage(releasesList);
+
+                    VNDetailsFactory.ReleaseElementWrapper releaseElementWrapper = VNDetailsFactory.getReleases(VNDetailsActivity.this);
+                    releaseElement.setPrimaryImages(releaseElementWrapper.release_images);
+                    releaseElement.setPrimaryData(releaseElementWrapper.release_names);
+                    releaseElement.setSecondaryData(releaseElementWrapper.release_subnames);
+                    releaseElement.setSecondaryImages(releaseElementWrapper.release_ids);
+                }
+            }, Callback.errorCallback(this));
+        }
+    }
+
+    /**
+     * Cache.releases just gives the set of all the releases for the VN.
+     * That's not what we want though : like it is displayed on VNDB.org, we want to group these
+     * VNs by language. That means that we somehow want a data structure "Language" -> "List of releases"
+     * in which a release may appear several times for different languages!
+     *
+     * @param releasesList the releases list for the VN, where each release appear a single time.
+     */
+    private void groupReleasesByLanguage(List<Item> releasesList) {
+        releases = new LinkedHashMap<>();
+        for (Item release : releasesList) {
+            for (String language : release.getLanguages()) {
+                if (releases.get(language) == null)
+                    releases.put(language, new ArrayList<Item>());
+                releases.get(language).add(release);
+            }
         }
     }
 
@@ -229,6 +280,14 @@ public class VNDetailsActivity extends AppCompatActivity {
         this.characterElement = characterElement;
     }
 
+    public VNDetailsElement getReleaseElement() {
+        return releaseElement;
+    }
+
+    public void setReleaseElement(VNDetailsElement releaseElement) {
+        this.releaseElement = releaseElement;
+    }
+
     public VNDetailsElement getCharacterElement() {
         return characterElement;
     }
@@ -239,5 +298,9 @@ public class VNDetailsActivity extends AppCompatActivity {
 
     public List<Item> getCharacters() {
         return characters;
+    }
+
+    public LinkedHashMap<String, List<Item>> getReleases() {
+        return releases;
     }
 }

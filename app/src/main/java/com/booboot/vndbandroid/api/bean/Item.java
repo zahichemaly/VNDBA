@@ -67,6 +67,18 @@ public class Item extends VNDBCommand {
     private List<int[]> traits;
     private List<Object[]> vns;
 
+    /* Release-specific properties */
+    private String type;
+    private boolean patch;
+    private boolean freeware;
+    private boolean doujin;
+    private String website;
+    private int minage;
+    private String gtin;
+    private String catalog;
+    private List<Media> media;
+    private List<Producer> producers;
+
     public String getName() {
         return name;
     }
@@ -422,5 +434,85 @@ public class Item extends VNDBCommand {
 
     public void setVns(List<Object[]> vns) {
         this.vns = vns;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public boolean isPatch() {
+        return patch;
+    }
+
+    public void setPatch(boolean patch) {
+        this.patch = patch;
+    }
+
+    public boolean isFreeware() {
+        return freeware;
+    }
+
+    public void setFreeware(boolean freeware) {
+        this.freeware = freeware;
+    }
+
+    public boolean isDoujin() {
+        return doujin;
+    }
+
+    public void setDoujin(boolean doujin) {
+        this.doujin = doujin;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
+    }
+
+    public int getMinage() {
+        return minage;
+    }
+
+    public void setMinage(int minage) {
+        this.minage = minage;
+    }
+
+    public String getGtin() {
+        return gtin;
+    }
+
+    public void setGtin(String gtin) {
+        this.gtin = gtin;
+    }
+
+    public String getCatalog() {
+        return catalog;
+    }
+
+    public void setCatalog(String catalog) {
+        this.catalog = catalog;
+    }
+
+    public List<Media> getMedia() {
+        return media;
+    }
+
+    public void setMedia(List<Media> media) {
+        this.media = media;
+    }
+
+    public List<Producer> getProducers() {
+        return producers;
+    }
+
+    public void setProducers(List<Producer> producers) {
+        this.producers = producers;
     }
 }

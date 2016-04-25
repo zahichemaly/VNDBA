@@ -24,7 +24,7 @@ public class CharacterDataFactory {
      * Body             Teen, Slim, Pale
      * Hair             Blond, Long, Spiky Bangs
      * [...]
-     * Contains an O(n) algorithm that fetches all the character's traits grouped by their parents.
+     * Contains an ~O(n) algorithm that fetches all the character's traits grouped by their parents.
      *
      * @param context   because Android
      * @param character character we want to display the info and traits

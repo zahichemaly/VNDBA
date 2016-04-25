@@ -139,8 +139,14 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                     ImageLoader.getInstance().displayImage(url, iconView);
                     Lightbox.set(context, iconView, url);
                 }
-                title.setText(primaryText);
-                subtitle.setText(secondaryText);
+
+                title.setText(Html.fromHtml(primaryText));
+
+                if (secondaryText == null) {
+                    subtitle.setVisibility(View.GONE);
+                } else {
+                    subtitle.setText(secondaryText);
+                }
 
                 switch ((String) getGroup(listPosition)) {
                     case VNDetailsFactory.TITLE_RELATIONS:
@@ -188,6 +194,62 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                                 });
                             }
                         });
+                        break;
+
+                    case VNDetailsFactory.TITLE_RELEASES:
+                        /* Display a flag next to the language */
+                        if (getElement(listPosition).getPrimaryImages() != null) {
+                            Integer image = getElement(listPosition).getPrimaryImages().get(expandedListPosition);
+                            if (image != null) {
+                                iconView.setImageResource(image);
+                                iconView.setMaxWidth(Pixels.px(35, context));
+                                iconView.setMaxHeight(Pixels.px(40, context));
+                                ViewGroup.LayoutParams layoutParams = iconView.getLayoutParams();
+                                layoutParams.width = Pixels.px(35, context);
+                                layoutParams.height = Pixels.px(40, context);
+                                iconView.setLayoutParams(layoutParams);
+                                iconView.setVisibility(View.VISIBLE);
+                            }
+                        }
+
+                        /* Retrieve the release matching the element */
+                        final Integer releaseId = getElement(listPosition).getSecondaryImages().get(expandedListPosition);
+                        if (releaseId == null) break;
+                        Item release = null;
+                        for (Item tmp : Cache.releases.get(((VNDetailsActivity) context).getVn().getId())) {
+                            if (tmp.getId() == releaseId) {
+                                release = tmp;
+                                break;
+                            }
+                        }
+                        if (release == null) break;
+
+                        /* [TODO] On click, display a modal with all the release details
+                        final DoubleListElement[] elements = CharacterDataFactory.getData(context, character);
+
+                        convertView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                View view = layoutInflater.inflate(R.layout.character_dialog, null);
+                                view.findViewById(R.id.closeButton).setBackgroundTintList(ColorStateList.valueOf(MainActivity.getThemeColor(context, R.attr.colorPrimaryDark)));
+
+                                ListView listView = (ListView) view.findViewById(R.id.listView);
+                                listView.setAdapter(new DoubleListAdapter(context, elements));
+
+                                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+                                dialogBuilder.setView(view);
+                                dialogBuilder.setTitle(character.getName());
+                                dialogBuilder.setCancelable(true);
+                                final AlertDialog dialog = dialogBuilder.show();
+                                view.findViewById(R.id.closeButton).setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                            }
+                        });
+                        */
                         break;
 
                     case VNDetailsFactory.TITLE_ANIME:

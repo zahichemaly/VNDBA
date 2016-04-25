@@ -13,15 +13,11 @@ import com.booboot.vndbandroid.api.bean.Relation;
 import com.booboot.vndbandroid.api.bean.Screen;
 import com.booboot.vndbandroid.api.bean.Tag;
 import com.booboot.vndbandroid.api.bean.Vote;
+import com.booboot.vndbandroid.util.DateUtils;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 
 public class VNDetailsFactory {
     public final static String TITLE_INFORMATION = "Information";
@@ -31,6 +27,7 @@ public class VNDetailsFactory {
     public final static String TITLE_SCREENSHOTS = "Screenshots";
     public final static String TITLE_STATS = "Stats";
     public final static String TITLE_TAGS = "Tags";
+    public final static String TITLE_RELEASES = "Releases";
     public final static String TITLE_RELATIONS = "Relations";
     public final static String TITLE_ANIME = "Anime";
     public final static String TITLE_PLATFORMS = "Platforms";
@@ -53,16 +50,7 @@ public class VNDetailsFactory {
         }
 
         infoLeft.add("Released date");
-        if (vn.getReleased() == null) {
-            infoRight.add("Unknown");
-        } else {
-            try {
-                Date released = new SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(vn.getReleased());
-                infoRight.add(new SimpleDateFormat("d MMMM yyyy", Locale.US).format(released));
-            } catch (ParseException e) {
-                infoRight.add(vn.getReleased());
-            }
-        }
+        infoRight.add(DateUtils.getDate(vn.getReleased()));
         infoRightImages.add(-1);
 
         if (vn.getAliases() != null) {
@@ -98,8 +86,15 @@ public class VNDetailsFactory {
         if (activity.getCharacters() == null) {
             activity.setCharacterElement(new VNDetailsElement(null, new ArrayList<String>(), null, null, null, VNDetailsElement.TYPE_SUBTITLE));
         } else {
-            HashMap<String, List<String>> characters = getCharacters(activity);
-            activity.setCharacterElement(new VNDetailsElement(null, characters.get("character_names"), characters.get("character_subnames"), null, characters.get("character_images"), VNDetailsElement.TYPE_SUBTITLE));
+            CharacterElementWrapper characters = getCharacters(activity);
+            activity.setCharacterElement(new VNDetailsElement(null, characters.character_names, characters.character_subnames, null, characters.character_images, VNDetailsElement.TYPE_SUBTITLE));
+        }
+
+        if (activity.getReleases() == null) {
+            activity.setReleaseElement(new VNDetailsElement(null, new ArrayList<String>(), null, null, null, VNDetailsElement.TYPE_SUBTITLE));
+        } else {
+            ReleaseElementWrapper releases = getReleases(activity);
+            activity.setReleaseElement(new VNDetailsElement(releases.release_images, releases.release_names, releases.release_subnames, releases.release_ids, null, VNDetailsElement.TYPE_SUBTITLE));
         }
 
         List<String> tags = new ArrayList<>();
@@ -179,6 +174,7 @@ public class VNDetailsFactory {
         expandableListDetail.put(TITLE_SCREENSHOTS, new VNDetailsElement(null, screenshots, null, null, null, VNDetailsElement.TYPE_IMAGES));
         expandableListDetail.put(TITLE_STATS, new VNDetailsElement(null, statLeft, statRight, statRightImages, null, VNDetailsElement.TYPE_TEXT));
         expandableListDetail.put(TITLE_TAGS, new VNDetailsElement(tags_images, tags, null, null, null, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put(TITLE_RELEASES, activity.getReleaseElement());
         expandableListDetail.put(TITLE_RELATIONS, new VNDetailsElement(relation_ids, relation_titles, relation_types, null, null, VNDetailsElement.TYPE_SUBTITLE));
         expandableListDetail.put(TITLE_ANIME, new VNDetailsElement(anime_ids, anime_primary, anime_secondary, null, null, VNDetailsElement.TYPE_SUBTITLE));
         expandableListDetail.put(TITLE_PLATFORMS, new VNDetailsElement(platforms_images, platforms, null, null, null, VNDetailsElement.TYPE_TEXT));
@@ -187,20 +183,48 @@ public class VNDetailsFactory {
         return expandableListDetail;
     }
 
-    public static HashMap<String, List<String>> getCharacters(VNDetailsActivity activity) {
-        List<String> character_images = new ArrayList<>();
-        List<String> character_names = new ArrayList<>();
-        List<String> character_subnames = new ArrayList<>();
+    public static CharacterElementWrapper getCharacters(VNDetailsActivity activity) {
+        CharacterElementWrapper characterElementWrapper = new CharacterElementWrapper();
         for (Item character : activity.getCharacters()) {
-            character_images.add(character.getImage());
-            character_names.add(character.getName());
-            character_subnames.add(Item.ROLES.get(character.getVns().get(0)[Item.ROLE_INDEX].toString()));
+            characterElementWrapper.character_images.add(character.getImage());
+            characterElementWrapper.character_names.add(character.getName());
+            characterElementWrapper.character_subnames.add(Item.ROLES.get(character.getVns().get(0)[Item.ROLE_INDEX].toString()));
         }
+        return characterElementWrapper;
+    }
 
-        HashMap<String, List<String>> res = new HashMap<>();
-        res.put("character_images", character_images);
-        res.put("character_names", character_names);
-        res.put("character_subnames", character_subnames);
-        return res;
+    public static ReleaseElementWrapper getReleases(VNDetailsActivity activity) {
+        ReleaseElementWrapper releaseElementWrapper = new ReleaseElementWrapper();
+        for (String language : activity.getReleases().keySet()) {
+            releaseElementWrapper.release_images.add(Language.FLAGS.get(language));
+            releaseElementWrapper.release_names.add("<b>" + Language.FULL_TEXT.get(language) + " :</b>");
+            releaseElementWrapper.release_subnames.add(null);
+            releaseElementWrapper.release_ids.add(null);
+            for (Item release : activity.getReleases().get(language)) {
+                releaseElementWrapper.release_images.add(null);
+                releaseElementWrapper.release_names.add(release.getTitle());
+                releaseElementWrapper.release_subnames.add(DateUtils.getDate(release.getReleased()) + " • " + release.getType());
+                releaseElementWrapper.release_ids.add(release.getId());
+            }
+        }
+        return releaseElementWrapper;
+    }
+
+    /**
+     * CharacterElementWrapper and ReleaseElementWrapper are just wrapper classes for getCharacters() and getReleases(), because
+     * Java is so stubborn that it's the nicer way to return all these elements from a method. We don't bother putting this in
+     * a separate class because come on, there's already too many almost-empty beans in this project!
+     */
+    public static class CharacterElementWrapper {
+        public List<String> character_images = new ArrayList<>();
+        public List<String> character_names = new ArrayList<>();
+        public List<String> character_subnames = new ArrayList<>();
+    }
+
+    public static class ReleaseElementWrapper {
+        public List<Integer> release_images = new ArrayList<>();
+        public List<String> release_names = new ArrayList<>();
+        public List<String> release_subnames = new ArrayList<>();
+        public List<Integer> release_ids = new ArrayList<>();
     }
 }
