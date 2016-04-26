@@ -96,10 +96,9 @@ public class VNDBServer {
     }
 
     public static void get(final String type, final String flags, final String filters, final Options options, final Context context, final Callback successCallback, final Callback errorCallback) {
-        if (!takeMutex()) return;
-
         new Thread() {
             public void run() {
+                if (!takeMutex()) return;
                 init(context, successCallback, errorCallback, options.isUseCacheIfError());
                 StringBuilder command = new StringBuilder();
                 command.append("get ");
@@ -133,10 +132,9 @@ public class VNDBServer {
     }
 
     public static void set(final String type, final int id, final Fields fields, final Context context, final Callback successCallback, final Callback errorCallback) {
-        if (!takeMutex()) return;
-
         new Thread() {
             public void run() {
+                if (!takeMutex()) return;
                 init(context, successCallback, errorCallback, false);
                 StringBuilder command = new StringBuilder();
                 command.append("set ");
@@ -155,10 +153,9 @@ public class VNDBServer {
     }
 
     public static void dbstats(final Callback successCallback, final Callback errorCallback) {
-        if (!takeMutex()) return;
-
         new Thread() {
             public void run() {
+                if (!takeMutex()) return;
                 init(context, successCallback, errorCallback, false);
                 VNDBCommand results = sendCommand("dbstats", null);
                 if (results instanceof DbStats) {
