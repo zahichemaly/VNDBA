@@ -20,7 +20,6 @@ public class ConnectionReceiver extends BroadcastReceiver {
         }
     }
 
-
     public static boolean isConnected(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = null;

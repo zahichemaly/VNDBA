@@ -4,10 +4,8 @@ package com.booboot.vndbandroid.adapter.vndetails;
  * Created by od on 18/03/2016.
  */
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.text.Html;
@@ -18,15 +16,12 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
-import com.booboot.vndbandroid.activity.MainActivity;
 import com.booboot.vndbandroid.activity.VNDetailsActivity;
 import com.booboot.vndbandroid.activity.VNTypeFragment;
-import com.booboot.vndbandroid.adapter.doublelist.DoubleListAdapter;
-import com.booboot.vndbandroid.adapter.doublelist.DoubleListElement;
+import com.booboot.vndbandroid.adapter.doublelist.DoubleListListener;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Links;
@@ -171,30 +166,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
 
                     case VNDetailsFactory.TITLE_CHARACTERS:
                         final Item character = ((VNDetailsActivity) context).getCharacters().get(expandedListPosition);
-                        final DoubleListElement[] characterElements = CharacterDataFactory.getData(context, character);
-
-                        convertView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                View view = layoutInflater.inflate(R.layout.character_dialog, null);
-                                view.findViewById(R.id.closeButton).setBackgroundTintList(ColorStateList.valueOf(MainActivity.getThemeColor(context, R.attr.colorPrimaryDark)));
-
-                                ListView listView = (ListView) view.findViewById(R.id.listView);
-                                listView.setAdapter(new DoubleListAdapter(context, characterElements));
-
-                                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
-                                dialogBuilder.setView(view);
-                                dialogBuilder.setTitle(character.getName());
-                                dialogBuilder.setCancelable(true);
-                                final AlertDialog dialog = dialogBuilder.show();
-                                view.findViewById(R.id.closeButton).setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        dialog.dismiss();
-                                    }
-                                });
-                            }
-                        });
+                        convertView.setOnClickListener(new DoubleListListener(context, character.getName(), CharacterDataFactory.getData(context, character)));
                         break;
 
                     case VNDetailsFactory.TITLE_RELEASES:
@@ -216,40 +188,16 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                         /* Retrieve the release matching the element */
                         final Integer releaseId = getElement(listPosition).getSecondaryImages().get(expandedListPosition);
                         if (releaseId == null) break;
-                        Item releaseTmp = null;
+                        Item release = null;
                         for (Item tmp : Cache.releases.get(((VNDetailsActivity) context).getVn().getId())) {
                             if (tmp.getId() == releaseId) {
-                                releaseTmp = tmp;
+                                release = tmp;
                                 break;
                             }
                         }
-                        if (releaseTmp == null) break;
+                        if (release == null) break;
 
-                        final Item release = releaseTmp;
-                        final DoubleListElement[] releaseElements = ReleaseDataFactory.getData(release);
-
-                        convertView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                View view = layoutInflater.inflate(R.layout.character_dialog, null);
-                                view.findViewById(R.id.closeButton).setBackgroundTintList(ColorStateList.valueOf(MainActivity.getThemeColor(context, R.attr.colorPrimaryDark)));
-
-                                ListView listView = (ListView) view.findViewById(R.id.listView);
-                                listView.setAdapter(new DoubleListAdapter(context, releaseElements));
-
-                                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
-                                dialogBuilder.setView(view);
-                                dialogBuilder.setTitle(release.getTitle());
-                                dialogBuilder.setCancelable(true);
-                                final AlertDialog dialog = dialogBuilder.show();
-                                view.findViewById(R.id.closeButton).setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        dialog.dismiss();
-                                    }
-                                });
-                            }
-                        });
+                        convertView.setOnClickListener(new DoubleListListener(context, release.getTitle(), ReleaseDataFactory.getData(release)));
                         break;
 
                     case VNDetailsFactory.TITLE_ANIME:

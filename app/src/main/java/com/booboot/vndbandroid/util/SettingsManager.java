@@ -22,6 +22,7 @@ public class SettingsManager {
         new SettingsManager(context);
         return settings.getString("USERNAME", null);
     }
+
     public static void setUsername(Context context, String username) {
         new SettingsManager(context);
         editor.putString("USERNAME", username);
