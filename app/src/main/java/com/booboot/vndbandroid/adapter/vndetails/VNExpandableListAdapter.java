@@ -32,6 +32,7 @@ import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Links;
 import com.booboot.vndbandroid.db.Cache;
 import com.booboot.vndbandroid.factory.CharacterDataFactory;
+import com.booboot.vndbandroid.factory.ReleaseDataFactory;
 import com.booboot.vndbandroid.factory.VNDetailsFactory;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.Lightbox;
@@ -170,7 +171,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
 
                     case VNDetailsFactory.TITLE_CHARACTERS:
                         final Item character = ((VNDetailsActivity) context).getCharacters().get(expandedListPosition);
-                        final DoubleListElement[] elements = CharacterDataFactory.getData(context, character);
+                        final DoubleListElement[] characterElements = CharacterDataFactory.getData(context, character);
 
                         convertView.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -179,7 +180,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                                 view.findViewById(R.id.closeButton).setBackgroundTintList(ColorStateList.valueOf(MainActivity.getThemeColor(context, R.attr.colorPrimaryDark)));
 
                                 ListView listView = (ListView) view.findViewById(R.id.listView);
-                                listView.setAdapter(new DoubleListAdapter(context, elements));
+                                listView.setAdapter(new DoubleListAdapter(context, characterElements));
 
                                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
                                 dialogBuilder.setView(view);
@@ -215,17 +216,17 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                         /* Retrieve the release matching the element */
                         final Integer releaseId = getElement(listPosition).getSecondaryImages().get(expandedListPosition);
                         if (releaseId == null) break;
-                        Item release = null;
+                        Item releaseTmp = null;
                         for (Item tmp : Cache.releases.get(((VNDetailsActivity) context).getVn().getId())) {
                             if (tmp.getId() == releaseId) {
-                                release = tmp;
+                                releaseTmp = tmp;
                                 break;
                             }
                         }
-                        if (release == null) break;
+                        if (releaseTmp == null) break;
 
-                        /* [TODO] On click, display a modal with all the release details
-                        final DoubleListElement[] elements = CharacterDataFactory.getData(context, character);
+                        final Item release = releaseTmp;
+                        final DoubleListElement[] releaseElements = ReleaseDataFactory.getData(release);
 
                         convertView.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -234,11 +235,11 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                                 view.findViewById(R.id.closeButton).setBackgroundTintList(ColorStateList.valueOf(MainActivity.getThemeColor(context, R.attr.colorPrimaryDark)));
 
                                 ListView listView = (ListView) view.findViewById(R.id.listView);
-                                listView.setAdapter(new DoubleListAdapter(context, elements));
+                                listView.setAdapter(new DoubleListAdapter(context, releaseElements));
 
                                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
                                 dialogBuilder.setView(view);
-                                dialogBuilder.setTitle(character.getName());
+                                dialogBuilder.setTitle(release.getTitle());
                                 dialogBuilder.setCancelable(true);
                                 final AlertDialog dialog = dialogBuilder.show();
                                 view.findViewById(R.id.closeButton).setOnClickListener(new View.OnClickListener() {
@@ -249,7 +250,6 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                                 });
                             }
                         });
-                        */
                         break;
 
                     case VNDetailsFactory.TITLE_ANIME:

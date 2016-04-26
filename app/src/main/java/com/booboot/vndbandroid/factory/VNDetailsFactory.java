@@ -14,6 +14,7 @@ import com.booboot.vndbandroid.api.bean.Screen;
 import com.booboot.vndbandroid.api.bean.Tag;
 import com.booboot.vndbandroid.api.bean.Vote;
 import com.booboot.vndbandroid.util.DateUtils;
+import com.booboot.vndbandroid.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -203,7 +204,7 @@ public class VNDetailsFactory {
             for (Item release : activity.getReleases().get(language)) {
                 releaseElementWrapper.release_images.add(null);
                 releaseElementWrapper.release_names.add(release.getTitle());
-                releaseElementWrapper.release_subnames.add(DateUtils.getDate(release.getReleased()) + " • " + release.getType());
+                releaseElementWrapper.release_subnames.add(DateUtils.getDate(release.getReleased()) + " • " + StringUtils.capitalize(release.getType()));
                 releaseElementWrapper.release_ids.add(release.getId());
             }
         }

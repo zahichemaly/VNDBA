@@ -1,6 +1,8 @@
 package com.booboot.vndbandroid.adapter.doublelist;
 
 import android.content.Context;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,9 +65,12 @@ public class DoubleListAdapter extends BaseAdapter {
             itemRightText.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
         }
 
+        if (element.getRightText().contains("</a>"))
+            itemRightText.setMovementMethod(LinkMovementMethod.getInstance());
+
         itemLeftText.setPadding(Pixels.px(15, context), itemLeftText.getPaddingTop(), itemLeftText.getPaddingRight(), itemLeftText.getPaddingBottom());
         itemLeftText.setText(element.getLeftText());
-        itemRightText.setText(element.getRightText());
+        itemRightText.setText(Html.fromHtml(element.getRightText()));
         return convertView;
     }
 }
