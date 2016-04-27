@@ -19,6 +19,7 @@
     <string name="logout">Logout</string>
     <string name="action_sort">Sort</string>
     <string name="view_on_vndb_org">View on VNDB.org</string>
+    <string name="pref_key_spoiler">spoiler</string>
 
     <string-array name="background_pref_titles">
         <item>Default (orange)</item>
@@ -65,5 +66,16 @@
         <item>18</item>
         <item>19</item>
         <item>20</item>
+    </string-array>
+
+    <string-array name="spoiler_pref_titles">
+        <item>Hide spoilers</item>
+        <item>Show minor spoilers</item>
+        <item>Spoil me!</item>
+    </string-array>
+    <string-array name="spoiler_pref_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
     </string-array>
 </resources>

@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.util.JSON;
+import com.booboot.vndbandroid.util.SettingsManager;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -45,6 +46,12 @@ public class Tag extends VNDBCommand {
         }
 
         return tags;
+    }
+
+    public static boolean checkSpoilerLevel(Context context, int level) {
+        int authorizedLevel = SettingsManager.getSpoilerLevel(context);
+        if (authorizedLevel == 2) return true;
+        return level < authorizedLevel + 1;
     }
 
     public List<Integer> getParents() {

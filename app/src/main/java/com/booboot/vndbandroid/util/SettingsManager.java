@@ -94,4 +94,16 @@ public class SettingsManager {
         editor.putBoolean("REVERSE_SORT", reverse);
         editor.commit();
     }
+
+    public static int getSpoilerLevel(Context context) {
+        new SettingsManager(context);
+        return settings.getInt("SPOILER_LEVEL", 0);
+    }
+
+    public static void setSpoilerLevel(Context context, int spoiler) {
+        new SettingsManager(context);
+        editor.putInt("SPOILER_LEVEL", spoiler);
+        editor.commit();
+    }
+
 }

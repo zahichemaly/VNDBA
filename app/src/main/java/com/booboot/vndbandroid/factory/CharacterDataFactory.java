@@ -5,6 +5,7 @@ import android.text.TextUtils;
 
 import com.booboot.vndbandroid.adapter.doublelist.DoubleListElement;
 import com.booboot.vndbandroid.api.bean.Item;
+import com.booboot.vndbandroid.api.bean.Tag;
 import com.booboot.vndbandroid.api.bean.Trait;
 
 import java.text.SimpleDateFormat;
@@ -59,6 +60,8 @@ public class CharacterDataFactory {
         TreeMap<Integer, List<Trait>> characterTraits = new TreeMap<>();
         for (int[] ids : character.getTraits()) {
             int id = ids[0];
+            if (!Tag.checkSpoilerLevel(context, ids[1])) continue;
+
             Trait trait = Trait.getTraits(context).get(id);
             Trait rootTrait = trait;
             /* Getting the root element recursively (which will be the name displayed at the left) */

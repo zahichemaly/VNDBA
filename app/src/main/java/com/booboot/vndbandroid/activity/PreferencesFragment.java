@@ -51,6 +51,7 @@ public class PreferencesFragment extends PreferenceFragment implements Preferenc
         // updated to reflect the new value, per the Android Design guidelines.
         bindPreferenceSummaryToValue(findPreference("example_text"));
         bindPreferenceSummaryToValue(findPreference(getActivity().getString(R.string.pref_key_theme)));
+        bindPreferenceSummaryToValue(findPreference(getActivity().getString(R.string.pref_key_spoiler)));
     }
 
     /**
@@ -93,6 +94,8 @@ public class PreferencesFragment extends PreferenceFragment implements Preferenc
                     SettingsManager.setWallpaper(getActivity(), newTheme.getWallpaper());
                     getActivity().recreate();
                 }
+            } else if (listPreference.getKey().equals(getActivity().getString(R.string.pref_key_spoiler))) {
+                SettingsManager.setSpoilerLevel(getActivity(), Integer.valueOf(stringValue));
             }
         } else {
             // For all other preferences, set the summary to the value's simple string representation.

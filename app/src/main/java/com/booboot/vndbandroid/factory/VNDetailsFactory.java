@@ -16,8 +16,10 @@ import com.booboot.vndbandroid.api.bean.Vote;
 import com.booboot.vndbandroid.util.Utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class VNDetailsFactory {
     public final static String TITLE_INFORMATION = "Information";
@@ -77,6 +79,7 @@ public class VNDetailsFactory {
 
         List<String> genres = new ArrayList<>();
         for (List<Number> tag : vn.getTags()) {
+            if (!Tag.checkSpoilerLevel(activity, tag.get(2).intValue())) continue;
             String tagName = Tag.getTags(activity).get(tag.get(0).intValue()).getName();
             if (Genre.contains(tagName)) {
                 genres.add(tagName);
@@ -99,14 +102,16 @@ public class VNDetailsFactory {
 
         List<String> tags = new ArrayList<>();
         List<Integer> tags_images = new ArrayList<>();
-        List<String> alreadyProcessedTags = new ArrayList<>();
+        Map<String, Boolean> alreadyProcessedCategories = new HashMap<>();
         for (List<Number> cat : vn.getTags()) {
+            if (!Tag.checkSpoilerLevel(activity, cat.get(2).intValue())) continue;
             String currentCategory = Tag.getTags(activity).get(cat.get(0).intValue()).getCat();
-            if (!alreadyProcessedTags.contains(currentCategory)) {
-                alreadyProcessedTags.add(currentCategory);
+            if (alreadyProcessedCategories.get(currentCategory) == null) {
+                alreadyProcessedCategories.put(currentCategory, true);
                 tags.add("<b>" + Category.CATEGORIES.get(currentCategory) + " :</b>");
                 tags_images.add(-1);
                 for (List<Number> tag : vn.getTags()) {
+                    if (!Tag.checkSpoilerLevel(activity, tag.get(2).intValue())) continue;
                     String tagCat = Tag.getTags(activity).get(tag.get(0).intValue()).getCat();
                     if (tagCat.equals(currentCategory)) {
                         String tagName = Tag.getTags(activity).get(tag.get(0).intValue()).getName();
@@ -186,6 +191,20 @@ public class VNDetailsFactory {
     public static CharacterElementWrapper getCharacters(VNDetailsActivity activity) {
         CharacterElementWrapper characterElementWrapper = new CharacterElementWrapper();
         for (Item character : activity.getCharacters()) {
+            /* Checking the spoiler level of the whole character */
+            boolean spoilerOk = true;
+            /* Looping through the "vns" attribute because the spoiler lever is stored for each vn */
+            for (Object[] spoilerInfo : character.getVns()) {
+                /* Checking only the character for the current VN */
+                if ((int) spoilerInfo[0] != activity.getVn().getId()) continue;
+                /* If at least one release tags the character's spoiler level beyond our desired spoiler level, we totally hide it */
+                if (!Tag.checkSpoilerLevel(activity, (int) spoilerInfo[2])) {
+                    spoilerOk = false;
+                    break;
+                }
+            }
+            if (!spoilerOk) continue;
+
             characterElementWrapper.character_images.add(character.getImage());
             characterElementWrapper.character_names.add(character.getName());
             characterElementWrapper.character_subnames.add(Item.ROLES.get(character.getVns().get(0)[Item.ROLE_INDEX].toString()));
