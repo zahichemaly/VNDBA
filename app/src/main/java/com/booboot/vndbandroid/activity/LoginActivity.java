@@ -21,14 +21,15 @@ import android.widget.Toast;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.api.VNDBServer;
+import com.booboot.vndbandroid.api.bean.Links;
 import com.booboot.vndbandroid.db.Cache;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.SettingsManager;
+import com.booboot.vndbandroid.util.Utils;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
-    public final static String VNDB_REGISTER = "https://vndb.org/u/register";
     public static LoginActivity instance;
     private Button loginButton;
     private EditText loginUsername;
@@ -78,8 +79,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         ClickableSpan clickableSpan = new ClickableSpan() {
             @Override
             public void onClick(View textView) {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(VNDB_REGISTER));
-                startActivity(browserIntent);
+                Utils.openInBrowser(LoginActivity.this, Links.VNDB_REGISTER);
             }
 
             @Override

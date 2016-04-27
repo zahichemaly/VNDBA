@@ -11,6 +11,8 @@ public class Links extends VNDBCommand {
     public final static String ENCUBED = "http://novelnews.net/tag/";
     public final static String RENAI = "http://renai.us/game/";
     public final static String ANIDB = "https://anidb.net/perl-bin/animedb.pl?show=anime&aid=";
+    public final static String VNDB_REGISTER = "https://vndb.org/u/register";
+    public final static String VNDB_PAGE = "https://vndb.org/v";
 
     private String wikipedia;
     private String encubed;

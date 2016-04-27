@@ -32,6 +32,7 @@ import com.booboot.vndbandroid.factory.VNDetailsFactory;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.Lightbox;
 import com.booboot.vndbandroid.util.Pixels;
+import com.booboot.vndbandroid.util.Utils;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.LinkedHashMap;
@@ -205,8 +206,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                         convertView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(Links.ANIDB + id));
-                                context.startActivity(browserIntent);
+                                Utils.openInBrowser(context, Links.ANIDB + id);
                             }
                         });
                         break;

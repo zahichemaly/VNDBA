@@ -13,8 +13,7 @@ import com.booboot.vndbandroid.api.bean.Relation;
 import com.booboot.vndbandroid.api.bean.Screen;
 import com.booboot.vndbandroid.api.bean.Tag;
 import com.booboot.vndbandroid.api.bean.Vote;
-import com.booboot.vndbandroid.util.DateUtils;
-import com.booboot.vndbandroid.util.StringUtils;
+import com.booboot.vndbandroid.util.Utils;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -51,7 +50,7 @@ public class VNDetailsFactory {
         }
 
         infoLeft.add("Released date");
-        infoRight.add(DateUtils.getDate(vn.getReleased()));
+        infoRight.add(Utils.getDate(vn.getReleased()));
         infoRightImages.add(-1);
 
         if (vn.getAliases() != null) {
@@ -204,7 +203,7 @@ public class VNDetailsFactory {
             for (Item release : activity.getReleases().get(language)) {
                 releaseElementWrapper.release_images.add(null);
                 releaseElementWrapper.release_names.add(release.getTitle());
-                releaseElementWrapper.release_subnames.add(DateUtils.getDate(release.getReleased()) + " • " + StringUtils.capitalize(release.getType()));
+                releaseElementWrapper.release_subnames.add(Utils.getDate(release.getReleased()) + " • " + Utils.capitalize(release.getType()));
                 releaseElementWrapper.release_ids.add(release.getId());
             }
         }

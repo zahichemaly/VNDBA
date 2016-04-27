@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,6 +25,7 @@ import com.booboot.vndbandroid.adapter.vndetails.VNDetailsElement;
 import com.booboot.vndbandroid.adapter.vndetails.VNExpandableListAdapter;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.Item;
+import com.booboot.vndbandroid.api.bean.Links;
 import com.booboot.vndbandroid.api.bean.Options;
 import com.booboot.vndbandroid.api.bean.Priority;
 import com.booboot.vndbandroid.api.bean.Status;
@@ -34,6 +36,7 @@ import com.booboot.vndbandroid.listener.VNDetailsListener;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.Lightbox;
 import com.booboot.vndbandroid.util.SettingsManager;
+import com.booboot.vndbandroid.util.Utils;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
@@ -261,6 +264,12 @@ public class VNDetailsActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.vn_details_menu, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -270,6 +279,10 @@ public class VNDetailsActivity extends AppCompatActivity {
                 Cache.saveToCache(this, Cache.VOTELIST_CACHE, Cache.votelist);
                 Cache.saveToCache(this, Cache.WISHLIST_CACHE, Cache.wishlist);
                 finish();
+                break;
+
+            case R.id.action_view_on_vndb:
+                Utils.openInBrowser(this, Links.VNDB_PAGE + vn.getId());
                 break;
         }
 

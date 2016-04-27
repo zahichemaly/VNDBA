@@ -8,8 +8,7 @@ import com.booboot.vndbandroid.api.bean.Language;
 import com.booboot.vndbandroid.api.bean.Media;
 import com.booboot.vndbandroid.api.bean.Platform;
 import com.booboot.vndbandroid.api.bean.Producer;
-import com.booboot.vndbandroid.util.DateUtils;
-import com.booboot.vndbandroid.util.StringUtils;
+import com.booboot.vndbandroid.util.Utils;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -30,9 +29,9 @@ public class ReleaseDataFactory {
         if (release.getOriginal() != null)
             releaseData.add(new DoubleListElement("Original name", release.getOriginal(), false));
         if (release.getReleased() != null)
-            releaseData.add(new DoubleListElement("Released date", DateUtils.getDate(release.getReleased()), false));
+            releaseData.add(new DoubleListElement("Released date", Utils.getDate(release.getReleased()), false));
         if (release.getType() != null)
-            releaseData.add(new DoubleListElement("Type", StringUtils.capitalize(release.getType()), false));
+            releaseData.add(new DoubleListElement("Type", Utils.capitalize(release.getType()), false));
 
         List<String> publication = new ArrayList<>();
         if (release.isFreeware()) publication.add("Freeware");
