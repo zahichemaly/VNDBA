@@ -87,7 +87,7 @@ public class VNDBServer {
                 if (!connect()) return;
                 String username = SettingsManager.getUsername(context).toLowerCase().trim();
                 String password = SettingsManager.getPassword(context);
-                VNDBCommand response = sendCommand("login", Login.create(PROTOCOL, CLIENT, CLIENTVER, username, password));
+                VNDBCommand response = sendCommand("login ", Login.create(PROTOCOL, CLIENT, CLIENTVER, username, password));
                 if (response instanceof Ok) {
                     successCallback.call();
                 }

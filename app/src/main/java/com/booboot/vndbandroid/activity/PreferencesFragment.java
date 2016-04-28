@@ -11,6 +11,7 @@ import android.preference.SwitchPreference;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.api.bean.Theme;
 import com.booboot.vndbandroid.util.SettingsManager;
+import com.booboot.vndbandroid.util.Utils;
 
 import java.util.HashMap;
 
@@ -100,7 +101,7 @@ public class PreferencesFragment extends PreferenceFragment implements Preferenc
                     SettingsManager.setTheme(getActivity(), newTheme.getStyle());
                     SettingsManager.setNoActionBarTheme(getActivity(), newTheme.getNoActionBarStyle());
                     SettingsManager.setWallpaper(getActivity(), newTheme.getWallpaper());
-                    getActivity().recreate();
+                    Utils.recreate(getActivity());
                 }
             } else if (listPreference.getKey().equals(getActivity().getString(R.string.pref_key_spoiler))) {
                 SettingsManager.setSpoilerLevel(getActivity(), Integer.valueOf(stringValue));

@@ -31,6 +31,12 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".activity.EmptyActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+
         <!-- Receive Wi-Fi connection state changes -->
         <receiver android:name=".util.ConnectionReceiver">
             <intent-filter>

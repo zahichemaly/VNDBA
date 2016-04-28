@@ -1,10 +1,11 @@
 package com.booboot.vndbandroid.util;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
-import com.booboot.vndbandroid.api.bean.Links;
+import com.booboot.vndbandroid.activity.EmptyActivity;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -53,5 +54,19 @@ public class Utils {
     public static void openInBrowser(Context context, String url) {
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         context.startActivity(browserIntent);
+    }
+
+    /**
+     * Seamlessly recreates an activity, keeping its state and avoiding the blinking effect.
+     * The trick is simple: another fake activity is launched and immediately killed, keeping the main thread busy
+     * and preventing it from displaying a black screen while it's reloading our activity. The effect is even more
+     * transparent if the fake activity launches itself twice.
+     *
+     * @param activity activity to recreate
+     */
+    public static void recreate(Activity activity) {
+        Intent intent = new Intent(activity, EmptyActivity.class);
+        activity.startActivity(intent);
+        activity.recreate();
     }
 }

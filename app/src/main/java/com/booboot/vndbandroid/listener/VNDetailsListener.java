@@ -1,6 +1,5 @@
 package com.booboot.vndbandroid.listener;
 
-import android.content.Context;
 import android.support.v7.widget.PopupMenu;
 import android.view.MenuItem;
 import android.widget.Button;
@@ -17,16 +16,17 @@ import com.booboot.vndbandroid.api.bean.Status;
 import com.booboot.vndbandroid.db.Cache;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.ConnectionReceiver;
+import com.booboot.vndbandroid.util.Utils;
 
 /**
  * Created by od on 12/04/2016.
  */
 public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener {
-    private Context context;
+    private VNDetailsActivity context;
     private Item vn;
     private Button popupButton;
 
-    public VNDetailsListener(Context context, Item vn) {
+    public VNDetailsListener(VNDetailsActivity context, Item vn) {
         this.context = context;
         this.vn = vn;
     }
@@ -197,17 +197,17 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener {
 
             case R.id.item_spoil_0:
                 VNDetailsActivity.spoilerLevel = 0;
-                ((VNDetailsActivity) context).recreate();
+                Utils.recreate(context);
                 return true;
 
             case R.id.item_spoil_1:
                 VNDetailsActivity.spoilerLevel = 1;
-                ((VNDetailsActivity) context).recreate();
+                Utils.recreate(context);
                 return true;
 
             case R.id.item_spoil_2:
                 VNDetailsActivity.spoilerLevel = 2;
-                ((VNDetailsActivity) context).recreate();
+                Utils.recreate(context);
                 return true;
 
             default:
