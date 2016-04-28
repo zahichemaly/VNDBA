@@ -76,8 +76,12 @@ public class VNDetailsActivity extends AppCompatActivity {
         vn = (Item) getIntent().getSerializableExtra(VNTypeFragment.VN_ARG);
         listener = new VNDetailsListener(this, vn);
 
-        if (spoilerLevel < 0)
-            spoilerLevel = SettingsManager.getSpoilerLevel(this);
+        if (spoilerLevel < 0) {
+            if (SettingsManager.getSpoilerCompleted(this) && vn.getStatus() == Status.FINISHED)
+                spoilerLevel = 2;
+            else
+                spoilerLevel = SettingsManager.getSpoilerLevel(this);
+        }
 
         initCharacters();
         initReleases();

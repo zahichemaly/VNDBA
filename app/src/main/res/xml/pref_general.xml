@@ -1,11 +1,5 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="example_switch"
-        android:summary="Recommendations for people to contact based on your message history"
-        android:title="Enable social recommandations"/>
-
+<!--
     <EditTextPreference
         android:capitalize="words"
         android:defaultValue="John Smith"
@@ -15,7 +9,7 @@
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:title="Display name"/>
-
+-->
     <ListPreference
         android:defaultValue="-1"
         android:entries="@array/background_pref_titles"
@@ -34,4 +28,9 @@
         android:positiveButtonText="@null"
         android:title="Default spoiler level"/>
 
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="@string/pref_key_spoiler_completed"
+        android:summary="Enable all spoilers for a VN if its status is &quot;Finished&quot;."
+        android:title="Spoil me if finished"/>
 </PreferenceScreen>

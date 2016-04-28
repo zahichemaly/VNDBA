@@ -106,4 +106,15 @@ public class SettingsManager {
         editor.commit();
     }
 
+    public static boolean getSpoilerCompleted(Context context) {
+        new SettingsManager(context);
+        return settings.getBoolean("SPOILER_COMPLETED", true);
+    }
+
+    public static void setSpoilerCompleted(Context context, boolean ok) {
+        new SettingsManager(context);
+        editor.putBoolean("SPOILER_COMPLETED", ok);
+        editor.commit();
+    }
+
 }

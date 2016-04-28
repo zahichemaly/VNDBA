@@ -21,6 +21,7 @@
     <string name="view_on_vndb_org">View on VNDB.org</string>
     <string name="pref_key_spoiler">spoiler</string>
     <string name="set_spoiler_level_for_this_vn">Set spoiler level for this VN</string>
+    <string name="pref_key_spoiler_completed">spoiler_completed</string>
 
     <string-array name="background_pref_titles">
         <item>Default (orange)</item>

@@ -1,10 +1,12 @@
 package com.booboot.vndbandroid.activity;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.preference.SwitchPreference;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.api.bean.Theme;
@@ -49,7 +51,7 @@ public class PreferencesFragment extends PreferenceFragment implements Preferenc
 
         // Bind the summaries of EditText/List/Dialog/Ringtone preferences to their values. When their values change, their summaries are
         // updated to reflect the new value, per the Android Design guidelines.
-        bindPreferenceSummaryToValue(findPreference("example_text"));
+        bindPreferenceSummaryToValue(findPreference(getActivity().getString(R.string.pref_key_spoiler_completed)));
         bindPreferenceSummaryToValue(findPreference(getActivity().getString(R.string.pref_key_theme)));
         bindPreferenceSummaryToValue(findPreference(getActivity().getString(R.string.pref_key_spoiler)));
     }
@@ -68,7 +70,13 @@ public class PreferencesFragment extends PreferenceFragment implements Preferenc
         preference.setOnPreferenceChangeListener(bindPreferenceSummaryToValueListener);
 
         // Trigger the listener immediately with the preference's current value.
-        bindPreferenceSummaryToValueListener.onPreferenceChange(preference, PreferenceManager.getDefaultSharedPreferences(preference.getContext()).getString(preference.getKey(), ""));
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(preference.getContext());
+        Object newValue;
+        if (preference instanceof SwitchPreference)
+            newValue = sharedPreferences.getBoolean(preference.getKey(), false);
+        else newValue = sharedPreferences.getString(preference.getKey(), "");
+
+        bindPreferenceSummaryToValueListener.onPreferenceChange(preference, newValue);
     }
 
     @Override
@@ -98,8 +106,9 @@ public class PreferencesFragment extends PreferenceFragment implements Preferenc
                 SettingsManager.setSpoilerLevel(getActivity(), Integer.valueOf(stringValue));
             }
         } else {
-            // For all other preferences, set the summary to the value's simple string representation.
-            preference.setSummary(stringValue);
+            if (preference.getKey().equals(getActivity().getString(R.string.pref_key_spoiler_completed))) {
+                SettingsManager.setSpoilerCompleted(getActivity(), Boolean.parseBoolean(stringValue));
+            }
         }
         return true;
     }
