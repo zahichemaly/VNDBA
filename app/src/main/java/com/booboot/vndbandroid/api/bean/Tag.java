@@ -3,6 +3,7 @@ package com.booboot.vndbandroid.api.bean;
 import android.content.Context;
 
 import com.booboot.vndbandroid.R;
+import com.booboot.vndbandroid.activity.VNDetailsActivity;
 import com.booboot.vndbandroid.util.JSON;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -49,7 +50,7 @@ public class Tag extends VNDBCommand {
     }
 
     public static boolean checkSpoilerLevel(Context context, int level) {
-        int authorizedLevel = SettingsManager.getSpoilerLevel(context);
+        int authorizedLevel = VNDetailsActivity.spoilerLevel;
         if (authorizedLevel == 2) return true;
         return level < authorizedLevel + 1;
     }

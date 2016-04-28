@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.MainActivity;
+import com.booboot.vndbandroid.activity.VNDetailsActivity;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.Fields;
 import com.booboot.vndbandroid.api.bean.Item;
@@ -37,7 +38,8 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener {
             return true;
         }
 
-        popupButton.setText(item.getTitle());
+        if (popupButton != null)
+            popupButton.setText(item.getTitle());
         String type;
         Fields fields = new Fields();
 
@@ -192,6 +194,21 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener {
                 fields = null;
                 Cache.votelist.remove(vn.getId());
                 break;
+
+            case R.id.item_spoil_0:
+                VNDetailsActivity.spoilerLevel = 0;
+                ((VNDetailsActivity) context).recreate();
+                return true;
+
+            case R.id.item_spoil_1:
+                VNDetailsActivity.spoilerLevel = 1;
+                ((VNDetailsActivity) context).recreate();
+                return true;
+
+            case R.id.item_spoil_2:
+                VNDetailsActivity.spoilerLevel = 2;
+                ((VNDetailsActivity) context).recreate();
+                return true;
 
             default:
                 return false;

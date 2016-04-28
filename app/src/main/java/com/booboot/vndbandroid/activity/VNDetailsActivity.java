@@ -46,6 +46,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class VNDetailsActivity extends AppCompatActivity {
+    public static int spoilerLevel = -1;
     private ActionBar actionBar;
     private Item vn;
     private Item vnlistVn;
@@ -74,6 +75,9 @@ public class VNDetailsActivity extends AppCompatActivity {
 
         vn = (Item) getIntent().getSerializableExtra(VNTypeFragment.VN_ARG);
         listener = new VNDetailsListener(this, vn);
+
+        if (spoilerLevel < 0)
+            spoilerLevel = SettingsManager.getSpoilerLevel(this);
 
         initCharacters();
         initReleases();
@@ -283,6 +287,26 @@ public class VNDetailsActivity extends AppCompatActivity {
 
             case R.id.action_view_on_vndb:
                 Utils.openInBrowser(this, Links.VNDB_PAGE + vn.getId());
+                break;
+
+            case R.id.action_spoiler:
+                PopupMenu popup = new PopupMenu(this, findViewById(R.id.action_spoiler));
+                MenuInflater inflater = popup.getMenuInflater();
+                inflater.inflate(R.menu.spoiler, popup.getMenu());
+                switch (spoilerLevel) {
+                    case 1:
+                        popup.getMenu().findItem(R.id.item_spoil_1).setChecked(true);
+                        break;
+                    case 2:
+                        popup.getMenu().findItem(R.id.item_spoil_2).setChecked(true);
+                        break;
+                    default:
+                        popup.getMenu().findItem(R.id.item_spoil_0).setChecked(true);
+                        break;
+                }
+                popup.setOnMenuItemClickListener(listener);
+                listener.setPopupButton(null);
+                popup.show();
                 break;
         }
 

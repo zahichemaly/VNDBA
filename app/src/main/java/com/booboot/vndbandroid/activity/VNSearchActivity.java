@@ -116,4 +116,10 @@ public class VNSearchActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    protected void onResume() {
+        VNDetailsActivity.spoilerLevel = -1;
+        super.onResume();
+    }
 }
