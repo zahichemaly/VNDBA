@@ -119,8 +119,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }, new Callback() {
             @Override
             public void config() {
-                SettingsManager.setUsername(LoginActivity.this, null);
-                SettingsManager.setPassword(LoginActivity.this, null);
                 Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
                 enableAll();
             }
