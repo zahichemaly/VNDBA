@@ -33,7 +33,11 @@ public class CharacterDataFactory {
      */
     public static DoubleListElement[] getData(Context context, Item character) {
         final List<DoubleListElement> characterData = new ArrayList<>();
-        characterData.add(new DoubleListElement("Description", character.getDescription(), true));
+        String descriptionWithoutSpoilers = character.getDescription();
+        if (!Tag.checkSpoilerLevel(2)) {
+            descriptionWithoutSpoilers = descriptionWithoutSpoilers.replaceAll("\\[spoiler\\].*\\[/spoiler\\]", "");
+        }
+        characterData.add(new DoubleListElement("Description", descriptionWithoutSpoilers, true));
         if (character.getOriginal() != null)
             characterData.add(new DoubleListElement("Original name", character.getOriginal(), false));
         if (character.getGender() != null)
