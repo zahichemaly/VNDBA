@@ -55,6 +55,7 @@ public class PreferencesFragment extends PreferenceFragment implements Preferenc
         bindPreferenceSummaryToValue(findPreference(getActivity().getString(R.string.pref_key_spoiler_completed)));
         bindPreferenceSummaryToValue(findPreference(getActivity().getString(R.string.pref_key_theme)));
         bindPreferenceSummaryToValue(findPreference(getActivity().getString(R.string.pref_key_spoiler)));
+        bindPreferenceSummaryToValue(findPreference(getActivity().getString(R.string.pref_key_nsfw)));
     }
 
     /**
@@ -109,6 +110,8 @@ public class PreferencesFragment extends PreferenceFragment implements Preferenc
         } else {
             if (preference.getKey().equals(getActivity().getString(R.string.pref_key_spoiler_completed))) {
                 SettingsManager.setSpoilerCompleted(getActivity(), Boolean.parseBoolean(stringValue));
+            } else if (preference.getKey().equals(getActivity().getString(R.string.pref_key_nsfw))) {
+                SettingsManager.setNSFW(getActivity(), Boolean.parseBoolean(stringValue));
             }
         }
         return true;

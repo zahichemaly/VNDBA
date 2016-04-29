@@ -1,15 +1,15 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-<!--
-    <EditTextPreference
-        android:capitalize="words"
-        android:defaultValue="John Smith"
-        android:inputType="textCapWords"
-        android:key="example_text"
-        android:maxLines="1"
-        android:selectAllOnFocus="true"
-        android:singleLine="true"
-        android:title="Display name"/>
--->
+    <!--
+        <EditTextPreference
+            android:capitalize="words"
+            android:defaultValue="John Smith"
+            android:inputType="textCapWords"
+            android:key="example_text"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Display name"/>
+    -->
     <ListPreference
         android:defaultValue="-1"
         android:entries="@array/background_pref_titles"
@@ -33,4 +33,10 @@
         android:key="@string/pref_key_spoiler_completed"
         android:summary="Enable all spoilers for a VN if its status is &quot;Finished&quot;."
         android:title="Spoil me if finished"/>
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="@string/pref_key_nsfw"
+        android:summary=""
+        android:title="Show NSFW content"/>
 </PreferenceScreen>

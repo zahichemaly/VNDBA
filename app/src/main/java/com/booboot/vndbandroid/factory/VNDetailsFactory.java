@@ -13,6 +13,7 @@ import com.booboot.vndbandroid.api.bean.Relation;
 import com.booboot.vndbandroid.api.bean.Screen;
 import com.booboot.vndbandroid.api.bean.Tag;
 import com.booboot.vndbandroid.api.bean.Vote;
+import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
 
 import java.util.ArrayList;
@@ -79,7 +80,7 @@ public class VNDetailsFactory {
 
         List<String> genres = new ArrayList<>();
         for (List<Number> tag : vn.getTags()) {
-            if (!Tag.checkSpoilerLevel(activity, tag.get(2).intValue())) continue;
+            if (!Tag.checkSpoilerLevel(tag.get(2).intValue())) continue;
             String tagName = Tag.getTags(activity).get(tag.get(0).intValue()).getName();
             if (Genre.contains(tagName)) {
                 genres.add(tagName);
@@ -104,14 +105,14 @@ public class VNDetailsFactory {
         List<Integer> tags_images = new ArrayList<>();
         Map<String, Boolean> alreadyProcessedCategories = new HashMap<>();
         for (List<Number> cat : vn.getTags()) {
-            if (!Tag.checkSpoilerLevel(activity, cat.get(2).intValue())) continue;
+            if (!Tag.checkSpoilerLevel(cat.get(2).intValue())) continue;
             String currentCategory = Tag.getTags(activity).get(cat.get(0).intValue()).getCat();
             if (alreadyProcessedCategories.get(currentCategory) == null) {
                 alreadyProcessedCategories.put(currentCategory, true);
                 tags.add("<b>" + Category.CATEGORIES.get(currentCategory) + " :</b>");
                 tags_images.add(-1);
                 for (List<Number> tag : vn.getTags()) {
-                    if (!Tag.checkSpoilerLevel(activity, tag.get(2).intValue())) continue;
+                    if (!Tag.checkSpoilerLevel(tag.get(2).intValue())) continue;
                     String tagCat = Tag.getTags(activity).get(tag.get(0).intValue()).getCat();
                     if (tagCat.equals(currentCategory)) {
                         String tagName = Tag.getTags(activity).get(tag.get(0).intValue()).getName();
@@ -145,6 +146,7 @@ public class VNDetailsFactory {
 
         List<String> screenshots = new ArrayList<>();
         for (Screen screenshot : vn.getScreens()) {
+            if (screenshot.isNsfw() && !SettingsManager.getNSFW(activity)) continue;
             screenshots.add(screenshot.getImage());
         }
 
@@ -198,7 +200,7 @@ public class VNDetailsFactory {
                 /* Checking only the character for the current VN */
                 if ((int) spoilerInfo[0] != activity.getVn().getId()) continue;
                 /* If at least one release tags the character's spoiler level beyond our desired spoiler level, we totally hide it */
-                if (!Tag.checkSpoilerLevel(activity, (int) spoilerInfo[2])) {
+                if (!Tag.checkSpoilerLevel((int) spoilerInfo[2])) {
                     spoilerOk = false;
                     break;
                 }

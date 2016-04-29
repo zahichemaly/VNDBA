@@ -118,8 +118,12 @@ public class VNDetailsActivity extends AppCompatActivity {
         wishlistButton.setBackgroundTintList(ColorStateList.valueOf(MainActivity.getThemeColor(this, R.attr.colorPrimaryDark)));
         votesButton.setBackgroundTintList(ColorStateList.valueOf(MainActivity.getThemeColor(this, R.attr.colorPrimaryDark)));
 
-        ImageLoader.getInstance().displayImage(vn.getImage(), image);
-        Lightbox.set(VNDetailsActivity.this, image, vn.getImage());
+        if (vn.isImage_nsfw() && !SettingsManager.getNSFW(this)) {
+            image.setImageResource(R.drawable.ic_nsfw);
+        } else {
+            ImageLoader.getInstance().displayImage(vn.getImage(), image);
+            Lightbox.set(VNDetailsActivity.this, image, vn.getImage());
+        }
     }
 
     private void initExpandableListView() {
@@ -282,7 +286,7 @@ public class VNDetailsActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 /* Refreshing tabs' counter upon leaving (may have made changes in this activity) */
-                MainActivity.instance.getVnlistFragment().refreshTitles();
+                if (MainActivity.instance.getVnlistFragment() != null) MainActivity.instance.getVnlistFragment().refreshTitles();
                 Cache.saveToCache(this, Cache.VNLIST_CACHE, Cache.vnlist);
                 Cache.saveToCache(this, Cache.VOTELIST_CACHE, Cache.votelist);
                 Cache.saveToCache(this, Cache.WISHLIST_CACHE, Cache.wishlist);

@@ -60,7 +60,7 @@ public class CharacterDataFactory {
         TreeMap<Integer, List<Trait>> characterTraits = new TreeMap<>();
         for (int[] ids : character.getTraits()) {
             int id = ids[0];
-            if (!Tag.checkSpoilerLevel(context, ids[1])) continue;
+            if (!Tag.checkSpoilerLevel(ids[1])) continue;
 
             Trait trait = Trait.getTraits(context).get(id);
             Trait rootTrait = trait;

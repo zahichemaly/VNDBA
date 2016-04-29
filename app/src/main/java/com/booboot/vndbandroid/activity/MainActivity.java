@@ -249,7 +249,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public VNListFragment getVnlistFragment() {
-        return (VNListFragment) directSubfragment;
+        return directSubfragment instanceof VNListFragment ? (VNListFragment) directSubfragment : null;
     }
 
     public SearchView getSearchView() {

@@ -49,7 +49,7 @@ public class Tag extends VNDBCommand {
         return tags;
     }
 
-    public static boolean checkSpoilerLevel(Context context, int level) {
+    public static boolean checkSpoilerLevel(int level) {
         int authorizedLevel = VNDetailsActivity.spoilerLevel;
         if (authorizedLevel == 2) return true;
         return level < authorizedLevel + 1;

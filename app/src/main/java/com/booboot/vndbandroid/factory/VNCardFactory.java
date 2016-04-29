@@ -12,6 +12,7 @@ import com.booboot.vndbandroid.api.bean.Priority;
 import com.booboot.vndbandroid.api.bean.Status;
 import com.booboot.vndbandroid.api.bean.Vote;
 import com.booboot.vndbandroid.db.Cache;
+import com.booboot.vndbandroid.util.SettingsManager;
 import com.dexafree.materialList.card.Card;
 import com.dexafree.materialList.card.CardProvider;
 
@@ -52,7 +53,7 @@ public class VNCardFactory {
             description.append(vote).append(" (").append(Vote.getName(vote)).append(")\n");
         } else description.append("Not voted yet\n");
 
-        Card card = new Card.Builder(context)
+        CardProvider cardProvider = new Card.Builder(context)
                 .withProvider(new CardProvider())
                 .setLayout(R.layout.vn_card_layout)
                 .setTitle(vn.getTitle())
@@ -63,9 +64,13 @@ public class VNCardFactory {
                 .setDescription(description.toString())
                 .setDescriptionGravity(Gravity.CENTER)
                 // .setDescriptionColor(getActivity().getResources().getColor(R.color.dark_blue, getActivity().getTheme()))
-                .setDescriptionColor(MainActivity.getThemeColor(context, R.attr.colorPrimaryDark))
-                .setDrawable(vn.getImage())
-                .endConfig().build();
+                .setDescriptionColor(MainActivity.getThemeColor(context, R.attr.colorPrimaryDark));
+
+        if (vn.isImage_nsfw() && !SettingsManager.getNSFW(context))
+            cardProvider.setDrawable(R.drawable.ic_nsfw);
+        else cardProvider.setDrawable(vn.getImage());
+
+        Card card = cardProvider.endConfig().build();
         card.setTag(vn);
 
         materialListView.getAdapter().add(card);

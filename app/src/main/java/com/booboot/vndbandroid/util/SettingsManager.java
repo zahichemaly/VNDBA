@@ -117,4 +117,14 @@ public class SettingsManager {
         editor.commit();
     }
 
+    public static boolean getNSFW(Context context) {
+        new SettingsManager(context);
+        return settings.getBoolean("NSFW", false);
+    }
+
+    public static void setNSFW(Context context, boolean ok) {
+        new SettingsManager(context);
+        editor.putBoolean("NSFW", ok);
+        editor.commit();
+    }
 }
