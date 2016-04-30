@@ -290,22 +290,26 @@ public class VNDBServer {
     }
 
     public static void close() {
-        try {
-            if (in != null) {
-                in.close();
-                in = null;
+        new Thread() {
+            public void run() {
+                try {
+                    if (in != null) {
+                        in.close();
+                        in = null;
+                    }
+                    if (out != null) {
+                        out.close();
+                        out = null;
+                    }
+                    if (socket != null) {
+                        socket.close();
+                        socket = null;
+                    }
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                }
             }
-            if (out != null) {
-                out.close();
-                out = null;
-            }
-            if (socket != null) {
-                socket.close();
-                socket = null;
-            }
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
+        }.start();
     }
 
     private static boolean takeMutex() {
