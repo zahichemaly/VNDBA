@@ -20,8 +20,8 @@
 
         <com.booboot.vndbandroid.adapter.materiallistview.MaterialListView
             android:id="@+id/materialListView"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             app:column_count_landscape="2"
             app:column_count_portrait="1"/>
     </android.support.v4.widget.SwipeRefreshLayout>

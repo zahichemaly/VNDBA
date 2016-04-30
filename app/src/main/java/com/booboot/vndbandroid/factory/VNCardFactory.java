@@ -1,6 +1,6 @@
 package com.booboot.vndbandroid.factory;
 
-import android.content.Context;
+import android.app.Activity;
 import android.graphics.Color;
 import android.view.Gravity;
 
@@ -13,6 +13,7 @@ import com.booboot.vndbandroid.api.bean.Status;
 import com.booboot.vndbandroid.api.bean.Vote;
 import com.booboot.vndbandroid.db.Cache;
 import com.booboot.vndbandroid.util.SettingsManager;
+import com.booboot.vndbandroid.util.Utils;
 import com.dexafree.materialList.card.Card;
 import com.dexafree.materialList.card.CardProvider;
 
@@ -25,7 +26,7 @@ import java.util.Locale;
  * Created by od on 17/04/2016.
  */
 public class VNCardFactory {
-    public static void buildCard(Context context, Item vn, MaterialListView materialListView) {
+    public static void buildCard(Activity activity, Item vn, MaterialListView materialListView) {
         Date released;
         StringBuilder subtitle = new StringBuilder(), description = new StringBuilder();
 
@@ -53,7 +54,10 @@ public class VNCardFactory {
             description.append(vote).append(" (").append(Vote.getName(vote)).append(")\n");
         } else description.append("Not voted yet\n");
 
-        CardProvider cardProvider = new Card.Builder(context)
+        materialListView.setColumnCountLandscape(Utils.isTablet(activity) ? 3 : 2);
+        materialListView.setColumnCountPortrait(Utils.isTablet(activity) ? 2 : 1);
+
+        CardProvider cardProvider = new Card.Builder(activity)
                 .withProvider(new CardProvider())
                 .setLayout(R.layout.vn_card_layout)
                 .setTitle(vn.getTitle())
@@ -63,10 +67,9 @@ public class VNCardFactory {
                 .setSubtitleGravity(Gravity.CENTER)
                 .setDescription(description.toString())
                 .setDescriptionGravity(Gravity.CENTER)
-                // .setDescriptionColor(getActivity().getResources().getColor(R.color.dark_blue, getActivity().getTheme()))
-                .setDescriptionColor(MainActivity.getThemeColor(context, R.attr.colorPrimaryDark));
+                .setDescriptionColor(MainActivity.getThemeColor(activity, R.attr.colorPrimaryDark));
 
-        if (vn.isImage_nsfw() && !SettingsManager.getNSFW(context))
+        if (vn.isImage_nsfw() && !SettingsManager.getNSFW(activity))
             cardProvider.setDrawable(R.drawable.ic_nsfw);
         else cardProvider.setDrawable(vn.getImage());
 

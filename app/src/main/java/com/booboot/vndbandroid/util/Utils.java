@@ -3,7 +3,12 @@ package com.booboot.vndbandroid.util;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.graphics.Point;
 import android.net.Uri;
+import android.util.DisplayMetrics;
+import android.view.Display;
 
 import com.booboot.vndbandroid.activity.EmptyActivity;
 
@@ -68,5 +73,20 @@ public class Utils {
         Intent intent = new Intent(activity, EmptyActivity.class);
         activity.startActivity(intent);
         activity.recreate();
+    }
+
+    public static boolean isTablet(Activity activity) {
+        Display display = activity.getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+
+        Resources resources = activity.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+
+        if (activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            return size.x / ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT) > 1150;
+        } else {
+            return size.x / ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT) > 760;
+        }
     }
 }
