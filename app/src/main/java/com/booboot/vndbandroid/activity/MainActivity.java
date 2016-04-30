@@ -220,6 +220,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_logout) {
             VNDBServer.close();
             Cache.clearCache(this);
+            LoginActivity.autologin = false;
             LoginActivity.instance.enableAll();
             selectedItem = 0;
             finish();

@@ -31,6 +31,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     public static LoginActivity instance;
+    public static boolean autologin = true;
     private Button loginButton;
     private EditText loginUsername;
     private EditText loginPassword;
@@ -62,7 +63,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         String savedUsername = SettingsManager.getUsername(this);
         String savedPassword = SettingsManager.getPassword(this);
-        if (savedUsername != null && savedPassword != null) {
+        if (autologin && savedUsername != null && savedPassword != null) {
             /* Filling the inputs with saved values (for appearance's sake) */
             loginUsername.setText(savedUsername);
             loginPassword.setText(savedPassword);
@@ -71,6 +72,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         } else {
             enableAll();
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+            autologin = true;
         }
     }
 
