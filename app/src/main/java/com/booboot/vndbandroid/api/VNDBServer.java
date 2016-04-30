@@ -23,17 +23,23 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+
+import javax.net.SocketFactory;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 
 /**
  * Created by od on 12/03/2016.
  */
 public class VNDBServer {
     public final static String HOST = "api.vndb.org";
-    public final static int PORT = 19534;
+    public final static int PORT = 19535;
     public final static char EOM = 0x04;
 
     public final static int PROTOCOL = 1;
@@ -41,7 +47,7 @@ public class VNDBServer {
     public final static double CLIENTVER = 0.1;
 
     private static boolean mutex = true;
-    private static Socket socket;
+    private static SSLSocket socket;
     private static OutputStream out;
     private static InputStreamReader in;
     private static Context context;
@@ -57,8 +63,19 @@ public class VNDBServer {
 
     private static boolean connect() {
         try {
-            socket = new Socket(HOST, PORT);
+            SocketFactory sf = SSLSocketFactory.getDefault();
+            socket = (SSLSocket) sf.createSocket(HOST, PORT);
             socket.setKeepAlive(true);
+
+            HostnameVerifier hv = HttpsURLConnection.getDefaultHostnameVerifier();
+            SSLSession s = socket.getSession();
+
+            if (!hv.verify(HOST, s)) {
+                errorCallback.message = "The API's certificate is not valid. Expected " + HOST + ", found " + s.getPeerPrincipal().getName();
+                errorCallback.call();
+                return false;
+            }
+
             out = socket.getOutputStream();
             in = new InputStreamReader(socket.getInputStream());
             return true;
