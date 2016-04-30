@@ -11,7 +11,7 @@
             android:title="Display name"/>
     -->
     <ListPreference
-        android:defaultValue="-1"
+        android:defaultValue="0"
         android:entries="@array/background_pref_titles"
         android:entryValues="@array/background_pref_values"
         android:key="@string/pref_key_theme"
