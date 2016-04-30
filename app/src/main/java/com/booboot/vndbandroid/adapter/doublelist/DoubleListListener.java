@@ -3,6 +3,8 @@ package com.booboot.vndbandroid.adapter.doublelist;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.os.Build;
+import android.support.v4.view.ViewCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListView;
@@ -28,7 +30,13 @@ public class DoubleListListener implements View.OnClickListener {
     public void onClick(View v) {
         final LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.vn_info_dialog, null);
-        view.findViewById(R.id.closeButton).setBackgroundTintList(ColorStateList.valueOf(MainActivity.getThemeColor(context, R.attr.colorPrimaryDark)));
+
+        ColorStateList buttonBackgroundColor = ColorStateList.valueOf(MainActivity.getThemeColor(context, R.attr.colorPrimaryDark));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            view.findViewById(R.id.closeButton).setBackgroundTintList(buttonBackgroundColor);
+        } else {
+            ViewCompat.setBackgroundTintList(view.findViewById(R.id.closeButton), buttonBackgroundColor);
+        }
 
         ListView listView = (ListView) view.findViewById(R.id.listView);
         listView.setAdapter(new DoubleListAdapter(context, elements));

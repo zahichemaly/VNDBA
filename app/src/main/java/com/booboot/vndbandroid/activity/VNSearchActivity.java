@@ -3,6 +3,7 @@ package com.booboot.vndbandroid.activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -40,7 +41,11 @@ public class VNSearchActivity extends AppCompatActivity {
 
         materialListView = (MaterialListView) findViewById(R.id.materialListView);
         /* [Fix] Set the background color to match the default one (not the case by default) */
-        materialListView.getRootView().setBackgroundColor(getResources().getColor(R.color.windowBackground, getTheme()));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            materialListView.getRootView().setBackgroundColor(getResources().getColor(R.color.windowBackground, getTheme()));
+        } else {
+            materialListView.getRootView().setBackgroundColor(getResources().getColor(R.color.windowBackground));
+        }
 
         SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.refreshLayout);
         refreshLayout.setEnabled(false);

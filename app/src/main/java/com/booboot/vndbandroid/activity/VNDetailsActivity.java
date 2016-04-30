@@ -4,7 +4,11 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v4.view.TintableBackgroundView;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
@@ -118,9 +122,16 @@ public class VNDetailsActivity extends AppCompatActivity {
         wishlistButton.setText(Priority.toString(wishlistVn != null ? wishlistVn.getPriority() : -1));
         votesButton.setText(Vote.toString(votelistVn != null ? votelistVn.getVote() : -1));
 
-        statusButton.setBackgroundTintList(ColorStateList.valueOf(MainActivity.getThemeColor(this, R.attr.colorPrimaryDark)));
-        wishlistButton.setBackgroundTintList(ColorStateList.valueOf(MainActivity.getThemeColor(this, R.attr.colorPrimaryDark)));
-        votesButton.setBackgroundTintList(ColorStateList.valueOf(MainActivity.getThemeColor(this, R.attr.colorPrimaryDark)));
+        ColorStateList buttonBackgroundColor = ColorStateList.valueOf(MainActivity.getThemeColor(this, R.attr.colorPrimaryDark));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            statusButton.setBackgroundTintList(buttonBackgroundColor);
+            wishlistButton.setBackgroundTintList(buttonBackgroundColor);
+            votesButton.setBackgroundTintList(buttonBackgroundColor);
+        } else {
+            ViewCompat.setBackgroundTintList(statusButton, buttonBackgroundColor);
+            ViewCompat.setBackgroundTintList(wishlistButton, buttonBackgroundColor);
+            ViewCompat.setBackgroundTintList(votesButton, buttonBackgroundColor);
+        }
 
         if (vn.isImage_nsfw() && !SettingsManager.getNSFW(this)) {
             image.setImageResource(R.drawable.ic_nsfw);

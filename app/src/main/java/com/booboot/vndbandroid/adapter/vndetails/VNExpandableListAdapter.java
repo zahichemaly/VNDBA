@@ -12,6 +12,7 @@ import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -120,7 +121,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
             case R.layout.list_item_images:
                 final ImageButton expandedListImage = (ImageButton) convertView.findViewById(R.id.expandedListImage);
                 ImageLoader.getInstance().displayImage(primaryText, expandedListImage);
-                convertView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Pixels.px(100, activity)));
+                convertView.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, Pixels.px(100, activity)));
                 Lightbox.set(activity, expandedListImage, primaryText);
                 break;
 

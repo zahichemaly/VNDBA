@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.design.widget.FloatingActionButton;
@@ -22,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -80,7 +82,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.getMenu().findItem(R.id.accountTitle).setTitle(SettingsManager.getUsername(this));
         View header = navigationView.getHeaderView(0);
         LinearLayout headerBackground = (LinearLayout) header.findViewById(R.id.headerBackground);
-        headerBackground.setBackground(getResources().getDrawable(SettingsManager.getWallpaper(this), getTheme()));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            headerBackground.setBackground(getResources().getDrawable(SettingsManager.getWallpaper(this), getTheme()));
+        } else {
+            headerBackground.setBackground(getResources().getDrawable(SettingsManager.getWallpaper(this)));
+        }
 
         FloatingActionButton floatingSearchButton = (FloatingActionButton) findViewById(R.id.floatingSearchButton);
         if (floatingSearchButton != null) {
@@ -152,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LinearLayout linearLayout = new LinearLayout(this);
         final CheckBox reverseCheckbox = new CheckBox(this);
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        AbsListView.LayoutParams layoutParams = new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.WRAP_CONTENT);
         reverseCheckbox.setLayoutParams(layoutParams);
         reverseCheckbox.setPadding(Pixels.px(20, this), reverseCheckbox.getPaddingTop(), reverseCheckbox.getPaddingRight(), reverseCheckbox.getPaddingBottom());
         reverseCheckbox.setText("Reverse order");
@@ -175,9 +181,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 });
 
         AlertDialog alertDialog = builder.create();
-
-        alertDialog.show();
         alertDialog.getListView().addFooterView(linearLayout);
+        alertDialog.show();
     }
 
     @Override
