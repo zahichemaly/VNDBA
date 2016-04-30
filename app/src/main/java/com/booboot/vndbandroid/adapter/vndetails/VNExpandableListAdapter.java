@@ -7,7 +7,6 @@ package com.booboot.vndbandroid.adapter.vndetails;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -25,6 +24,7 @@ import com.booboot.vndbandroid.adapter.doublelist.DoubleListListener;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Links;
+import com.booboot.vndbandroid.api.bean.Options;
 import com.booboot.vndbandroid.db.Cache;
 import com.booboot.vndbandroid.factory.CharacterDataFactory;
 import com.booboot.vndbandroid.factory.ReleaseDataFactory;
@@ -151,14 +151,21 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                         convertView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                VNDBServer.get("vn", Cache.VN_FLAGS, "(id = " + vnId + ")", null, context, new Callback() {
+                                if (Cache.vnlist.get(vnId) != null) {
+                                    Intent intent = new Intent(context, VNDetailsActivity.class);
+                                    intent.putExtra(VNTypeFragment.VN_ARG, Cache.vnlist.get(vnId));
+                                    context.startActivity(intent);
+                                    return;
+                                }
+
+                                VNDBServer.get("vn", Cache.VN_FLAGS, "(id = " + vnId + ")", Options.create(false, false), context, new Callback() {
                                     @Override
                                     protected void config() {
-                                        if (results.getItems().size() < 1) return;
-
-                                        Intent intent = new Intent(context, VNDetailsActivity.class);
-                                        intent.putExtra(VNTypeFragment.VN_ARG, results.getItems().get(0));
-                                        context.startActivity(intent);
+                                        if (!results.getItems().isEmpty()) {
+                                            Intent intent = new Intent(context, VNDetailsActivity.class);
+                                            intent.putExtra(VNTypeFragment.VN_ARG, results.getItems().get(0));
+                                            context.startActivity(intent);
+                                        }
                                     }
                                 }, Callback.errorCallback(context));
                             }
