@@ -83,11 +83,11 @@ public class VNDetailsFactory {
         description.add(descriptionWithoutSpoilers);
 
         List<String> genres = new ArrayList<>();
-        for (List<Number> tag : vn.getTags()) {
-            if (!Tag.checkSpoilerLevel(tag.get(2).intValue())) continue;
-            String tagName = Tag.getTags(activity).get(tag.get(0).intValue()).getName();
-            if (Genre.contains(tagName)) {
-                genres.add(tagName);
+        for (List<Number> tagInfo : vn.getTags()) {
+            if (!Tag.checkSpoilerLevel(tagInfo.get(2).intValue())) continue;
+            Tag tag = Tag.getTags(activity).get(tagInfo.get(0).intValue());
+            if (tag != null && Genre.contains(tag.getName())) {
+                genres.add(tag.getName());
             }
         }
 
@@ -108,20 +108,20 @@ public class VNDetailsFactory {
         List<String> tags = new ArrayList<>();
         List<Integer> tags_images = new ArrayList<>();
         Map<String, Boolean> alreadyProcessedCategories = new HashMap<>();
-        for (List<Number> cat : vn.getTags()) {
-            if (!Tag.checkSpoilerLevel(cat.get(2).intValue())) continue;
-            String currentCategory = Tag.getTags(activity).get(cat.get(0).intValue()).getCat();
-            if (alreadyProcessedCategories.get(currentCategory) == null) {
-                alreadyProcessedCategories.put(currentCategory, true);
-                tags.add("<b>" + Category.CATEGORIES.get(currentCategory) + " :</b>");
+        for (List<Number> catInfo : vn.getTags()) {
+            if (!Tag.checkSpoilerLevel(catInfo.get(2).intValue())) continue;
+            Tag cat = Tag.getTags(activity).get(catInfo.get(0).intValue());
+            if (cat != null && alreadyProcessedCategories.get(cat.getCat()) == null) {
+                alreadyProcessedCategories.put(cat.getCat(), true);
+                tags.add("<b>" + Category.CATEGORIES.get(cat.getCat()) + " :</b>");
                 tags_images.add(-1);
-                for (List<Number> tag : vn.getTags()) {
-                    if (!Tag.checkSpoilerLevel(tag.get(2).intValue())) continue;
-                    String tagCat = Tag.getTags(activity).get(tag.get(0).intValue()).getCat();
-                    if (tagCat.equals(currentCategory)) {
-                        String tagName = Tag.getTags(activity).get(tag.get(0).intValue()).getName();
+                for (List<Number> tagInfo : vn.getTags()) {
+                    if (!Tag.checkSpoilerLevel(tagInfo.get(2).intValue())) continue;
+                    Tag tag = Tag.getTags(activity).get(tagInfo.get(0).intValue());
+                    if (tag != null && tag.getCat().equals(cat.getCat())) {
+                        String tagName = Tag.getTags(activity).get(tagInfo.get(0).intValue()).getName();
                         tags.add(tagName);
-                        tags_images.add(Tag.getScoreImage(tag));
+                        tags_images.add(Tag.getScoreImage(tagInfo));
                     }
                 }
             }
