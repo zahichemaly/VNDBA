@@ -46,7 +46,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class VNDetailsActivity extends AppCompatActivity {
-    public static int spoilerLevel = -1;
+    public int spoilerLevel = -1;
     private ActionBar actionBar;
     private Item vn;
     private Item vnlistVn;
@@ -75,6 +75,10 @@ public class VNDetailsActivity extends AppCompatActivity {
 
         vn = (Item) getIntent().getSerializableExtra(VNTypeFragment.VN_ARG);
         listener = new VNDetailsListener(this, vn);
+
+        if (savedInstanceState != null) {
+            spoilerLevel = savedInstanceState.getInt("SPOILER_LEVEL");
+        }
 
         if (spoilerLevel < 0) {
             if (SettingsManager.getSpoilerCompleted(this) && vn.getStatus() == Status.FINISHED)
@@ -319,6 +323,12 @@ public class VNDetailsActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putInt("SPOILER_LEVEL", spoilerLevel);
+        super.onSaveInstanceState(savedInstanceState);
     }
 
     public void setCharacterElement(VNDetailsElement characterElement) {

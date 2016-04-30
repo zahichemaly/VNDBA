@@ -22,19 +22,19 @@ import com.booboot.vndbandroid.util.Utils;
  * Created by od on 12/04/2016.
  */
 public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener {
-    private VNDetailsActivity context;
+    private VNDetailsActivity activity;
     private Item vn;
     private Button popupButton;
 
-    public VNDetailsListener(VNDetailsActivity context, Item vn) {
-        this.context = context;
+    public VNDetailsListener(VNDetailsActivity activity, Item vn) {
+        this.activity = activity;
         this.vn = vn;
     }
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        if (!ConnectionReceiver.isConnected(context)) {
-            Toast.makeText(context, ConnectionReceiver.CONNECTION_ERROR_MESSAGE, Toast.LENGTH_LONG).show();
+        if (!ConnectionReceiver.isConnected(activity)) {
+            Toast.makeText(activity, ConnectionReceiver.CONNECTION_ERROR_MESSAGE, Toast.LENGTH_LONG).show();
             return true;
         }
 
@@ -196,25 +196,25 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener {
                 break;
 
             case R.id.item_spoil_0:
-                VNDetailsActivity.spoilerLevel = 0;
-                Utils.recreate(context);
+                activity.spoilerLevel = 0;
+                Utils.recreate(activity);
                 return true;
 
             case R.id.item_spoil_1:
-                VNDetailsActivity.spoilerLevel = 1;
-                Utils.recreate(context);
+                activity.spoilerLevel = 1;
+                Utils.recreate(activity);
                 return true;
 
             case R.id.item_spoil_2:
-                VNDetailsActivity.spoilerLevel = 2;
-                Utils.recreate(context);
+                activity.spoilerLevel = 2;
+                Utils.recreate(activity);
                 return true;
 
             default:
                 return false;
         }
 
-        VNDBServer.set(type, vn.getId(), fields, context, null, Callback.errorCallback(context));
+        VNDBServer.set(type, vn.getId(), fields, activity, null, Callback.errorCallback(activity));
         MainActivity.instance.getVnlistFragment().refresh();
 
         return true;

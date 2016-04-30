@@ -39,12 +39,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class VNExpandableListAdapter extends BaseExpandableListAdapter {
-    private Context context;
+    private VNDetailsActivity activity;
     private List<String> titles;
     private LinkedHashMap<String, VNDetailsElement> vnDetailsElements;
 
-    public VNExpandableListAdapter(Context context, List<String> titles, LinkedHashMap<String, VNDetailsElement> vnDetailsElements) {
-        this.context = context;
+    public VNExpandableListAdapter(VNDetailsActivity activity, List<String> titles, LinkedHashMap<String, VNDetailsElement> vnDetailsElements) {
+        this.activity = activity;
         this.titles = titles;
         this.vnDetailsElements = vnDetailsElements;
     }
@@ -83,7 +83,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
         final String primaryText = (String) getChild(listPosition, expandedListPosition);
         final String secondaryText = (String) getRightChild(listPosition, expandedListPosition);
         final int layout = getChildLayout(listPosition);
-        final LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final LayoutInflater layoutInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         convertView = layoutInflater.inflate(layout, null);
 
         switch (layout) {
@@ -120,8 +120,8 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
             case R.layout.list_item_images:
                 final ImageButton expandedListImage = (ImageButton) convertView.findViewById(R.id.expandedListImage);
                 ImageLoader.getInstance().displayImage(primaryText, expandedListImage);
-                convertView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Pixels.px(100, context)));
-                Lightbox.set(context, expandedListImage, primaryText);
+                convertView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Pixels.px(100, activity)));
+                Lightbox.set(activity, expandedListImage, primaryText);
                 break;
 
             case R.layout.list_item_subtitle:
@@ -134,7 +134,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                 } else {
                     String url = getElement(listPosition).getUrlImages().get(expandedListPosition);
                     ImageLoader.getInstance().displayImage(url, iconView);
-                    Lightbox.set(context, iconView, url);
+                    Lightbox.set(activity, iconView, url);
                 }
 
                 title.setText(Html.fromHtml(primaryText));
@@ -152,29 +152,29 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                             @Override
                             public void onClick(View v) {
                                 if (Cache.vnlist.get(vnId) != null) {
-                                    Intent intent = new Intent(context, VNDetailsActivity.class);
+                                    Intent intent = new Intent(activity, VNDetailsActivity.class);
                                     intent.putExtra(VNTypeFragment.VN_ARG, Cache.vnlist.get(vnId));
-                                    context.startActivity(intent);
+                                    activity.startActivity(intent);
                                     return;
                                 }
 
-                                VNDBServer.get("vn", Cache.VN_FLAGS, "(id = " + vnId + ")", Options.create(false, false), context, new Callback() {
+                                VNDBServer.get("vn", Cache.VN_FLAGS, "(id = " + vnId + ")", Options.create(false, false), activity, new Callback() {
                                     @Override
                                     protected void config() {
                                         if (!results.getItems().isEmpty()) {
-                                            Intent intent = new Intent(context, VNDetailsActivity.class);
+                                            Intent intent = new Intent(activity, VNDetailsActivity.class);
                                             intent.putExtra(VNTypeFragment.VN_ARG, results.getItems().get(0));
-                                            context.startActivity(intent);
+                                            activity.startActivity(intent);
                                         }
                                     }
-                                }, Callback.errorCallback(context));
+                                }, Callback.errorCallback(activity));
                             }
                         });
                         break;
 
                     case VNDetailsFactory.TITLE_CHARACTERS:
-                        final Item character = ((VNDetailsActivity) context).getCharacters().get(expandedListPosition);
-                        convertView.setOnClickListener(new DoubleListListener(context, character.getName(), CharacterDataFactory.getData(context, character)));
+                        final Item character = activity.getCharacters().get(expandedListPosition);
+                        convertView.setOnClickListener(new DoubleListListener(activity, character.getName(), CharacterDataFactory.getData(activity, character)));
                         break;
 
                     case VNDetailsFactory.TITLE_RELEASES:
@@ -183,11 +183,11 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                             Integer image = getElement(listPosition).getPrimaryImages().get(expandedListPosition);
                             if (image != null) {
                                 iconView.setImageResource(image);
-                                iconView.setMaxWidth(Pixels.px(35, context));
-                                iconView.setMaxHeight(Pixels.px(40, context));
+                                iconView.setMaxWidth(Pixels.px(35, activity));
+                                iconView.setMaxHeight(Pixels.px(40, activity));
                                 ViewGroup.LayoutParams layoutParams = iconView.getLayoutParams();
-                                layoutParams.width = Pixels.px(35, context);
-                                layoutParams.height = Pixels.px(40, context);
+                                layoutParams.width = Pixels.px(35, activity);
+                                layoutParams.height = Pixels.px(40, activity);
                                 iconView.setLayoutParams(layoutParams);
                                 iconView.setVisibility(View.VISIBLE);
                             }
@@ -197,7 +197,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                         final Integer releaseId = getElement(listPosition).getSecondaryImages().get(expandedListPosition);
                         if (releaseId == null) break;
                         Item release = null;
-                        for (Item tmp : Cache.releases.get(((VNDetailsActivity) context).getVn().getId())) {
+                        for (Item tmp : Cache.releases.get(activity.getVn().getId())) {
                             if (tmp.getId() == releaseId) {
                                 release = tmp;
                                 break;
@@ -205,7 +205,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                         }
                         if (release == null) break;
 
-                        convertView.setOnClickListener(new DoubleListListener(context, release.getTitle(), ReleaseDataFactory.getData(release)));
+                        convertView.setOnClickListener(new DoubleListListener(activity, release.getTitle(), ReleaseDataFactory.getData(release)));
                         break;
 
                     case VNDetailsFactory.TITLE_ANIME:
@@ -213,7 +213,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                         convertView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Utils.openInBrowser(context, Links.ANIDB + id);
+                                Utils.openInBrowser(activity, Links.ANIDB + id);
                             }
                         });
                         break;
@@ -248,7 +248,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
     public View getGroupView(int listPosition, boolean isExpanded, View convertView, ViewGroup parent) {
         String listTitle = (String) getGroup(listPosition);
         if (convertView == null) {
-            LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater layoutInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = layoutInflater.inflate(R.layout.list_group, null);
         }
         TextView listTitleTextView = (TextView) convertView.findViewById(R.id.listTitle);

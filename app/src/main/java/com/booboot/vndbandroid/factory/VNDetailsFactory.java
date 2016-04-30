@@ -77,14 +77,14 @@ public class VNDetailsFactory {
 
         List<String> description = new ArrayList<>();
         String descriptionWithoutSpoilers = vn.getDescription();
-        if (!Tag.checkSpoilerLevel(2)) {
+        if (!Tag.checkSpoilerLevel(activity, 2)) {
             descriptionWithoutSpoilers = descriptionWithoutSpoilers.replaceAll("\\[spoiler\\].*\\[/spoiler\\]", "");
         }
         description.add(descriptionWithoutSpoilers);
 
         List<String> genres = new ArrayList<>();
         for (List<Number> tagInfo : vn.getTags()) {
-            if (!Tag.checkSpoilerLevel(tagInfo.get(2).intValue())) continue;
+            if (!Tag.checkSpoilerLevel(activity, tagInfo.get(2).intValue())) continue;
             Tag tag = Tag.getTags(activity).get(tagInfo.get(0).intValue());
             if (tag != null && Genre.contains(tag.getName())) {
                 genres.add(tag.getName());
@@ -109,14 +109,14 @@ public class VNDetailsFactory {
         List<Integer> tags_images = new ArrayList<>();
         Map<String, Boolean> alreadyProcessedCategories = new HashMap<>();
         for (List<Number> catInfo : vn.getTags()) {
-            if (!Tag.checkSpoilerLevel(catInfo.get(2).intValue())) continue;
+            if (!Tag.checkSpoilerLevel(activity, catInfo.get(2).intValue())) continue;
             Tag cat = Tag.getTags(activity).get(catInfo.get(0).intValue());
             if (cat != null && alreadyProcessedCategories.get(cat.getCat()) == null) {
                 alreadyProcessedCategories.put(cat.getCat(), true);
                 tags.add("<b>" + Category.CATEGORIES.get(cat.getCat()) + " :</b>");
                 tags_images.add(-1);
                 for (List<Number> tagInfo : vn.getTags()) {
-                    if (!Tag.checkSpoilerLevel(tagInfo.get(2).intValue())) continue;
+                    if (!Tag.checkSpoilerLevel(activity, tagInfo.get(2).intValue())) continue;
                     Tag tag = Tag.getTags(activity).get(tagInfo.get(0).intValue());
                     if (tag != null && tag.getCat().equals(cat.getCat())) {
                         String tagName = Tag.getTags(activity).get(tagInfo.get(0).intValue()).getName();
@@ -204,7 +204,7 @@ public class VNDetailsFactory {
                 /* Checking only the character for the current VN */
                 if ((int) spoilerInfo[0] != activity.getVn().getId()) continue;
                 /* If at least one release tags the character's spoiler level beyond our desired spoiler level, we totally hide it */
-                if (!Tag.checkSpoilerLevel((int) spoilerInfo[2])) {
+                if (!Tag.checkSpoilerLevel(activity, (int) spoilerInfo[2])) {
                     spoilerOk = false;
                     break;
                 }

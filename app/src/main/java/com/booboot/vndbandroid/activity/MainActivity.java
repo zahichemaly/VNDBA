@@ -234,12 +234,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    @Override
-    protected void onResume() {
-        VNDetailsActivity.spoilerLevel = -1;
-        super.onResume();
-    }
-
     public void addActiveFragment(VNTypeFragment fragment) {
         this.activeFragments.add(fragment);
     }
