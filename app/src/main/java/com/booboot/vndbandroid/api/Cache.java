@@ -254,22 +254,22 @@ public class Cache {
                         Item vnlistA = Cache.vnlist.get(first.getKey());
                         Item vnlistB = Cache.vnlist.get(second.getKey());
                         if (vnlistA == null && vnlistB == null) return 0;
-                        if (vnlistA == null) return 1;
-                        if (vnlistB == null) return -1;
+                        if (vnlistA == null) return -1;
+                        if (vnlistB == null) return 1;
                         return Integer.valueOf(vnlistA.getStatus()).compareTo(vnlistB.getStatus());
                     case 7:
                         Item votelistA = Cache.votelist.get(first.getKey());
                         Item votelistB = Cache.votelist.get(second.getKey());
                         if (votelistA == null && votelistB == null) return 0;
-                        if (votelistA == null) return 1;
-                        if (votelistB == null) return -1;
+                        if (votelistA == null) return -1;
+                        if (votelistB == null) return 1;
                         return Integer.valueOf(votelistA.getVote()).compareTo(votelistB.getVote());
                     case 8:
                         Item wishlistA = Cache.wishlist.get(first.getKey());
                         Item wishlistB = Cache.wishlist.get(second.getKey());
                         if (wishlistA == null && wishlistB == null) return 0;
-                        if (wishlistA == null) return 1;
-                        if (wishlistB == null) return -1;
+                        if (wishlistA == null) return -1;
+                        if (wishlistB == null) return 1;
                         return Integer.valueOf(wishlistA.getPriority()).compareTo(wishlistB.getPriority());
                     default:
                         return Integer.valueOf(first.getValue().getId()).compareTo(second.getValue().getId());
