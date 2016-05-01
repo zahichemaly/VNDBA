@@ -76,11 +76,13 @@ public class VNDetailsFactory {
         infoRightImages.add(-1);
 
         List<String> description = new ArrayList<>();
-        String descriptionWithoutSpoilers = vn.getDescription();
-        if (!Tag.checkSpoilerLevel(activity, 2)) {
-            descriptionWithoutSpoilers = descriptionWithoutSpoilers.replaceAll("\\[spoiler\\].*\\[/spoiler\\]", "");
+        if (vn.getDescription() != null) {
+            String descriptionWithoutSpoilers = vn.getDescription();
+            if (!Tag.checkSpoilerLevel(activity, 2)) {
+                descriptionWithoutSpoilers = descriptionWithoutSpoilers.replaceAll("\\[spoiler\\].*\\[/spoiler\\]", "");
+            }
+            description.add(descriptionWithoutSpoilers);
         }
-        description.add(descriptionWithoutSpoilers);
 
         List<String> genres = new ArrayList<>();
         for (List<Number> tagInfo : vn.getTags()) {
