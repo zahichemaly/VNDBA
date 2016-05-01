@@ -1,6 +1,8 @@
 package com.booboot.vndbandroid.listener;
 
+import android.provider.Settings;
 import android.support.v7.widget.PopupMenu;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.Toast;
@@ -32,14 +34,12 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener {
     }
 
     @Override
-    public boolean onMenuItemClick(MenuItem item) {
+    public boolean onMenuItemClick(final MenuItem item) {
         if (!ConnectionReceiver.isConnected(activity)) {
             Toast.makeText(activity, ConnectionReceiver.CONNECTION_ERROR_MESSAGE, Toast.LENGTH_LONG).show();
             return true;
         }
 
-        if (popupButton != null)
-            popupButton.setText(item.getTitle());
         String type;
         Fields fields = new Fields();
 
@@ -47,152 +47,111 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener {
             case R.id.item_playing:
                 type = "vnlist";
                 fields.setStatus(Status.PLAYING);
-                vn.setStatus(Status.PLAYING);
-                Cache.vnlist.put(vn.getId(), vn);
                 break;
 
             case R.id.item_finished:
                 type = "vnlist";
                 fields.setStatus(Status.FINISHED);
-                vn.setStatus(Status.FINISHED);
-                Cache.vnlist.put(vn.getId(), vn);
                 break;
 
             case R.id.item_stalled:
                 type = "vnlist";
                 fields.setStatus(Status.STALLED);
-                vn.setStatus(Status.STALLED);
-                Cache.vnlist.put(vn.getId(), vn);
-
                 break;
+
             case R.id.item_dropped:
                 type = "vnlist";
                 fields.setStatus(Status.DROPPED);
-                vn.setStatus(Status.DROPPED);
-                Cache.vnlist.put(vn.getId(), vn);
                 break;
 
             case R.id.item_unknown:
                 type = "vnlist";
                 fields.setStatus(Status.UNKNOWN);
-                vn.setStatus(Status.UNKNOWN);
-                Cache.vnlist.put(vn.getId(), vn);
                 break;
 
             case R.id.item_no_status:
                 type = "vnlist";
                 fields = null;
-                Cache.vnlist.remove(vn.getId());
                 break;
 
             case R.id.item_high:
                 type = "wishlist";
                 fields.setPriority(Priority.HIGH);
-                vn.setPriority(Priority.HIGH);
-                Cache.wishlist.put(vn.getId(), vn);
                 break;
 
             case R.id.item_medium:
                 type = "wishlist";
                 fields.setPriority(Priority.MEDIUM);
-                vn.setPriority(Priority.MEDIUM);
-                Cache.wishlist.put(vn.getId(), vn);
                 break;
 
             case R.id.item_low:
                 type = "wishlist";
                 fields.setPriority(Priority.LOW);
-                vn.setPriority(Priority.LOW);
-                Cache.wishlist.put(vn.getId(), vn);
                 break;
 
             case R.id.item_blacklist:
                 type = "wishlist";
                 fields.setPriority(Priority.BLACKLIST);
-                vn.setPriority(Priority.BLACKLIST);
-                Cache.wishlist.put(vn.getId(), vn);
                 break;
 
             case R.id.item_no_wishlist:
                 type = "wishlist";
                 fields = null;
-                Cache.wishlist.remove(vn.getId());
                 break;
 
             case R.id.item_10:
                 type = "votelist";
                 fields.setVote(100);
-                vn.setVote(100);
-                Cache.votelist.put(vn.getId(), vn);
                 break;
 
             case R.id.item_9:
                 type = "votelist";
                 fields.setVote(90);
-                vn.setVote(90);
-                Cache.votelist.put(vn.getId(), vn);
                 break;
 
             case R.id.item_8:
                 type = "votelist";
                 fields.setVote(80);
-                vn.setVote(80);
-                Cache.votelist.put(vn.getId(), vn);
                 break;
 
             case R.id.item_7:
                 type = "votelist";
                 fields.setVote(70);
-                vn.setVote(70);
-                Cache.votelist.put(vn.getId(), vn);
                 break;
 
             case R.id.item_6:
                 type = "votelist";
                 fields.setVote(60);
-                vn.setVote(60);
-                Cache.votelist.put(vn.getId(), vn);
                 break;
 
             case R.id.item_5:
                 type = "votelist";
                 fields.setVote(50);
-                vn.setVote(50);
-                Cache.votelist.put(vn.getId(), vn);
                 break;
 
             case R.id.item_4:
                 type = "votelist";
                 fields.setVote(40);
-                vn.setVote(40);
-                Cache.votelist.put(vn.getId(), vn);
                 break;
 
             case R.id.item_3:
                 type = "votelist";
                 fields.setVote(30);
-                vn.setVote(30);
-                Cache.votelist.put(vn.getId(), vn);
                 break;
 
             case R.id.item_2:
                 type = "votelist";
                 fields.setVote(20);
-                vn.setVote(20);
-                Cache.votelist.put(vn.getId(), vn);
                 break;
 
             case R.id.item_1:
                 type = "votelist";
                 fields.setVote(10);
-                vn.setVote(10);
-                Cache.votelist.put(vn.getId(), vn);
                 break;
 
             case R.id.item_no_vote:
                 type = "votelist";
                 fields = null;
-                Cache.votelist.remove(vn.getId());
                 break;
 
             case R.id.item_spoil_0:
@@ -214,8 +173,132 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener {
                 return false;
         }
 
-        VNDBServer.set(type, vn.getId(), fields, activity, null, Callback.errorCallback(activity));
-        MainActivity.instance.getVnlistFragment().refresh();
+        final long start = System.currentTimeMillis();
+        VNDBServer.set(type, vn.getId(), fields, activity, new Callback() {
+            @Override
+            /**
+             * It is necessary to make another switch here to update our cache, because if there is an error
+             * during the request, our cache's state would be different from the actual account state and there would be discrepancies.
+             */
+            protected void config() {
+                Log.d("D", "Request finished in : " + (System.currentTimeMillis() - start) + " ms");
+                if (popupButton != null)
+                    popupButton.setText(item.getTitle());
+
+                switch (item.getItemId()) {
+                    case R.id.item_playing:
+                        vn.setStatus(Status.PLAYING);
+                        Cache.vnlist.put(vn.getId(), vn);
+                        break;
+
+                    case R.id.item_finished:
+                        vn.setStatus(Status.FINISHED);
+                        Cache.vnlist.put(vn.getId(), vn);
+                        break;
+
+                    case R.id.item_stalled:
+                        vn.setStatus(Status.STALLED);
+                        Cache.vnlist.put(vn.getId(), vn);
+
+                        break;
+                    case R.id.item_dropped:
+                        vn.setStatus(Status.DROPPED);
+                        Cache.vnlist.put(vn.getId(), vn);
+                        break;
+
+                    case R.id.item_unknown:
+                        vn.setStatus(Status.UNKNOWN);
+                        Cache.vnlist.put(vn.getId(), vn);
+                        break;
+
+                    case R.id.item_no_status:
+                        Cache.vnlist.remove(vn.getId());
+                        break;
+
+                    case R.id.item_high:
+                        vn.setPriority(Priority.HIGH);
+                        Cache.wishlist.put(vn.getId(), vn);
+                        break;
+
+                    case R.id.item_medium:
+                        vn.setPriority(Priority.MEDIUM);
+                        Cache.wishlist.put(vn.getId(), vn);
+                        break;
+
+                    case R.id.item_low:
+                        vn.setPriority(Priority.LOW);
+                        Cache.wishlist.put(vn.getId(), vn);
+                        break;
+
+                    case R.id.item_blacklist:
+                        vn.setPriority(Priority.BLACKLIST);
+                        Cache.wishlist.put(vn.getId(), vn);
+                        break;
+
+                    case R.id.item_no_wishlist:
+                        Cache.wishlist.remove(vn.getId());
+                        break;
+
+                    case R.id.item_10:
+                        vn.setVote(100);
+                        Cache.votelist.put(vn.getId(), vn);
+                        break;
+
+                    case R.id.item_9:
+                        vn.setVote(90);
+                        Cache.votelist.put(vn.getId(), vn);
+                        break;
+
+                    case R.id.item_8:
+                        vn.setVote(80);
+                        Cache.votelist.put(vn.getId(), vn);
+                        break;
+
+                    case R.id.item_7:
+                        vn.setVote(70);
+                        Cache.votelist.put(vn.getId(), vn);
+                        break;
+
+                    case R.id.item_6:
+                        vn.setVote(60);
+                        Cache.votelist.put(vn.getId(), vn);
+                        break;
+
+                    case R.id.item_5:
+                        vn.setVote(50);
+                        Cache.votelist.put(vn.getId(), vn);
+                        break;
+
+                    case R.id.item_4:
+                        vn.setVote(40);
+                        Cache.votelist.put(vn.getId(), vn);
+                        break;
+
+                    case R.id.item_3:
+                        vn.setVote(30);
+                        Cache.votelist.put(vn.getId(), vn);
+                        break;
+
+                    case R.id.item_2:
+                        vn.setVote(20);
+                        Cache.votelist.put(vn.getId(), vn);
+                        break;
+
+                    case R.id.item_1:
+                        vn.setVote(10);
+                        Cache.votelist.put(vn.getId(), vn);
+                        break;
+
+                    case R.id.item_no_vote:
+                        Cache.votelist.remove(vn.getId());
+                        break;
+
+                    default: return;
+                }
+
+                MainActivity.instance.getVnlistFragment().refresh();
+            }
+        }, Callback.errorCallback(activity));
 
         return true;
     }

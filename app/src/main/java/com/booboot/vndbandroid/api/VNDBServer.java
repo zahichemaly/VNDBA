@@ -202,7 +202,7 @@ public class VNDBServer {
         }
 
         try {
-            Log.e("D", query.toString());
+            // Log.e("D", query.toString());
             if (in == null) {
                 /* If we are inside the application without connection and the connection just worked again, we have to reconnect on the fly */
                 VNDBServer.close();
@@ -263,7 +263,7 @@ public class VNDBServer {
             errorCallback.call();
             return null;
         }
-        log(response.toString());
+        // log(response.toString());
 
         int delimiterIndex = response.indexOf("{");
         if (delimiterIndex < 0) {
