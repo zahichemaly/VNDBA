@@ -2,7 +2,6 @@ package com.booboot.vndbandroid.activity;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -23,7 +22,7 @@ import android.widget.Toast;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.Links;
-import com.booboot.vndbandroid.db.Cache;
+import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;

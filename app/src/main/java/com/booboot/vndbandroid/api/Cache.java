@@ -1,8 +1,7 @@
-package com.booboot.vndbandroid.db;
+package com.booboot.vndbandroid.api;
 
 import android.content.Context;
 
-import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.DbStats;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Options;
@@ -91,6 +90,12 @@ public class Cache {
                                 Set<Integer> mergedIds = new HashSet<>(vnlistIds.keySet());
                                 mergedIds.addAll(votelistIds.keySet());
                                 mergedIds.addAll(wishlistIds.keySet());
+
+                                if (mergedIds.isEmpty()) {
+                                    successCallback.call();
+                                    return;
+                                }
+
                                 try {
                                     mergedIdsString = JSON.mapper.writeValueAsString(mergedIds);
                                 } catch (JsonProcessingException e) {

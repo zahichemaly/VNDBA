@@ -13,7 +13,7 @@ import com.booboot.vndbandroid.api.bean.Fields;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Priority;
 import com.booboot.vndbandroid.api.bean.Status;
-import com.booboot.vndbandroid.db.Cache;
+import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.ConnectionReceiver;
 import com.booboot.vndbandroid.util.Utils;

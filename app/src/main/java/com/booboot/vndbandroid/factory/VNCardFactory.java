@@ -11,7 +11,7 @@ import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Priority;
 import com.booboot.vndbandroid.api.bean.Status;
 import com.booboot.vndbandroid.api.bean.Vote;
-import com.booboot.vndbandroid.db.Cache;
+import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
 import com.dexafree.materialList.card.Card;

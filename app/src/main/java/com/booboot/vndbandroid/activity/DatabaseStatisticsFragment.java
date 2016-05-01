@@ -11,7 +11,7 @@ import android.widget.ListView;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.adapter.doublelist.DoubleListAdapter;
 import com.booboot.vndbandroid.adapter.doublelist.DoubleListElement;
-import com.booboot.vndbandroid.db.Cache;
+import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.util.Callback;
 
 /**

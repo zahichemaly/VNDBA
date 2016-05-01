@@ -14,7 +14,7 @@ import com.booboot.vndbandroid.adapter.tabs.VNTabsAdapter;
 import com.booboot.vndbandroid.api.bean.ListType;
 import com.booboot.vndbandroid.api.bean.Priority;
 import com.booboot.vndbandroid.api.bean.Status;
-import com.booboot.vndbandroid.db.Cache;
+import com.booboot.vndbandroid.api.Cache;
 
 /**
  * Created by od on 13/03/2016.

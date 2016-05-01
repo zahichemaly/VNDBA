@@ -12,7 +12,6 @@ import com.booboot.vndbandroid.api.bean.Ok;
 import com.booboot.vndbandroid.api.bean.Options;
 import com.booboot.vndbandroid.api.bean.Results;
 import com.booboot.vndbandroid.api.bean.VNDBCommand;
-import com.booboot.vndbandroid.db.Cache;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.ConnectionReceiver;
 import com.booboot.vndbandroid.util.JSON;

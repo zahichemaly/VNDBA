@@ -32,7 +32,7 @@ import android.widget.TextView;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.ListType;
-import com.booboot.vndbandroid.db.Cache;
+import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.util.Pixels;
 import com.booboot.vndbandroid.util.SettingsManager;
 

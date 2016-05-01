@@ -19,7 +19,7 @@ import com.booboot.vndbandroid.adapter.materiallistview.MaterialListView;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Options;
-import com.booboot.vndbandroid.db.Cache;
+import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.factory.VNCardFactory;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.SettingsManager;

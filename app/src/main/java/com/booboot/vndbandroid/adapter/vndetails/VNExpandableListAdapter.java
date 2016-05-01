@@ -26,7 +26,7 @@ import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Links;
 import com.booboot.vndbandroid.api.bean.Options;
-import com.booboot.vndbandroid.db.Cache;
+import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.factory.CharacterDataFactory;
 import com.booboot.vndbandroid.factory.ReleaseDataFactory;
 import com.booboot.vndbandroid.factory.VNDetailsFactory;
