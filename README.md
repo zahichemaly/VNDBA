@@ -2,6 +2,39 @@
 
 This project is an open-source Android client for the Visual Novel Database (VNDB - https://vndb.org/). The purpose of this app is to relate information on visual novels and enable you to keep track and mark the visual novels you played. You'll need a VNDB account to use this app.
 
+### Features
+- View your visual novel list, votelist and wishlist organized by tabs.
+- Filter your lists by name.
+- Sort your lists by:
+  - ID
+  - Title
+  - Release date
+  - Length
+  - Popularity
+  - Rating
+  - Status
+  - Vote
+  - Wish
+- View all information about a VN on a single page:
+  - General information (title, released date, length...)
+  - Description
+  - Genres
+  - Characters
+  - Screenshots
+  - Stats
+  - Tags
+  - Releases
+  - Relations to other VNs
+  - Related anime
+  - Platforms
+  - Languages
+- Add or modify a VN in your visual novel list, votelist or wishlist.
+- Search through all existing VNs with a smart search.
+- Enable or disable NSFW content.
+- Define a default spoiler level and a spoiler level for each VN.
+- View VNDB.org database statistics.
+- Change the appearance of your app through a selection of 21 different themes.
+
 ### Compatibility
   - Android : 4.2+
   - Phones and tablets 4"+
@@ -11,7 +44,7 @@ We're trying to keep the required permissions to a minimum. Here are the current
   - INTERNET : because we need Internet !
   - ACCESS_NETWORK_STATE : for offline support (enabling the application to work without connection).
 
-## Screenshots
+### Screenshots
 <p align="center">
   <img src="http://image.noelshack.com/fichiers/2016/17/1462036856-2016-04-30-17-19-32.png" width="45%"/>
   <img src="http://image.noelshack.com/fichiers/2016/17/1462036855-2016-04-30-17-20-17.png" width="45%"/>
