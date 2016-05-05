@@ -7,11 +7,12 @@ import android.view.Gravity;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.MainActivity;
 import com.booboot.vndbandroid.adapter.materiallistview.MaterialListView;
+import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Priority;
 import com.booboot.vndbandroid.api.bean.Status;
 import com.booboot.vndbandroid.api.bean.Vote;
-import com.booboot.vndbandroid.api.Cache;
+import com.booboot.vndbandroid.util.Lightbox;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
 import com.dexafree.materialList.card.Card;
@@ -71,7 +72,10 @@ public class VNCardFactory {
 
         if (vn.isImage_nsfw() && !SettingsManager.getNSFW(activity))
             cardProvider.setDrawable(R.drawable.ic_nsfw);
-        else cardProvider.setDrawable(vn.getImage());
+        else if (PlaceholderPictureFactory.USE_PLACEHOLDER)
+            cardProvider.setDrawable(PlaceholderPictureFactory.getPlaceholderPicture());
+        else
+            cardProvider.setDrawable(vn.getImage());
 
         Card card = cardProvider.endConfig().build();
         card.setTag(vn);

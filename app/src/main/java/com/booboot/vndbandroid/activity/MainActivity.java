@@ -7,9 +7,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.IdRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -30,11 +34,13 @@ import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
+import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.ListType;
-import com.booboot.vndbandroid.api.Cache;
+import com.booboot.vndbandroid.factory.PlaceholderPictureFactory;
 import com.booboot.vndbandroid.util.Pixels;
 import com.booboot.vndbandroid.util.SettingsManager;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,11 +86,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         navigationView.getMenu().findItem(R.id.accountTitle).setTitle(SettingsManager.getUsername(this));
         View header = navigationView.getHeaderView(0);
-        LinearLayout headerBackground = (LinearLayout) header.findViewById(R.id.headerBackground);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            headerBackground.setBackground(getResources().getDrawable(SettingsManager.getWallpaper(this), getTheme()));
+        final LinearLayout headerBackground = (LinearLayout) header.findViewById(R.id.headerBackground);
+
+        if (PlaceholderPictureFactory.USE_PLACEHOLDER) {
+            new Thread() {
+                public void run() {
+                    final Bitmap background = ImageLoader.getInstance().loadImageSync(PlaceholderPictureFactory.getPlaceholderPicture());
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            headerBackground.setBackground(new BitmapDrawable(getResources(), background));
+                        }
+                    });
+                }
+            }.start();
         } else {
-            headerBackground.setBackground(getResources().getDrawable(SettingsManager.getWallpaper(this)));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                headerBackground.setBackground(getResources().getDrawable(SettingsManager.getWallpaper(this), getTheme()));
+            } else {
+                headerBackground.setBackground(getResources().getDrawable(SettingsManager.getWallpaper(this)));
+            }
         }
 
         FloatingActionButton floatingSearchButton = (FloatingActionButton) findViewById(R.id.floatingSearchButton);

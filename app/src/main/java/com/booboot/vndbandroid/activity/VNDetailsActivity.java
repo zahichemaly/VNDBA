@@ -33,6 +33,7 @@ import com.booboot.vndbandroid.api.bean.Priority;
 import com.booboot.vndbandroid.api.bean.Status;
 import com.booboot.vndbandroid.api.bean.Vote;
 import com.booboot.vndbandroid.api.Cache;
+import com.booboot.vndbandroid.factory.PlaceholderPictureFactory;
 import com.booboot.vndbandroid.factory.VNDetailsFactory;
 import com.booboot.vndbandroid.listener.VNDetailsListener;
 import com.booboot.vndbandroid.util.Callback;
@@ -134,7 +135,7 @@ public class VNDetailsActivity extends AppCompatActivity {
         if (vn.isImage_nsfw() && !SettingsManager.getNSFW(this)) {
             image.setImageResource(R.drawable.ic_nsfw);
         } else {
-            ImageLoader.getInstance().displayImage(vn.getImage(), image);
+            ImageLoader.getInstance().displayImage(PlaceholderPictureFactory.USE_PLACEHOLDER ? PlaceholderPictureFactory.getPlaceholderPicture() : vn.getImage(), image);
             Lightbox.set(VNDetailsActivity.this, image, vn.getImage());
         }
     }
