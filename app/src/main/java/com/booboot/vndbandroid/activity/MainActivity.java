@@ -40,6 +40,7 @@ import com.booboot.vndbandroid.api.bean.ListType;
 import com.booboot.vndbandroid.factory.PlaceholderPictureFactory;
 import com.booboot.vndbandroid.util.Pixels;
 import com.booboot.vndbandroid.util.SettingsManager;
+import com.booboot.vndbandroid.util.Utils;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
@@ -245,8 +246,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_logout) {
             VNDBServer.close();
             Cache.clearCache(this);
-            LoginActivity.autologin = false;
             LoginActivity.instance.enableAll();
+            Utils.recreate(LoginActivity.instance);
             selectedItem = 0;
             finish();
             return true;

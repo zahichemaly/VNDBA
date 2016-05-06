@@ -20,9 +20,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.booboot.vndbandroid.R;
+import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.Links;
-import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
@@ -41,6 +41,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTheme(SettingsManager.getNoActionBarTheme(this));
         setContentView(R.layout.login);
 
         instance = this;
@@ -52,7 +53,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
+            window.setStatusBarColor(MainActivity.getThemeColor(this, R.attr.colorPrimaryDark));
         }
 
         signupTextView = (TextView) findViewById(R.id.signupTextView);
@@ -69,12 +70,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             /* Filling the inputs with saved values (for appearance's sake) */
             loginUsername.setText(savedUsername);
             loginPassword.setText(savedPassword);
+            autologin = false;
 
             login();
         } else {
             enableAll();
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-            autologin = true;
         }
     }
 
