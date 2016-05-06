@@ -70,13 +70,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             /* Filling the inputs with saved values (for appearance's sake) */
             loginUsername.setText(savedUsername);
             loginPassword.setText(savedPassword);
-            autologin = false;
 
             login();
         } else {
             enableAll();
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         }
+        
+        autologin = false;
     }
 
     private void initSignup() {
