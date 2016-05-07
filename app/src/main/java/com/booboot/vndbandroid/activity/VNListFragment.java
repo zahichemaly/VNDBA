@@ -79,6 +79,7 @@ public class VNListFragment extends Fragment implements TabLayout.OnTabSelectedL
         viewPager.setAdapter(null);
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(currentPage);
+        refreshTitles();
     }
 
     @SuppressWarnings("ConstantConditions")

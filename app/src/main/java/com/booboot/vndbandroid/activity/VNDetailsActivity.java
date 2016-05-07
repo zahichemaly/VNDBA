@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.adapter.vndetails.VNDetailsElement;
 import com.booboot.vndbandroid.adapter.vndetails.VNExpandableListAdapter;
+import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Links;
@@ -32,7 +33,6 @@ import com.booboot.vndbandroid.api.bean.Options;
 import com.booboot.vndbandroid.api.bean.Priority;
 import com.booboot.vndbandroid.api.bean.Status;
 import com.booboot.vndbandroid.api.bean.Vote;
-import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.factory.PlaceholderPictureFactory;
 import com.booboot.vndbandroid.factory.VNDetailsFactory;
 import com.booboot.vndbandroid.listener.VNDetailsListener;
@@ -299,11 +299,6 @@ public class VNDetailsActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                /* Refreshing tabs' counter upon leaving (may have made changes in this activity) */
-                if (MainActivity.instance.getVnlistFragment() != null) MainActivity.instance.getVnlistFragment().refreshTitles();
-                Cache.saveToCache(this, Cache.VNLIST_CACHE, Cache.vnlist);
-                Cache.saveToCache(this, Cache.VOTELIST_CACHE, Cache.votelist);
-                Cache.saveToCache(this, Cache.WISHLIST_CACHE, Cache.wishlist);
                 finish();
                 break;
 
@@ -339,6 +334,14 @@ public class VNDetailsActivity extends AppCompatActivity {
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putInt("SPOILER_LEVEL", spoilerLevel);
         super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    protected void onDestroy() {
+        Cache.saveToCache(this, Cache.VNLIST_CACHE, Cache.vnlist);
+        Cache.saveToCache(this, Cache.VOTELIST_CACHE, Cache.votelist);
+        Cache.saveToCache(this, Cache.WISHLIST_CACHE, Cache.wishlist);
+        super.onDestroy();
     }
 
     public void setCharacterElement(VNDetailsElement characterElement) {
