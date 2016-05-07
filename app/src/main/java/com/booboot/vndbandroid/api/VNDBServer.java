@@ -3,6 +3,7 @@ package com.booboot.vndbandroid.api;
 import android.content.Context;
 import android.util.Log;
 
+import com.booboot.vndbandroid.BuildConfig;
 import com.booboot.vndbandroid.api.bean.DbStats;
 import com.booboot.vndbandroid.api.bean.Error;
 import com.booboot.vndbandroid.api.bean.Fields;
@@ -202,7 +203,9 @@ public class VNDBServer {
         }
 
         try {
-            // Log.e("D", query.toString());
+            if (BuildConfig.DEBUG) {
+                Log.e("D", query.toString());
+            }
             if (in == null) {
                 /* If we are inside the application without connection and the connection just worked again, we have to reconnect on the fly */
                 VNDBServer.close();
@@ -263,7 +266,9 @@ public class VNDBServer {
             errorCallback.call();
             return null;
         }
-        // log(response.toString());
+        if (BuildConfig.DEBUG) {
+            //   log(response.toString());
+        }
 
         int delimiterIndex = response.indexOf("{");
         if (delimiterIndex < 0) {
