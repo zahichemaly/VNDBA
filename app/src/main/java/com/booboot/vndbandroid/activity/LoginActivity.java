@@ -70,13 +70,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             /* Filling the inputs with saved values (for appearance's sake) */
             loginUsername.setText(savedUsername);
             loginPassword.setText(savedPassword);
+            disableAll();
 
-            login();
+            new Thread() {
+                public void run() {
+                    login();
+                }
+            }.start();
         } else {
             enableAll();
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         }
-        
+
         autologin = false;
     }
 
@@ -106,29 +111,36 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if (v.getId() == R.id.loginButton) {
             SettingsManager.setUsername(this, loginUsername.getText().toString());
             SettingsManager.setPassword(this, loginPassword.getText().toString());
+            disableAll();
             login();
         }
     }
 
     private void login() {
-        disableAll();
-        VNDBServer.login(this, new Callback() {
-            @Override
-            public void config() {
-                Cache.loadData(LoginActivity.this, new Callback() {
-                    @Override
-                    protected void config() {
-                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                    }
-                });
-            }
-        }, new Callback() {
-            @Override
-            public void config() {
-                Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
-                enableAll();
-            }
-        });
+        Cache.loadFromCache(this);
+
+        if (Cache.loadedFromCache) {
+            VNTypeFragment.refreshOnInit = true;
+            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+        } else {
+            VNDBServer.login(this, new Callback() {
+                @Override
+                public void config() {
+                    Cache.loadData(LoginActivity.this, new Callback() {
+                        @Override
+                        protected void config() {
+                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                        }
+                    });
+                }
+            }, new Callback() {
+                @Override
+                public void config() {
+                    Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
+                    enableAll();
+                }
+            });
+        }
     }
 
     public void enableAll() {

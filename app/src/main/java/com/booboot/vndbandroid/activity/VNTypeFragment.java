@@ -11,9 +11,9 @@ import android.view.ViewGroup;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.adapter.materiallistview.MaterialListView;
+import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.ListType;
-import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.factory.VNCardFactory;
 import com.booboot.vndbandroid.util.Callback;
 import com.dexafree.materialList.card.Card;
@@ -28,6 +28,7 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
     public final static String TAB_VALUE_ARG = "STATUS";
     public final static String VN_ARG = "VN";
 
+    public static boolean refreshOnInit;
     private MaterialListView materialListView;
     private SwipeRefreshLayout refreshLayout;
     private MainActivity activity;
@@ -71,6 +72,16 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
         refreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refreshLayout);
         refreshLayout.setOnRefreshListener(this);
         refreshLayout.setColorSchemeResources(R.color.colorAccent);
+        refreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                if (refreshOnInit) {
+                    refreshOnInit = false;
+                    refreshLayout.setRefreshing(true);
+                    onRefresh();
+                }
+            }
+        });
 
         return rootView;
     }
@@ -105,10 +116,9 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
         Cache.loadData(getActivity(), new Callback() {
             @Override
             protected void config() {
-                int currentPage = VNListFragment.currentPage;
-                activity.goToFragment(MainActivity.selectedItem);
-                VNListFragment.currentPage = currentPage;
-
+                if (message == null) {
+                    MainActivity.instance.getVnlistFragment().refresh();
+                }
                 refreshLayout.setRefreshing(false);
             }
         });

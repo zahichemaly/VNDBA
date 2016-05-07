@@ -5,6 +5,7 @@ import android.content.Context;
 import com.booboot.vndbandroid.api.bean.DbStats;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Options;
+import com.booboot.vndbandroid.api.bean.Results;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.IPredicate;
 import com.booboot.vndbandroid.util.JSON;
@@ -45,6 +46,7 @@ public class Cache {
     public final static String CHARACTERS_CACHE = "characters.data";
     public final static String RELEASES_CACHE = "releases.data";
     public final static String DBSTATS_CACHE = "dbstats.data";
+    public static boolean loadedFromCache = false;
 
     public final static String[] SORT_OPTIONS = new String[]{
             "ID",
@@ -62,8 +64,7 @@ public class Cache {
     private static String mergedIdsString;
 
     public static void loadData(final Context context, final Callback successCallback) {
-        Cache.vnlist.clear();
-        VNDBServer.get("vnlist", "basic", "(uid = 0)", Options.create(true, true), context, new Callback() {
+        VNDBServer.get("vnlist", "basic", "(uid = 0)", Options.create(1, 100, null, false, true, true), context, new Callback() {
             @Override
             public void config() {
                 final Map<Integer, Item> vnlistIds = new HashMap<>(), votelistIds = new HashMap<>(), wishlistIds = new HashMap<>();
@@ -71,16 +72,14 @@ public class Cache {
                     vnlistIds.put(vnlistItem.getVn(), vnlistItem);
                 }
 
-                Cache.votelist.clear();
-                VNDBServer.get("votelist", "basic", "(uid = 0)", Options.create(true, true), context, new Callback() {
+                VNDBServer.get("votelist", "basic", "(uid = 0)", Options.create(1, 100, null, false, true, true), context, new Callback() {
                     @Override
                     protected void config() {
                         for (Item votelistItem : results.getItems()) {
                             votelistIds.put(votelistItem.getVn(), votelistItem);
                         }
 
-                        Cache.wishlist.clear();
-                        VNDBServer.get("wishlist", "basic", "(uid = 0)", Options.create(true, true), context, new Callback() {
+                        VNDBServer.get("wishlist", "basic", "(uid = 0)", Options.create(1, 100, null, false, true, true), context, new Callback() {
                             @Override
                             protected void config() {
                                 for (Item wishlistItem : results.getItems()) {
@@ -104,6 +103,16 @@ public class Cache {
                                 VNDBServer.get("vn", VN_FLAGS, "(id = " + mergedIdsString + ")", Options.create(true, true), context, new Callback() {
                                     @Override
                                     protected void config() {
+                                        if (!listsHaveChanged(results, vnlistIds, votelistIds, wishlistIds)) {
+                                            successCallback.message = "do not refresh";
+                                            successCallback.call();
+                                            return;
+                                        }
+
+                                        vnlist = new LinkedHashMap<>();
+                                        votelist = new LinkedHashMap<>();
+                                        wishlist = new LinkedHashMap<>();
+
                                         for (Item vn : results.getItems()) {
                                             Item vnlistItem = vnlistIds.get(vn.getId());
                                             Item votelistItem = votelistIds.get(vn.getId());
@@ -138,6 +147,44 @@ public class Cache {
         }, Callback.errorCallback(context));
     }
 
+    /**
+     * @return true if the up-to-date lists (directly fetched from the API) are different from the cache content.
+     */
+    private static boolean listsHaveChanged(Results results, Map<Integer, Item> vnlistIds, Map<Integer, Item> votelistIds, Map<Integer, Item> wishlistIds) {
+        if (vnlist.size() != vnlistIds.size() || votelist.size() != votelistIds.size() || wishlist.size() != wishlistIds.size())
+            return true;
+
+        for (int id : vnlist.keySet()) {
+            if (vnlistIds.get(id) == null) return true;
+        }
+        for (int id : votelist.keySet()) {
+            if (votelistIds.get(id) == null) return true;
+        }
+        for (int id : wishlist.keySet()) {
+            if (wishlistIds.get(id) == null) return true;
+        }
+        for (Item vn : results.getItems()) {
+            Item vnlistItem = vnlistIds.get(vn.getId());
+            Item votelistItem = votelistIds.get(vn.getId());
+            Item wishlistItem = wishlistIds.get(vn.getId());
+
+            if (vnlistItem != null) {
+                if (vnlist.get(vn.getId()) == null || vnlistItem.getStatus() != vnlist.get(vn.getId()).getStatus())
+                    return true;
+            }
+            if (votelistItem != null) {
+                if (votelist.get(vn.getId()) == null || votelistItem.getVote() != votelist.get(vn.getId()).getVote())
+                    return true;
+            }
+            if (wishlistItem != null) {
+                if (wishlist.get(vn.getId()) == null || wishlistItem.getPriority() != wishlist.get(vn.getId()).getPriority())
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
     public static void saveToCache(Context context, String filename, Object object) {
         File file = new File(context.getFilesDir(), filename);
         try {
@@ -148,6 +195,7 @@ public class Cache {
     }
 
     public static boolean loadFromCache(Context context) {
+        if (loadedFromCache) return true;
         File vnlistFile = new File(context.getFilesDir(), VNLIST_CACHE);
         File votelistFile = new File(context.getFilesDir(), VOTELIST_CACHE);
         File wishlistFile = new File(context.getFilesDir(), WISHLIST_CACHE);
@@ -178,6 +226,7 @@ public class Cache {
         }
 
         sortAll(context);
+        loadedFromCache = true;
         return true;
     }
 
@@ -204,6 +253,11 @@ public class Cache {
         if (wishlistFile.exists()) wishlistFile.delete();
         if (charactersFile.exists()) charactersFile.delete();
         if (releasesFile.exists()) releasesFile.delete();
+
+        vnlist = new LinkedHashMap<>();
+        votelist = new LinkedHashMap<>();
+        wishlist = new LinkedHashMap<>();
+        loadedFromCache = false;
     }
 
     public static void loadStats(final Context context, final Callback successCallback, boolean forceRefresh) {
@@ -308,5 +362,4 @@ public class Cache {
             }
         }).size();
     }
-
 }
