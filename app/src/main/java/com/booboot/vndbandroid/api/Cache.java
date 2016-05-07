@@ -5,7 +5,6 @@ import android.content.Context;
 import com.booboot.vndbandroid.api.bean.DbStats;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Options;
-import com.booboot.vndbandroid.api.bean.Results;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.IPredicate;
 import com.booboot.vndbandroid.util.JSON;
@@ -90,7 +89,8 @@ public class Cache {
                                 mergedIds.addAll(votelistIds.keySet());
                                 mergedIds.addAll(wishlistIds.keySet());
 
-                                if (mergedIds.isEmpty()) {
+                                if (mergedIds.isEmpty() || !listsHaveChanged(vnlistIds, votelistIds, wishlistIds, mergedIds)) {
+                                    successCallback.message = "";
                                     successCallback.call();
                                     return;
                                 }
@@ -103,12 +103,6 @@ public class Cache {
                                 VNDBServer.get("vn", VN_FLAGS, "(id = " + mergedIdsString + ")", Options.create(true, true), context, new Callback() {
                                     @Override
                                     protected void config() {
-                                        if (!listsHaveChanged(results, vnlistIds, votelistIds, wishlistIds)) {
-                                            successCallback.message = "do not refresh";
-                                            successCallback.call();
-                                            return;
-                                        }
-
                                         vnlist = new LinkedHashMap<>();
                                         votelist = new LinkedHashMap<>();
                                         wishlist = new LinkedHashMap<>();
@@ -150,7 +144,7 @@ public class Cache {
     /**
      * @return true if the up-to-date lists (directly fetched from the API) are different from the cache content.
      */
-    private static boolean listsHaveChanged(Results results, Map<Integer, Item> vnlistIds, Map<Integer, Item> votelistIds, Map<Integer, Item> wishlistIds) {
+    private static boolean listsHaveChanged(Map<Integer, Item> vnlistIds, Map<Integer, Item> votelistIds, Map<Integer, Item> wishlistIds, Set<Integer> mergedIds) {
         if (vnlist.size() != vnlistIds.size() || votelist.size() != votelistIds.size() || wishlist.size() != wishlistIds.size())
             return true;
 
@@ -163,21 +157,21 @@ public class Cache {
         for (int id : wishlist.keySet()) {
             if (wishlistIds.get(id) == null) return true;
         }
-        for (Item vn : results.getItems()) {
-            Item vnlistItem = vnlistIds.get(vn.getId());
-            Item votelistItem = votelistIds.get(vn.getId());
-            Item wishlistItem = wishlistIds.get(vn.getId());
+        for (Integer id : mergedIds) {
+            Item vnlistItem = vnlistIds.get(id);
+            Item votelistItem = votelistIds.get(id);
+            Item wishlistItem = wishlistIds.get(id);
 
             if (vnlistItem != null) {
-                if (vnlist.get(vn.getId()) == null || vnlistItem.getStatus() != vnlist.get(vn.getId()).getStatus())
+                if (vnlist.get(id) == null || vnlistItem.getStatus() != vnlist.get(id).getStatus())
                     return true;
             }
             if (votelistItem != null) {
-                if (votelist.get(vn.getId()) == null || votelistItem.getVote() != votelist.get(vn.getId()).getVote())
+                if (votelist.get(id) == null || votelistItem.getVote() != votelist.get(id).getVote())
                     return true;
             }
             if (wishlistItem != null) {
-                if (wishlist.get(vn.getId()) == null || wishlistItem.getPriority() != wishlist.get(vn.getId()).getPriority())
+                if (wishlist.get(id) == null || wishlistItem.getPriority() != wishlist.get(id).getPriority())
                     return true;
             }
         }
