@@ -25,4 +25,6 @@
             app:column_count_landscape="2"
             app:column_count_portrait="1"/>
     </android.support.v4.widget.SwipeRefreshLayout>
+
+    <include layout="@layout/progress_bar"></include>
 </LinearLayout>
