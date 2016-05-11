@@ -81,6 +81,5 @@ public class VNCardFactory {
         card.setTag(vn);
 
         materialListView.getAdapter().add(card);
-        materialListView.scrollToPosition(0);
     }
 }

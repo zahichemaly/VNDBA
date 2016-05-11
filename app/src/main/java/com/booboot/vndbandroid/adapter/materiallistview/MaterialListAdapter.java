@@ -94,7 +94,7 @@ public class MaterialListAdapter extends RecyclerView.Adapter<MaterialListAdapte
      * @param card     to insert.
      */
     public void add(final int position, @NonNull final Card card) {
-        add(position, card, true);
+        add(position, card, false);
     }
 
     /**
