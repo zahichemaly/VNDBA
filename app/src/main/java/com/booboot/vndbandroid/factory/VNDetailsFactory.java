@@ -53,7 +53,7 @@ public class VNDetailsFactory {
         }
 
         infoLeft.add("Released date");
-        infoRight.add(Utils.getDate(vn.getReleased()));
+        infoRight.add(Utils.getDate(vn.getReleased(), true));
         infoRightImages.add(-1);
 
         if (vn.getAliases() != null) {
@@ -230,7 +230,7 @@ public class VNDetailsFactory {
             for (Item release : activity.getReleases().get(language)) {
                 releaseElementWrapper.release_images.add(null);
                 releaseElementWrapper.release_names.add(release.getTitle());
-                releaseElementWrapper.release_subnames.add(Utils.getDate(release.getReleased()) + " • " + Utils.capitalize(release.getType()));
+                releaseElementWrapper.release_subnames.add(Utils.getDate(release.getReleased(), true) + " • " + Utils.capitalize(release.getType()));
                 releaseElementWrapper.release_ids.add(release.getId());
             }
         }

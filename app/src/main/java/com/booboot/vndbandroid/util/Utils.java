@@ -45,12 +45,12 @@ public class Utils {
         return "";
     }
 
-    public static String getDate(String date) {
+    public static String getDate(String date, boolean showFullDate) {
         if (date == null) {
             return "Unknown";
         } else try {
             Date released = new SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(date);
-            return new SimpleDateFormat("d MMMM yyyy", Locale.US).format(released);
+            return new SimpleDateFormat(showFullDate ? "d MMMM yyyy" : "yyyy", Locale.US).format(released);
         } catch (ParseException e) {
             return date;
         }

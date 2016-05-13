@@ -50,7 +50,7 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
                 continue;
             if (type == ListType.WISHLIST && vn.getPriority() != tabValue) continue;
 
-            VNCardFactory.buildCard(getActivity(), vn, materialListView);
+            VNCardFactory.buildCard(getActivity(), vn, materialListView, false, false);
         }
 
         materialListView.addOnItemTouchListener(new RecyclerItemClickListener.OnItemClickListener() {

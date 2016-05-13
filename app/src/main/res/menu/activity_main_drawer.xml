@@ -41,9 +41,14 @@
                     android:title="@string/popular"/>
 
                 <item
-                    android:id="@+id/nav_new"
+                    android:id="@+id/nav_newly_released"
                     android:icon="@drawable/ic_new_releases"
-                    android:title="@string/title_new"/>
+                    android:title="@string/newly_released"/>
+
+                <item
+                    android:id="@+id/nav_newly_added"
+                    android:icon="@drawable/ic_new_releases"
+                    android:title="@string/newly_added"/>
             </group>
         </menu>
     </item>

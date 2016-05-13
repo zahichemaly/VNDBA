@@ -13,6 +13,8 @@
     tools:context=".activity.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
+    <include layout="@layout/progress_bar"/>
+
     <android.support.v4.widget.SwipeRefreshLayout android:id="@+id/refreshLayout"
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
@@ -25,6 +27,4 @@
             app:column_count_landscape="2"
             app:column_count_portrait="1"/>
     </android.support.v4.widget.SwipeRefreshLayout>
-
-    <include layout="@layout/progress_bar"></include>
 </LinearLayout>

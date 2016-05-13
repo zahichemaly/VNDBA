@@ -245,7 +245,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             args.putInt(VNListFragment.LIST_TYPE_ARG, ListType.WISHLIST);
         } else if (id == R.id.nav_stats) {
             directSubfragment = new DatabaseStatisticsFragment();
-        } else if (id == R.id.nav_settings) {
+        } else if (id == R.id.nav_top) {
+            directSubfragment = new RankingNewlyReleasedFragment();
+        } else if (id == R.id.nav_popular) {
+            directSubfragment = new RankingNewlyReleasedFragment();
+        } else if (id == R.id.nav_newly_released) {
+            directSubfragment = new RankingNewlyReleasedFragment();
+        } else if (id == R.id.nav_newly_added) {
+            directSubfragment = new RankingNewlyAddedFragment();
+        }else if (id == R.id.nav_settings) {
             directSubfragment = new PreferencesFragment();
         } else if (id == R.id.nav_logout) {
             VNDBServer.close();

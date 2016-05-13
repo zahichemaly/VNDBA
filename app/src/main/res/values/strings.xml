@@ -27,6 +27,8 @@
     <string name="top">Top</string>
     <string name="popular">Popular</string>
     <string name="title_new">New</string>
+    <string name="newly_released">Newly released</string>
+    <string name="newly_added">Newly added</string>
 
     <string-array name="background_pref_titles">
         <item>Default (orange)</item>
