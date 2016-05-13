@@ -15,6 +15,7 @@ import com.booboot.vndbandroid.api.bean.ListType;
 import com.booboot.vndbandroid.api.bean.Priority;
 import com.booboot.vndbandroid.api.bean.Status;
 import com.booboot.vndbandroid.api.Cache;
+import com.booboot.vndbandroid.util.Utils;
 
 /**
  * Created by od on 13/03/2016.
@@ -32,8 +33,10 @@ public class VNListFragment extends Fragment implements TabLayout.OnTabSelectedL
 
         tabLayout = (TabLayout) inflatedView.findViewById(R.id.tabLayout);
         type = getArguments().getInt(LIST_TYPE_ARG);
+
         switch (type) {
             case ListType.VNLIST:
+                Utils.setTitle(getActivity(), getActivity().getResources().getString(R.string.my_visual_novel_list));
                 tabLayout.addTab(tabLayout.newTab().setText("Playing (" + Cache.getStatusNumber(Status.PLAYING) + ")"));
                 tabLayout.addTab(tabLayout.newTab().setText("Finished (" + Cache.getStatusNumber(Status.FINISHED) + ")"));
                 tabLayout.addTab(tabLayout.newTab().setText("Stalled (" + Cache.getStatusNumber(Status.STALLED) + ")"));
@@ -42,6 +45,7 @@ public class VNListFragment extends Fragment implements TabLayout.OnTabSelectedL
                 break;
 
             case ListType.VOTELIST:
+                Utils.setTitle(getActivity(), getActivity().getResources().getString(R.string.my_votes));
                 tabLayout.addTab(tabLayout.newTab().setText("10 - 9 (" + Cache.getVoteNumber(10) + ")"));
                 tabLayout.addTab(tabLayout.newTab().setText("8 - 7 (" + Cache.getVoteNumber(8) + ")"));
                 tabLayout.addTab(tabLayout.newTab().setText("6 - 5 (" + Cache.getVoteNumber(6) + ")"));
@@ -50,6 +54,7 @@ public class VNListFragment extends Fragment implements TabLayout.OnTabSelectedL
                 break;
 
             case ListType.WISHLIST:
+                Utils.setTitle(getActivity(), getActivity().getResources().getString(R.string.my_wishlist));
                 tabLayout.addTab(tabLayout.newTab().setText("High (" + Cache.getWishNumber(Priority.HIGH) + ")"));
                 tabLayout.addTab(tabLayout.newTab().setText("Medium (" + Cache.getWishNumber(Priority.MEDIUM) + ")"));
                 tabLayout.addTab(tabLayout.newTab().setText("Low (" + Cache.getWishNumber(Priority.LOW) + ")"));

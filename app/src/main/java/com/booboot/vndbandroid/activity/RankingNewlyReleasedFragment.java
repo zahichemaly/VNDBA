@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.api.bean.Options;
 import com.booboot.vndbandroid.factory.ProgressiveResultLoader;
+import com.booboot.vndbandroid.util.Utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -20,6 +21,7 @@ public class RankingNewlyReleasedFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.vn_card_list_layout, container, false);
+        Utils.setTitle(getActivity(), getActivity().getResources().getString(R.string.newly_released));
 
         progressiveResultLoader = new ProgressiveResultLoader();
         progressiveResultLoader.setActivity(getActivity());

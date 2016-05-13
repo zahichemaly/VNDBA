@@ -7,6 +7,8 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.net.Uri;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.Display;
 
@@ -88,5 +90,11 @@ public class Utils {
         } else {
             return size.x / ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT) > 760;
         }
+    }
+
+    public static void setTitle(Activity activity, String title) {
+        ActionBar actionBar = ((AppCompatActivity) activity).getSupportActionBar();
+        if (actionBar != null)
+            actionBar.setTitle(title);
     }
 }
