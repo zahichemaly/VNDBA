@@ -6,6 +6,7 @@ import android.os.Build;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -18,7 +19,6 @@ import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Options;
-import com.booboot.vndbandroid.factory.VNCardFactory;
 import com.booboot.vndbandroid.util.Callback;
 import com.dexafree.materialList.card.Card;
 import com.dexafree.materialList.listeners.RecyclerItemClickListener;
@@ -68,10 +68,19 @@ public class ProgressiveResultLoader {
         materialListView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                if (dy > 0 && !progressBar.isShown() && moreResults && recyclerView.getLayoutManager() instanceof LinearLayoutManager) {
+                if (dy > 0 && !progressBar.isShown() && moreResults) {
                     int visibleItemCount = recyclerView.getLayoutManager().getChildCount();
                     int totalItemCount = recyclerView.getLayoutManager().getItemCount();
-                    int pastVisiblesItems = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+                    int pastVisiblesItems = 0;
+                    if (recyclerView.getLayoutManager() instanceof LinearLayoutManager) {
+                        /* Computing past visible items in portrait (1 column) */
+                        pastVisiblesItems = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+                    } else {
+                        /* Computing past visible items in landscape (> 1 column) */
+                        int[] firstVisibleItemPositions = ((StaggeredGridLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPositions(null);
+                        for (int i = 0; i < firstVisibleItemPositions.length - 1; i++)
+                            pastVisiblesItems += firstVisibleItemPositions[i];
+                    }
 
                     if (visibleItemCount + pastVisiblesItems >= totalItemCount) {
                         currentPage++;
