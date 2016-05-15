@@ -17,6 +17,8 @@ import com.booboot.vndbandroid.util.SettingsManager;
 
 public class VNSearchActivity extends AppCompatActivity {
     private ProgressiveResultLoader progressiveResultLoader;
+    private SearchView searchView;
+    private String savedQuery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +34,10 @@ public class VNSearchActivity extends AppCompatActivity {
         progressiveResultLoader.setActivity(this);
         progressiveResultLoader.setOptions(new Options());
         progressiveResultLoader.init();
+
+        if (savedInstanceState != null) {
+            savedQuery = savedInstanceState.getString("SEARCH_INPUT");
+        }
     }
 
     @Override
@@ -40,7 +46,7 @@ public class VNSearchActivity extends AppCompatActivity {
         inflater.inflate(R.menu.search, menu);
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        final SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         // Little trick to put the icon inside the input field and prevent the search view from collapsing when clicking on "x"
         searchView.setIconified(false);
@@ -69,6 +75,8 @@ public class VNSearchActivity extends AppCompatActivity {
             }
         });
 
+        if (savedQuery != null) searchView.setQuery(savedQuery, true);
+
         return true;
     }
 
@@ -81,5 +89,12 @@ public class VNSearchActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        if (searchView != null)
+            savedInstanceState.putString("SEARCH_INPUT", searchView.getQuery().toString());
+        super.onSaveInstanceState(savedInstanceState);
     }
 }
