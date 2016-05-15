@@ -29,6 +29,7 @@
     <string name="title_new">New</string>
     <string name="newly_released">Newly released</string>
     <string name="newly_added">Newly added</string>
+    <string name="most_voted">Most voted</string>
 
     <string-array name="background_pref_titles">
         <item>Default (orange)</item>

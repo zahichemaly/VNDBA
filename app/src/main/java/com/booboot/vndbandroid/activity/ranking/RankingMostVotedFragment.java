@@ -1,4 +1,4 @@
-package com.booboot.vndbandroid.activity;
+package com.booboot.vndbandroid.activity.ranking;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -11,26 +11,21 @@ import com.booboot.vndbandroid.api.bean.Options;
 import com.booboot.vndbandroid.factory.ProgressiveResultLoader;
 import com.booboot.vndbandroid.util.Utils;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
-public class RankingNewlyReleasedFragment extends Fragment {
+public class RankingMostVotedFragment extends Fragment {
     private ProgressiveResultLoader progressiveResultLoader;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.vn_card_list_layout, container, false);
-        Utils.setTitle(getActivity(), getActivity().getResources().getString(R.string.newly_released));
+        Utils.setTitle(getActivity(), getActivity().getResources().getString(R.string.most_voted));
 
         progressiveResultLoader = new ProgressiveResultLoader();
         progressiveResultLoader.setActivity(getActivity());
         progressiveResultLoader.setRootView(rootView);
-        progressiveResultLoader.setOptions(Options.create(1, 25, "released", true, false, false));
-        progressiveResultLoader.setShowFullDate(true);
+        progressiveResultLoader.setOptions(Options.create(1, 25, "votecount", true, false, false));
         progressiveResultLoader.setShowRank(true);
-        String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());
-        progressiveResultLoader.setFilters("(released <= \"" + currentDate + "\")");
+        progressiveResultLoader.setShowVoteCount(true);
+        progressiveResultLoader.setFilters("(id > 1)");
         progressiveResultLoader.init();
         progressiveResultLoader.loadResults(true);
 

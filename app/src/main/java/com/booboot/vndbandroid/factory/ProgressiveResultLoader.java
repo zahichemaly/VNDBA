@@ -12,6 +12,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.booboot.vndbandroid.R;
+import com.booboot.vndbandroid.activity.MainActivity;
 import com.booboot.vndbandroid.activity.VNDetailsActivity;
 import com.booboot.vndbandroid.activity.VNTypeFragment;
 import com.booboot.vndbandroid.adapter.materiallistview.MaterialListView;
@@ -26,11 +27,13 @@ import com.dexafree.materialList.listeners.RecyclerItemClickListener;
 /**
  * Created by od on 13/05/2016.
  */
-public class ProgressiveResultLoader {
+public class ProgressiveResultLoader implements SwipeRefreshLayout.OnRefreshListener {
     private Activity activity;
     private View rootView;
     private MaterialListView materialListView;
     private ProgressBar progressBar;
+    private SwipeRefreshLayout refreshLayout;
+
     private int currentPage = 1;
     private String filters;
     private Options options;
@@ -38,6 +41,9 @@ public class ProgressiveResultLoader {
 
     private boolean showFullDate;
     private boolean showRank;
+    private boolean showRating;
+    private boolean showPopularity;
+    private boolean showVoteCount;
 
     public void init() {
         progressBar = (ProgressBar) (rootView == null ? activity.findViewById(R.id.progressBar) : rootView.findViewById(R.id.progressBar));
@@ -90,8 +96,9 @@ public class ProgressiveResultLoader {
             }
         });
 
-        SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) (rootView == null ? activity.findViewById(R.id.refreshLayout) : rootView.findViewById(R.id.refreshLayout));
-        refreshLayout.setEnabled(false);
+        refreshLayout = (SwipeRefreshLayout) (rootView == null ? activity.findViewById(R.id.refreshLayout) : rootView.findViewById(R.id.refreshLayout));
+        refreshLayout.setOnRefreshListener(this);
+        refreshLayout.setColorSchemeColors(MainActivity.getThemeColor(activity, R.attr.colorAccent));
     }
 
     public void loadResults(final boolean clearData) {
@@ -105,20 +112,28 @@ public class ProgressiveResultLoader {
                     materialListView.getAdapter().clearAll();
 
                 for (final Item vn : results.getItems()) {
-                    VNCardFactory.buildCard(activity, vn, materialListView, showFullDate, showRank);
+                    VNCardFactory.buildCard(activity, vn, materialListView, showFullDate, showRank, showRating, showPopularity, showVoteCount);
                 }
 
                 if (currentPage == 1)
                     materialListView.scrollToPosition(0);
                 progressBar.setVisibility(View.GONE);
+                refreshLayout.setRefreshing(false);
             }
         }, new Callback() {
             @Override
             public void config() {
                 progressBar.setVisibility(View.GONE);
+                refreshLayout.setRefreshing(false);
                 Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    @Override
+    public void onRefresh() {
+        currentPage = 1;
+        loadResults(true);
     }
 
     public void setFilters(String filters) {
@@ -159,5 +174,17 @@ public class ProgressiveResultLoader {
 
     public void setShowRank(boolean showRank) {
         this.showRank = showRank;
+    }
+
+    public void setShowRating(boolean showRating) {
+        this.showRating = showRating;
+    }
+
+    public void setShowPopularity(boolean showPopularity) {
+        this.showPopularity = showPopularity;
+    }
+
+    public void setShowVoteCount(boolean showVoteCount) {
+        this.showVoteCount = showVoteCount;
     }
 }

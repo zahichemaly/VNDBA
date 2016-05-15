@@ -50,7 +50,7 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
                 continue;
             if (type == ListType.WISHLIST && vn.getPriority() != tabValue) continue;
 
-            VNCardFactory.buildCard(getActivity(), vn, materialListView, false, false);
+            VNCardFactory.buildCard(getActivity(), vn, materialListView, false, false, false, false, false);
         }
 
         materialListView.addOnItemTouchListener(new RecyclerItemClickListener.OnItemClickListener() {
@@ -71,7 +71,7 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
         refreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refreshLayout);
         refreshLayout.setOnRefreshListener(this);
-        refreshLayout.setColorSchemeResources(R.color.colorAccent);
+        refreshLayout.setColorSchemeColors(MainActivity.getThemeColor(activity, R.attr.colorAccent));
         refreshLayout.post(new Runnable() {
             @Override
             public void run() {
