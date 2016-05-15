@@ -24,7 +24,8 @@
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_gravity="center_vertical"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:focusableInTouchMode="true">
 
                 <ImageView
                     android:id="@+id/loginLogo"
