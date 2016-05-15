@@ -79,7 +79,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }.start();
         } else {
             enableAll();
-            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+            loginUsername.requestFocus();
         }
 
         autologin = false;
@@ -155,8 +155,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         loginUsername.setEnabled(false);
         loginPassword.setEnabled(false);
         loginButton.setEnabled(false);
-        /* Hiding the keyboard */
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         progressBar.setVisibility(View.VISIBLE);
     }
 }
