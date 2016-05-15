@@ -50,11 +50,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         ImageLoader.getInstance().init(config);
 
         Window window = getWindow();
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.setStatusBarColor(MainActivity.getThemeColor(this, R.attr.colorPrimaryDark));
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            window.getDecorView().setBackgroundColor(getResources().getColor(android.R.color.transparent, getTheme()));
+        } else {
+            window.getDecorView().setBackgroundColor(getResources().getColor(android.R.color.transparent));
+        }
+        window.getDecorView().setVisibility(View.GONE);
 
         signupTextView = (TextView) findViewById(R.id.signupTextView);
         initSignup();
@@ -79,7 +83,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }.start();
         } else {
             enableAll();
-            loginUsername.requestFocus();
         }
 
         autologin = false;
