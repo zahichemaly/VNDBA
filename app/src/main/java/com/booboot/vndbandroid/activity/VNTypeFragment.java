@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -18,6 +19,7 @@ import com.booboot.vndbandroid.factory.VNCardFactory;
 import com.booboot.vndbandroid.util.Callback;
 import com.dexafree.materialList.card.Card;
 import com.dexafree.materialList.listeners.RecyclerItemClickListener;
+import com.pluscubed.recyclerfastscroll.RecyclerFastScroller;
 
 import java.util.LinkedHashMap;
 
@@ -64,6 +66,21 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
             @Override
             public void onItemLongClick(Card card, int position) {
                 Log.d("LONG_CLICK", card.getProvider().getTitle());
+            }
+        });
+
+        RecyclerFastScroller fastScroller = (RecyclerFastScroller) rootView.findViewById(R.id.fastScroller);
+        fastScroller.attachRecyclerView(materialListView);
+
+        fastScroller.setOnHandleTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                    refreshLayout.setEnabled(false);
+                } else if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+                    refreshLayout.setEnabled(true);
+                }
+                return false;
             }
         });
 
