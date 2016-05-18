@@ -24,6 +24,9 @@ import com.booboot.vndbandroid.util.Callback;
 import com.dexafree.materialList.card.Card;
 import com.dexafree.materialList.listeners.RecyclerItemClickListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by od on 13/05/2016.
  */
@@ -130,6 +133,20 @@ public class ProgressiveResultLoader implements SwipeRefreshLayout.OnRefreshList
                 Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    public void initFromExisting() {
+        List<Card> cards = new ArrayList<>();
+        for (int i = 0; i < materialListView.getAdapter().getItemCount(); i++) {
+            cards.add(materialListView.getAdapter().getCard(i));
+        }
+
+        init();
+        for (Card card : cards) {
+            if (card == null) continue;
+            Item vn = (Item) card.getTag();
+            VNCardFactory.buildCard(activity, vn, materialListView, showFullDate, showRank, showRating, showPopularity, showVoteCount);
+        }
     }
 
     @Override
