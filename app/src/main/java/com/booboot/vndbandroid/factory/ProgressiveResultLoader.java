@@ -99,6 +99,8 @@ public class ProgressiveResultLoader implements SwipeRefreshLayout.OnRefreshList
         refreshLayout = (SwipeRefreshLayout) (rootView == null ? activity.findViewById(R.id.refreshLayout) : rootView.findViewById(R.id.refreshLayout));
         refreshLayout.setOnRefreshListener(this);
         refreshLayout.setColorSchemeColors(MainActivity.getThemeColor(activity, R.attr.colorAccent));
+
+        FastScrollerFactory.get(activity, rootView, materialListView, refreshLayout);
     }
 
     public void loadResults(final boolean clearData) {

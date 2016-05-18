@@ -15,6 +15,7 @@ import com.booboot.vndbandroid.adapter.materiallistview.MaterialListView;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.ListType;
+import com.booboot.vndbandroid.factory.FastScrollerFactory;
 import com.booboot.vndbandroid.factory.VNCardFactory;
 import com.booboot.vndbandroid.util.Callback;
 import com.dexafree.materialList.card.Card;
@@ -69,21 +70,6 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
             }
         });
 
-        RecyclerFastScroller fastScroller = (RecyclerFastScroller) rootView.findViewById(R.id.fastScroller);
-        fastScroller.attachRecyclerView(materialListView);
-
-        fastScroller.setOnHandleTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-                    refreshLayout.setEnabled(false);
-                } else if (event.getActionMasked() == MotionEvent.ACTION_UP) {
-                    refreshLayout.setEnabled(true);
-                }
-                return false;
-            }
-        });
-
         initFilter();
 
         refreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refreshLayout);
@@ -99,6 +85,8 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
                 }
             }
         });
+
+        FastScrollerFactory.get(getActivity(), rootView, materialListView, refreshLayout);
 
         return rootView;
     }
