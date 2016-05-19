@@ -9,6 +9,7 @@ public class Status {
     public final static int FINISHED = 2;
     public final static int STALLED = 3;
     public final static int DROPPED = 4;
+    public final static String DEFAULT = "Add to my VN list";
 
     public static String toString(int status) {
         switch (status) {
@@ -23,7 +24,7 @@ public class Status {
             case 4:
                 return "Dropped";
             default:
-                return "Not on my VN list";
+                return DEFAULT;
         }
     }
 }
