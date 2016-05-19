@@ -203,9 +203,6 @@ public class VNDBServer {
         }
 
         try {
-            if (BuildConfig.DEBUG) {
-                Log.e("D", query.toString());
-            }
             if (in == null) {
                 /* If we are inside the application without connection and the connection just worked again, we have to reconnect on the fly */
                 VNDBServer.close();
@@ -216,6 +213,9 @@ public class VNDBServer {
                 if (!(response instanceof Ok)) return null;
             }
 
+            if (BuildConfig.DEBUG) {
+                Log.e("D", query.toString());
+            }
             if (in.ready()) while (in.read() > -1) ;
             out.write(query.toString().getBytes("UTF-8"));
         } catch (UnsupportedEncodingException uee) {
