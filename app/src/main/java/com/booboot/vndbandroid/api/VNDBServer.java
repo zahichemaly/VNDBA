@@ -44,7 +44,7 @@ public class VNDBServer {
 
     public final static int PROTOCOL = 1;
     public final static String CLIENT = "VNDB_ANDROID";
-    public final static double CLIENTVER = 1.0;
+    public final static double CLIENTVER = 1.1;
 
     private static boolean mutex = true;
     private static SSLSocket socket;
