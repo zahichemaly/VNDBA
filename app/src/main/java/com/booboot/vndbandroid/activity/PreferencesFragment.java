@@ -48,6 +48,7 @@ public class PreferencesFragment extends PreferenceFragment implements Preferenc
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.pref_general);
         setHasOptionsMenu(true);
+        Utils.setTitle(getActivity(), getActivity().getResources().getString(R.string.preferences));
         bindPreferenceSummaryToValueListener = this;
 
         // Bind the summaries of EditText/List/Dialog/Ringtone preferences to their values. When their values change, their summaries are

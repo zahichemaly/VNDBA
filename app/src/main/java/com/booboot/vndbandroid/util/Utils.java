@@ -7,6 +7,8 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.net.Uri;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.Display;
 
@@ -45,12 +47,12 @@ public class Utils {
         return "";
     }
 
-    public static String getDate(String date) {
+    public static String getDate(String date, boolean showFullDate) {
         if (date == null) {
             return "Unknown";
         } else try {
             Date released = new SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(date);
-            return new SimpleDateFormat("d MMMM yyyy", Locale.US).format(released);
+            return new SimpleDateFormat(showFullDate ? "d MMMM yyyy" : "yyyy", Locale.US).format(released);
         } catch (ParseException e) {
             return date;
         }
@@ -88,5 +90,11 @@ public class Utils {
         } else {
             return size.x / ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT) > 760;
         }
+    }
+
+    public static void setTitle(Activity activity, String title) {
+        ActionBar actionBar = ((AppCompatActivity) activity).getSupportActionBar();
+        if (actionBar != null)
+            actionBar.setTitle(title);
     }
 }

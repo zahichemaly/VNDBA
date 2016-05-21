@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -14,10 +15,12 @@ import com.booboot.vndbandroid.adapter.materiallistview.MaterialListView;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.ListType;
+import com.booboot.vndbandroid.factory.FastScrollerFactory;
 import com.booboot.vndbandroid.factory.VNCardFactory;
 import com.booboot.vndbandroid.util.Callback;
 import com.dexafree.materialList.card.Card;
 import com.dexafree.materialList.listeners.RecyclerItemClickListener;
+import com.pluscubed.recyclerfastscroll.RecyclerFastScroller;
 
 import java.util.LinkedHashMap;
 
@@ -50,7 +53,7 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
                 continue;
             if (type == ListType.WISHLIST && vn.getPriority() != tabValue) continue;
 
-            VNCardFactory.buildCard(getActivity(), vn, materialListView);
+            VNCardFactory.buildCard(getActivity(), vn, materialListView, false, false, false, false, false);
         }
 
         materialListView.addOnItemTouchListener(new RecyclerItemClickListener.OnItemClickListener() {
@@ -71,7 +74,7 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
         refreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refreshLayout);
         refreshLayout.setOnRefreshListener(this);
-        refreshLayout.setColorSchemeResources(R.color.colorAccent);
+        refreshLayout.setColorSchemeColors(MainActivity.getThemeColor(activity, R.attr.colorAccent));
         refreshLayout.post(new Runnable() {
             @Override
             public void run() {
@@ -82,6 +85,8 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
                 }
             }
         });
+
+        FastScrollerFactory.get(getActivity(), rootView, materialListView, refreshLayout);
 
         return rootView;
     }

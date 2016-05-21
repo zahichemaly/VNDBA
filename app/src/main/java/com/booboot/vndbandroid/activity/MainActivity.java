@@ -34,6 +34,11 @@ import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
+import com.booboot.vndbandroid.activity.ranking.RankingMostVotedFragment;
+import com.booboot.vndbandroid.activity.ranking.RankingNewlyAddedFragment;
+import com.booboot.vndbandroid.activity.ranking.RankingNewlyReleasedFragment;
+import com.booboot.vndbandroid.activity.ranking.RankingPopularFragment;
+import com.booboot.vndbandroid.activity.ranking.RankingTopFragment;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.ListType;
@@ -245,6 +250,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             args.putInt(VNListFragment.LIST_TYPE_ARG, ListType.WISHLIST);
         } else if (id == R.id.nav_stats) {
             directSubfragment = new DatabaseStatisticsFragment();
+        } else if (id == R.id.nav_top) {
+            directSubfragment = new RankingTopFragment();
+        } else if (id == R.id.nav_popular) {
+            directSubfragment = new RankingPopularFragment();
+        } else if (id == R.id.nav_most_voted) {
+            directSubfragment = new RankingMostVotedFragment();
+        } else if (id == R.id.nav_newly_released) {
+            directSubfragment = new RankingNewlyReleasedFragment();
+        } else if (id == R.id.nav_newly_added) {
+            directSubfragment = new RankingNewlyAddedFragment();
         } else if (id == R.id.nav_settings) {
             directSubfragment = new PreferencesFragment();
         } else if (id == R.id.nav_logout) {
@@ -297,5 +312,4 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         TextView view = (TextView) navigationView.getMenu().findItem(itemId).getActionView();
         view.setText(count > 0 ? String.valueOf(count) : null);
     }
-
 }

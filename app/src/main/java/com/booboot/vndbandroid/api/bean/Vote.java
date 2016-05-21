@@ -6,8 +6,10 @@ import com.booboot.vndbandroid.R;
  * Created by od on 15/03/2016.
  */
 public class Vote {
+    public final static String DEFAULT = "Add a vote";
+
     public static String toString(int vote) {
-        return vote < 10 ? "Not on my votelist" : (vote / 10) + " (" + getName(vote / 10) + ")";
+        return vote < 10 ? DEFAULT : (vote / 10) + " (" + getName(vote / 10) + ")";
     }
 
     public static String getName(double vote) {
@@ -21,7 +23,8 @@ public class Vote {
         if (vote >= 3) return "bad";
         if (vote >= 2) return "awful";
         if (vote >= 1) return "worst ever";
-        else return "Other";
+        if (vote >= 0) return "Other";
+        return DEFAULT;
     }
 
     public static Integer getImage(double vote) {

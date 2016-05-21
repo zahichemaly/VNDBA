@@ -29,7 +29,7 @@ public class ReleaseDataFactory {
         if (release.getOriginal() != null)
             releaseData.add(new DoubleListElement("Original name", release.getOriginal(), false));
         if (release.getReleased() != null)
-            releaseData.add(new DoubleListElement("Released date", Utils.getDate(release.getReleased()), false));
+            releaseData.add(new DoubleListElement("Released date", Utils.getDate(release.getReleased(), true), false));
         if (release.getType() != null)
             releaseData.add(new DoubleListElement("Type", Utils.capitalize(release.getType()), false));
 

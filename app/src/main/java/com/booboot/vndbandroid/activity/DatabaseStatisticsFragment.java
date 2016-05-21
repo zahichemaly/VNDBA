@@ -13,6 +13,7 @@ import com.booboot.vndbandroid.adapter.doublelist.DoubleListAdapter;
 import com.booboot.vndbandroid.adapter.doublelist.DoubleListElement;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.util.Callback;
+import com.booboot.vndbandroid.util.Utils;
 
 /**
  * Created by od on 13/03/2016.
@@ -24,6 +25,7 @@ public class DatabaseStatisticsFragment extends Fragment implements SwipeRefresh
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.db_stats, container, false);
+        Utils.setTitle(getActivity(), getActivity().getResources().getString(R.string.database_statistics));
 
         listView = (ListView) rootView.findViewById(R.id.listView);
         refresh(false);

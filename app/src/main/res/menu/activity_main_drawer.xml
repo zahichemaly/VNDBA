@@ -22,8 +22,41 @@
         <item
             android:id="@+id/nav_stats"
             android:icon="@drawable/ic_equalizer"
-            android:title="@string/database_statitistics"/>
+            android:title="@string/database_statistics"/>
     </group>
+
+    <item
+        android:id="@+id/rankingTitle"
+        android:title="@string/rankings">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_top"
+                    android:icon="@drawable/ic_star"
+                    android:title="@string/top"/>
+
+                <item
+                    android:id="@+id/nav_popular"
+                    android:icon="@drawable/ic_whatshot"
+                    android:title="@string/popular"/>
+
+                <item
+                    android:id="@+id/nav_most_voted"
+                    android:icon="@drawable/ic_trending_up"
+                    android:title="@string/most_voted"/>
+
+                <item
+                    android:id="@+id/nav_newly_released"
+                    android:icon="@drawable/ic_new_releases"
+                    android:title="@string/newly_released"/>
+
+                <item
+                    android:id="@+id/nav_newly_added"
+                    android:icon="@drawable/ic_new_releases"
+                    android:title="@string/newly_added"/>
+            </group>
+        </menu>
+    </item>
 
     <item
         android:id="@+id/accountTitle"

@@ -7,8 +7,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Options extends VNDBCommand {
-    private int page;
-    private int results;
+    private int page = 1;
+    private int results = 25;
     private String sort;
     private boolean reverse;
     private boolean fetchAllPages;
@@ -16,10 +16,6 @@ public class Options extends VNDBCommand {
 
     public static Options create(boolean fetchAllPages, boolean useCacheIfError) {
         Options options = new Options();
-        options.page = 1;
-        options.results = 25;
-        options.sort = null;
-        options.reverse = false;
         options.fetchAllPages = fetchAllPages;
         options.useCacheIfError = useCacheIfError;
         return options;

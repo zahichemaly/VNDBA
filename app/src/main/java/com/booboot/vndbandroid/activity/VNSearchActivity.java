@@ -2,32 +2,23 @@ package com.booboot.vndbandroid.activity;
 
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.SearchView;
 
 import com.booboot.vndbandroid.R;
-import com.booboot.vndbandroid.adapter.materiallistview.MaterialListView;
-import com.booboot.vndbandroid.api.VNDBServer;
-import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Options;
-import com.booboot.vndbandroid.api.Cache;
-import com.booboot.vndbandroid.factory.VNCardFactory;
-import com.booboot.vndbandroid.util.Callback;
+import com.booboot.vndbandroid.factory.ProgressiveResultLoader;
 import com.booboot.vndbandroid.util.SettingsManager;
-import com.dexafree.materialList.card.Card;
-import com.dexafree.materialList.listeners.RecyclerItemClickListener;
 
 public class VNSearchActivity extends AppCompatActivity {
-    private MaterialListView materialListView;
+    private ProgressiveResultLoader progressiveResultLoader;
+    private SearchView searchView;
+    private String savedQuery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,16 +30,14 @@ public class VNSearchActivity extends AppCompatActivity {
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        materialListView = (MaterialListView) findViewById(R.id.materialListView);
-        /* [Fix] Set the background color to match the default one (not the case by default) */
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            materialListView.getRootView().setBackgroundColor(getResources().getColor(R.color.windowBackground, getTheme()));
-        } else {
-            materialListView.getRootView().setBackgroundColor(getResources().getColor(R.color.windowBackground));
-        }
+        progressiveResultLoader = new ProgressiveResultLoader();
+        progressiveResultLoader.setActivity(this);
+        progressiveResultLoader.setOptions(new Options());
+        progressiveResultLoader.init();
 
-        SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) findViewById(R.id.refreshLayout);
-        refreshLayout.setEnabled(false);
+        if (savedInstanceState != null) {
+            savedQuery = savedInstanceState.getString("SEARCH_INPUT");
+        }
     }
 
     @Override
@@ -57,7 +46,7 @@ public class VNSearchActivity extends AppCompatActivity {
         inflater.inflate(R.menu.search, menu);
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        final SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         // Little trick to put the icon inside the input field and prevent the search view from collapsing when clicking on "x"
         searchView.setIconified(false);
@@ -74,31 +63,9 @@ public class VNSearchActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 searchView.clearFocus();
-                VNDBServer.get("vn", Cache.VN_FLAGS, "(search ~ \"" + query.trim() + "\")", Options.create(false, false), VNSearchActivity.this, new Callback() {
-                    @Override
-                    protected void config() {
-                        materialListView.getAdapter().clearAll();
-
-                        for (final Item vn : results.getItems()) {
-                            VNCardFactory.buildCard(VNSearchActivity.this, vn, materialListView);
-                        }
-
-                        materialListView.addOnItemTouchListener(new RecyclerItemClickListener.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(Card card, int position) {
-                                Intent intent = new Intent(VNSearchActivity.this, VNDetailsActivity.class);
-                                intent.putExtra(VNTypeFragment.VN_ARG, (Item) card.getTag());
-                                startActivity(intent);
-                            }
-
-                            @Override
-                            public void onItemLongClick(Card card, int position) {
-                                Log.d("LONG_CLICK", card.getProvider().getTitle());
-                            }
-                        });
-                    }
-                }, Callback.errorCallback(VNSearchActivity.this));
-
+                progressiveResultLoader.setCurrentPage(1);
+                progressiveResultLoader.setFilters("(search ~ \"" + query.trim() + "\")");
+                progressiveResultLoader.loadResults(true);
                 return true;
             }
 
@@ -107,6 +74,8 @@ public class VNSearchActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        if (savedQuery != null) searchView.setQuery(savedQuery, true);
 
         return true;
     }
@@ -120,5 +89,12 @@ public class VNSearchActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        if (searchView != null)
+            savedInstanceState.putString("SEARCH_INPUT", searchView.getQuery().toString());
+        super.onSaveInstanceState(savedInstanceState);
     }
 }

@@ -12,36 +12,28 @@ import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Priority;
 import com.booboot.vndbandroid.api.bean.Status;
 import com.booboot.vndbandroid.api.bean.Vote;
-import com.booboot.vndbandroid.util.Lightbox;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
 import com.dexafree.materialList.card.Card;
 import com.dexafree.materialList.card.CardProvider;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 /**
  * Created by od on 17/04/2016.
  */
 public class VNCardFactory {
-    public static void buildCard(Activity activity, Item vn, MaterialListView materialListView) {
-        Date released;
-        StringBuilder subtitle = new StringBuilder(), description = new StringBuilder();
-
-        if (vn.getReleased() == null) {
-            subtitle.append("Unknown");
-        } else {
-            try {
-                released = new SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(vn.getReleased());
-                subtitle.append(new SimpleDateFormat("yyyy", Locale.US).format(released));
-            } catch (ParseException e) {
-                subtitle.append(vn.getReleased());
-            }
-        }
-
+    public static void buildCard(Activity activity, Item vn, MaterialListView materialListView, boolean showFullDate, boolean showRank, boolean showRating, boolean showPopularity, boolean showVoteCount) {
+        StringBuilder title = new StringBuilder(), subtitle = new StringBuilder(), description = new StringBuilder();
+        if (showRank)
+            title.append("#").append(materialListView.getAdapter().getItemCount() + 1).append(" − ");
+        title.append(vn.getTitle());
+        if (showRating)
+            subtitle.append(vn.getRating()).append(" (").append(Vote.getName(vn.getRating())).append(")");
+        else if (showPopularity)
+            subtitle.append(vn.getPopularity()).append("%");
+        else if (showVoteCount)
+            subtitle.append(vn.getVotecount()).append(" votes");
+        else
+            subtitle.append(Utils.getDate(vn.getReleased(), showFullDate));
         subtitle.append(" • ").append(vn.getLengthString());
 
         if (Cache.vnlist.get(vn.getId()) != null)
@@ -61,7 +53,7 @@ public class VNCardFactory {
         CardProvider cardProvider = new Card.Builder(activity)
                 .withProvider(new CardProvider())
                 .setLayout(R.layout.vn_card_layout)
-                .setTitle(vn.getTitle())
+                .setTitle(title.toString())
                 .setSubtitle(subtitle.toString())
                 .setSubtitleColor(Color.GRAY)
                 .setTitleGravity(Gravity.CENTER)
@@ -81,6 +73,5 @@ public class VNCardFactory {
         card.setTag(vn);
 
         materialListView.getAdapter().add(card);
-        materialListView.scrollToPosition(0);
     }
 }

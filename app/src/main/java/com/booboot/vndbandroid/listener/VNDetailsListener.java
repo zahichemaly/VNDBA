@@ -16,6 +16,7 @@ import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Priority;
 import com.booboot.vndbandroid.api.bean.Status;
 import com.booboot.vndbandroid.api.Cache;
+import com.booboot.vndbandroid.api.bean.Vote;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.ConnectionReceiver;
 import com.booboot.vndbandroid.util.Utils;
@@ -173,7 +174,6 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener {
                 return false;
         }
 
-        final long start = System.currentTimeMillis();
         VNDBServer.set(type, vn.getId(), fields, activity, new Callback() {
             @Override
             /**
@@ -181,7 +181,6 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener {
              * during the request, our cache's state would be different from the actual account state and there would be discrepancies.
              */
             protected void config() {
-                Log.d("D", "Request finished in : " + (System.currentTimeMillis() - start) + " ms");
                 if (popupButton != null)
                     popupButton.setText(item.getTitle());
 
@@ -213,6 +212,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener {
 
                     case R.id.item_no_status:
                         Cache.vnlist.remove(vn.getId());
+                        popupButton.setText(Status.DEFAULT);
                         break;
 
                     case R.id.item_high:
@@ -237,6 +237,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener {
 
                     case R.id.item_no_wishlist:
                         Cache.wishlist.remove(vn.getId());
+                        popupButton.setText(Priority.DEFAULT);
                         break;
 
                     case R.id.item_10:
@@ -291,6 +292,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener {
 
                     case R.id.item_no_vote:
                         Cache.votelist.remove(vn.getId());
+                        popupButton.setText(Vote.DEFAULT);
                         break;
 
                     default: return;
