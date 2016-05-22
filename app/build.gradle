@@ -8,8 +8,8 @@ android {
         applicationId "com.booboot.vndbandroid"
         minSdkVersion 17
         targetSdkVersion 23
-        versionCode 9
-        versionName "1.1.0"
+        versionCode 10
+        versionName "1.1.1"
     }
     buildTypes {
         release {
@@ -45,4 +45,5 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-databind:2.6.5'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     compile 'com.github.pluscubed:recycler-fast-scroll:0.3.1'
+    compile 'cat.ereza:customactivityoncrash:1.5.0'
 }
