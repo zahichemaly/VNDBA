@@ -120,6 +120,7 @@ public class VNDetailsActivity extends AppCompatActivity {
         statusButton.setText(Status.toString(vnlistVn != null ? vnlistVn.getStatus() : -1));
         wishlistButton.setText(Priority.toString(wishlistVn != null ? wishlistVn.getPriority() : -1));
         votesButton.setText(Vote.toString(votelistVn != null ? votelistVn.getVote() : -1));
+        toggleButtons();
 
         ColorStateList buttonBackgroundColor = ColorStateList.valueOf(MainActivity.getThemeColor(this, R.attr.colorPrimaryDark));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -328,6 +329,17 @@ public class VNDetailsActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void toggleButtons() {
+        vnlistVn = Cache.vnlist.get(vn.getId());
+        wishlistVn = Cache.wishlist.get(vn.getId());
+        votelistVn = Cache.votelist.get(vn.getId());
+
+        boolean hideWish = votelistVn != null && wishlistVn == null;
+        boolean hideVote = votelistVn == null && wishlistVn != null;
+        wishlistButton.setVisibility(hideWish ? View.GONE : View.VISIBLE);
+        votesButton.setVisibility(hideVote ? View.GONE : View.VISIBLE);
     }
 
     @Override
