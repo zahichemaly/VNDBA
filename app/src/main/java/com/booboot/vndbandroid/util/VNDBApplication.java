@@ -3,6 +3,7 @@ package com.booboot.vndbandroid.util;
 import android.app.Application;
 
 import com.booboot.vndbandroid.R;
+import com.booboot.vndbandroid.activity.ErrorActivity;
 
 import cat.ereza.customactivityoncrash.CustomActivityOnCrash;
 
@@ -14,6 +15,7 @@ public class VNDBApplication extends Application {
     public void onCreate() {
         super.onCreate();
         CustomActivityOnCrash.setDefaultErrorActivityDrawable(R.drawable.vndb_logo_80);
+        CustomActivityOnCrash.setErrorActivityClass(ErrorActivity.class);
         CustomActivityOnCrash.install(this);
     }
 }
