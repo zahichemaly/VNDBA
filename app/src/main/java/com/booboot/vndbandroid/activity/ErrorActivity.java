@@ -25,7 +25,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
@@ -43,6 +42,7 @@ import cat.ereza.customactivityoncrash.CustomActivityOnCrash;
 import cat.ereza.customactivityoncrash.R;
 
 public final class ErrorActivity extends AppCompatActivity {
+    private String fullErrorMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +59,8 @@ public final class ErrorActivity extends AppCompatActivity {
 
         final Class<? extends Activity> restartActivityClass = CustomActivityOnCrash.getRestartActivityClassFromIntent(getIntent());
         final CustomActivityOnCrash.EventListener eventListener = CustomActivityOnCrash.getEventListenerFromIntent(getIntent());
-        final String fullErrorMessage = CustomActivityOnCrash.getAllErrorDetailsFromIntent(ErrorActivity.this, getIntent());
+        fullErrorMessage = CustomActivityOnCrash.getAllErrorDetailsFromIntent(ErrorActivity.this, getIntent());
+        fullErrorMessage = addErrorInfo("Android version: " + Build.VERSION.RELEASE);
 
         if (restartActivityClass != null) {
             restartButton.setText(R.string.customactivityoncrash_error_activity_restart_app);
@@ -126,7 +127,7 @@ public final class ErrorActivity extends AppCompatActivity {
         new Thread() {
             @Override
             public void run() {
-                    MailService mailer = new MailService("vndb.android@gmail.com", Mail.getInfo(ErrorActivity.this).getTo(), "[VNDB Android] Bug @ " + new Date().toString(), body, null);
+                MailService mailer = new MailService("vndb.android@gmail.com", Mail.getInfo(ErrorActivity.this).getTo(), "[VNDB Android] Bug @ " + new Date().toString(), body, null);
                 try {
                     mailer.sendAuthenticated();
                 } catch (Exception e) {
@@ -134,9 +135,14 @@ public final class ErrorActivity extends AppCompatActivity {
             }
         }.start();
     }
+
+    private String addErrorInfo(String s) {
+        int insertPosition = fullErrorMessage.indexOf("Stack trace") - 2;
+        return new StringBuilder(fullErrorMessage).insert(insertPosition, s + "\n").toString();
+    }
+
     private void copyErrorToClipboard() {
-        String errorInformation =
-                CustomActivityOnCrash.getAllErrorDetailsFromIntent(ErrorActivity.this, getIntent());
+        String errorInformation = CustomActivityOnCrash.getAllErrorDetailsFromIntent(ErrorActivity.this, getIntent());
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
