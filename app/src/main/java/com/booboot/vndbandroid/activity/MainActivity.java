@@ -288,8 +288,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         this.activeFragments.remove(fragment);
     }
 
-    public VNListFragment getVnlistFragment() {
-        return directSubfragment instanceof VNListFragment ? (VNListFragment) directSubfragment : null;
+    public void refreshVnlistFragment() {
+        VNListFragment fragment = directSubfragment instanceof VNListFragment ? (VNListFragment) directSubfragment : null;
+        if (fragment != null)
+            fragment.refresh();
     }
 
     public SearchView getSearchView() {
