@@ -32,5 +32,5 @@
         android:title="1 (worst ever)"/>
     <item
         android:id="@+id/item_no_vote"
-        android:title="Other"/>
+        android:title="Remove vote"/>
 </menu>
