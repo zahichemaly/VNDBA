@@ -1,21 +1,26 @@
 package com.booboot.vndbandroid.listener;
 
-import android.provider.Settings;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.support.v7.widget.PopupMenu;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.MainActivity;
 import com.booboot.vndbandroid.activity.VNDetailsActivity;
+import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.Fields;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Priority;
 import com.booboot.vndbandroid.api.bean.Status;
-import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.bean.Vote;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.ConnectionReceiver;
@@ -150,6 +155,11 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener {
                 fields.setVote(10);
                 break;
 
+            case R.id.item_other_vote:
+                type = "votelist";
+                buildOtherVoteDialog(type, fields, item);
+                return true;
+
             case R.id.item_no_vote:
                 type = "votelist";
                 fields = null;
@@ -174,6 +184,11 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener {
                 return false;
         }
 
+        sendSetRequest(type, fields, item);
+        return true;
+    }
+
+    private void sendSetRequest(String type, Fields fields, final MenuItem item) {
         VNDBServer.set(type, vn.getId(), fields, activity, new Callback() {
             @Override
             /**
@@ -295,15 +310,59 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener {
                         popupButton.setText(Vote.DEFAULT);
                         break;
 
-                    default: return;
+                    default:
+                        return;
                 }
 
                 activity.toggleButtons();
                 MainActivity.instance.refreshVnlistFragment();
             }
         }, Callback.errorCallback(activity));
+    }
 
-        return true;
+    private void buildOtherVoteDialog(final String type, final Fields fields, final MenuItem item) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("Custom vote");
+        LayoutInflater layoutInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View dialogView = layoutInflater.inflate(R.layout.other_vote_dialog, null);
+        builder.setView(dialogView);
+        final EditText otherVoteInput = (EditText) dialogView.findViewById(R.id.otherVoteInput);
+
+        builder.setPositiveButton("OK", null);
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        final AlertDialog dialog = builder.create();
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                Button okButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                okButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String vote = otherVoteInput.getText().toString().trim();
+                        if (Vote.isValid(vote)) {
+                            // sendSetRequest(type, fields, item);
+                            dialog.cancel();
+                        } else {
+                            otherVoteInput.setError("Invalid vote.");
+                        }
+                    }
+                });
+            }
+        });
+        otherVoteInput.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+                }
+            }
+        });
+        dialog.show();
     }
 
     public void setPopupButton(Button popupButton) {

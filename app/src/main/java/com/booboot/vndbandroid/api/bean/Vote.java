@@ -2,14 +2,29 @@ package com.booboot.vndbandroid.api.bean;
 
 import com.booboot.vndbandroid.R;
 
+import java.text.DecimalFormat;
+import java.util.regex.Pattern;
+
 /**
  * Created by od on 15/03/2016.
  */
 public class Vote {
     public final static String DEFAULT = "Add a vote";
+    private final static DecimalFormat VOTE_FORMAT = new DecimalFormat("#.#");
+
+    public static double outOf10(int vote) {
+        return vote / 10.0;
+    }
 
     public static String toString(int vote) {
-        return vote < 10 ? DEFAULT : (vote / 10) + " (" + getName(vote / 10) + ")";
+        if (vote < 1) return DEFAULT;
+        return VOTE_FORMAT.format(outOf10(vote)) + " (" + getName(outOf10(vote)) + ")";
+    }
+
+    public static boolean isValid(String vote) {
+        if (vote == null) return false;
+        Pattern pattern = Pattern.compile("[1-9](\\.[0-9])?");
+        return pattern.matcher(vote).matches();
     }
 
     public static String getName(double vote) {

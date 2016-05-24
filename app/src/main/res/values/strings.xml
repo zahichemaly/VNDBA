@@ -30,6 +30,7 @@
     <string name="newly_released">Newly released</string>
     <string name="newly_added">Newly added</string>
     <string name="most_voted">Most voted</string>
+    <string name="other_vote_explanation">Please input your vote as a number between 1 and 10. One digit after the decimal is allowed, for example: 8.6 or 7.3.</string>
 
     <string-array name="background_pref_titles">
         <item>Default (orange)</item>

@@ -157,7 +157,6 @@ public class MailService {
             msg.setRecipients(javax.mail.Message.RecipientType.BCC, addressBCC);
         }
 
-        Log.e("D", "11111");
         // set header
         msg.addHeader("X-Mailer", "MyAppMailer");
         msg.addHeader("Precedence", "bulk");

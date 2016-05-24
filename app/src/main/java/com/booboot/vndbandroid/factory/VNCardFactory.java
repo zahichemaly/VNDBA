@@ -43,9 +43,9 @@ public class VNCardFactory {
             description.append(Priority.toString(Cache.wishlist.get(vn.getId()).getPriority())).append("\n");
         else description.append("Not on your wishlist\n");
         if (Cache.votelist.get(vn.getId()) != null) {
-            int vote = Cache.votelist.get(vn.getId()).getVote() / 10;
-            description.append(vote).append(" (").append(Vote.getName(vote)).append(")\n");
-        } else description.append("Not voted yet\n");
+            int vote = Cache.votelist.get(vn.getId()).getVote();
+            description.append(Vote.toString(vote));
+        } else description.append("Not voted yet");
 
         materialListView.setColumnCountLandscape(Utils.isTablet(activity) ? 3 : 2);
         materialListView.setColumnCountPortrait(Utils.isTablet(activity) ? 2 : 1);
