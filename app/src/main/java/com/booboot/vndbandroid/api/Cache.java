@@ -89,7 +89,7 @@ public class Cache {
                                 mergedIds.addAll(votelistIds.keySet());
                                 mergedIds.addAll(wishlistIds.keySet());
 
-                                if (mergedIds.isEmpty() || !listsHaveChanged(vnlistIds, votelistIds, wishlistIds, mergedIds)) {
+                                if (mergedIds.isEmpty() || !shouldSendGetVn(context, vnlistIds, votelistIds, wishlistIds, mergedIds)) {
                                     successCallback.message = "";
                                     successCallback.call();
                                     return;
@@ -103,10 +103,6 @@ public class Cache {
                                 VNDBServer.get("vn", VN_FLAGS, "(id = " + mergedIdsString + ")", Options.create(true, true), context, new Callback() {
                                     @Override
                                     protected void config() {
-                                        vnlist = new LinkedHashMap<>();
-                                        votelist = new LinkedHashMap<>();
-                                        wishlist = new LinkedHashMap<>();
-
                                         for (Item vn : results.getItems()) {
                                             Item vnlistItem = vnlistIds.get(vn.getId());
                                             Item votelistItem = votelistIds.get(vn.getId());
@@ -144,36 +140,61 @@ public class Cache {
     /**
      * @return true if the up-to-date lists (directly fetched from the API) are different from the cache content.
      */
-    private static boolean listsHaveChanged(Map<Integer, Item> vnlistIds, Map<Integer, Item> votelistIds, Map<Integer, Item> wishlistIds, Set<Integer> mergedIds) {
-        if (vnlist.size() != vnlistIds.size() || votelist.size() != votelistIds.size() || wishlist.size() != wishlistIds.size())
-            return true;
+    private static boolean shouldSendGetVn(Context context, Map<Integer, Item> vnlistIds, Map<Integer, Item> votelistIds, Map<Integer, Item> wishlistIds, Set<Integer> mergedIds) {
+        /* 1 - Checking for VNs that have been removed overtime */
+        boolean vnlistHasChanged = false;
+        for (int id : new HashSet<>(vnlist.keySet())) {
+            if (vnlistIds.get(id) == null) {
+                vnlist.remove(id);
+                vnlistHasChanged = true;
+            }
+        }
+        boolean votelistHasChanged = false;
+        for (int id : new HashSet<>(votelist.keySet())) {
+            if (votelistIds.get(id) == null) {
+                votelist.remove(id);
+                votelistHasChanged = true;
+            }
+        }
+        boolean wishlistHasChanged = false;
+        for (int id : new HashSet<>(wishlist.keySet())) {
+            if (wishlistIds.get(id) == null) {
+                wishlist.remove(id);
+                wishlistHasChanged = true;
+            }
+        }
 
-        for (int id : vnlist.keySet()) {
-            if (vnlistIds.get(id) == null) return true;
-        }
-        for (int id : votelist.keySet()) {
-            if (votelistIds.get(id) == null) return true;
-        }
-        for (int id : wishlist.keySet()) {
-            if (wishlistIds.get(id) == null) return true;
-        }
+        Set<Integer> filteredMergedIds = new HashSet<>();
         for (Integer id : mergedIds) {
             Item vnlistItem = vnlistIds.get(id);
             Item votelistItem = votelistIds.get(id);
             Item wishlistItem = wishlistIds.get(id);
 
+            /* 2 - Checking for VNs that have been added or modified overtime */
             if (vnlistItem != null) {
                 if (vnlist.get(id) == null || vnlistItem.getStatus() != vnlist.get(id).getStatus())
-                    return true;
+                    filteredMergedIds.add(id);
             }
             if (votelistItem != null) {
                 if (votelist.get(id) == null || votelistItem.getVote() != votelist.get(id).getVote())
-                    return true;
+                    filteredMergedIds.add(id);
             }
             if (wishlistItem != null) {
                 if (wishlist.get(id) == null || wishlistItem.getPriority() != wishlist.get(id).getPriority())
-                    return true;
+                    filteredMergedIds.add(id);
             }
+        }
+
+        if (!filteredMergedIds.isEmpty()) {
+            /* VNs have been added or modified: updating the ids we're going to query */
+            mergedIds.clear();
+            mergedIds.addAll(filteredMergedIds);
+            return true;
+        } else {
+            /* Updating persistent cache if VNs have been removed */
+            if (vnlistHasChanged) saveToCache(context, VNLIST_CACHE, vnlist);
+            if (votelistHasChanged) saveToCache(context, VOTELIST_CACHE, votelist);
+            if (wishlistHasChanged) saveToCache(context, WISHLIST_CACHE, wishlist);
         }
 
         return false;
