@@ -188,7 +188,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener {
         return true;
     }
 
-    private void sendSetRequest(String type, Fields fields, final MenuItem item) {
+    private void sendSetRequest(String type, final Fields fields, final MenuItem item) {
         VNDBServer.set(type, vn.getId(), fields, activity, new Callback() {
             @Override
             /**
@@ -256,53 +256,19 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener {
                         break;
 
                     case R.id.item_10:
-                        vn.setVote(100);
-                        Cache.votelist.put(vn.getId(), vn);
-                        break;
-
                     case R.id.item_9:
-                        vn.setVote(90);
-                        Cache.votelist.put(vn.getId(), vn);
-                        break;
-
                     case R.id.item_8:
-                        vn.setVote(80);
-                        Cache.votelist.put(vn.getId(), vn);
-                        break;
-
                     case R.id.item_7:
-                        vn.setVote(70);
-                        Cache.votelist.put(vn.getId(), vn);
-                        break;
-
                     case R.id.item_6:
-                        vn.setVote(60);
-                        Cache.votelist.put(vn.getId(), vn);
-                        break;
-
                     case R.id.item_5:
-                        vn.setVote(50);
-                        Cache.votelist.put(vn.getId(), vn);
-                        break;
-
                     case R.id.item_4:
-                        vn.setVote(40);
-                        Cache.votelist.put(vn.getId(), vn);
-                        break;
-
                     case R.id.item_3:
-                        vn.setVote(30);
-                        Cache.votelist.put(vn.getId(), vn);
-                        break;
-
                     case R.id.item_2:
-                        vn.setVote(20);
-                        Cache.votelist.put(vn.getId(), vn);
-                        break;
-
                     case R.id.item_1:
-                        vn.setVote(10);
+                    case R.id.item_other_vote:
+                        vn.setVote(fields.getVote());
                         Cache.votelist.put(vn.getId(), vn);
+                        popupButton.setText(Vote.toString(fields.getVote()));
                         break;
 
                     case R.id.item_no_vote:
@@ -345,7 +311,8 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener {
                     public void onClick(View v) {
                         String vote = otherVoteInput.getText().toString().trim();
                         if (Vote.isValid(vote)) {
-                            // sendSetRequest(type, fields, item);
+                            fields.setVote(Math.round(Float.valueOf(vote) * 10));
+                            sendSetRequest(type, fields, item);
                             dialog.cancel();
                         } else {
                             otherVoteInput.setError("Invalid vote.");
