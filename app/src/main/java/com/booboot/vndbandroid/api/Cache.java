@@ -312,7 +312,11 @@ public class Cache {
                     case 1:
                         return first.getValue().getTitle().compareTo(second.getValue().getTitle());
                     case 2:
-                        return first.getValue().getReleased().compareTo(second.getValue().getReleased());
+                        String releasedA = first.getValue().getReleased();
+                        String releasedB = second.getValue().getReleased();
+                        if (releasedA == null) return -1;
+                        if (releasedB == null) return 1;
+                        return releasedA.compareTo(releasedB);
                     case 3:
                         return Integer.valueOf(first.getValue().getLength()).compareTo(second.getValue().getLength());
                     case 4:
