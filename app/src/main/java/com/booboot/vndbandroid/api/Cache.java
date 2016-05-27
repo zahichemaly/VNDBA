@@ -61,8 +61,10 @@ public class Cache {
 
     public static DbStats dbstats;
     private static String mergedIdsString;
+    public static boolean shouldRefreshView;
 
     public static void loadData(final Context context, final Callback successCallback) {
+        shouldRefreshView = false;
         VNDBServer.get("vnlist", "basic", "(uid = 0)", Options.create(1, 100, null, false, true, true), context, new Callback() {
             @Override
             public void config() {
@@ -90,7 +92,6 @@ public class Cache {
                                 mergedIds.addAll(wishlistIds.keySet());
 
                                 if (mergedIds.isEmpty() || !shouldSendGetVn(context, vnlistIds, votelistIds, wishlistIds, mergedIds)) {
-                                    successCallback.message = "";
                                     successCallback.call();
                                     return;
                                 }
@@ -126,6 +127,7 @@ public class Cache {
                                         saveToCache(context, VNLIST_CACHE, vnlist);
                                         saveToCache(context, VOTELIST_CACHE, votelist);
                                         saveToCache(context, WISHLIST_CACHE, wishlist);
+                                        shouldRefreshView = true;
                                         successCallback.call();
                                     }
                                 }, Callback.errorCallback(context));
@@ -195,6 +197,7 @@ public class Cache {
             if (vnlistHasChanged) saveToCache(context, VNLIST_CACHE, vnlist);
             if (votelistHasChanged) saveToCache(context, VOTELIST_CACHE, votelist);
             if (wishlistHasChanged) saveToCache(context, WISHLIST_CACHE, wishlist);
+            if (vnlistHasChanged || votelistHasChanged || wishlistHasChanged) shouldRefreshView = true;
         }
 
         return false;

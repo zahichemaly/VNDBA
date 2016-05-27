@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -20,7 +19,6 @@ import com.booboot.vndbandroid.factory.VNCardFactory;
 import com.booboot.vndbandroid.util.Callback;
 import com.dexafree.materialList.card.Card;
 import com.dexafree.materialList.listeners.RecyclerItemClickListener;
-import com.pluscubed.recyclerfastscroll.RecyclerFastScroller;
 
 import java.util.LinkedHashMap;
 
@@ -121,7 +119,7 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
         Cache.loadData(getActivity(), new Callback() {
             @Override
             protected void config() {
-                if (message == null) {
+                if (Cache.shouldRefreshView) {
                     MainActivity.instance.refreshVnlistFragment();
                 }
                 refreshLayout.setRefreshing(false);
