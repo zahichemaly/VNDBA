@@ -1,6 +1,5 @@
 package com.booboot.vndbandroid.factory;
 
-import android.content.Context;
 import android.text.TextUtils;
 
 import com.booboot.vndbandroid.activity.VNDetailsActivity;
@@ -28,19 +27,19 @@ public class CharacterDataFactory {
      * [...]
      * Contains an ~O(n) algorithm that fetches all the character's traits grouped by their parents.
      *
-     * @param activity   because Android
+     * @param activity  because Android
      * @param character character we want to display the info and traits
      * @return DoubleListElement[] array to be given to a DoubleListAdapter
      */
     public static DoubleListElement[] getData(VNDetailsActivity activity, Item character) {
         final List<DoubleListElement> characterData = new ArrayList<>();
-       if (character.getDescription() != null) {
-           String descriptionWithoutSpoilers = character.getDescription();
-           if (!Tag.checkSpoilerLevel(activity, 2)) {
-               descriptionWithoutSpoilers = descriptionWithoutSpoilers.replaceAll("\\[spoiler\\].*\\[/spoiler\\]", "");
-           }
-           characterData.add(new DoubleListElement("Description", descriptionWithoutSpoilers, true));
-       }
+        if (character.getDescription() != null) {
+            String descriptionWithoutSpoilers = character.getDescription();
+            if (!Tag.checkSpoilerLevel(activity, 2)) {
+                descriptionWithoutSpoilers = descriptionWithoutSpoilers.replaceAll("\\[spoiler\\].*\\[/spoiler\\]", "");
+            }
+            characterData.add(new DoubleListElement("Description", descriptionWithoutSpoilers, true));
+        }
         if (character.getOriginal() != null)
             characterData.add(new DoubleListElement("Original name", character.getOriginal(), false));
         if (character.getGender() != null)
@@ -70,11 +69,14 @@ public class CharacterDataFactory {
             if (!Tag.checkSpoilerLevel(activity, ids[1])) continue;
 
             Trait trait = Trait.getTraits(activity).get(id);
+            if (trait == null) continue;
             Trait rootTrait = trait;
             /* Getting the root element recursively (which will be the name displayed at the left) */
             while (!rootTrait.getParents().isEmpty()) {
                 int rootId = rootTrait.getParents().get(0);
-                rootTrait = Trait.getTraits(activity).get(rootId);
+                Trait parentTrait = Trait.getTraits(activity).get(rootId);
+                if (parentTrait == null) break;
+                rootTrait = parentTrait;
             }
 
             if (characterTraits.get(rootTrait.getId()) == null)

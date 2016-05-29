@@ -121,7 +121,7 @@ public class VNDetailsFactory {
                     if (!Tag.checkSpoilerLevel(activity, tagInfo.get(2).intValue())) continue;
                     Tag tag = Tag.getTags(activity).get(tagInfo.get(0).intValue());
                     if (tag != null && tag.getCat().equals(cat.getCat())) {
-                        String tagName = Tag.getTags(activity).get(tagInfo.get(0).intValue()).getName();
+                        String tagName = tag.getName();
                         tags.add(tagName);
                         tags_images.add(Tag.getScoreImage(tagInfo));
                     }
