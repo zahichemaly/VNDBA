@@ -144,6 +144,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         progressBar.setVisibility(View.INVISIBLE);
         loginUsername.setEnabled(true);
         loginPassword.setEnabled(true);
+        loginButton.setText(R.string.sign_in);
         loginButton.setEnabled(true);
     }
 
@@ -151,6 +152,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         /* Disabling the inputs */
         loginUsername.setEnabled(false);
         loginPassword.setEnabled(false);
+        loginButton.setText(R.string.signing_in);
         loginButton.setEnabled(false);
         progressBar.setVisibility(View.VISIBLE);
     }
