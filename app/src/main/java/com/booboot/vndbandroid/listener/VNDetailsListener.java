@@ -281,7 +281,8 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener {
                 }
 
                 activity.toggleButtons();
-                MainActivity.instance.refreshVnlistFragment();
+                if (MainActivity.instance != null)
+                    MainActivity.instance.refreshVnlistFragment();
             }
         }, Callback.errorCallback(activity));
     }

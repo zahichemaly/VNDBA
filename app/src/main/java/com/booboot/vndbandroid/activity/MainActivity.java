@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else if (!searchView.isIconified()) {
+        } else if (searchView != null && !searchView.isIconified()) {
             searchView.setIconified(true);
         } else {
             /* Going back to home screen (don't use super.onBackPressed() because it would redirect to the LoginActivity underneath) */
