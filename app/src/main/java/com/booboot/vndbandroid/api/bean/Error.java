@@ -25,4 +25,13 @@ public class Error extends VNDBCommand {
     public void setMsg(String msg) {
         this.msg = msg;
     }
+
+    public String getFullMessage() {
+        switch (id) {
+            case "throttled":
+                return "VNDB.org is too busy to fulfill your request now, so your lists may not be up-to-date. Please wait a bit and try again.";
+            default:
+                return id + " : " + msg;
+        }
+    }
 }

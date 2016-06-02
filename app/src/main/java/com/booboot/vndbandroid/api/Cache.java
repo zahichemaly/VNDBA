@@ -63,7 +63,7 @@ public class Cache {
     private static String mergedIdsString;
     public static boolean shouldRefreshView;
 
-    public static void loadData(final Context context, final Callback successCallback) {
+    public static void loadData(final Context context, final Callback successCallback, final Callback errorCallback) {
         shouldRefreshView = false;
         VNDBServer.get("vnlist", "basic", "(uid = 0)", Options.create(1, 100, null, false, true, true), context, new Callback() {
             @Override
@@ -130,13 +130,13 @@ public class Cache {
                                         shouldRefreshView = true;
                                         successCallback.call();
                                     }
-                                }, Callback.errorCallback(context));
+                                }, errorCallback);
                             }
-                        }, Callback.errorCallback(context));
+                        }, errorCallback);
                     }
-                }, Callback.errorCallback(context));
+                }, errorCallback);
             }
-        }, Callback.errorCallback(context));
+        }, errorCallback);
     }
 
     /**

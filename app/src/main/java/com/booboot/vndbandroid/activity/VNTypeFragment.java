@@ -124,6 +124,12 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
                 }
                 refreshLayout.setRefreshing(false);
             }
+        }, new Callback() {
+            @Override
+            protected void config() {
+                Callback.showToast(getActivity(), message);
+                refreshLayout.setRefreshing(false);
+            }
         });
     }
 }

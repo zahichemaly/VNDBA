@@ -1,6 +1,7 @@
 package com.booboot.vndbandroid.util;
 
 import android.content.Context;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
@@ -31,8 +32,24 @@ public abstract class Callback {
         return new Callback() {
             @Override
             public void config() {
-                Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+                showToast(context, message);
             }
         };
+    }
+
+    public static void showToast(Context context, String message) {
+        final Toast toast = Toast.makeText(context, message, Toast.LENGTH_LONG);
+        toast.show();
+        if (message.length() > 90) {
+            new CountDownTimer(8000, 1000) {
+                public void onTick(long millisUntilFinished) {
+                    toast.show();
+                }
+
+                public void onFinish() {
+                    toast.cancel();
+                }
+            }.start();
+        }
     }
 }

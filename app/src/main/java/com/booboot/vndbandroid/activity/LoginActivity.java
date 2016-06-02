@@ -16,7 +16,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.api.Cache;
@@ -128,15 +127,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         protected void config() {
                             startActivity(new Intent(LoginActivity.this, MainActivity.class));
                         }
-                    });
+                    }, getCallback());
                 }
-            }, new Callback() {
-                @Override
-                public void config() {
-                    Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
-                    enableAll();
-                }
-            });
+            }, getCallback());
         }
     }
 
@@ -155,5 +148,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         loginButton.setText(R.string.signing_in);
         loginButton.setEnabled(false);
         progressBar.setVisibility(View.VISIBLE);
+    }
+
+    private Callback getCallback() {
+        return new Callback() {
+            @Override
+            public void config() {
+                Callback.showToast(LoginActivity.this, message);
+                enableAll();
+            }
+        };
     }
 }

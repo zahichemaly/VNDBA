@@ -244,7 +244,7 @@ public class VNDBServer {
 
         VNDBCommand response = getResponse();
         if (response instanceof Error) {
-            errorCallback.message = ((Error) response).getId() + " : " + ((Error) response).getMsg();
+            errorCallback.message = ((Error) response).getFullMessage();
             errorCallback.call();
         }
 
