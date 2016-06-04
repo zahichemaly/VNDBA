@@ -19,7 +19,6 @@ import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.api.Cache;
-import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.Links;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.SettingsManager;
@@ -119,15 +118,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             VNTypeFragment.refreshOnInit = true;
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
         } else {
-            VNDBServer.login(this, new Callback() {
+            Cache.loadData(LoginActivity.this, new Callback() {
                 @Override
-                public void config() {
-                    Cache.loadData(LoginActivity.this, new Callback() {
-                        @Override
-                        protected void config() {
-                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                        }
-                    }, getCallback());
+                protected void config() {
+                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
                 }
             }, getCallback());
         }

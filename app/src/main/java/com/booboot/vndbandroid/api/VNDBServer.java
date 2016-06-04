@@ -16,6 +16,7 @@ import com.booboot.vndbandroid.api.bean.VNDBCommand;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.ConnectionReceiver;
 import com.booboot.vndbandroid.util.JSON;
+import com.booboot.vndbandroid.util.NumberedThread;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -26,6 +27,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.SocketFactory;
 import javax.net.ssl.HostnameVerifier;
@@ -47,12 +51,12 @@ public class VNDBServer {
     public final static double CLIENTVER = 1.1;
 
     private static boolean mutex = true;
-    private static SSLSocket socket;
-    private static OutputStream out;
-    private static InputStreamReader in;
     private static Context context;
     private static Callback successCallback, errorCallback;
     private static boolean useCacheIfError;
+
+    private static VNDBCommand plResults;
+    private static VNDBCommand[] plPageResults;
 
     private static void init(Context c, Callback sc, Callback ec, boolean ucie) {
         context = c;
@@ -61,10 +65,10 @@ public class VNDBServer {
         useCacheIfError = ucie;
     }
 
-    private static boolean connect() {
+    public static boolean connect(int socketIndex) {
         try {
             SocketFactory sf = SSLSocketFactory.getDefault();
-            socket = (SSLSocket) sf.createSocket(HOST, PORT);
+            SSLSocket socket = (SSLSocket) sf.createSocket(HOST, PORT);
             socket.setKeepAlive(true);
 
             HostnameVerifier hv = HttpsURLConnection.getDefaultHostnameVerifier();
@@ -76,8 +80,7 @@ public class VNDBServer {
                 return false;
             }
 
-            out = socket.getOutputStream();
-            in = new InputStreamReader(socket.getInputStream());
+            SocketPool.setSocket(socketIndex, socket);
             return true;
         } catch (UnknownHostException uhe) {
             if (!useCacheIfError || !Cache.loadFromCache(context)) {
@@ -97,19 +100,18 @@ public class VNDBServer {
         }
     }
 
-    public static void login(final Context context, final Callback successCallback, final Callback errorCallback) {
-        new Thread() {
-            public void run() {
-                init(context, successCallback, errorCallback, true);
-                if (!connect()) return;
+    public static void login(final Context context, final int socketIndex, final Callback successCallback, final Callback errorCallback) {
+        synchronized (SocketPool.getLock(socketIndex)) {
+            if (SocketPool.getSocket(socketIndex) == null) {
+                if (!connect(socketIndex)) return;
                 String username = SettingsManager.getUsername(context).toLowerCase().trim();
                 String password = SettingsManager.getPassword(context);
-                VNDBCommand response = sendCommand("login ", Login.create(PROTOCOL, CLIENT, CLIENTVER, username, password));
-                if (response instanceof Ok) {
-                    successCallback.call();
+                VNDBCommand response = sendCommand("login ", Login.create(PROTOCOL, CLIENT, CLIENTVER, username, password), socketIndex);
+                if (!(response instanceof Ok)) {
+                    errorCallback.call();
                 }
             }
-        }.start();
+        }
     }
 
     public static void get(final String type, final String flags, final String filters, final Options options, final Context context, final Callback successCallback, final Callback errorCallback) {
@@ -117,7 +119,7 @@ public class VNDBServer {
             public void run() {
                 if (!takeMutex()) return;
                 init(context, successCallback, errorCallback, options.isUseCacheIfError());
-                StringBuilder command = new StringBuilder();
+                final StringBuilder command = new StringBuilder();
                 command.append("get ");
                 command.append(type);
                 command.append(' ');
@@ -125,22 +127,62 @@ public class VNDBServer {
                 command.append(' ');
                 command.append(filters);
                 command.append(' ');
-                VNDBCommand results = null, pageResults;
-                do {
-                    pageResults = sendCommand(command.toString(), options);
-                    if (results == null)
-                        results = pageResults;
-                    /* If there there's more than 1 page, we add the current page items to the overall results, to avoid overwriting the results of the previous pages */
-                    else if (results instanceof Results && pageResults instanceof Results)
-                        ((Results) results).getItems().addAll(((Results) pageResults).getItems());
 
-                    if (options == null || pageResults == null) break;
-                    options.setPage(options.getPage() + 1);
-                } while (options.isFetchAllPages() && pageResults instanceof Results && ((Results) pageResults).isMore());
+                if (options != null && options.getNumberOfPages() > 1) {
+                    plResults = null;
+                    plPageResults = new VNDBCommand[options.getNumberOfPages()];
+                    ExecutorService threadManager = Executors.newCachedThreadPool();
+                    for (int i = 0; i < options.getNumberOfPages(); i++) {
+                        threadManager.execute(new NumberedThread(i) {
+                            public void run() {
+                                synchronized (SocketPool.getLock(num)) {
+                                    Options threadOptions = Options.create(options);
+                                    threadOptions.setPage(num + 1);
+                                    plPageResults[num] = sendCommand(command.toString(), threadOptions, num);
+                                }
+                            }
+                        });
+                    }
 
-                if (results instanceof Results && pageResults != null) {
-                    successCallback.results = (Results) results;
-                    successCallback.call();
+                    threadManager.shutdown();
+                    try {
+                        boolean finished = threadManager.awaitTermination(1, TimeUnit.MINUTES);
+                        if (finished) {
+                            for (int i = 0; i < plPageResults.length; i++) {
+                                if (plResults == null)
+                                    plResults = plPageResults[i];
+                                else if (plResults instanceof Results && plPageResults[i] instanceof Results)
+                                    ((Results) plResults).getItems().addAll(((Results) plPageResults[i]).getItems());
+
+                                if (plPageResults == null) continue;
+                            }
+
+                            if (plResults instanceof Results && plPageResults != null) {
+                                successCallback.results = (Results) plResults;
+                                successCallback.call();
+                            }
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    VNDBCommand results = null, pageResults;
+                    do {
+                        pageResults = sendCommand(command.toString(), options, 0);
+                        if (results == null)
+                            results = pageResults;
+                        /* If there there's more than 1 page, we add the current page items to the overall results, to avoid overwriting the results of the previous pages */
+                        else if (results instanceof Results && pageResults instanceof Results)
+                            ((Results) results).getItems().addAll(((Results) pageResults).getItems());
+
+                        if (options == null || pageResults == null) break;
+                        options.setPage(options.getPage() + 1);
+                    } while (options.isFetchAllPages() && pageResults instanceof Results && ((Results) pageResults).isMore());
+
+                    if (results instanceof Results && pageResults != null) {
+                        successCallback.results = (Results) results;
+                        successCallback.call();
+                    }
                 }
 
                 freeMutex();
@@ -159,7 +201,7 @@ public class VNDBServer {
                 command.append(' ');
                 command.append(id);
                 command.append(' ');
-                VNDBCommand results = sendCommand(command.toString(), fields);
+                VNDBCommand results = sendCommand(command.toString(), fields, 0);
                 if (results instanceof Ok) {
                     if (successCallback != null) successCallback.call();
                 }
@@ -174,7 +216,7 @@ public class VNDBServer {
             public void run() {
                 if (!takeMutex()) return;
                 init(context, successCallback, errorCallback, false);
-                VNDBCommand results = sendCommand("dbstats", null);
+                VNDBCommand results = sendCommand("dbstats", null, 0);
                 if (results instanceof DbStats) {
                     successCallback.dbstats = (DbStats) results;
                     successCallback.call();
@@ -189,7 +231,7 @@ public class VNDBServer {
         }.start();
     }
 
-    public static VNDBCommand sendCommand(String command, VNDBCommand params) {
+    public static VNDBCommand sendCommand(String command, VNDBCommand params, int socketIndex) {
         StringBuilder query = new StringBuilder();
         try {
             query.append(command);
@@ -202,29 +244,27 @@ public class VNDBServer {
             return null;
         }
 
+        InputStreamReader in;
+        OutputStream out;
         try {
-            if (in == null) {
-                /* If we are inside the application without connection and the connection just worked again, we have to reconnect on the fly */
-                VNDBServer.close();
-                if (!connect()) return null;
-                String username = SettingsManager.getUsername(context).toLowerCase().trim();
-                String password = SettingsManager.getPassword(context);
-                VNDBCommand response = sendCommand("login", Login.create(PROTOCOL, CLIENT, CLIENTVER, username, password));
-                if (!(response instanceof Ok)) return null;
-            }
+            in = new InputStreamReader(SocketPool.getSocket(context, socketIndex, successCallback, errorCallback).getInputStream());
+            out = SocketPool.getSocket(context, socketIndex, successCallback, errorCallback).getOutputStream();
 
+            //   Log.e("D", "11111");
             if (BuildConfig.DEBUG) {
                 Log.e("D", query.toString());
             }
             if (in.ready()) while (in.read() > -1) ;
+            // Log.e("D", "222222");
             out.write(query.toString().getBytes("UTF-8"));
+            // Log.e("D", "333333");
         } catch (UnsupportedEncodingException uee) {
             errorCallback.message = "Tried to send a query to the API with a wrong encoding. Aborting operation.";
             errorCallback.call();
             return null;
         } catch (SocketException se) {
             se.printStackTrace();
-            VNDBServer.close();
+            VNDBServer.close(socketIndex);
 
             if (!useCacheIfError || !Cache.loadFromCache(context)) {
                 errorCallback.message = ConnectionReceiver.CONNECTION_ERROR_MESSAGE;
@@ -242,7 +282,7 @@ public class VNDBServer {
             return null;
         }
 
-        VNDBCommand response = getResponse();
+        VNDBCommand response = getResponse(in);
         if (response instanceof Error) {
             errorCallback.message = ((Error) response).getFullMessage();
             errorCallback.call();
@@ -251,15 +291,18 @@ public class VNDBServer {
         return response;
     }
 
-    private static VNDBCommand getResponse() {
+    private static VNDBCommand getResponse(InputStreamReader in) {
         StringBuilder response = new StringBuilder();
         try {
+            //     Log.e("D", "44444");
             int read = in.read();
+            //   Log.e("D", "5555555");
             while (read != 4 && read > -1) {
                 response.append((char) read);
                 read = in.read();
                 // Log.e("D", response.toString());
             }
+            //  Log.e("D", "66666");
         } catch (IOException ioe) {
             ioe.printStackTrace();
             errorCallback.message = "An error occurred while receiving the response from the API. Please try again later.";
@@ -275,7 +318,7 @@ public class VNDBServer {
             if (response.toString().trim().equals("ok"))
                 return new Ok();
             else {
-                errorCallback.message = "An error occurred while decoding the response from the API. Aborting operation.";
+                errorCallback.message = "An error occurred while reading the response from the API. Aborting operation.";
                 errorCallback.call();
                 return null;
             }
@@ -293,21 +336,36 @@ public class VNDBServer {
         }
     }
 
-    public static void close() {
+    public static void close(final int socketIndex) {
         new Thread() {
             public void run() {
                 try {
-                    if (in != null) {
-                        in.close();
-                        in = null;
-                    }
-                    if (out != null) {
-                        out.close();
-                        out = null;
-                    }
+                    SSLSocket socket = SocketPool.getSocket(socketIndex);
                     if (socket != null) {
+                        socket.getInputStream().close();
+                        socket.getOutputStream().close();
                         socket.close();
-                        socket = null;
+                        SocketPool.setSocket(socketIndex, null);
+                    }
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                }
+            }
+        }.start();
+    }
+
+    public static void closeAll() {
+        new Thread() {
+            public void run() {
+                try {
+                    for (int i = 0; i < SocketPool.MAX_SOCKETS; i++) {
+                        SSLSocket socket = SocketPool.getSocket(i);
+                        if (socket != null) {
+                            socket.getInputStream().close();
+                            socket.getOutputStream().close();
+                            socket.close();
+                            SocketPool.setSocket(i, null);
+                        }
                     }
                 } catch (IOException ioe) {
                     ioe.printStackTrace();

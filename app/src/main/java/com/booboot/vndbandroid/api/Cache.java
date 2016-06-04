@@ -65,7 +65,7 @@ public class Cache {
 
     public static void loadData(final Context context, final Callback successCallback, final Callback errorCallback) {
         shouldRefreshView = false;
-        VNDBServer.get("vnlist", "basic", "(uid = 0)", Options.create(1, 100, null, false, true, true), context, new Callback() {
+        VNDBServer.get("vnlist", "basic", "(uid = 0)", Options.create(1, 100, null, false, true, true, 0), context, new Callback() {
             @Override
             public void config() {
                 final Map<Integer, Item> vnlistIds = new HashMap<>(), votelistIds = new HashMap<>(), wishlistIds = new HashMap<>();
@@ -73,14 +73,14 @@ public class Cache {
                     vnlistIds.put(vnlistItem.getVn(), vnlistItem);
                 }
 
-                VNDBServer.get("votelist", "basic", "(uid = 0)", Options.create(1, 100, null, false, true, true), context, new Callback() {
+                VNDBServer.get("votelist", "basic", "(uid = 0)", Options.create(1, 100, null, false, true, true, 0), context, new Callback() {
                     @Override
                     protected void config() {
                         for (Item votelistItem : results.getItems()) {
                             votelistIds.put(votelistItem.getVn(), votelistItem);
                         }
 
-                        VNDBServer.get("wishlist", "basic", "(uid = 0)", Options.create(1, 100, null, false, true, true), context, new Callback() {
+                        VNDBServer.get("wishlist", "basic", "(uid = 0)", Options.create(1, 100, null, false, true, true, 0), context, new Callback() {
                             @Override
                             protected void config() {
                                 for (Item wishlistItem : results.getItems()) {
@@ -101,7 +101,8 @@ public class Cache {
                                 } catch (JsonProcessingException e) {
                                     e.printStackTrace();
                                 }
-                                VNDBServer.get("vn", VN_FLAGS, "(id = " + mergedIdsString + ")", Options.create(true, true), context, new Callback() {
+                                int numberOfPages = (int) Math.ceil(mergedIds.size() * 1.0 / 25);
+                                VNDBServer.get("vn", VN_FLAGS, "(id = " + mergedIdsString + ")", Options.create(true, true, numberOfPages), context, new Callback() {
                                     @Override
                                     protected void config() {
                                         for (Item vn : results.getItems()) {

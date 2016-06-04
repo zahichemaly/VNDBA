@@ -23,7 +23,7 @@ public class RankingTopFragment extends Fragment {
             progressiveResultLoader = new ProgressiveResultLoader();
             progressiveResultLoader.setActivity(getActivity());
             progressiveResultLoader.setRootView(rootView);
-            progressiveResultLoader.setOptions(Options.create(1, 25, "rating", true, false, false));
+            progressiveResultLoader.setOptions(Options.create(1, 25, "rating", true, false, false, 1));
             progressiveResultLoader.setShowRank(true);
             progressiveResultLoader.setShowRating(true);
             progressiveResultLoader.setFilters("(id > 1)");

@@ -16,7 +16,7 @@ public class ConnectionReceiver extends BroadcastReceiver {
         ConnectivityManager conMan = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = conMan.getActiveNetworkInfo();
         if (netInfo == null) {
-            VNDBServer.close();
+            VNDBServer.closeAll();
         }
     }
 

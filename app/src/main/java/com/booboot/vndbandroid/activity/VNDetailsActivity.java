@@ -184,7 +184,7 @@ public class VNDetailsActivity extends AppCompatActivity {
 
     private void initCharacters() {
         if (Cache.characters.get(vn.getId()) == null) {
-            VNDBServer.get("character", Cache.CHARACTER_FLAGS, "(vn = " + vn.getId() + ")", Options.create(true, true), this, new Callback() {
+            VNDBServer.get("character", Cache.CHARACTER_FLAGS, "(vn = " + vn.getId() + ")", Options.create(true, true, 0), this, new Callback() {
                 @Override
                 protected void config() {
                     if (results.getItems().isEmpty()) {
@@ -219,7 +219,7 @@ public class VNDetailsActivity extends AppCompatActivity {
 
     private void initReleases() {
         if (Cache.releases.get(vn.getId()) == null) {
-            VNDBServer.get("release", Cache.RELEASE_FLAGS, "(vn = " + vn.getId() + ")", Options.create(1, 25, "released", false, true, true), this, new Callback() {
+            VNDBServer.get("release", Cache.RELEASE_FLAGS, "(vn = " + vn.getId() + ")", Options.create(1, 25, "released", false, true, true, 0), this, new Callback() {
                 @Override
                 protected void config() {
                     List<Item> releasesList;

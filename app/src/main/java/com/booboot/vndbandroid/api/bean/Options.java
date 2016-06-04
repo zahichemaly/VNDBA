@@ -13,15 +13,17 @@ public class Options extends VNDBCommand {
     private boolean reverse;
     private boolean fetchAllPages;
     private boolean useCacheIfError;
+    private int numberOfPages;
 
-    public static Options create(boolean fetchAllPages, boolean useCacheIfError) {
+    public static Options create(boolean fetchAllPages, boolean useCacheIfError, int numberOfPages) {
         Options options = new Options();
         options.fetchAllPages = fetchAllPages;
         options.useCacheIfError = useCacheIfError;
+        options.numberOfPages = numberOfPages;
         return options;
     }
 
-    public static Options create(int page, int results, String sort, boolean reverse, boolean fetchAllPages, boolean useCacheIfError) {
+    public static Options create(int page, int results, String sort, boolean reverse, boolean fetchAllPages, boolean useCacheIfError, int numberOfPages) {
         Options options = new Options();
         options.page = page;
         options.results = results;
@@ -29,6 +31,19 @@ public class Options extends VNDBCommand {
         options.reverse = reverse;
         options.fetchAllPages = fetchAllPages;
         options.useCacheIfError = useCacheIfError;
+        options.numberOfPages = numberOfPages;
+        return options;
+    }
+
+    public static Options create(Options other) {
+        Options options = new Options();
+        options.page = other.page;
+        options.results = other.results;
+        options.sort = other.sort;
+        options.reverse = other.reverse;
+        options.fetchAllPages = other.fetchAllPages;
+        options.useCacheIfError = other.useCacheIfError;
+        options.numberOfPages = other.numberOfPages;
         return options;
     }
 
@@ -78,5 +93,13 @@ public class Options extends VNDBCommand {
 
     public void setUseCacheIfError(boolean useCacheIfError) {
         this.useCacheIfError = useCacheIfError;
+    }
+
+    public int getNumberOfPages() {
+        return numberOfPages;
+    }
+
+    public void setNumberOfPages(int numberOfPages) {
+        this.numberOfPages = numberOfPages;
     }
 }

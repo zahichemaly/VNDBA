@@ -263,7 +263,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_settings) {
             directSubfragment = new PreferencesFragment();
         } else if (id == R.id.nav_logout) {
-            VNDBServer.close();
+            VNDBServer.closeAll();
             Cache.clearCache(this);
             LoginActivity.instance.enableAll();
             Utils.recreate(LoginActivity.instance);

@@ -23,7 +23,7 @@ public class RankingPopularFragment extends Fragment {
             progressiveResultLoader = new ProgressiveResultLoader();
             progressiveResultLoader.setActivity(getActivity());
             progressiveResultLoader.setRootView(rootView);
-            progressiveResultLoader.setOptions(Options.create(1, 25, "popularity", true, false, false));
+            progressiveResultLoader.setOptions(Options.create(1, 25, "popularity", true, false, false, 1));
             progressiveResultLoader.setShowRank(true);
             progressiveResultLoader.setShowPopularity(true);
             progressiveResultLoader.setFilters("(id > 1)");
