@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Created by od on 15/03/2016.
@@ -63,81 +64,106 @@ public class Cache {
     private static String mergedIdsString;
     public static boolean shouldRefreshView;
 
-    public static void loadData(final Context context, final Callback successCallback, final Callback errorCallback) {
-        shouldRefreshView = false;
-        VNDBServer.get("vnlist", "basic", "(uid = 0)", Options.create(1, 100, null, false, true, true, 0), context, new Callback() {
-            @Override
-            public void config() {
-                final Map<Integer, Item> vnlistIds = new HashMap<>(), votelistIds = new HashMap<>(), wishlistIds = new HashMap<>();
-                for (Item vnlistItem : results.getItems()) {
-                    vnlistIds.put(vnlistItem.getVn(), vnlistItem);
-                }
+    public static boolean pipeliningError;
 
-                VNDBServer.get("votelist", "basic", "(uid = 0)", Options.create(1, 100, null, false, true, true, 0), context, new Callback() {
+    public static void loadData(final Context context, final Callback successCallback, final Callback errorCallback) {
+        new Thread() {
+            public void run() {
+                shouldRefreshView = false;
+                final Map<Integer, Item> vnlistIds = new HashMap<>(), votelistIds = new HashMap<>(), wishlistIds = new HashMap<>();
+
+                /* Initializing multi-threading variables */
+                pipeliningError = false;
+                Callback.countDownLatch = new CountDownLatch(3);
+
+                VNDBServer.get("vnlist", "basic", "(uid = 0)", Options.create(1, 100, null, false, true, true, 0), 0, context, new Callback() {
+                    @Override
+                    public void config() {
+                        for (Item vnlistItem : results.getItems()) {
+                            vnlistIds.put(vnlistItem.getVn(), vnlistItem);
+                        }
+                        if (countDownLatch != null) countDownLatch.countDown();
+                    }
+                }, errorCallback);
+
+                VNDBServer.get("votelist", "basic", "(uid = 0)", Options.create(1, 100, null, false, true, true, 0), 1, context, new Callback() {
                     @Override
                     protected void config() {
                         for (Item votelistItem : results.getItems()) {
                             votelistIds.put(votelistItem.getVn(), votelistItem);
                         }
+                        if (countDownLatch != null) countDownLatch.countDown();
+                    }
+                }, errorCallback);
 
-                        VNDBServer.get("wishlist", "basic", "(uid = 0)", Options.create(1, 100, null, false, true, true, 0), context, new Callback() {
-                            @Override
-                            protected void config() {
-                                for (Item wishlistItem : results.getItems()) {
-                                    wishlistIds.put(wishlistItem.getVn(), wishlistItem);
-                                }
+                VNDBServer.get("wishlist", "basic", "(uid = 0)", Options.create(1, 100, null, false, true, true, 0), 2, context, new Callback() {
+                    @Override
+                    protected void config() {
+                        for (Item wishlistItem : results.getItems()) {
+                            wishlistIds.put(wishlistItem.getVn(), wishlistItem);
+                        }
+                        if (countDownLatch != null) countDownLatch.countDown();
+                    }
+                }, errorCallback);
 
-                                Set<Integer> mergedIds = new HashSet<>(vnlistIds.keySet());
-                                mergedIds.addAll(votelistIds.keySet());
-                                mergedIds.addAll(wishlistIds.keySet());
+                try {
+                    Callback.countDownLatch.await();
+                } catch (InterruptedException E) {
+                    errorCallback.message = "An unexpected error occurred while loading your lists. Please try again later.";
+                    errorCallback.call();
+                    return;
+                }
 
-                                if (mergedIds.isEmpty() || !shouldSendGetVn(context, vnlistIds, votelistIds, wishlistIds, mergedIds)) {
-                                    successCallback.call();
-                                    return;
-                                }
+                Callback.countDownLatch = null;
+                if (pipeliningError) return;
 
-                                try {
-                                    mergedIdsString = JSON.mapper.writeValueAsString(mergedIds);
-                                } catch (JsonProcessingException e) {
-                                    e.printStackTrace();
-                                }
-                                int numberOfPages = (int) Math.ceil(mergedIds.size() * 1.0 / 25);
-                                VNDBServer.get("vn", VN_FLAGS, "(id = " + mergedIdsString + ")", Options.create(true, true, numberOfPages), context, new Callback() {
-                                    @Override
-                                    protected void config() {
-                                        for (Item vn : results.getItems()) {
-                                            Item vnlistItem = vnlistIds.get(vn.getId());
-                                            Item votelistItem = votelistIds.get(vn.getId());
-                                            Item wishlistItem = wishlistIds.get(vn.getId());
+                Set<Integer> mergedIds = new HashSet<>(vnlistIds.keySet());
+                mergedIds.addAll(votelistIds.keySet());
+                mergedIds.addAll(wishlistIds.keySet());
 
-                                            if (vnlistItem != null) {
-                                                vn.setStatus(vnlistItem.getStatus());
-                                                Cache.vnlist.put(vn.getId(), vn);
-                                            }
-                                            if (votelistItem != null) {
-                                                vn.setVote(votelistItem.getVote());
-                                                Cache.votelist.put(vn.getId(), vn);
-                                            }
-                                            if (wishlistItem != null) {
-                                                vn.setPriority(wishlistItem.getPriority());
-                                                Cache.wishlist.put(vn.getId(), vn);
-                                            }
-                                        }
+                if (mergedIds.isEmpty() || !shouldSendGetVn(context, vnlistIds, votelistIds, wishlistIds, mergedIds)) {
+                    successCallback.call();
+                    return;
+                }
 
-                                        sortAll(context);
-                                        saveToCache(context, VNLIST_CACHE, vnlist);
-                                        saveToCache(context, VOTELIST_CACHE, votelist);
-                                        saveToCache(context, WISHLIST_CACHE, wishlist);
-                                        shouldRefreshView = true;
-                                        successCallback.call();
-                                    }
-                                }, errorCallback);
+                try {
+                    mergedIdsString = JSON.mapper.writeValueAsString(mergedIds);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+                int numberOfPages = (int) Math.ceil(mergedIds.size() * 1.0 / 25);
+                VNDBServer.get("vn", VN_FLAGS, "(id = " + mergedIdsString + ")", Options.create(true, true, numberOfPages), 0, context, new Callback() {
+                    @Override
+                    protected void config() {
+                        for (Item vn : results.getItems()) {
+                            Item vnlistItem = vnlistIds.get(vn.getId());
+                            Item votelistItem = votelistIds.get(vn.getId());
+                            Item wishlistItem = wishlistIds.get(vn.getId());
+
+                            if (vnlistItem != null) {
+                                vn.setStatus(vnlistItem.getStatus());
+                                Cache.vnlist.put(vn.getId(), vn);
                             }
-                        }, errorCallback);
+                            if (votelistItem != null) {
+                                vn.setVote(votelistItem.getVote());
+                                Cache.votelist.put(vn.getId(), vn);
+                            }
+                            if (wishlistItem != null) {
+                                vn.setPriority(wishlistItem.getPriority());
+                                Cache.wishlist.put(vn.getId(), vn);
+                            }
+                        }
+
+                        sortAll(context);
+                        saveToCache(context, VNLIST_CACHE, vnlist);
+                        saveToCache(context, VOTELIST_CACHE, votelist);
+                        saveToCache(context, WISHLIST_CACHE, wishlist);
+                        shouldRefreshView = true;
+                        successCallback.call();
                     }
                 }, errorCallback);
             }
-        }, errorCallback);
+        }.start();
     }
 
     /**

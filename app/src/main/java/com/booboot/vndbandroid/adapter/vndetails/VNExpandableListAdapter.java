@@ -159,7 +159,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                                     return;
                                 }
 
-                                VNDBServer.get("vn", Cache.VN_FLAGS, "(id = " + vnId + ")", Options.create(false, false, 1), activity, new Callback() {
+                                VNDBServer.get("vn", Cache.VN_FLAGS, "(id = " + vnId + ")", Options.create(false, false, 1), 0, activity, new Callback() {
                                     @Override
                                     protected void config() {
                                         if (!results.getItems().isEmpty()) {

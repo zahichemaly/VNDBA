@@ -9,6 +9,8 @@ import android.widget.Toast;
 import com.booboot.vndbandroid.api.bean.DbStats;
 import com.booboot.vndbandroid.api.bean.Results;
 
+import java.util.concurrent.CountDownLatch;
+
 /**
  * Created by od on 12/03/2016.
  */
@@ -16,6 +18,7 @@ public abstract class Callback {
     public String message;
     public Results results;
     public DbStats dbstats;
+    public static CountDownLatch countDownLatch;
 
     protected abstract void config();
 
@@ -33,6 +36,7 @@ public abstract class Callback {
             @Override
             public void config() {
                 showToast(context, message);
+                if (countDownLatch != null) countDownLatch.countDown();
             }
         };
     }

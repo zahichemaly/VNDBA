@@ -148,8 +148,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         return new Callback() {
             @Override
             public void config() {
+                if (Cache.pipeliningError) return;
+                Cache.pipeliningError = true;
                 Callback.showToast(LoginActivity.this, message);
                 enableAll();
+                if (countDownLatch != null) countDownLatch.countDown();
             }
         };
     }

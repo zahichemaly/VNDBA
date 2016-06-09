@@ -109,7 +109,7 @@ public class ProgressiveResultLoader implements SwipeRefreshLayout.OnRefreshList
     public void loadResults(final boolean clearData) {
         options.setPage(currentPage);
         progressBar.setVisibility(View.VISIBLE);
-        VNDBServer.get("vn", Cache.VN_FLAGS, filters, options, activity, new Callback() {
+        VNDBServer.get("vn", Cache.VN_FLAGS, filters, options, 0, activity, new Callback() {
             @Override
             protected void config() {
                 moreResults = results.isMore();
