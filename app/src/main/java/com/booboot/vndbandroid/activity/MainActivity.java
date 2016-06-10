@@ -292,6 +292,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         VNListFragment fragment = directSubfragment instanceof VNListFragment ? (VNListFragment) directSubfragment : null;
         if (fragment != null)
             fragment.refresh();
+        updateMenuCounters();
     }
 
     public SearchView getSearchView() {
@@ -311,7 +312,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void setMenuCounter(@IdRes int itemId, int count) {
-        TextView view = (TextView) navigationView.getMenu().findItem(itemId).getActionView();
-        view.setText(count > 0 ? String.valueOf(count) : null);
+        if (navigationView != null) {
+            TextView view = (TextView) navigationView.getMenu().findItem(itemId).getActionView();
+            view.setText(count > 0 ? String.valueOf(count) : null);
+        }
     }
 }
