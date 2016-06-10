@@ -110,7 +110,6 @@ public class VNDBServer {
     public static void get(final String type, final String flags, final String filters, final Options options, final int socketIndex, final Context context, final Callback successCallback, final Callback errorCallback) {
         new Thread() {
             public void run() {
-                //synchronized (SocketPool.getLock(socketIndex)) {
                     init(context, successCallback, errorCallback, options.isUseCacheIfError());
                     final StringBuilder command = new StringBuilder();
                     command.append("get ");
@@ -159,26 +158,27 @@ public class VNDBServer {
                             e.printStackTrace();
                         }
                     } else {
-                        VNDBCommand pageResults;
-                        do {
-                            pageResults = sendCommand(command.toString(), options, socketIndex);
-                            if (results == null)
-                                results = pageResults;
-                            /* If there there's more than 1 page, we add the current page items to the overall results, to avoid overwriting the results of the previous pages */
-                            else if (results instanceof Results && pageResults instanceof Results)
-                                ((Results) results).getItems().addAll(((Results) pageResults).getItems());
+                        synchronized (SocketPool.getLock(socketIndex)) {
+                            VNDBCommand pageResults;
+                            do {
+                                pageResults = sendCommand(command.toString(), options, socketIndex);
+                                if (results == null)
+                                    results = pageResults;
+                                /* If there there's more than 1 page, we add the current page items to the overall results, to avoid overwriting the results of the previous pages */
+                                else if (results instanceof Results && pageResults instanceof Results)
+                                    ((Results) results).getItems().addAll(((Results) pageResults).getItems());
 
-                            if (options == null || pageResults == null) break;
-                            options.setPage(options.getPage() + 1);
-                        } while (options.isFetchAllPages() && pageResults instanceof Results && ((Results) pageResults).isMore());
+                                if (options == null || pageResults == null) break;
+                                options.setPage(options.getPage() + 1);
+                            } while (options.isFetchAllPages() && pageResults instanceof Results && ((Results) pageResults).isMore());
 
-                        if (results instanceof Results && pageResults != null) {
-                            successCallback.results = (Results) results;
-                            successCallback.call();
+                            if (results instanceof Results && pageResults != null) {
+                                successCallback.results = (Results) results;
+                                successCallback.call();
+                            }
                         }
                     }
                 }
-           // }
         }.start();
     }
 
