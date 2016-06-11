@@ -34,6 +34,7 @@
     <string name="sign_in">Sign in</string>
     <string name="signing_in">Signing in, please be patient...</string>
     <string name="throttle_warning">VNDB.org is a bit busy right now, so it may take some minutes to complete your request. Come back here later or try again in %d minutes!</string>
+    <string name="about">About</string>
 
     <string-array name="background_pref_titles">
         <item>Default (orange)</item>

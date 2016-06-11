@@ -262,6 +262,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             directSubfragment = new RankingNewlyAddedFragment();
         } else if (id == R.id.nav_settings) {
             directSubfragment = new PreferencesFragment();
+        } else if (id == R.id.nav_about) {
+            directSubfragment = new AboutFragment();
         } else if (id == R.id.nav_logout) {
             VNDBServer.closeAll();
             Cache.clearCache(this);
