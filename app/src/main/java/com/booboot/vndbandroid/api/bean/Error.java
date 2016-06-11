@@ -9,6 +9,18 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class Error extends VNDBCommand {
     private String id;
     private String msg;
+    private String type;
+    private double minwait;
+    private double fullwait;
+
+    public String getFullMessage() {
+        switch (id) {
+            case "throttled":
+                return "VNDB.org is too busy to fulfill your request now, so your lists may not be up-to-date. Please wait a bit and try again.";
+            default:
+                return id + " : " + msg;
+        }
+    }
 
     public String getId() {
         return id;
@@ -26,12 +38,28 @@ public class Error extends VNDBCommand {
         this.msg = msg;
     }
 
-    public String getFullMessage() {
-        switch (id) {
-            case "throttled":
-                return "VNDB.org is too busy to fulfill your request now, so your lists may not be up-to-date. Please wait a bit and try again.";
-            default:
-                return id + " : " + msg;
-        }
+    public String getType() {
+        return type;
     }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public double getMinwait() {
+        return minwait;
+    }
+
+    public void setMinwait(double minwait) {
+        this.minwait = minwait;
+    }
+
+    public double getFullwait() {
+        return fullwait;
+    }
+
+    public void setFullwait(double fullwait) {
+        this.fullwait = fullwait;
+    }
+
 }

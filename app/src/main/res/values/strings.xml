@@ -33,6 +33,7 @@
     <string name="other_vote_explanation">Please input your vote as a number between 1 and 10. One digit after the decimal is allowed, for example: 8.6 or 7.3.</string>
     <string name="sign_in">Sign in</string>
     <string name="signing_in">Signing in, please be patient...</string>
+    <string name="throttle_warning">VNDB.org is a bit busy right now, so it may take some minutes to complete your request. Come back here later or try again in %d minutes!</string>
 
     <string-array name="background_pref_titles">
         <item>Default (orange)</item>

@@ -41,19 +41,24 @@ public abstract class Callback {
         };
     }
 
-    public static void showToast(Context context, String message) {
-        final Toast toast = Toast.makeText(context, message, Toast.LENGTH_LONG);
-        toast.show();
-        if (message.length() > 90) {
-            new CountDownTimer(8000, 1000) {
-                public void onTick(long millisUntilFinished) {
-                    toast.show();
-                }
+    public static void showToast(final Context context, final String message) {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                final Toast toast = Toast.makeText(context, message, Toast.LENGTH_LONG);
+                toast.show();
+                if (message.length() > 90) {
+                    new CountDownTimer(8000, 1000) {
+                        public void onTick(long millisUntilFinished) {
+                            toast.show();
+                        }
 
-                public void onFinish() {
-                    toast.cancel();
+                        public void onFinish() {
+                            toast.cancel();
+                        }
+                    }.start();
                 }
-            }.start();
-        }
+            }
+        });
     }
 }
