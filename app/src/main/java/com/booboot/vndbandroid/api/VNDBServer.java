@@ -49,7 +49,7 @@ public class VNDBServer {
 
     public final static int PROTOCOL = 1;
     public final static String CLIENT = "VNDB_ANDROID";
-    public final static double CLIENTVER = 1.1;
+    public final static double CLIENTVER = 2.0;
 
     private static boolean mutex = true;
     private static Context context;
@@ -325,7 +325,7 @@ public class VNDBServer {
             return null;
         }
         if (BuildConfig.DEBUG) {
-            log(response.toString());
+          //  log(response.toString());
         }
 
         int delimiterIndex = response.indexOf("{");
