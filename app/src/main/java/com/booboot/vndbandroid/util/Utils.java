@@ -97,4 +97,17 @@ public class Utils {
         if (actionBar != null)
             actionBar.setTitle(title);
     }
+
+    /**
+     * Returns a pseudo-random number between min and max, inclusive.
+     * The difference between min and max can be at most
+     * <code>Integer.MAX_VALUE - 1</code>.
+     *
+     * @param min Minimum value
+     * @param max Maximum value.  Must be greater than min.
+     * @return Integer between min and max, inclusive.
+     */
+    public static int randInt(int min, int max) {
+        return min + (int) (Math.random() * ((max - min) + 1));
+    }
 }

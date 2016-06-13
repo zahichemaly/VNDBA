@@ -19,6 +19,7 @@ import com.booboot.vndbandroid.util.ConnectionReceiver;
 import com.booboot.vndbandroid.util.JSON;
 import com.booboot.vndbandroid.util.NumberedThread;
 import com.booboot.vndbandroid.util.SettingsManager;
+import com.booboot.vndbandroid.util.Utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.io.IOException;
@@ -59,6 +60,7 @@ public class VNDBServer {
     /* Pipelining variables */
     private static ExecutorService threadManager;
     private static VNDBCommand[] plPageResults;
+    private static int throttleHandlingSocket = -1;
 
     private static void init(Context c, Callback sc, Callback ec, boolean ucie) {
         context = c;
@@ -71,7 +73,7 @@ public class VNDBServer {
         try {
             SocketFactory sf = SSLSocketFactory.getDefault();
             SSLSocket socket = (SSLSocket) sf.createSocket(HOST, PORT);
-            socket.setKeepAlive(true);
+            socket.setKeepAlive(false);
             socket.setSoTimeout(0);
 
             HostnameVerifier hv = HttpsURLConnection.getDefaultHostnameVerifier();
@@ -135,6 +137,7 @@ public class VNDBServer {
                                     Options threadOptions = Options.create(options);
                                     threadOptions.setPage(num + 1);
                                     plPageResults[num] = sendCommand(command.toString(), threadOptions, num);
+                                    throttleHandlingSocket = -1;
                                 }
                             }
                         });
@@ -265,12 +268,15 @@ public class VNDBServer {
                     Error error = (Error) response;
                     isThrottled = error.getId().equals("throttled");
                     if (isThrottled) {
+                        if (throttleHandlingSocket < 0) throttleHandlingSocket = socketIndex;
+
                         /* We got throttled by the server. Displaying a warning message */
                         long fullwait = Math.round(error.getFullwait() / 60);
                         Callback.showToast(context, String.format(context.getString(R.string.throttle_warning), fullwait));
                         try {
                             /* Waiting minwait*3 seconds before trying this query again */
-                            Thread.sleep(Math.round(error.getMinwait() * 3000));
+                            long waitingFactor = throttleHandlingSocket == socketIndex ? Utils.randInt(1000, 2000) : Utils.randInt(5000, 10000);
+                            Thread.sleep(Math.round(error.getMinwait() * waitingFactor));
                         } catch (InterruptedException e) {
                             /* For some reason we weren't able to sleep, so we can ignore the exception and keep rolling anyway */
                         }
@@ -325,17 +331,19 @@ public class VNDBServer {
             return null;
         }
         if (BuildConfig.DEBUG) {
-          //  log(response.toString());
+            //   log(response.toString());
         }
 
         int delimiterIndex = response.indexOf("{");
         if (delimiterIndex < 0) {
             if (response.toString().trim().equals("ok"))
                 return new Ok();
-            else if (threadManager == null || !threadManager.isShutdown()) {
-                /* Calling the error callback only if we're not pipelining (might be wrong to call the error callback while there are other threads running) */
-                errorCallback.message = "An error occurred while reading the response from the API. Aborting operation.";
-                errorCallback.call();
+            else {
+                if (threadManager == null || !threadManager.isShutdown()) {
+                    /* Calling the error callback only if we're not pipelining (might be wrong to call the error callback while there are other threads running) */
+                    errorCallback.message = "An error occurred while reading the response from the API. Aborting operation.";
+                    errorCallback.call();
+                }
                 return null;
             }
         }
@@ -361,8 +369,8 @@ public class VNDBServer {
                         socket.getInputStream().close();
                         socket.getOutputStream().close();
                         socket.close();
-                        SocketPool.setSocket(socketIndex, null);
                     }
+                    SocketPool.setSocket(socketIndex, null);
                 } catch (IOException ioe) {
                     ioe.printStackTrace();
                 }
@@ -380,8 +388,8 @@ public class VNDBServer {
                             socket.getInputStream().close();
                             socket.getOutputStream().close();
                             socket.close();
-                            SocketPool.setSocket(i, null);
                         }
+                        SocketPool.setSocket(i, null);
                     }
                 } catch (IOException ioe) {
                     ioe.printStackTrace();
