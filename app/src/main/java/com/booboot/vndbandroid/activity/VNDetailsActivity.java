@@ -122,16 +122,9 @@ public class VNDetailsActivity extends AppCompatActivity {
         votesButton.setText(Vote.toString(votelistVn != null ? votelistVn.getVote() : -1));
         toggleButtons();
 
-        ColorStateList buttonBackgroundColor = ColorStateList.valueOf(MainActivity.getThemeColor(this, R.attr.colorPrimaryDark));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            statusButton.setBackgroundTintList(buttonBackgroundColor);
-            wishlistButton.setBackgroundTintList(buttonBackgroundColor);
-            votesButton.setBackgroundTintList(buttonBackgroundColor);
-        } else {
-            ViewCompat.setBackgroundTintList(statusButton, buttonBackgroundColor);
-            ViewCompat.setBackgroundTintList(wishlistButton, buttonBackgroundColor);
-            ViewCompat.setBackgroundTintList(votesButton, buttonBackgroundColor);
-        }
+        Utils.setButtonColor(this, statusButton);
+        Utils.setButtonColor(this, wishlistButton);
+        Utils.setButtonColor(this, votesButton);
 
         if (vn.isImage_nsfw() && !SettingsManager.getNSFW(this)) {
             image.setImageResource(R.drawable.ic_nsfw);

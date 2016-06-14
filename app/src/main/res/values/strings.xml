@@ -35,6 +35,7 @@
     <string name="signing_in">Signing in, please be patient...</string>
     <string name="throttle_warning">VNDB.org is a bit busy right now, so it may take some minutes to complete your request. Come back here later or try again in %d minutes!</string>
     <string name="about">About</string>
+    <string name="customactivityoncrash_error_activity_error_occurred_explanation">An unexpected error occurred.\nSorry for the inconvenience.\nThe error details have been sent to the developer and we\'ll take a look as soon as possible!</string>
 
     <string-array name="background_pref_titles">
         <item>Default (orange)</item>

@@ -3,16 +3,23 @@ package com.booboot.vndbandroid.util;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.net.Uri;
+import android.os.Build;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.Display;
+import android.widget.Button;
 
+import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.EmptyActivity;
+import com.booboot.vndbandroid.activity.MainActivity;
+import com.booboot.vndbandroid.activity.VNDetailsActivity;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -109,5 +116,14 @@ public class Utils {
      */
     public static int randInt(int min, int max) {
         return min + (int) (Math.random() * ((max - min) + 1));
+    }
+
+    public static void setButtonColor(Context context, Button button) {
+        ColorStateList buttonBackgroundColor = ColorStateList.valueOf(MainActivity.getThemeColor(context, R.attr.colorPrimaryDark));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            button.setBackgroundTintList(buttonBackgroundColor);
+        } else {
+            ViewCompat.setBackgroundTintList(button, buttonBackgroundColor);
+        }
     }
 }

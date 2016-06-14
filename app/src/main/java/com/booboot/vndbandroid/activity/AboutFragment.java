@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.booboot.vndbandroid.BuildConfig;
@@ -28,9 +29,12 @@ public class AboutFragment extends Fragment {
         appVersion.setText(BuildConfig.VERSION_NAME + " / " + BuildConfig.VERSION_CODE);
 
         floatingSearchButton = (FloatingActionButton) getActivity().findViewById(R.id.floatingSearchButton);
-        floatingSearchButton.setVisibility(View.GONE);
+        Button feedbackButton = (Button) rootView.findViewById(R.id.feedbackButton);
+        Button githubButton = (Button) rootView.findViewById(R.id.githubButton);
 
-        getActivity().findViewById(R.id.floatingSearchButton);
+        floatingSearchButton.setVisibility(View.GONE);
+        Utils.setButtonColor(getActivity(), feedbackButton);
+        Utils.setButtonColor(getActivity(), githubButton);
 
         return rootView;
     }
@@ -51,5 +55,11 @@ public class AboutFragment extends Fragment {
     public void onPause() {
         floatingSearchButton.setVisibility(View.VISIBLE);
         super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        floatingSearchButton.setVisibility(View.GONE);
+        super.onResume();
     }
 }
