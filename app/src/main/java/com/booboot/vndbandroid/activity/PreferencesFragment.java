@@ -57,6 +57,7 @@ public class PreferencesFragment extends PreferenceFragment implements Preferenc
         bindPreferenceSummaryToValue(findPreference(getActivity().getString(R.string.pref_key_theme)));
         bindPreferenceSummaryToValue(findPreference(getActivity().getString(R.string.pref_key_spoiler)));
         bindPreferenceSummaryToValue(findPreference(getActivity().getString(R.string.pref_key_nsfw)));
+        bindPreferenceSummaryToValue(findPreference(getActivity().getString(R.string.pref_key_browser)));
     }
 
     /**
@@ -113,6 +114,8 @@ public class PreferencesFragment extends PreferenceFragment implements Preferenc
                 SettingsManager.setSpoilerCompleted(getActivity(), Boolean.parseBoolean(stringValue));
             } else if (preference.getKey().equals(getActivity().getString(R.string.pref_key_nsfw))) {
                 SettingsManager.setNSFW(getActivity(), Boolean.parseBoolean(stringValue));
+            } else if (preference.getKey().equals(getActivity().getString(R.string.pref_key_browser))) {
+                SettingsManager.setInAppBrowser(getActivity(), Boolean.parseBoolean(stringValue));
             }
         }
         return true;

@@ -1,15 +1,4 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <!--
-        <EditTextPreference
-            android:capitalize="words"
-            android:defaultValue="John Smith"
-            android:inputType="textCapWords"
-            android:key="example_text"
-            android:maxLines="1"
-            android:selectAllOnFocus="true"
-            android:singleLine="true"
-            android:title="Display name"/>
-    -->
     <ListPreference
         android:defaultValue="0"
         android:entries="@array/background_pref_titles"
@@ -39,4 +28,10 @@
         android:key="@string/pref_key_nsfw"
         android:summary=""
         android:title="Show NSFW content"/>
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="@string/pref_key_browser"
+        android:summary="Open external links directly inside the application."
+        android:title="In-app browser"/>
 </PreferenceScreen>

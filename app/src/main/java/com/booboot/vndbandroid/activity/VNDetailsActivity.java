@@ -3,10 +3,7 @@ package com.booboot.vndbandroid.activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
@@ -297,7 +294,7 @@ public class VNDetailsActivity extends AppCompatActivity {
                 break;
 
             case R.id.action_view_on_vndb:
-                Utils.openInBrowser(this, Links.VNDB_PAGE + vn.getId());
+                Utils.openURL(this, Links.VNDB_PAGE + vn.getId());
                 break;
 
             case R.id.action_spoiler:

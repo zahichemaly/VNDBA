@@ -127,4 +127,15 @@ public class SettingsManager {
         editor.putBoolean("NSFW", ok);
         editor.commit();
     }
+
+    public static boolean getInAppBrowser(Context context) {
+        new SettingsManager(context);
+        return settings.getBoolean("IN_APP_BROWSER", true);
+    }
+
+    public static void setInAppBrowser(Context context, boolean ok) {
+        new SettingsManager(context);
+        editor.putBoolean("IN_APP_BROWSER", ok);
+        editor.commit();
+    }
 }

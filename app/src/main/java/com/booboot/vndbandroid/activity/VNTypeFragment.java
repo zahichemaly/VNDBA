@@ -17,6 +17,7 @@ import com.booboot.vndbandroid.api.bean.ListType;
 import com.booboot.vndbandroid.factory.FastScrollerFactory;
 import com.booboot.vndbandroid.factory.VNCardFactory;
 import com.booboot.vndbandroid.util.Callback;
+import com.booboot.vndbandroid.util.Utils;
 import com.dexafree.materialList.card.Card;
 import com.dexafree.materialList.listeners.RecyclerItemClickListener;
 
@@ -72,7 +73,7 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
         refreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refreshLayout);
         refreshLayout.setOnRefreshListener(this);
-        refreshLayout.setColorSchemeColors(MainActivity.getThemeColor(activity, R.attr.colorAccent));
+        refreshLayout.setColorSchemeColors(Utils.getThemeColor(activity, R.attr.colorAccent));
         refreshLayout.post(new Runnable() {
             @Override
             public void run() {

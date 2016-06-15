@@ -22,7 +22,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -84,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         };
 
         int[] colors = new int[]{
-                getThemeColor(this, R.attr.colorAccent),
+                Utils.getThemeColor(this, R.attr.colorAccent),
                 Color.BLACK
         };
         navigationView.setItemTextColor(new ColorStateList(states, colors));
@@ -299,12 +298,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public SearchView getSearchView() {
         return searchView;
-    }
-
-    public static int getThemeColor(Context context, int resid) {
-        TypedValue colorAttribute = new TypedValue();
-        context.getTheme().resolveAttribute(resid, colorAttribute, true);
-        return colorAttribute.data;
     }
 
     public void updateMenuCounters() {

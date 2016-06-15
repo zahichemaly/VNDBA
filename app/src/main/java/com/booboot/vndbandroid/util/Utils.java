@@ -6,20 +6,29 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.Display;
+import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.EmptyActivity;
-import com.booboot.vndbandroid.activity.MainActivity;
-import com.booboot.vndbandroid.activity.VNDetailsActivity;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -65,9 +74,16 @@ public class Utils {
         }
     }
 
-    public static void openInBrowser(Context context, String url) {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        context.startActivity(browserIntent);
+    public static void openURL(Activity context, String url) {
+        if (SettingsManager.getInAppBrowser(context)) {
+            CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+            builder.setToolbarColor(getThemeColor(context, R.attr.colorPrimary));
+            CustomTabsIntent customTabsIntent = builder.build();
+            customTabsIntent.launchUrl(context, Uri.parse(url));
+        } else {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            context.startActivity(browserIntent);
+        }
     }
 
     /**
@@ -119,11 +135,38 @@ public class Utils {
     }
 
     public static void setButtonColor(Context context, Button button) {
-        ColorStateList buttonBackgroundColor = ColorStateList.valueOf(MainActivity.getThemeColor(context, R.attr.colorPrimaryDark));
+        ColorStateList buttonBackgroundColor = ColorStateList.valueOf(getThemeColor(context, R.attr.colorPrimaryDark));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             button.setBackgroundTintList(buttonBackgroundColor);
         } else {
             ViewCompat.setBackgroundTintList(button, buttonBackgroundColor);
         }
+    }
+
+    public static int getThemeColor(Context context, int resid) {
+        TypedValue colorAttribute = new TypedValue();
+        context.getTheme().resolveAttribute(resid, colorAttribute, true);
+        return colorAttribute.data;
+    }
+
+    public static void setTextViewLink(final Activity context, TextView textView, final String url, int start, int end) {
+        SpannableString ss = new SpannableString(textView.getText().toString());
+        ClickableSpan clickableSpan = new ClickableSpan() {
+            @Override
+            public void onClick(View textView) {
+                Utils.openURL(context, url);
+            }
+
+            @Override
+            public void updateDrawState(TextPaint ds) {
+                super.updateDrawState(ds);
+                ds.setUnderlineText(false);
+            }
+        };
+        ss.setSpan(clickableSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        textView.setText(ss);
+        textView.setMovementMethod(LinkMovementMethod.getInstance());
+        textView.setHighlightColor(Color.TRANSPARENT);
     }
 }

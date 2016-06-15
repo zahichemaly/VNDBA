@@ -12,7 +12,6 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.booboot.vndbandroid.R;
-import com.booboot.vndbandroid.activity.MainActivity;
 import com.booboot.vndbandroid.activity.VNDetailsActivity;
 import com.booboot.vndbandroid.activity.VNTypeFragment;
 import com.booboot.vndbandroid.adapter.materiallistview.MaterialListView;
@@ -21,6 +20,7 @@ import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Options;
 import com.booboot.vndbandroid.util.Callback;
+import com.booboot.vndbandroid.util.Utils;
 import com.dexafree.materialList.card.Card;
 import com.dexafree.materialList.listeners.RecyclerItemClickListener;
 
@@ -101,7 +101,7 @@ public class ProgressiveResultLoader implements SwipeRefreshLayout.OnRefreshList
 
         refreshLayout = (SwipeRefreshLayout) (rootView == null ? activity.findViewById(R.id.refreshLayout) : rootView.findViewById(R.id.refreshLayout));
         refreshLayout.setOnRefreshListener(this);
-        refreshLayout.setColorSchemeColors(MainActivity.getThemeColor(activity, R.attr.colorAccent));
+        refreshLayout.setColorSchemeColors(Utils.getThemeColor(activity, R.attr.colorAccent));
 
         FastScrollerFactory.get(activity, rootView, materialListView, refreshLayout);
     }

@@ -214,7 +214,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                         convertView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Utils.openInBrowser(activity, Links.ANIDB + id);
+                                Utils.openURL(activity, Links.ANIDB + id);
                             }
                         });
                         break;

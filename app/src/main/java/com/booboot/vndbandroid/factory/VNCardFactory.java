@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.view.Gravity;
 
 import com.booboot.vndbandroid.R;
-import com.booboot.vndbandroid.activity.MainActivity;
 import com.booboot.vndbandroid.adapter.materiallistview.MaterialListView;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.bean.Item;
@@ -60,7 +59,7 @@ public class VNCardFactory {
                 .setSubtitleGravity(Gravity.CENTER)
                 .setDescription(description.toString())
                 .setDescriptionGravity(Gravity.CENTER)
-                .setDescriptionColor(MainActivity.getThemeColor(activity, R.attr.colorPrimaryDark));
+                .setDescriptionColor(Utils.getThemeColor(activity, R.attr.colorPrimaryDark));
 
         if (vn.isImage_nsfw() && !SettingsManager.getNSFW(activity))
             cardProvider.setDrawable(R.drawable.ic_nsfw);

@@ -12,12 +12,13 @@ import android.widget.TextView;
 
 import com.booboot.vndbandroid.BuildConfig;
 import com.booboot.vndbandroid.R;
+import com.booboot.vndbandroid.api.bean.Links;
 import com.booboot.vndbandroid.util.Utils;
 
 /**
  * Created by od on 11/06/2016.
  */
-public class AboutFragment extends Fragment {
+public class AboutFragment extends Fragment implements View.OnClickListener {
     private FloatingActionButton floatingSearchButton;
 
     @Override
@@ -31,10 +32,17 @@ public class AboutFragment extends Fragment {
         floatingSearchButton = (FloatingActionButton) getActivity().findViewById(R.id.floatingSearchButton);
         Button feedbackButton = (Button) rootView.findViewById(R.id.feedbackButton);
         Button githubButton = (Button) rootView.findViewById(R.id.githubButton);
+        TextView myVNDBProfile = (TextView) rootView.findViewById(R.id.myVNDBProfile);
+        TextView aboutDescription = (TextView) rootView.findViewById(R.id.aboutDescription);
 
         floatingSearchButton.setVisibility(View.GONE);
         Utils.setButtonColor(getActivity(), feedbackButton);
         Utils.setButtonColor(getActivity(), githubButton);
+        Utils.setTextViewLink(getActivity(), myVNDBProfile, Links.MY_VNDB_PROFILE, 0, myVNDBProfile.getText().toString().length());
+        int linkStart = aboutDescription.getText().toString().indexOf(Links.VNDB);
+        Utils.setTextViewLink(getActivity(), aboutDescription, Links.VNDB, linkStart, linkStart + Links.VNDB.length());
+
+        githubButton.setOnClickListener(this);
 
         return rootView;
     }
@@ -61,5 +69,18 @@ public class AboutFragment extends Fragment {
     public void onResume() {
         floatingSearchButton.setVisibility(View.GONE);
         super.onResume();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.feedbackButton:
+
+                break;
+
+            case R.id.githubButton:
+                Utils.openURL(getActivity(), Links.GITHUB);
+                break;
+        }
     }
 }

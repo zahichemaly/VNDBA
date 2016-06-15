@@ -1,15 +1,9 @@
 package com.booboot.vndbandroid.activity;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.TextPaint;
-import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -43,7 +37,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         Window window = getWindow();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.setStatusBarColor(MainActivity.getThemeColor(this, R.attr.colorPrimaryDark));
+            window.setStatusBarColor(Utils.getThemeColor(this, R.attr.colorPrimaryDark));
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.getDecorView().setBackgroundColor(getResources().getColor(android.R.color.transparent, getTheme()));
@@ -53,7 +47,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         window.getDecorView().setVisibility(View.GONE);
 
         signupTextView = (TextView) findViewById(R.id.signupTextView);
-        initSignup();
+        Utils.setTextViewLink(this, signupTextView, Links.VNDB_REGISTER, signupTextView.getText().toString().indexOf("Sign up here"), signupTextView.getText().toString().length());
         loginButton = (Button) findViewById(R.id.loginButton);
         loginButton.setOnClickListener(this);
         loginUsername = (EditText) findViewById(R.id.loginUsername);
@@ -78,27 +72,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
 
         autologin = false;
-    }
-
-    private void initSignup() {
-        SpannableString ss = new SpannableString("Don't have a VNDB account yet? Sign up here.");
-        ClickableSpan clickableSpan = new ClickableSpan() {
-            @Override
-            public void onClick(View textView) {
-                Utils.openInBrowser(LoginActivity.this, Links.VNDB_REGISTER);
-            }
-
-            @Override
-            public void updateDrawState(TextPaint ds) {
-                super.updateDrawState(ds);
-                ds.setUnderlineText(false);
-            }
-        };
-        ss.setSpan(clickableSpan, ss.toString().indexOf("Sign up here"), ss.toString().length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-        signupTextView.setText(ss);
-        signupTextView.setMovementMethod(LinkMovementMethod.getInstance());
-        signupTextView.setHighlightColor(Color.TRANSPARENT);
     }
 
     @Override
