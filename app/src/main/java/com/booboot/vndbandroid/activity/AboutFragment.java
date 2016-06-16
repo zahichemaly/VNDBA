@@ -1,6 +1,7 @@
 package com.booboot.vndbandroid.activity;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 import com.booboot.vndbandroid.BuildConfig;
 import com.booboot.vndbandroid.R;
+import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Links;
 import com.booboot.vndbandroid.util.Utils;
 
@@ -43,6 +45,7 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
         Utils.setTextViewLink(getActivity(), aboutDescription, Links.VNDB, linkStart, linkStart + Links.VNDB.length());
 
         githubButton.setOnClickListener(this);
+        feedbackButton.setOnClickListener(this);
 
         return rootView;
     }
@@ -75,7 +78,9 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.feedbackButton:
-
+                Intent intent = new Intent(getActivity(), FeedbackActivity.class);
+                getActivity().startActivity(intent);
+                getActivity().overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
                 break;
 
             case R.id.githubButton:

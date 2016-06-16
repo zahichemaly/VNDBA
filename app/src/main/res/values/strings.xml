@@ -38,6 +38,9 @@
     <string name="customactivityoncrash_error_activity_error_occurred_explanation">An unexpected error occurred.\nSorry for the inconvenience.\nThe error details have been sent to the developer and we\'ll take a look as soon as possible!</string>
     <string name="sign_up_here">Don\'t have a VNDB account yet? Sign up here.</string>
     <string name="pref_key_browser">browser</string>
+    <string name="action_send">Send</string>
+    <string name="feedback">Feedback</string>
+    <string name="send_a_feedback">Send a feedback</string>
 
     <string-array name="background_pref_titles">
         <item>Default (orange)</item>

@@ -67,6 +67,7 @@ public class ProgressiveResultLoader implements SwipeRefreshLayout.OnRefreshList
                 Intent intent = new Intent(activity, VNDetailsActivity.class);
                 intent.putExtra(VNTypeFragment.VN_ARG, (Item) card.getTag());
                 activity.startActivity(intent);
+                activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
             }
 
             @Override

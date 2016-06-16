@@ -291,6 +291,7 @@ public class VNDetailsActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
+                overridePendingTransition(R.anim.slide_back_in, R.anim.slide_back_out);
                 break;
 
             case R.id.action_view_on_vndb:
@@ -336,6 +337,12 @@ public class VNDetailsActivity extends AppCompatActivity {
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putInt("SPOILER_LEVEL", spoilerLevel);
         super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.slide_back_in, R.anim.slide_back_out);
     }
 
     @Override

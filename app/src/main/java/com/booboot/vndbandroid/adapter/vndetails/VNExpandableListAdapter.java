@@ -156,6 +156,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                                     Intent intent = new Intent(activity, VNDetailsActivity.class);
                                     intent.putExtra(VNTypeFragment.VN_ARG, Cache.vnlist.get(vnId));
                                     activity.startActivity(intent);
+                                    activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
                                     return;
                                 }
 
@@ -166,6 +167,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                                             Intent intent = new Intent(activity, VNDetailsActivity.class);
                                             intent.putExtra(VNTypeFragment.VN_ARG, results.getItems().get(0));
                                             activity.startActivity(intent);
+                                            activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
                                         }
                                     }
                                 }, Callback.errorCallback(activity));
