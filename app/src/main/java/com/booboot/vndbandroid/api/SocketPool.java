@@ -17,9 +17,9 @@ public class SocketPool {
     public final static SSLSocket[] SOCKETS = new SSLSocket[MAX_SOCKETS];
     public final static ConcurrentMap<Integer, Integer> LOCKS = new ConcurrentHashMap<>();
 
-    public static SSLSocket getSocket(Context context, int socketIndex, Callback successCallback, Callback errorCallback) {
+    public static SSLSocket getSocket(Context context, int socketIndex, Callback errorCallback) {
         socketIndex %= SOCKETS.length;
-        VNDBServer.login(context, socketIndex, successCallback, errorCallback);
+        VNDBServer.login(context, socketIndex, errorCallback);
         return SOCKETS[socketIndex];
     }
 
