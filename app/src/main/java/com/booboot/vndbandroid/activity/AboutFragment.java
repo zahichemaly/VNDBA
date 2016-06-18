@@ -3,9 +3,9 @@ package com.booboot.vndbandroid.activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import com.booboot.vndbandroid.BuildConfig;
 import com.booboot.vndbandroid.R;
-import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Links;
 import com.booboot.vndbandroid.util.Utils;
 
@@ -21,8 +20,6 @@ import com.booboot.vndbandroid.util.Utils;
  * Created by od on 11/06/2016.
  */
 public class AboutFragment extends Fragment implements View.OnClickListener {
-    private FloatingActionButton floatingSearchButton;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.about, container, false);
@@ -31,13 +28,11 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
         TextView appVersion = (TextView) rootView.findViewById(R.id.appVersion);
         appVersion.setText(BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ")");
 
-        floatingSearchButton = (FloatingActionButton) getActivity().findViewById(R.id.floatingSearchButton);
         Button feedbackButton = (Button) rootView.findViewById(R.id.feedbackButton);
         Button githubButton = (Button) rootView.findViewById(R.id.githubButton);
         TextView myVNDBProfile = (TextView) rootView.findViewById(R.id.myVNDBProfile);
         TextView aboutDescription = (TextView) rootView.findViewById(R.id.aboutDescription);
 
-        floatingSearchButton.setVisibility(View.GONE);
         Utils.setButtonColor(getActivity(), feedbackButton);
         Utils.setButtonColor(getActivity(), githubButton);
         Utils.setTextViewLink(getActivity(), myVNDBProfile, Links.MY_VNDB_PROFILE, 0, myVNDBProfile.getText().toString().length());
@@ -60,18 +55,27 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
     public void onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.action_filter).setVisible(false);
         menu.findItem(R.id.action_sort).setVisible(false);
+        menu.findItem(R.id.action_rate).setVisible(true);
+        menu.findItem(R.id.action_share).setVisible(true);
     }
 
     @Override
-    public void onPause() {
-        floatingSearchButton.setVisibility(View.VISIBLE);
-        super.onPause();
-    }
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_rate:
+                Utils.openURL(getActivity(), Links.PLAY_STORE);
+                break;
 
-    @Override
-    public void onResume() {
-        floatingSearchButton.setVisibility(View.GONE);
-        super.onResume();
+            case R.id.action_share:
+                Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                sharingIntent.setType("text/plain");
+                sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "VNDB Android");
+                sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, Links.PLAY_STORE);
+                startActivity(Intent.createChooser(sharingIntent, "Share via"));
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

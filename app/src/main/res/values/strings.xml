@@ -41,6 +41,8 @@
     <string name="action_send">Send</string>
     <string name="feedback">Feedback</string>
     <string name="send_a_feedback">Send a feedback</string>
+    <string name="action_rate">Rate the app</string>
+    <string name="action_share">Share</string>
 
     <string-array name="background_pref_titles">
         <item>Default (orange)</item>

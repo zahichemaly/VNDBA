@@ -6,15 +6,16 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.adapter.tabs.VNTabsAdapter;
+import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.bean.ListType;
 import com.booboot.vndbandroid.api.bean.Priority;
 import com.booboot.vndbandroid.api.bean.Status;
-import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.util.Utils;
 
 /**
@@ -74,6 +75,18 @@ public class VNListFragment extends Fragment implements TabLayout.OnTabSelectedL
         return inflatedView;
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.action_filter).setVisible(true);
+        menu.findItem(R.id.action_sort).setVisible(true);
+    }
+
     /**
      * Refresh the view pager with a little trick : setting the adapter to null then back to its value.
      * Don't forget to remember the previous page.
@@ -129,11 +142,9 @@ public class VNListFragment extends Fragment implements TabLayout.OnTabSelectedL
 
     @Override
     public void onTabUnselected(TabLayout.Tab tab) {
-
     }
 
     @Override
     public void onTabReselected(TabLayout.Tab tab) {
-
     }
 }
