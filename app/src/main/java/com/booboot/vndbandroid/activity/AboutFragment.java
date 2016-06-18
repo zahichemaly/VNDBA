@@ -29,7 +29,7 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
 
         Utils.setTitle(getActivity(), "About");
         TextView appVersion = (TextView) rootView.findViewById(R.id.appVersion);
-        appVersion.setText(BuildConfig.VERSION_NAME + " / " + BuildConfig.VERSION_CODE);
+        appVersion.setText(BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ")");
 
         floatingSearchButton = (FloatingActionButton) getActivity().findViewById(R.id.floatingSearchButton);
         Button feedbackButton = (Button) rootView.findViewById(R.id.feedbackButton);

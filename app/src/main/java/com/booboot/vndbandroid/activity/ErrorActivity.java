@@ -32,9 +32,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.booboot.vndbandroid.api.bean.Mail;
-import com.booboot.vndbandroid.util.MailService;
 import com.booboot.vndbandroid.util.SettingsManager;
+import com.booboot.vndbandroid.util.Utils;
 
 import java.util.Date;
 
@@ -61,6 +60,7 @@ public final class ErrorActivity extends AppCompatActivity {
         final CustomActivityOnCrash.EventListener eventListener = CustomActivityOnCrash.getEventListenerFromIntent(getIntent());
         fullErrorMessage = CustomActivityOnCrash.getAllErrorDetailsFromIntent(ErrorActivity.this, getIntent());
         fullErrorMessage = addErrorInfo("Android version: " + Build.VERSION.RELEASE);
+        fullErrorMessage = addErrorInfo("VNDB username: " + SettingsManager.getUsername(this));
 
         if (restartActivityClass != null) {
             restartButton.setText(R.string.customactivityoncrash_error_activity_restart_app);
@@ -120,20 +120,7 @@ public final class ErrorActivity extends AppCompatActivity {
             errorImageView.setImageDrawable(getResources().getDrawable(defaultErrorActivityDrawableId));
         }
 
-        sendEmail(fullErrorMessage);
-    }
-
-    public void sendEmail(final String body) {
-        new Thread() {
-            @Override
-            public void run() {
-                MailService mailer = new MailService("vndb.android@gmail.com", Mail.getInfo(ErrorActivity.this).getTo(), "[VNDB Android] Bug @ " + new Date().toString(), body, null);
-                try {
-                    mailer.sendAuthenticated();
-                } catch (Exception e) {
-                }
-            }
-        }.start();
+        Utils.sendEmail(this, "[VNDB Android] Bug @ " + new Date().toString(), fullErrorMessage);
     }
 
     private String addErrorInfo(String s) {

@@ -3,6 +3,7 @@ package com.booboot.vndbandroid.util;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -27,15 +28,20 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.booboot.vndbandroid.BuildConfig;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.EmptyActivity;
+import com.booboot.vndbandroid.api.bean.Mail;
 
+import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 /**
  * Created by od on 03/04/2016.
@@ -171,5 +177,55 @@ public class Utils {
         textView.setText(ss);
         textView.setMovementMethod(LinkMovementMethod.getInstance());
         textView.setHighlightColor(Color.TRANSPARENT);
+    }
+
+    public static String getBuildDateAsString(Context context, DateFormat dateFormat) {
+        String buildDate;
+        try {
+            ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), 0);
+            ZipFile zf = new ZipFile(ai.sourceDir);
+            ZipEntry ze = zf.getEntry("classes.dex");
+            long time = ze.getTime();
+            buildDate = dateFormat.format(new Date(time));
+            zf.close();
+        } catch (Exception e) {
+            buildDate = "Unknown";
+        }
+        return buildDate;
+    }
+
+    public static String getDeviceModelName() {
+        String manufacturer = Build.MANUFACTURER;
+        String model = Build.MODEL;
+        if (model.startsWith(manufacturer)) {
+            return capitalize(model);
+        } else {
+            return capitalize(manufacturer) + " " + model;
+        }
+    }
+
+    public static String getDeviceInfo(Context context) {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+
+        String res = "Build version: " + BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ") \n";
+        res += "Build date: " + Utils.getBuildDateAsString(context, dateFormat) + " \n";
+        res += "Current date: " + dateFormat.format(new Date()) + " \n";
+        res += "Device: " + Utils.getDeviceModelName() + " \n";
+        res += "Android version: " + Build.VERSION.RELEASE + " \n";
+        res += "VNDB username: " + SettingsManager.getUsername(context) + " \n \n";
+        return res;
+    }
+
+    public static void sendEmail(final Context context, final String title, final String body) {
+        new Thread() {
+            @Override
+            public void run() {
+                MailService mailer = new MailService("vndb.android@gmail.com", Mail.getInfo(context).getTo(), title, body, null);
+                try {
+                    mailer.sendAuthenticated();
+                } catch (Exception e) {
+                }
+            }
+        }.start();
     }
 }
