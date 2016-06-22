@@ -8,23 +8,29 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.ExpandableListView;
 import android.widget.SearchView;
 
 import com.booboot.vndbandroid.R;
+import com.booboot.vndbandroid.adapter.search.SearchOptionsAdapter;
 import com.booboot.vndbandroid.api.bean.Options;
 import com.booboot.vndbandroid.factory.ProgressiveResultLoader;
 import com.booboot.vndbandroid.util.SettingsManager;
 
 public class VNSearchActivity extends AppCompatActivity {
+    public final static String SAVED_QUERY_STATE = "SEARCH_INPUT";
+    public final static String INCLUDE_TAGS_STATE = "INCLUDE_TAGS";
+    public final static String EXCLUDE_TAGS_STATE = "EXCLUDE_TAGS";
     private ProgressiveResultLoader progressiveResultLoader;
     private SearchView searchView;
     private String savedQuery;
+    private SearchOptionsAdapter expandableListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTheme(SettingsManager.getTheme(this));
-        setContentView(R.layout.vn_card_list_layout);
+        setContentView(R.layout.vn_search);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled(false);
@@ -35,8 +41,12 @@ public class VNSearchActivity extends AppCompatActivity {
         progressiveResultLoader.setOptions(new Options());
         progressiveResultLoader.init();
 
+        ExpandableListView expandableListView = (ExpandableListView) findViewById(R.id.expandableListView);
+        expandableListAdapter = new SearchOptionsAdapter(this, savedInstanceState);
+        expandableListView.setAdapter(expandableListAdapter);
+
         if (savedInstanceState != null) {
-            savedQuery = savedInstanceState.getString("SEARCH_INPUT");
+            savedQuery = savedInstanceState.getString(SAVED_QUERY_STATE);
         }
     }
 
@@ -94,7 +104,11 @@ public class VNSearchActivity extends AppCompatActivity {
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         if (searchView != null)
-            savedInstanceState.putString("SEARCH_INPUT", searchView.getQuery().toString());
+            savedInstanceState.putString(SAVED_QUERY_STATE, searchView.getQuery().toString());
+        if (expandableListAdapter != null && expandableListAdapter.getIncludeTagsInput() != null) {
+            savedInstanceState.putParcelable(INCLUDE_TAGS_STATE, expandableListAdapter.getIncludeTagsInput().onSaveInstanceState());
+            savedInstanceState.putParcelable(EXCLUDE_TAGS_STATE, expandableListAdapter.getExcludeTagsInput().onSaveInstanceState());
+        }
         super.onSaveInstanceState(savedInstanceState);
     }
 }

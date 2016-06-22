@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Include all these tags:"
+        android:textColor="#00FF00"
+        android:textStyle="bold"/>
+
+    <com.booboot.vndbandroid.view.TagAutoCompleteView
+        android:id="@+id/includeTagsInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusableInTouchMode="true"
+        android:hint="@string/start_typing_tags"
+        android:imeOptions="actionDone"
+        android:inputType="text|textNoSuggestions|textMultiLine"
+        android:textSize="16sp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Exclude all these tags:"
+        android:textColor="#FF0000"
+        android:textStyle="bold"/>
+
+    <com.booboot.vndbandroid.view.TagAutoCompleteView
+        android:id="@+id/excludeTagsInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusableInTouchMode="true"
+        android:hint="@string/start_typing_tags"
+        android:imeOptions="actionDone"
+        android:inputType="text|textNoSuggestions|textMultiLine"
+        android:textSize="16sp"/>
+</LinearLayout>

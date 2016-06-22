@@ -5,12 +5,13 @@ import android.content.Context;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.VNDetailsActivity;
 import com.booboot.vndbandroid.util.JSON;
-import com.booboot.vndbandroid.util.SettingsManager;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,8 +20,8 @@ import java.util.Map;
  * Created by od on 12/03/2016.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Tag extends VNDBCommand {
-    private static Map<Integer, Tag> tags;
+public class Tag extends VNDBCommand implements Serializable {
+    private transient static Map<Integer, Tag> tags;
 
     private List<Integer> parents;
     private int id;
@@ -47,6 +48,11 @@ public class Tag extends VNDBCommand {
         }
 
         return tags;
+    }
+
+    public static Tag[] getTagsArray(Context context) {
+        Collection<Tag> values = getTags(context).values();
+        return values.toArray(new Tag[values.size()]);
     }
 
     public static boolean checkSpoilerLevel(VNDetailsActivity activity, int level) {
@@ -125,5 +131,25 @@ public class Tag extends VNDBCommand {
         if (score >= 1) return R.drawable.score_light_green;
         if (score >= 0) return R.drawable.score_yellow;
         return R.drawable.score_red;
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Tag tag = (Tag) o;
+
+        return id == tag.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
     }
 }
