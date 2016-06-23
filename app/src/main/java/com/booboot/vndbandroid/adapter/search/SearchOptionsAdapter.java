@@ -8,8 +8,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ListPopupWindow;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
@@ -58,19 +61,38 @@ public class SearchOptionsAdapter extends BaseExpandableListAdapter {
         return convertView;
     }
 
-    private void initCompletionView(TagAutoCompleteView tagsInput, String tagsState) {
+    private void initCompletionView(final TagAutoCompleteView tagsInput, String tagsState) {
         tagsInput.allowCollapse(false);
         tagsInput.allowDuplicates(false);
         tagsInput.performBestGuess(false);
         ArrayAdapter<Tag> adapter = new FilteredArrayAdapter<Tag>(context, android.R.layout.simple_list_item_1, Tag.getTagsArray(context)) {
             @Override
             protected boolean keepObject(Tag obj, String mask) {
-                // TODO améliorer l'algo ici en séparant les mots
-                mask = mask.toLowerCase();
-                return obj.getName().toLowerCase().contains(mask);
+                for (String part : mask.toLowerCase().split(" ")) {
+                    if (!obj.getName().toLowerCase().contains(part))
+                        return false;
+                }
+                return true;
+            }
+
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                if (parent instanceof ListView) {
+                    ((ListView) parent).setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                        @Override
+                        public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                            Log.d("D", "on item long click !");
+                            // TODO display tag's description
+                            return true;
+                        }
+                    });
+                }
+                return super.getView(position, convertView, parent);
             }
         };
         tagsInput.setAdapter(adapter);
+        tagsInput.setTokenClickStyle(TokenCompleteTextView.TokenClickStyle.Delete);
+
         tagsInput.setTokenListener(new TokenCompleteTextView.TokenListener<Tag>() {
             @Override
             public void onTokenAdded(Tag token) {
