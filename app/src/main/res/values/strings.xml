@@ -43,7 +43,9 @@
     <string name="send_a_feedback">Send a feedback</string>
     <string name="action_rate">Rate the app</string>
     <string name="action_share">Share</string>
-    <string name="start_typing_tags">Start typing tags...</string>
+    <string name="include_all_tags">Include all these tags</string>
+    <string name="include_one_tags">Include at least one of these tags</string>
+    <string name="exclude_all_tags">Exclude all these tags</string>
 
     <string-array name="background_pref_titles">
         <item>Default (orange)</item>
