@@ -2,29 +2,65 @@ package com.booboot.vndbandroid.activity;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.PopupMenu;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.SearchView;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.adapter.search.SearchOptionsAdapter;
 import com.booboot.vndbandroid.api.bean.Options;
+import com.booboot.vndbandroid.api.bean.Tag;
 import com.booboot.vndbandroid.factory.ProgressiveResultLoader;
+import com.booboot.vndbandroid.util.JSON;
 import com.booboot.vndbandroid.util.SettingsManager;
+import com.booboot.vndbandroid.view.TagAutoCompleteView;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.tokenautocomplete.FilteredArrayAdapter;
+import com.tokenautocomplete.TokenCompleteTextView;
+import com.wrapp.floatlabelededittext.FloatLabeledEditText;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class VNSearchActivity extends AppCompatActivity {
     public final static String SAVED_QUERY_STATE = "SEARCH_INPUT";
     public final static String INCLUDE_TAGS_STATE = "INCLUDE_TAGS";
     public final static String EXCLUDE_TAGS_STATE = "EXCLUDE_TAGS";
+
+    private Bundle savedInstanceState;
     private ProgressiveResultLoader progressiveResultLoader;
     private SearchView searchView;
     private String savedQuery;
+
     private SearchOptionsAdapter expandableListAdapter;
+    private ExpandableListView expandableListView;
+    public LinearLayout searchOptionsLayout;
+
+    private TagAutoCompleteView includeTagsInput;
+    private TagAutoCompleteView excludeTagsInput;
+    private Set<Integer> includeTags = new HashSet<>();
+    private Set<Integer> excludeTags = new HashSet<>();
+    private FloatLabeledEditText includeTagsFloatingLabel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,12 +77,124 @@ public class VNSearchActivity extends AppCompatActivity {
         progressiveResultLoader.setOptions(new Options());
         progressiveResultLoader.init();
 
-        ExpandableListView expandableListView = (ExpandableListView) findViewById(R.id.expandableListView);
-        expandableListAdapter = new SearchOptionsAdapter(this, savedInstanceState);
+        expandableListView = (ExpandableListView) findViewById(R.id.expandableListView);
+        expandableListAdapter = new SearchOptionsAdapter(this);
         expandableListView.setAdapter(expandableListAdapter);
+        searchOptionsLayout = (LinearLayout) findViewById(R.id.searchOptionsLayout);
 
         if (savedInstanceState != null) {
+            this.savedInstanceState = savedInstanceState;
             savedQuery = savedInstanceState.getString(SAVED_QUERY_STATE);
+        }
+
+        initSearchOptions();
+    }
+
+    private void initSearchOptions() {
+        includeTagsInput = (TagAutoCompleteView) findViewById(R.id.includeTagsInput);
+        excludeTagsInput = (TagAutoCompleteView) findViewById(R.id.excludeTagsInput);
+        initCompletionView(includeTagsInput, VNSearchActivity.INCLUDE_TAGS_STATE, includeTags);
+        initCompletionView(excludeTagsInput, VNSearchActivity.EXCLUDE_TAGS_STATE, excludeTags);
+
+        includeTagsFloatingLabel = (FloatLabeledEditText) findViewById(R.id.includeTagsFloatingLabel);
+        final ImageView includeTagsIcon = (ImageView) findViewById(R.id.includeTagsIcon);
+        final ImageView includeTagsDropdown = (ImageView) findViewById(R.id.includeTagsDropdown);
+        ImageView excludeTagsIcon = (ImageView) findViewById(R.id.excludeTagsIcon);
+        includeTagsIcon.setColorFilter(getResources().getColor(R.color.green), PorterDuff.Mode.SRC_ATOP);
+        includeTagsDropdown.setColorFilter(getResources().getColor(R.color.green), PorterDuff.Mode.SRC_ATOP);
+        excludeTagsIcon.setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
+
+        LinearLayout includeTagsLayout = (LinearLayout) findViewById(R.id.includeTagsLayout);
+        assert includeTagsLayout != null;
+        includeTagsLayout.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View arg0, MotionEvent arg1) {
+                switch (arg1.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        includeTagsIcon.setAlpha(0.9f);
+                        includeTagsDropdown.setAlpha(0.9f);
+                        break;
+
+                    case MotionEvent.ACTION_UP:
+                        includeTagsIcon.setAlpha(0.4f);
+                        includeTagsDropdown.setAlpha(0.4f);
+                        PopupMenu popup = new PopupMenu(VNSearchActivity.this, includeTagsDropdown);
+                        MenuInflater inflater = popup.getMenuInflater();
+                        inflater.inflate(R.menu.include_tags, popup.getMenu());
+                        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem item) {
+                                if (item.getItemId() == R.id.item_include_all) {
+                                    includeTagsInput.setHint(R.string.include_all_tags);
+                                    includeTagsFloatingLabel.setHint(getResources().getString(R.string.include_all_tags));
+                                } else if (item.getItemId() == R.id.item_include_one) {
+                                    includeTagsInput.setHint(R.string.include_one_tags);
+                                    includeTagsFloatingLabel.setHint(getResources().getString(R.string.include_one_tags));
+                                }
+                                return false;
+                            }
+                        });
+                        popup.show();
+                        break;
+
+                    case MotionEvent.ACTION_CANCEL:
+                        includeTagsIcon.setAlpha(0.4f);
+                        includeTagsDropdown.setAlpha(0.4f);
+                        break;
+                }
+                return true;
+            }
+        });
+    }
+
+    private void initCompletionView(final TagAutoCompleteView tagsInput, final String tagsState, final Set<Integer> ids) {
+        tagsInput.allowCollapse(false);
+        tagsInput.allowDuplicates(false);
+        tagsInput.performBestGuess(false);
+        ArrayAdapter<Tag> adapter = new FilteredArrayAdapter<Tag>(this, android.R.layout.simple_list_item_1, Tag.getTagsArray(this)) {
+            @Override
+            protected boolean keepObject(Tag obj, String mask) {
+                for (String part : mask.toLowerCase().split(" ")) {
+                    if (!obj.getName().toLowerCase().contains(part))
+                        return false;
+                }
+                return true;
+            }
+
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                if (parent instanceof ListView) {
+                    ((ListView) parent).setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                        @Override
+                        public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                            Log.d("D", "on item long click !");
+                            // TODO display tag's description
+                            return true;
+                        }
+                    });
+                }
+                return super.getView(position, convertView, parent);
+            }
+        };
+        tagsInput.setAdapter(adapter);
+        tagsInput.setTokenClickStyle(TokenCompleteTextView.TokenClickStyle.Delete);
+
+        tagsInput.setTokenListener(new TokenCompleteTextView.TokenListener<Tag>() {
+            @Override
+            public void onTokenAdded(Tag token) {
+                ids.add(token.getId());
+            }
+
+            @Override
+            public void onTokenRemoved(Tag token) {
+                ids.remove(token.getId());
+            }
+        });
+
+        if (savedInstanceState != null) {
+            Parcelable savedState = savedInstanceState.getParcelable(tagsState);
+            if (savedState != null)
+                tagsInput.onRestoreInstanceState(savedState);
         }
     }
 
@@ -74,7 +222,21 @@ public class VNSearchActivity extends AppCompatActivity {
             public boolean onQueryTextSubmit(String query) {
                 searchView.clearFocus();
                 progressiveResultLoader.setCurrentPage(1);
-                progressiveResultLoader.setFilters("(search ~ \"" + query.trim() + "\")");
+                query = query.trim();
+                List<String> filters = new ArrayList<>();
+                try {
+                    if (query.length() > 0)
+                        filters.add("search ~ \"" + query.trim() + "\"");
+                    if (!includeTags.isEmpty()) {
+                        filters.add("tags = " + JSON.mapper.writeValueAsString(includeTags));
+                    }
+                    if (!excludeTags.isEmpty()) {
+                        filters.add("tags != " + JSON.mapper.writeValueAsString(excludeTags));
+                    }
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+                progressiveResultLoader.setFilters(filters.isEmpty() ? null : "(" + TextUtils.join(" and ", filters) + ")");
                 progressiveResultLoader.loadResults(true);
                 return true;
             }
@@ -105,9 +267,9 @@ public class VNSearchActivity extends AppCompatActivity {
     public void onSaveInstanceState(Bundle savedInstanceState) {
         if (searchView != null)
             savedInstanceState.putString(SAVED_QUERY_STATE, searchView.getQuery().toString());
-        if (expandableListAdapter != null && expandableListAdapter.getIncludeTagsInput() != null) {
-            savedInstanceState.putParcelable(INCLUDE_TAGS_STATE, expandableListAdapter.getIncludeTagsInput().onSaveInstanceState());
-            savedInstanceState.putParcelable(EXCLUDE_TAGS_STATE, expandableListAdapter.getExcludeTagsInput().onSaveInstanceState());
+        if (expandableListAdapter != null && includeTagsInput != null) {
+            savedInstanceState.putParcelable(INCLUDE_TAGS_STATE, includeTagsInput.onSaveInstanceState());
+            savedInstanceState.putParcelable(EXCLUDE_TAGS_STATE, excludeTagsInput.onSaveInstanceState());
         }
         super.onSaveInstanceState(savedInstanceState);
     }

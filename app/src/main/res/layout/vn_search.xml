@@ -8,10 +8,11 @@
         android:id="@+id/expandableListView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:dividerHeight="0dp"
         android:clipToPadding="false"
-        android:paddingBottom="4dp"
+        android:dividerHeight="0dp"
         android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft"/>
+
+    <include layout="@layout/vn_search_options"/>
 
     <include layout="@layout/vn_card_list_layout"/>
 </LinearLayout>
