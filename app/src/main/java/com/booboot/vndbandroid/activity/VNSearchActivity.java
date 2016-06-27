@@ -43,9 +43,13 @@ import java.util.List;
 import java.util.Set;
 
 public class VNSearchActivity extends AppCompatActivity {
-    public final static String SAVED_QUERY_STATE = "SEARCH_INPUT";
-    public final static String INCLUDE_TAGS_STATE = "INCLUDE_TAGS";
-    public final static String EXCLUDE_TAGS_STATE = "EXCLUDE_TAGS";
+    public final static String SAVED_QUERY_STATE = "SAVED_QUERY_STATE";
+    public final static String INCLUDE_TAGS_STATE = "INCLUDE_TAGS_STATE";
+    public final static String EXCLUDE_TAGS_STATE = "EXCLUDE_TAGS_STATE";
+    public final static String INCLUDE_TAGS_HINT = "INCLUDE_TAGS_HINT";
+    public final static String SEARCH_OPTIONS_VISIBILITY = "SEARCH_OPTIONS_VISIBILITY";
+    public final static String INCLUDE_TAGS = "INCLUDE_TAGS";
+    public final static String EXCLUDE_TAGS = "EXCLUDE_TAGS";
 
     private Bundle savedInstanceState;
     private ProgressiveResultLoader progressiveResultLoader;
@@ -85,6 +89,12 @@ public class VNSearchActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             this.savedInstanceState = savedInstanceState;
             savedQuery = savedInstanceState.getString(SAVED_QUERY_STATE);
+            //noinspection WrongConstant
+            searchOptionsLayout.setVisibility(savedInstanceState.getInt(SEARCH_OPTIONS_VISIBILITY));
+            ArrayList<Integer> savedTags = savedInstanceState.getIntegerArrayList(INCLUDE_TAGS);
+            if (savedTags != null) includeTags = new HashSet<>(savedTags);
+            savedTags = savedInstanceState.getIntegerArrayList(EXCLUDE_TAGS);
+            if (savedTags != null) excludeTags = new HashSet<>(savedTags);
         }
 
         initSearchOptions();
@@ -93,13 +103,14 @@ public class VNSearchActivity extends AppCompatActivity {
     private void initSearchOptions() {
         includeTagsInput = (TagAutoCompleteView) findViewById(R.id.includeTagsInput);
         excludeTagsInput = (TagAutoCompleteView) findViewById(R.id.excludeTagsInput);
-        initCompletionView(includeTagsInput, VNSearchActivity.INCLUDE_TAGS_STATE, includeTags);
-        initCompletionView(excludeTagsInput, VNSearchActivity.EXCLUDE_TAGS_STATE, excludeTags);
-
         includeTagsFloatingLabel = (FloatLabeledEditText) findViewById(R.id.includeTagsFloatingLabel);
         final ImageView includeTagsIcon = (ImageView) findViewById(R.id.includeTagsIcon);
         final ImageView includeTagsDropdown = (ImageView) findViewById(R.id.includeTagsDropdown);
         ImageView excludeTagsIcon = (ImageView) findViewById(R.id.excludeTagsIcon);
+        
+        initCompletionView(includeTagsInput, VNSearchActivity.INCLUDE_TAGS_STATE, includeTags);
+        initCompletionView(excludeTagsInput, VNSearchActivity.EXCLUDE_TAGS_STATE, excludeTags);
+
         includeTagsIcon.setColorFilter(getResources().getColor(R.color.green), PorterDuff.Mode.SRC_ATOP);
         includeTagsDropdown.setColorFilter(getResources().getColor(R.color.green), PorterDuff.Mode.SRC_ATOP);
         excludeTagsIcon.setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
@@ -193,8 +204,14 @@ public class VNSearchActivity extends AppCompatActivity {
 
         if (savedInstanceState != null) {
             Parcelable savedState = savedInstanceState.getParcelable(tagsState);
-            if (savedState != null)
+            if (savedState != null) {
                 tagsInput.onRestoreInstanceState(savedState);
+                CharSequence hint = savedInstanceState.getCharSequence(INCLUDE_TAGS_HINT);
+                if (hint != null) {
+                    tagsInput.setHint(hint);
+                    includeTagsFloatingLabel.setHint(hint.toString());
+                }
+            }
         }
     }
 
@@ -274,7 +291,12 @@ public class VNSearchActivity extends AppCompatActivity {
         if (expandableListAdapter != null && includeTagsInput != null) {
             savedInstanceState.putParcelable(INCLUDE_TAGS_STATE, includeTagsInput.onSaveInstanceState());
             savedInstanceState.putParcelable(EXCLUDE_TAGS_STATE, excludeTagsInput.onSaveInstanceState());
+            savedInstanceState.putCharSequence(INCLUDE_TAGS_HINT, includeTagsInput.getHint());
         }
+        savedInstanceState.putInt(SEARCH_OPTIONS_VISIBILITY, searchOptionsLayout.getVisibility());
+        savedInstanceState.putIntegerArrayList(INCLUDE_TAGS, new ArrayList<>(includeTags));
+        savedInstanceState.putIntegerArrayList(EXCLUDE_TAGS, new ArrayList<>(excludeTags));
+
         super.onSaveInstanceState(savedInstanceState);
     }
 }
