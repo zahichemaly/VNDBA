@@ -29,6 +29,7 @@ import com.booboot.vndbandroid.adapter.search.SearchOptionsAdapter;
 import com.booboot.vndbandroid.api.bean.Options;
 import com.booboot.vndbandroid.api.bean.Tag;
 import com.booboot.vndbandroid.factory.ProgressiveResultLoader;
+import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.JSON;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.view.TagAutoCompleteView;
@@ -107,7 +108,7 @@ public class VNSearchActivity extends AppCompatActivity {
         final ImageView includeTagsIcon = (ImageView) findViewById(R.id.includeTagsIcon);
         final ImageView includeTagsDropdown = (ImageView) findViewById(R.id.includeTagsDropdown);
         ImageView excludeTagsIcon = (ImageView) findViewById(R.id.excludeTagsIcon);
-        
+
         initCompletionView(includeTagsInput, VNSearchActivity.INCLUDE_TAGS_STATE, includeTags);
         initCompletionView(excludeTagsInput, VNSearchActivity.EXCLUDE_TAGS_STATE, excludeTags);
 
@@ -237,29 +238,7 @@ public class VNSearchActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                searchView.clearFocus();
-                progressiveResultLoader.setCurrentPage(1);
-                query = query.trim();
-                List<String> filters = new ArrayList<>();
-                try {
-                    if (query.length() > 0)
-                        filters.add("search ~ \"" + query.trim() + "\"");
-                    if (!includeTags.isEmpty()) {
-                        if (includeTagsInput.getHint().toString().equals(getResources().getString(R.string.include_one_tags))) {
-                            filters.add("tags = " + JSON.mapper.writeValueAsString(includeTags));
-                        } else {
-                            filters.add("tags = " + TextUtils.join(" and tags = ", includeTags));
-                        }
-                    }
-                    if (!excludeTags.isEmpty()) {
-                        filters.add("tags != " + JSON.mapper.writeValueAsString(excludeTags));
-                    }
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
-                }
-                progressiveResultLoader.setFilters(filters.isEmpty() ? null : "(" + TextUtils.join(" and ", filters) + ")");
-                progressiveResultLoader.loadResults(true);
-                return true;
+                return submitSearch(query);
             }
 
             @Override
@@ -279,9 +258,46 @@ public class VNSearchActivity extends AppCompatActivity {
             case android.R.id.home:
                 finish();
                 break;
+
+            case R.id.action_send_search:
+                submitSearch(searchView.getQuery().toString());
+                break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private boolean submitSearch(String query) {
+        searchView.clearFocus();
+        progressiveResultLoader.setCurrentPage(1);
+        query = query.trim();
+        List<String> filters = new ArrayList<>();
+        try {
+            if (query.length() > 0)
+                filters.add("search ~ \"" + query.trim() + "\"");
+            if (!includeTags.isEmpty()) {
+                if (includeTagsInput.getHint().toString().equals(getResources().getString(R.string.include_one_tags))) {
+                    filters.add("tags = " + JSON.mapper.writeValueAsString(includeTags));
+                } else {
+                    filters.add("tags = " + TextUtils.join(" and tags = ", includeTags));
+                }
+            }
+            if (!excludeTags.isEmpty()) {
+                filters.add("tags != " + JSON.mapper.writeValueAsString(excludeTags));
+            }
+        } catch (JsonProcessingException e) {
+            Callback.showToast(this, "An error occurred while creating your search. Please try again later.");
+            return false;
+        }
+
+        if (filters.isEmpty()) {
+            Callback.showToast(this, "Your search is empty.");
+            return false;
+        }
+
+        progressiveResultLoader.setFilters("(" + TextUtils.join(" and ", filters) + ")");
+        progressiveResultLoader.loadResults(true);
+        return true;
     }
 
     @Override
