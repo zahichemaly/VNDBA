@@ -159,7 +159,7 @@ public class Utils {
     }
 
     public static void setTextViewLink(final Activity context, TextView textView, final String url, int start, int end) {
-        SpannableString ss = new SpannableString(textView.getText().toString());
+        SpannableString ss = new SpannableString(textView.getText());
         ClickableSpan clickableSpan = new ClickableSpan() {
             @Override
             public void onClick(View textView) {

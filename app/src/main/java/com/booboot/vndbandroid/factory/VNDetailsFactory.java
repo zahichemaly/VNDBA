@@ -109,6 +109,7 @@ public class VNDetailsFactory {
 
         List<String> tags = new ArrayList<>();
         List<Integer> tags_images = new ArrayList<>();
+        List<Integer> tags_ids = new ArrayList<>();
         Map<String, Boolean> alreadyProcessedCategories = new HashMap<>();
         for (List<Number> catInfo : vn.getTags()) {
             if (!Tag.checkSpoilerLevel(activity, catInfo.get(2).intValue())) continue;
@@ -117,13 +118,14 @@ public class VNDetailsFactory {
                 alreadyProcessedCategories.put(cat.getCat(), true);
                 tags.add("<b>" + Category.CATEGORIES.get(cat.getCat()) + " :</b>");
                 tags_images.add(-1);
+                tags_ids.add(-1);
                 for (List<Number> tagInfo : vn.getTags()) {
                     if (!Tag.checkSpoilerLevel(activity, tagInfo.get(2).intValue())) continue;
                     Tag tag = Tag.getTags(activity).get(tagInfo.get(0).intValue());
                     if (tag != null && tag.getCat().equals(cat.getCat())) {
-                        String tagName = tag.getName();
-                        tags.add(tagName);
+                        tags.add(tag.getName());
                         tags_images.add(Tag.getScoreImage(tagInfo));
+                        tags_ids.add(tag.getId());
                     }
                 }
             }
@@ -186,7 +188,7 @@ public class VNDetailsFactory {
         expandableListDetail.put(TITLE_CHARACTERS, activity.getCharacterElement());
         expandableListDetail.put(TITLE_SCREENSHOTS, new VNDetailsElement(null, screenshots, null, null, null, VNDetailsElement.TYPE_IMAGES));
         expandableListDetail.put(TITLE_STATS, new VNDetailsElement(null, statLeft, statRight, statRightImages, null, VNDetailsElement.TYPE_TEXT));
-        expandableListDetail.put(TITLE_TAGS, new VNDetailsElement(tags_images, tags, null, null, null, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put(TITLE_TAGS, new VNDetailsElement(tags_images, tags, null, tags_ids, null, VNDetailsElement.TYPE_TEXT));
         expandableListDetail.put(TITLE_RELEASES, activity.getReleaseElement());
         expandableListDetail.put(TITLE_RELATIONS, new VNDetailsElement(relation_ids, relation_titles, relation_types, null, null, VNDetailsElement.TYPE_SUBTITLE));
         expandableListDetail.put(TITLE_ANIME, new VNDetailsElement(anime_ids, anime_primary, anime_secondary, null, null, VNDetailsElement.TYPE_SUBTITLE));

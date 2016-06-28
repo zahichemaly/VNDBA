@@ -45,6 +45,14 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".activity.URLActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="android.intent.action.VIEW"/>
+                <data android:scheme="com.booboot.vndbandroid"/>
+            </intent-filter>
+        </activity>
+
         <activity android:name=".activity.ErrorActivity" android:label="@string/app_name" android:process=":error_activity"/>
 
         <!-- Receive Wi-Fi connection state changes -->

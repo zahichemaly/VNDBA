@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,13 +23,15 @@ import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.VNDetailsActivity;
 import com.booboot.vndbandroid.activity.VNTypeFragment;
 import com.booboot.vndbandroid.adapter.doublelist.DoubleListListener;
+import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.bean.Item;
 import com.booboot.vndbandroid.api.bean.Links;
 import com.booboot.vndbandroid.api.bean.Options;
-import com.booboot.vndbandroid.api.Cache;
+import com.booboot.vndbandroid.api.bean.Tag;
 import com.booboot.vndbandroid.factory.CharacterDataFactory;
 import com.booboot.vndbandroid.factory.ReleaseDataFactory;
+import com.booboot.vndbandroid.factory.TagDataFactory;
 import com.booboot.vndbandroid.factory.VNDetailsFactory;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.Lightbox;
@@ -110,11 +113,22 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                     itemLeftImage.setVisibility(View.GONE);
                 }
 
-                int rightImage;
-                if (getElement(listPosition).getSecondaryImages() != null && (rightImage = getElement(listPosition).getSecondaryImages().get(expandedListPosition)) > 0) {
-                    itemRightImage.setImageResource(rightImage);
+                String group = (String) getGroup(listPosition);
+                if (group.equals(VNDetailsFactory.TITLE_TAGS)) {
+                    int tagId = getElement(listPosition).getSecondaryImages().get(expandedListPosition);
+                    if (tagId > 0) {
+                        Tag tag = Tag.getTags(activity).get(tagId);
+                        if (tag != null) {
+                            convertView.setOnClickListener(new DoubleListListener(activity, tag.getName(), TagDataFactory.getData(tag)));
+                        }
+                    }
                 } else {
-                    itemRightImage.setVisibility(View.GONE);
+                    int rightImage;
+                    if (getElement(listPosition).getSecondaryImages() != null && (rightImage = getElement(listPosition).getSecondaryImages().get(expandedListPosition)) > 0) {
+                        itemRightImage.setImageResource(rightImage);
+                    } else {
+                        itemRightImage.setVisibility(View.GONE);
+                    }
                 }
                 break;
 

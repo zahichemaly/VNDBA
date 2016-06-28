@@ -65,8 +65,10 @@ public class DoubleListAdapter extends BaseAdapter {
             itemRightText.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
         }
 
-        if (element.getRightText().contains("</a>"))
+        element.setRightText(element.getRightText().replaceAll("\\[url=(.*)\\](.*)\\[/url\\]", "<a href=\"" + context.getPackageName() + "://$1\">$2</a>"));
+        if (element.getRightText().contains("</a>")) {
             itemRightText.setMovementMethod(LinkMovementMethod.getInstance());
+        }
 
         itemLeftText.setPadding(Pixels.px(15, context), itemLeftText.getPaddingTop(), itemLeftText.getPaddingRight(), itemLeftText.getPaddingBottom());
         itemLeftText.setText(element.getLeftText());
