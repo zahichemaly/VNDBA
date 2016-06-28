@@ -163,6 +163,7 @@ public class VNSearchActivity extends AppCompatActivity {
         tagsInput.allowCollapse(false);
         tagsInput.allowDuplicates(false);
         tagsInput.performBestGuess(false);
+        tagsInput.setThreshold(1);
         ArrayAdapter<Tag> adapter = new FilteredArrayAdapter<Tag>(this, android.R.layout.simple_list_item_1, Tag.getTagsArray(this)) {
             @Override
             protected boolean keepObject(Tag obj, String mask) {
