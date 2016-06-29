@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -119,7 +118,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                     if (tagId > 0) {
                         Tag tag = Tag.getTags(activity).get(tagId);
                         if (tag != null) {
-                            convertView.setOnClickListener(new DoubleListListener(activity, tag.getName(), TagDataFactory.getData(tag)));
+                            convertView.setOnClickListener(new DoubleListListener(activity, tag.getName(), TagDataFactory.getData(tag), null));
                         }
                     }
                 } else {
@@ -191,7 +190,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
 
                     case VNDetailsFactory.TITLE_CHARACTERS:
                         final Item character = activity.getCharacters().get(expandedListPosition);
-                        convertView.setOnClickListener(new DoubleListListener(activity, character.getName(), CharacterDataFactory.getData(activity, character)));
+                        convertView.setOnClickListener(new DoubleListListener(activity, character.getName(), CharacterDataFactory.getData(activity, character), null));
                         break;
 
                     case VNDetailsFactory.TITLE_RELEASES:
@@ -222,7 +221,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                         }
                         if (release == null) break;
 
-                        convertView.setOnClickListener(new DoubleListListener(activity, release.getTitle(), ReleaseDataFactory.getData(release)));
+                        convertView.setOnClickListener(new DoubleListListener(activity, release.getTitle(), ReleaseDataFactory.getData(release), null));
                         break;
 
                     case VNDetailsFactory.TITLE_ANIME:

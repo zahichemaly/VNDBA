@@ -2,6 +2,7 @@ package com.booboot.vndbandroid.adapter.doublelist;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.os.Build;
 import android.support.v4.view.ViewCompat;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.widget.ListView;
 
 import com.booboot.vndbandroid.R;
+import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.Utils;
 
 /**
@@ -19,11 +21,13 @@ public class DoubleListListener implements View.OnClickListener {
     private Context context;
     private String title;
     private DoubleListElement[] elements;
+    private Callback onDismissCallback;
 
-    public DoubleListListener(Context context, String title, DoubleListElement[] elements) {
+    public DoubleListListener(Context context, String title, DoubleListElement[] elements, Callback onDismissCallback) {
         this.context = context;
         this.title = title;
         this.elements = elements;
+        this.onDismissCallback = onDismissCallback;
     }
 
     @Override
@@ -50,6 +54,14 @@ public class DoubleListListener implements View.OnClickListener {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
+            }
+        });
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                if (onDismissCallback != null) {
+                    onDismissCallback.call();
+                }
             }
         });
     }

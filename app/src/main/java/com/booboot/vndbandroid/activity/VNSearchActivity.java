@@ -9,23 +9,20 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.SearchView;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.adapter.search.SearchOptionsAdapter;
+import com.booboot.vndbandroid.adapter.search.TagFilteredArrayAdapter;
 import com.booboot.vndbandroid.api.bean.Options;
 import com.booboot.vndbandroid.api.bean.Tag;
 import com.booboot.vndbandroid.factory.ProgressiveResultLoader;
@@ -34,7 +31,6 @@ import com.booboot.vndbandroid.util.JSON;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.view.TagAutoCompleteView;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.tokenautocomplete.FilteredArrayAdapter;
 import com.tokenautocomplete.TokenCompleteTextView;
 import com.wrapp.floatlabelededittext.FloatLabeledEditText;
 
@@ -164,31 +160,7 @@ public class VNSearchActivity extends AppCompatActivity {
         tagsInput.allowDuplicates(false);
         tagsInput.performBestGuess(false);
         tagsInput.setThreshold(1);
-        ArrayAdapter<Tag> adapter = new FilteredArrayAdapter<Tag>(this, android.R.layout.simple_list_item_1, Tag.getTagsArray(this)) {
-            @Override
-            protected boolean keepObject(Tag obj, String mask) {
-                for (String part : mask.toLowerCase().split(" ")) {
-                    if (!obj.getName().toLowerCase().contains(part))
-                        return false;
-                }
-                return true;
-            }
-
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                if (parent instanceof ListView) {
-                    ((ListView) parent).setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-                        @Override
-                        public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                            Log.d("D", "on item long click !");
-                            // TODO display tag's description
-                            return true;
-                        }
-                    });
-                }
-                return super.getView(position, convertView, parent);
-            }
-        };
+        ArrayAdapter<Tag> adapter = new TagFilteredArrayAdapter(this, R.layout.token_autocomplete_list, Tag.getTagsArray(this), tagsInput);
         tagsInput.setAdapter(adapter);
         tagsInput.setTokenClickStyle(TokenCompleteTextView.TokenClickStyle.Delete);
 
