@@ -3,19 +3,26 @@ package com.booboot.vndbandroid.activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +42,7 @@ import com.booboot.vndbandroid.factory.VNDetailsFactory;
 import com.booboot.vndbandroid.listener.VNDetailsListener;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.Lightbox;
+import com.booboot.vndbandroid.util.Pixels;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -59,6 +67,7 @@ public class VNDetailsActivity extends AppCompatActivity {
     private Button statusButton;
     private Button wishlistButton;
     private Button votesButton;
+    private ImageButton notesEditButton;
 
     private VNDetailsListener listener;
 
@@ -109,6 +118,64 @@ public class VNDetailsActivity extends AppCompatActivity {
         statusButton = (Button) findViewById(R.id.statusButton);
         wishlistButton = (Button) findViewById(R.id.wishlistButton);
         votesButton = (Button) findViewById(R.id.votesButton);
+        final TextView notesTextView = (TextView) findViewById(R.id.notesTextView);
+        notesTextView.setText(vn.getNotes());
+        notesEditButton = (ImageButton) findViewById(R.id.notesEditButton);
+        notesEditButton.setColorFilter(Utils.getThemeColor(this, R.attr.colorPrimary), PorterDuff.Mode.SRC_ATOP);
+        notesEditButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View arg0, MotionEvent arg1) {
+                switch (arg1.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        notesEditButton.setBackgroundColor(getResources().getColor(R.color.buttonPressed));
+                        notesEditButton.setAlpha(0.4f);
+                        break;
+
+                    case MotionEvent.ACTION_UP:
+                        notesEditButton.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+                        notesEditButton.setAlpha(1.0f);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(VNDetailsActivity.this);
+                        builder.setTitle("Notes");
+                        final LinearLayout params = new LinearLayout(VNDetailsActivity.this);
+                        params.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                        params.setPadding(Pixels.px(15, VNDetailsActivity.this), 0, Pixels.px(15, VNDetailsActivity.this), 0);
+                        final EditText input = new EditText(VNDetailsActivity.this);
+                        input.setText(notesTextView.getText());
+                        input.setSelection(input.getText().length());
+                        input.setMaxHeight(Pixels.px(200, VNDetailsActivity.this));
+                        params.addView(input, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                        builder.setView(params);
+
+                        builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // TODO
+                            }
+                        });
+                        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+                        builder.setNeutralButton("Clear", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                                // TODO
+                                notesTextView.setText("");
+                            }
+                        });
+                        builder.show();
+                        break;
+
+                    case MotionEvent.ACTION_CANCEL:
+                        notesEditButton.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+                        notesEditButton.setAlpha(1.0f);
+                        break;
+                }
+                return true;
+            }
+        });
 
         actionBar = getSupportActionBar();
         actionBar.setTitle(vn.getTitle());
