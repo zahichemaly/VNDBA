@@ -284,38 +284,26 @@ public class Cache {
             long start = new Date().getTime();
             vnlist = JSON.mapper.readValue(vnlistFile, new TypeReference<LinkedHashMap<Integer, VNlistItem>>() {
             });
-            Log.d("D", "1 : " + (new Date().getTime() - start) + " ms");
-            start = new Date().getTime();
             votelist = JSON.mapper.readValue(votelistFile, new TypeReference<LinkedHashMap<Integer, VotelistItem>>() {
             });
-            Log.d("D", "2 : " + (new Date().getTime() - start) + " ms");
-            start = new Date().getTime();
             wishlist = JSON.mapper.readValue(wishlistFile, new TypeReference<LinkedHashMap<Integer, WishlistItem>>() {
             });
-            Log.d("D", "3 : " + (new Date().getTime() - start) + " ms");
-            start = new Date().getTime();
             vns = JSON.mapper.readValue(vnFile, new TypeReference<LinkedHashMap<Integer, Item>>() {
             });
-            Log.d("D", "4 : " + (new Date().getTime() - start) + " ms");
-            start = new Date().getTime();
             if (charactersFile.exists()) {
                 characters = JSON.mapper.readValue(charactersFile, new TypeReference<LinkedHashMap<Integer, List<Item>>>() {
                 });
             }
-            Log.d("D", "5 : " + (new Date().getTime() - start) + " ms");
-            start = new Date().getTime();
             if (releasesFile.exists()) {
                 releases = JSON.mapper.readValue(releasesFile, new TypeReference<LinkedHashMap<Integer, List<Item>>>() {
                 });
             }
             Log.d("D", "6 : " + (new Date().getTime() - start) + " ms");
-            start = new Date().getTime();
         } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
 
-        VNDBServer.log(vnlist.get(11).toString());
         sortAll(context);
         loadedFromCache = true;
         return true;

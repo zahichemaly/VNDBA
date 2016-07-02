@@ -14,7 +14,6 @@ import com.booboot.vndbandroid.adapter.materiallistview.MaterialListView;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.bean.Item;
 import com.booboot.vndbandroid.bean.ListType;
-import com.booboot.vndbandroid.bean.cache.CacheItem;
 import com.booboot.vndbandroid.bean.cache.VNlistItem;
 import com.booboot.vndbandroid.bean.cache.VotelistItem;
 import com.booboot.vndbandroid.bean.cache.WishlistItem;
@@ -24,8 +23,6 @@ import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.Utils;
 import com.dexafree.materialList.card.Card;
 import com.dexafree.materialList.listeners.RecyclerItemClickListener;
-
-import java.util.LinkedHashMap;
 
 /**
  * Created by od on 09/03/2016.
@@ -50,13 +47,28 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
         materialListView = (MaterialListView) rootView.findViewById(R.id.materialListView);
 
-        for (final CacheItem vn : getList().values()) {
-            if (type == ListType.VNLIST && ((VNlistItem) vn).getStatus() != tabValue) continue;
-            if (type == ListType.VOTELIST && ((VotelistItem) vn).getVote() / 10 != tabValue && ((VotelistItem) vn).getVote() / 10 != tabValue - 1)
-                continue;
-            if (type == ListType.WISHLIST && ((WishlistItem) vn).getPriority() != tabValue) continue;
+        switch (type) {
+            case ListType.VNLIST:
+                for (final VNlistItem vn : Cache.vnlist.values()) {
+                    if (vn.getStatus() != tabValue) continue;
+                    VNCardFactory.buildCard(getActivity(), Cache.vns.get(vn.getVn()), materialListView, false, false, false, false, false);
+                }
+                break;
 
-            VNCardFactory.buildCard(getActivity(), Cache.vns.get(vn.getVn()), materialListView, false, false, false, false, false);
+            case ListType.VOTELIST:
+                for (final VotelistItem vn : Cache.votelist.values()) {
+                    if (type == ListType.VOTELIST && vn.getVote() / 10 != tabValue && vn.getVote() / 10 != tabValue - 1)
+                        continue;
+                    VNCardFactory.buildCard(getActivity(), Cache.vns.get(vn.getVn()), materialListView, false, false, false, false, false);
+                }
+                break;
+
+            case ListType.WISHLIST:
+                for (final WishlistItem vn : Cache.wishlist.values()) {
+                    if (type == ListType.WISHLIST && vn.getPriority() != tabValue) continue;
+                    VNCardFactory.buildCard(getActivity(), Cache.vns.get(vn.getVn()), materialListView, false, false, false, false, false);
+                }
+                break;
         }
 
         materialListView.addOnItemTouchListener(new RecyclerItemClickListener.OnItemClickListener() {
@@ -93,13 +105,6 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
         FastScrollerFactory.get(getActivity(), rootView, materialListView, refreshLayout);
 
         return rootView;
-    }
-
-    public LinkedHashMap<Integer, ? extends CacheItem> getList() {
-        if (type == ListType.VNLIST) return Cache.vnlist;
-        if (type == ListType.VOTELIST) return Cache.votelist;
-        if (type == ListType.WISHLIST) return Cache.wishlist;
-        return null;
     }
 
     private void initFilter() {
