@@ -4,12 +4,14 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.widget.PopupMenu;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.booboot.vndbandroid.R;
@@ -29,14 +31,17 @@ import com.booboot.vndbandroid.util.Utils;
 /**
  * Created by od on 12/04/2016.
  */
-public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener {
+public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, DialogInterface.OnClickListener {
     private VNDetailsActivity activity;
     private Item vn;
     private Button popupButton;
+    private TextView notesTextView;
+    private EditText notesInput;
 
-    public VNDetailsListener(VNDetailsActivity activity, Item vn) {
+    public VNDetailsListener(VNDetailsActivity activity, Item vn, TextView notesTextView) {
         this.activity = activity;
         this.vn = vn;
+        this.notesTextView = notesTextView;
     }
 
     @Override
@@ -77,7 +82,9 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener {
 
             case R.id.item_no_status:
                 type = "vnlist";
-                fields = null;
+                //fields = null;
+                fields.setStatus(0);
+                fields.setNotes(vn.getNotes());
                 break;
 
             case R.id.item_high:
@@ -333,7 +340,49 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener {
         dialog.show();
     }
 
+    private void sendNotesRequest(String type, final Fields fields) {
+        VNDBServer.set(type, vn.getId(), fields, activity, new Callback() {
+            @Override
+            protected void config() {
+                vn.setNotes(fields.getNotes());
+                notesTextView.setText(fields.getNotes());
+                Cache.vnlist.put(vn.getId(), vn);
+                if (MainActivity.instance != null)
+                    MainActivity.instance.refreshVnlistFragment();
+            }
+        }, Callback.errorCallback(activity));
+    }
+
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+        if (notesInput == null) Callback.showToast(activity, "There are no notes to save.");
+        Fields fields = new Fields();
+        switch (which) {
+            case DialogInterface.BUTTON_POSITIVE:
+                fields.setStatus(vn.getStatus());
+                fields.setNotes(notesInput.getText().toString());
+                sendNotesRequest("vnlist", fields);
+                break;
+
+            case DialogInterface.BUTTON_NEGATIVE:
+                dialog.cancel();
+                break;
+
+            case DialogInterface.BUTTON_NEUTRAL:
+                dialog.cancel();
+                fields.setStatus(vn.getStatus());
+                fields.setNotes("");
+                sendNotesRequest("vnlist", fields);
+                break;
+
+        }
+    }
+
     public void setPopupButton(Button popupButton) {
         this.popupButton = popupButton;
+    }
+
+    public void setNotesInput(EditText notesInput) {
+        this.notesInput = notesInput;
     }
 }

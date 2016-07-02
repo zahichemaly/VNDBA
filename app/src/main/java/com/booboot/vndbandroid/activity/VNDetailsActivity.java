@@ -3,7 +3,6 @@ package com.booboot.vndbandroid.activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -16,6 +15,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -67,6 +67,7 @@ public class VNDetailsActivity extends AppCompatActivity {
     private Button statusButton;
     private Button wishlistButton;
     private Button votesButton;
+    private TextView notesTextView;
     private ImageButton notesEditButton;
 
     private VNDetailsListener listener;
@@ -83,7 +84,6 @@ public class VNDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.vn_details);
 
         vn = (Item) getIntent().getSerializableExtra(VNTypeFragment.VN_ARG);
-        listener = new VNDetailsListener(this, vn);
 
         if (savedInstanceState != null) {
             spoilerLevel = savedInstanceState.getInt("SPOILER_LEVEL");
@@ -118,8 +118,10 @@ public class VNDetailsActivity extends AppCompatActivity {
         statusButton = (Button) findViewById(R.id.statusButton);
         wishlistButton = (Button) findViewById(R.id.wishlistButton);
         votesButton = (Button) findViewById(R.id.votesButton);
-        final TextView notesTextView = (TextView) findViewById(R.id.notesTextView);
+        notesTextView = (TextView) findViewById(R.id.notesTextView);
         notesTextView.setText(vn.getNotes());
+        listener = new VNDetailsListener(this, vn, notesTextView);
+
         notesEditButton = (ImageButton) findViewById(R.id.notesEditButton);
         notesEditButton.setColorFilter(Utils.getThemeColor(this, R.attr.colorPrimary), PorterDuff.Mode.SRC_ATOP);
         notesEditButton.setOnTouchListener(new View.OnTouchListener() {
@@ -140,32 +142,27 @@ public class VNDetailsActivity extends AppCompatActivity {
                         params.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                         params.setPadding(Pixels.px(15, VNDetailsActivity.this), 0, Pixels.px(15, VNDetailsActivity.this), 0);
                         final EditText input = new EditText(VNDetailsActivity.this);
+                        input.setSingleLine();
                         input.setText(notesTextView.getText());
                         input.setSelection(input.getText().length());
                         input.setMaxHeight(Pixels.px(200, VNDetailsActivity.this));
                         params.addView(input, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                         builder.setView(params);
+                        listener.setNotesInput(input);
+                        builder.setPositiveButton("Save", listener);
+                        builder.setNegativeButton("Cancel", listener);
+                        builder.setNeutralButton("Clear", listener);
 
-                        builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                        final AlertDialog dialog = builder.create();
+                        input.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                // TODO
+                            public void onFocusChange(View v, boolean hasFocus) {
+                                if (hasFocus) {
+                                    dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+                                }
                             }
                         });
-                        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        });
-                        builder.setNeutralButton("Clear", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                                // TODO
-                                notesTextView.setText("");
-                            }
-                        });
-                        builder.show();
+                        dialog.show();
                         break;
 
                     case MotionEvent.ACTION_CANCEL:

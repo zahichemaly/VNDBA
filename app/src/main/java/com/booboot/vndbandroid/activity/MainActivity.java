@@ -291,8 +291,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void refreshVnlistFragment() {
         VNListFragment fragment = directSubfragment instanceof VNListFragment ? (VNListFragment) directSubfragment : null;
-        if (fragment != null)
+        Cache.sortAll(this);
+        if (fragment != null) {
             fragment.refresh();
+        }
         updateMenuCounters();
     }
 

@@ -202,13 +202,16 @@ public class Cache {
 
             /* 2 - Checking for VNs that have been added or modified overtime */
             if (vnlistItem != null) {
-                String cachedNotes = vnlistItem.getNotes();
-                String onlineNotes = vnlist.get(id).getNotes();
-                boolean notesHaveChanged = cachedNotes == null && onlineNotes != null ||
-                        cachedNotes != null && onlineNotes == null ||
-                        cachedNotes != null && onlineNotes != null && !cachedNotes.equals(onlineNotes);
-                if (vnlist.get(id) == null || vnlistItem.getStatus() != vnlist.get(id).getStatus() || notesHaveChanged)
+                if (vnlist.get(id) == null || vnlistItem.getStatus() != vnlist.get(id).getStatus())
                     filteredMergedIds.add(id);
+                else {
+                    String cachedNotes = vnlistItem.getNotes();
+                    String onlineNotes = vnlist.get(id).getNotes();
+                    boolean notesHaveChanged = cachedNotes == null && onlineNotes != null ||
+                            cachedNotes != null && onlineNotes == null ||
+                            cachedNotes != null && onlineNotes != null && !cachedNotes.equals(onlineNotes);
+                    if (notesHaveChanged) filteredMergedIds.add(id);
+                }
             }
             if (votelistItem != null) {
                 if (votelist.get(id) == null || votelistItem.getVote() != votelist.get(id).getVote())
