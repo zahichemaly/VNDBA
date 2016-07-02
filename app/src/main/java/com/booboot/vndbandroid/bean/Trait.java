@@ -1,4 +1,4 @@
-package com.booboot.vndbandroid.api.bean;
+package com.booboot.vndbandroid.bean;
 
 import android.content.Context;
 

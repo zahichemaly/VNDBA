@@ -7,9 +7,9 @@ import android.support.v13.app.FragmentStatePagerAdapter;
 
 import com.booboot.vndbandroid.activity.VNListFragment;
 import com.booboot.vndbandroid.activity.VNTypeFragment;
-import com.booboot.vndbandroid.api.bean.ListType;
-import com.booboot.vndbandroid.api.bean.Priority;
-import com.booboot.vndbandroid.api.bean.Status;
+import com.booboot.vndbandroid.bean.ListType;
+import com.booboot.vndbandroid.bean.Priority;
+import com.booboot.vndbandroid.bean.Status;
 
 /**
  * Created by od on 13/03/2016.

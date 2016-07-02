@@ -2,17 +2,17 @@ package com.booboot.vndbandroid.factory;
 
 import com.booboot.vndbandroid.activity.VNDetailsActivity;
 import com.booboot.vndbandroid.adapter.vndetails.VNDetailsElement;
-import com.booboot.vndbandroid.api.bean.Anime;
-import com.booboot.vndbandroid.api.bean.Category;
-import com.booboot.vndbandroid.api.bean.Genre;
-import com.booboot.vndbandroid.api.bean.Item;
-import com.booboot.vndbandroid.api.bean.Language;
-import com.booboot.vndbandroid.api.bean.Links;
-import com.booboot.vndbandroid.api.bean.Platform;
-import com.booboot.vndbandroid.api.bean.Relation;
-import com.booboot.vndbandroid.api.bean.Screen;
-import com.booboot.vndbandroid.api.bean.Tag;
-import com.booboot.vndbandroid.api.bean.Vote;
+import com.booboot.vndbandroid.bean.Anime;
+import com.booboot.vndbandroid.bean.Category;
+import com.booboot.vndbandroid.bean.Genre;
+import com.booboot.vndbandroid.bean.Item;
+import com.booboot.vndbandroid.bean.Language;
+import com.booboot.vndbandroid.bean.Links;
+import com.booboot.vndbandroid.bean.Platform;
+import com.booboot.vndbandroid.bean.Relation;
+import com.booboot.vndbandroid.bean.Screen;
+import com.booboot.vndbandroid.bean.Tag;
+import com.booboot.vndbandroid.bean.Vote;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
 

@@ -6,8 +6,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
 
-import com.booboot.vndbandroid.api.bean.DbStats;
-import com.booboot.vndbandroid.api.bean.Results;
+import com.booboot.vndbandroid.bean.DbStats;
+import com.booboot.vndbandroid.bean.Results;
 
 import java.util.concurrent.CountDownLatch;
 

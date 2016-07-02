@@ -31,7 +31,7 @@ import android.widget.TextView;
 import com.booboot.vndbandroid.BuildConfig;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.EmptyActivity;
-import com.booboot.vndbandroid.api.bean.Mail;
+import com.booboot.vndbandroid.bean.Mail;
 
 import java.text.DateFormat;
 import java.text.NumberFormat;

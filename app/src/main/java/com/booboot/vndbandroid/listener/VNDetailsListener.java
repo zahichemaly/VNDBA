@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.widget.PopupMenu;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,24 +18,41 @@ import com.booboot.vndbandroid.activity.MainActivity;
 import com.booboot.vndbandroid.activity.VNDetailsActivity;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.VNDBServer;
-import com.booboot.vndbandroid.api.bean.Fields;
-import com.booboot.vndbandroid.api.bean.Item;
-import com.booboot.vndbandroid.api.bean.Priority;
-import com.booboot.vndbandroid.api.bean.Status;
-import com.booboot.vndbandroid.api.bean.Vote;
+import com.booboot.vndbandroid.bean.Fields;
+import com.booboot.vndbandroid.bean.Item;
+import com.booboot.vndbandroid.bean.Priority;
+import com.booboot.vndbandroid.bean.Status;
+import com.booboot.vndbandroid.bean.Vote;
+import com.booboot.vndbandroid.bean.cache.VNlistItem;
+import com.booboot.vndbandroid.bean.cache.VotelistItem;
+import com.booboot.vndbandroid.bean.cache.WishlistItem;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.ConnectionReceiver;
 import com.booboot.vndbandroid.util.Utils;
+
+import java.util.Date;
 
 /**
  * Created by od on 12/04/2016.
  */
 public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, DialogInterface.OnClickListener {
     private VNDetailsActivity activity;
+    private VNlistItem vnlistVn;
+    private WishlistItem wishlistVn;
+    private VotelistItem votelistVn;
     private Item vn;
     private Button popupButton;
     private TextView notesTextView;
     private EditText notesInput;
+/*
+    public VNDetailsListener(VNDetailsActivity activity, VNlistItem vnlistVn, WishlistItem wishlistVn, VotelistItem votelistVn, TextView notesTextView) {
+        this.activity = activity;
+        this.vnlistVn = vnlistVn;
+        this.wishlistVn = wishlistVn;
+        this.votelistVn = votelistVn;
+        this.notesTextView = notesTextView;
+    }
+*/
 
     public VNDetailsListener(VNDetailsActivity activity, Item vn, TextView notesTextView) {
         this.activity = activity;
@@ -82,9 +98,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
 
             case R.id.item_no_status:
                 type = "vnlist";
-                //fields = null;
                 fields.setStatus(0);
-                fields.setNotes(vn.getNotes());
                 break;
 
             case R.id.item_high:
@@ -206,30 +220,64 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
                 if (popupButton != null)
                     popupButton.setText(item.getTitle());
 
+                VNlistItem vnlistItem;
+                WishlistItem wishlistItem;
+                VotelistItem votelistItem;
+
                 switch (item.getItemId()) {
                     case R.id.item_playing:
-                        vn.setStatus(Status.PLAYING);
-                        Cache.vnlist.put(vn.getId(), vn);
+                        vnlistItem = Cache.vnlist.get(vn.getId());
+                        if (vnlistItem == null) {
+                            vnlistItem = new VNlistItem();
+                            vnlistItem.setAdded((int) new Date().getTime());
+                            vnlistItem.setVn(vn.getId());
+                        }
+                        vnlistItem.setStatus(Status.PLAYING);
+                        Cache.vnlist.put(vn.getId(), vnlistItem);
                         break;
 
                     case R.id.item_finished:
-                        vn.setStatus(Status.FINISHED);
-                        Cache.vnlist.put(vn.getId(), vn);
+                        vnlistItem = Cache.vnlist.get(vn.getId());
+                        if (vnlistItem == null) {
+                            vnlistItem = new VNlistItem();
+                            vnlistItem.setAdded((int) new Date().getTime());
+                            vnlistItem.setVn(vn.getId());
+                        }
+                        vnlistItem.setStatus(Status.FINISHED);
+                        Cache.vnlist.put(vn.getId(), vnlistItem);
                         break;
 
                     case R.id.item_stalled:
-                        vn.setStatus(Status.STALLED);
-                        Cache.vnlist.put(vn.getId(), vn);
+                        vnlistItem = Cache.vnlist.get(vn.getId());
+                        if (vnlistItem == null) {
+                            vnlistItem = new VNlistItem();
+                            vnlistItem.setAdded((int) new Date().getTime());
+                            vnlistItem.setVn(vn.getId());
+                        }
+                        vnlistItem.setStatus(Status.STALLED);
+                        Cache.vnlist.put(vn.getId(), vnlistItem);
 
                         break;
                     case R.id.item_dropped:
-                        vn.setStatus(Status.DROPPED);
-                        Cache.vnlist.put(vn.getId(), vn);
+                        vnlistItem = Cache.vnlist.get(vn.getId());
+                        if (vnlistItem == null) {
+                            vnlistItem = new VNlistItem();
+                            vnlistItem.setAdded((int) new Date().getTime());
+                            vnlistItem.setVn(vn.getId());
+                        }
+                        vnlistItem.setStatus(Status.DROPPED);
+                        Cache.vnlist.put(vn.getId(), vnlistItem);
                         break;
 
                     case R.id.item_unknown:
-                        vn.setStatus(Status.UNKNOWN);
-                        Cache.vnlist.put(vn.getId(), vn);
+                        vnlistItem = Cache.vnlist.get(vn.getId());
+                        if (vnlistItem == null) {
+                            vnlistItem = new VNlistItem();
+                            vnlistItem.setAdded((int) new Date().getTime());
+                            vnlistItem.setVn(vn.getId());
+                        }
+                        vnlistItem.setStatus(Status.UNKNOWN);
+                        Cache.vnlist.put(vn.getId(), vnlistItem);
                         break;
 
                     case R.id.item_no_status:
@@ -238,23 +286,47 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
                         break;
 
                     case R.id.item_high:
-                        vn.setPriority(Priority.HIGH);
-                        Cache.wishlist.put(vn.getId(), vn);
+                        wishlistItem = Cache.wishlist.get(vn.getId());
+                        if (wishlistItem == null) {
+                            wishlistItem = new WishlistItem();
+                            wishlistItem.setAdded((int) new Date().getTime());
+                            wishlistItem.setVn(vn.getId());
+                        }
+                        wishlistItem.setPriority(Priority.HIGH);
+                        Cache.wishlist.put(vn.getId(), wishlistItem);
                         break;
 
                     case R.id.item_medium:
-                        vn.setPriority(Priority.MEDIUM);
-                        Cache.wishlist.put(vn.getId(), vn);
+                        wishlistItem = Cache.wishlist.get(vn.getId());
+                        if (wishlistItem == null) {
+                            wishlistItem = new WishlistItem();
+                            wishlistItem.setAdded((int) new Date().getTime());
+                            wishlistItem.setVn(vn.getId());
+                        }
+                        wishlistItem.setPriority(Priority.MEDIUM);
+                        Cache.wishlist.put(vn.getId(), wishlistItem);
                         break;
 
                     case R.id.item_low:
-                        vn.setPriority(Priority.LOW);
-                        Cache.wishlist.put(vn.getId(), vn);
+                        wishlistItem = Cache.wishlist.get(vn.getId());
+                        if (wishlistItem == null) {
+                            wishlistItem = new WishlistItem();
+                            wishlistItem.setAdded((int) new Date().getTime());
+                            wishlistItem.setVn(vn.getId());
+                        }
+                        wishlistItem.setPriority(Priority.LOW);
+                        Cache.wishlist.put(vn.getId(), wishlistItem);
                         break;
 
                     case R.id.item_blacklist:
-                        vn.setPriority(Priority.BLACKLIST);
-                        Cache.wishlist.put(vn.getId(), vn);
+                        wishlistItem = Cache.wishlist.get(vn.getId());
+                        if (wishlistItem == null) {
+                            wishlistItem = new WishlistItem();
+                            wishlistItem.setAdded((int) new Date().getTime());
+                            wishlistItem.setVn(vn.getId());
+                        }
+                        wishlistItem.setPriority(Priority.BLACKLIST);
+                        Cache.wishlist.put(vn.getId(), wishlistItem);
                         break;
 
                     case R.id.item_no_wishlist:
@@ -273,8 +345,14 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
                     case R.id.item_2:
                     case R.id.item_1:
                     case R.id.item_other_vote:
-                        vn.setVote(fields.getVote());
-                        Cache.votelist.put(vn.getId(), vn);
+                        votelistItem = Cache.votelist.get(vn.getId());
+                        if (votelistItem == null) {
+                            votelistItem = new VotelistItem();
+                            votelistItem.setAdded((int) new Date().getTime());
+                            votelistItem.setVn(vn.getId());
+                        }
+                        votelistItem.setVote(fields.getVote());
+                        Cache.votelist.put(vn.getId(), votelistItem);
                         popupButton.setText(Vote.toString(fields.getVote()));
                         break;
 
@@ -344,9 +422,10 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
         VNDBServer.set(type, vn.getId(), fields, activity, new Callback() {
             @Override
             protected void config() {
-                vn.setNotes(fields.getNotes());
+                VNlistItem vnlistItem = Cache.vnlist.get(vn.getId());
+                vnlistItem.setNotes(fields.getNotes());
                 notesTextView.setText(fields.getNotes());
-                Cache.vnlist.put(vn.getId(), vn);
+                Cache.vnlist.put(vn.getId(), vnlistItem);
                 if (MainActivity.instance != null)
                     MainActivity.instance.refreshVnlistFragment();
             }
@@ -357,9 +436,11 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
     public void onClick(DialogInterface dialog, int which) {
         if (notesInput == null) Callback.showToast(activity, "There are no notes to save.");
         Fields fields = new Fields();
+        VNlistItem vnlistItem;
         switch (which) {
             case DialogInterface.BUTTON_POSITIVE:
-                fields.setStatus(vn.getStatus());
+                vnlistItem = Cache.vnlist.get(vn.getId());
+                fields.setStatus(vnlistItem == null ? 0 : vnlistItem.getStatus());
                 fields.setNotes(notesInput.getText().toString());
                 sendNotesRequest("vnlist", fields);
                 break;
@@ -370,7 +451,8 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
 
             case DialogInterface.BUTTON_NEUTRAL:
                 dialog.cancel();
-                fields.setStatus(vn.getStatus());
+                vnlistItem = Cache.vnlist.get(vn.getId());
+                fields.setStatus(vnlistItem == null ? 0 : vnlistItem.getStatus());
                 fields.setNotes("");
                 sendNotesRequest("vnlist", fields);
                 break;

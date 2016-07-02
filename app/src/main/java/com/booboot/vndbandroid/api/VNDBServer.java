@@ -5,15 +5,15 @@ import android.util.Log;
 
 import com.booboot.vndbandroid.BuildConfig;
 import com.booboot.vndbandroid.R;
-import com.booboot.vndbandroid.api.bean.DbStats;
-import com.booboot.vndbandroid.api.bean.Error;
-import com.booboot.vndbandroid.api.bean.Fields;
-import com.booboot.vndbandroid.api.bean.Item;
-import com.booboot.vndbandroid.api.bean.Login;
-import com.booboot.vndbandroid.api.bean.Ok;
-import com.booboot.vndbandroid.api.bean.Options;
-import com.booboot.vndbandroid.api.bean.Results;
-import com.booboot.vndbandroid.api.bean.VNDBCommand;
+import com.booboot.vndbandroid.bean.DbStats;
+import com.booboot.vndbandroid.bean.Error;
+import com.booboot.vndbandroid.bean.Fields;
+import com.booboot.vndbandroid.bean.Item;
+import com.booboot.vndbandroid.bean.Login;
+import com.booboot.vndbandroid.bean.Ok;
+import com.booboot.vndbandroid.bean.Options;
+import com.booboot.vndbandroid.bean.Results;
+import com.booboot.vndbandroid.bean.VNDBCommand;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.ConnectionReceiver;
 import com.booboot.vndbandroid.util.JSON;
@@ -391,7 +391,7 @@ public class VNDBServer {
         }.start();
     }
 
-    private static void log(String sb) {
+    public static void log(String sb) {
         if (sb.length() > 4000) {
             int chunkCount = sb.length() / 4000;     // integer division
             for (int i = 0; i <= chunkCount; i++) {

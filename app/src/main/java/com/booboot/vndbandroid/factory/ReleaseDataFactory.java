@@ -3,11 +3,11 @@ package com.booboot.vndbandroid.factory;
 import android.text.TextUtils;
 
 import com.booboot.vndbandroid.adapter.doublelist.DoubleListElement;
-import com.booboot.vndbandroid.api.bean.Item;
-import com.booboot.vndbandroid.api.bean.Language;
-import com.booboot.vndbandroid.api.bean.Media;
-import com.booboot.vndbandroid.api.bean.Platform;
-import com.booboot.vndbandroid.api.bean.Producer;
+import com.booboot.vndbandroid.bean.Item;
+import com.booboot.vndbandroid.bean.Language;
+import com.booboot.vndbandroid.bean.Media;
+import com.booboot.vndbandroid.bean.Platform;
+import com.booboot.vndbandroid.bean.Producer;
 import com.booboot.vndbandroid.util.Utils;
 
 import java.util.ArrayList;

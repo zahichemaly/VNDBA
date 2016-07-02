@@ -24,10 +24,10 @@ import com.booboot.vndbandroid.activity.VNTypeFragment;
 import com.booboot.vndbandroid.adapter.doublelist.DoubleListListener;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.VNDBServer;
-import com.booboot.vndbandroid.api.bean.Item;
-import com.booboot.vndbandroid.api.bean.Links;
-import com.booboot.vndbandroid.api.bean.Options;
-import com.booboot.vndbandroid.api.bean.Tag;
+import com.booboot.vndbandroid.bean.Item;
+import com.booboot.vndbandroid.bean.Links;
+import com.booboot.vndbandroid.bean.Options;
+import com.booboot.vndbandroid.bean.Tag;
 import com.booboot.vndbandroid.factory.CharacterDataFactory;
 import com.booboot.vndbandroid.factory.ReleaseDataFactory;
 import com.booboot.vndbandroid.factory.TagDataFactory;
@@ -165,9 +165,9 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                         convertView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                if (Cache.vnlist.get(vnId) != null) {
+                                if (Cache.vns.get(vnId) != null) {
                                     Intent intent = new Intent(activity, VNDetailsActivity.class);
-                                    intent.putExtra(VNTypeFragment.VN_ARG, Cache.vnlist.get(vnId));
+                                    intent.putExtra(VNTypeFragment.VN_ARG, Cache.vns.get(vnId));
                                     activity.startActivity(intent);
                                     activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
                                     return;

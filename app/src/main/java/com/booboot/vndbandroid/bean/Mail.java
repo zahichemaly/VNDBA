@@ -1,16 +1,12 @@
-package com.booboot.vndbandroid.api.bean;
+package com.booboot.vndbandroid.bean;
 
 import android.content.Context;
 
 import com.booboot.vndbandroid.util.JSON;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by od on 12/03/2016.

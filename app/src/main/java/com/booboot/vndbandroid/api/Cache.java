@@ -1,10 +1,15 @@
 package com.booboot.vndbandroid.api;
 
 import android.content.Context;
+import android.util.Log;
 
-import com.booboot.vndbandroid.api.bean.DbStats;
-import com.booboot.vndbandroid.api.bean.Item;
-import com.booboot.vndbandroid.api.bean.Options;
+import com.booboot.vndbandroid.bean.DbStats;
+import com.booboot.vndbandroid.bean.Item;
+import com.booboot.vndbandroid.bean.Options;
+import com.booboot.vndbandroid.bean.cache.CacheItem;
+import com.booboot.vndbandroid.bean.cache.VNlistItem;
+import com.booboot.vndbandroid.bean.cache.VotelistItem;
+import com.booboot.vndbandroid.bean.cache.WishlistItem;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.IPredicate;
 import com.booboot.vndbandroid.util.JSON;
@@ -18,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -30,9 +36,10 @@ import java.util.concurrent.CountDownLatch;
  * Created by od on 15/03/2016.
  */
 public class Cache {
-    public static LinkedHashMap<Integer, Item> vnlist = new LinkedHashMap<>();
-    public static LinkedHashMap<Integer, Item> votelist = new LinkedHashMap<>();
-    public static LinkedHashMap<Integer, Item> wishlist = new LinkedHashMap<>();
+    public static LinkedHashMap<Integer, VNlistItem> vnlist = new LinkedHashMap<>();
+    public static LinkedHashMap<Integer, VotelistItem> votelist = new LinkedHashMap<>();
+    public static LinkedHashMap<Integer, WishlistItem> wishlist = new LinkedHashMap<>();
+    public static LinkedHashMap<Integer, Item> vns = new LinkedHashMap<>();
     public static LinkedHashMap<Integer, List<Item>> characters = new LinkedHashMap<>();
     public static LinkedHashMap<Integer, List<Item>> releases = new LinkedHashMap<>();
 
@@ -40,9 +47,10 @@ public class Cache {
     public final static String CHARACTER_FLAGS = "basic,details,meas,traits,vns";
     public final static String RELEASE_FLAGS = "basic,details,producers";
 
-    public final static String VNLIST_CACHE = "vnlist.data";
-    public final static String VOTELIST_CACHE = "votelist.data";
-    public final static String WISHLIST_CACHE = "wishlist.data";
+    public final static String VNLIST_CACHE = "vnlist.2.data";
+    public final static String VOTELIST_CACHE = "votelist.2.data";
+    public final static String WISHLIST_CACHE = "wishlist.2.data";
+    public final static String VN_CACHE = "vn.data";
     public final static String CHARACTERS_CACHE = "characters.data";
     public final static String RELEASES_CACHE = "releases.data";
     public final static String DBSTATS_CACHE = "dbstats.data";
@@ -141,24 +149,36 @@ public class Cache {
                             Item wishlistItem = wishlistIds.get(vn.getId());
 
                             if (vnlistItem != null) {
-                                vn.setStatus(vnlistItem.getStatus());
-                                vn.setNotes(vnlistItem.getNotes());
-                                Cache.vnlist.put(vn.getId(), vn);
+                                VNlistItem item = new VNlistItem();
+                                item.setVn(vn.getId());
+                                item.setStatus(vnlistItem.getStatus());
+                                item.setNotes(vnlistItem.getNotes());
+                                item.setAdded(vnlistItem.getAdded());
+                                Cache.vnlist.put(vn.getId(), item);
                             }
                             if (votelistItem != null) {
-                                vn.setVote(votelistItem.getVote());
-                                Cache.votelist.put(vn.getId(), vn);
+                                VotelistItem item = new VotelistItem();
+                                item.setVn(vn.getId());
+                                item.setVote(votelistItem.getVote());
+                                item.setAdded(votelistItem.getAdded());
+                                Cache.votelist.put(vn.getId(), item);
                             }
                             if (wishlistItem != null) {
-                                vn.setPriority(wishlistItem.getPriority());
-                                Cache.wishlist.put(vn.getId(), vn);
+                                WishlistItem item = new WishlistItem();
+                                item.setVn(vn.getId());
+                                item.setPriority(wishlistItem.getPriority());
+                                item.setAdded(wishlistItem.getAdded());
+                                Cache.wishlist.put(vn.getId(), item);
                             }
+
+                            Cache.vns.put(vn.getId(), vn);
                         }
 
                         sortAll(context);
                         saveToCache(context, VNLIST_CACHE, vnlist);
                         saveToCache(context, VOTELIST_CACHE, votelist);
                         saveToCache(context, WISHLIST_CACHE, wishlist);
+                        saveToCache(context, VN_CACHE, vns);
                         shouldRefreshView = true;
                         successCallback.call();
                     }
@@ -253,6 +273,7 @@ public class Cache {
         File vnlistFile = new File(context.getFilesDir(), VNLIST_CACHE);
         File votelistFile = new File(context.getFilesDir(), VOTELIST_CACHE);
         File wishlistFile = new File(context.getFilesDir(), WISHLIST_CACHE);
+        File vnFile = new File(context.getFilesDir(), VN_CACHE);
         File charactersFile = new File(context.getFilesDir(), CHARACTERS_CACHE);
         File releasesFile = new File(context.getFilesDir(), RELEASES_CACHE);
 
@@ -260,25 +281,41 @@ public class Cache {
             return false;
 
         try {
-            vnlist = JSON.mapper.readValue(vnlistFile, new TypeReference<LinkedHashMap<Integer, Item>>() {
+            long start = new Date().getTime();
+            vnlist = JSON.mapper.readValue(vnlistFile, new TypeReference<LinkedHashMap<Integer, VNlistItem>>() {
             });
-            votelist = JSON.mapper.readValue(votelistFile, new TypeReference<LinkedHashMap<Integer, Item>>() {
+            Log.d("D", "1 : " + (new Date().getTime() - start) + " ms");
+            start = new Date().getTime();
+            votelist = JSON.mapper.readValue(votelistFile, new TypeReference<LinkedHashMap<Integer, VotelistItem>>() {
             });
-            wishlist = JSON.mapper.readValue(wishlistFile, new TypeReference<LinkedHashMap<Integer, Item>>() {
+            Log.d("D", "2 : " + (new Date().getTime() - start) + " ms");
+            start = new Date().getTime();
+            wishlist = JSON.mapper.readValue(wishlistFile, new TypeReference<LinkedHashMap<Integer, WishlistItem>>() {
             });
+            Log.d("D", "3 : " + (new Date().getTime() - start) + " ms");
+            start = new Date().getTime();
+            vns = JSON.mapper.readValue(vnFile, new TypeReference<LinkedHashMap<Integer, Item>>() {
+            });
+            Log.d("D", "4 : " + (new Date().getTime() - start) + " ms");
+            start = new Date().getTime();
             if (charactersFile.exists()) {
                 characters = JSON.mapper.readValue(charactersFile, new TypeReference<LinkedHashMap<Integer, List<Item>>>() {
                 });
             }
+            Log.d("D", "5 : " + (new Date().getTime() - start) + " ms");
+            start = new Date().getTime();
             if (releasesFile.exists()) {
                 releases = JSON.mapper.readValue(releasesFile, new TypeReference<LinkedHashMap<Integer, List<Item>>>() {
                 });
             }
+            Log.d("D", "6 : " + (new Date().getTime() - start) + " ms");
+            start = new Date().getTime();
         } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
 
+        VNDBServer.log(vnlist.get(11).toString());
         sortAll(context);
         loadedFromCache = true;
         return true;
@@ -299,18 +336,21 @@ public class Cache {
         File vnlistFile = new File(context.getFilesDir(), VNLIST_CACHE);
         File votelistFile = new File(context.getFilesDir(), VOTELIST_CACHE);
         File wishlistFile = new File(context.getFilesDir(), WISHLIST_CACHE);
+        File vnFile = new File(context.getFilesDir(), VN_CACHE);
         File charactersFile = new File(context.getFilesDir(), CHARACTERS_CACHE);
         File releasesFile = new File(context.getFilesDir(), RELEASES_CACHE);
 
         if (vnlistFile.exists()) vnlistFile.delete();
         if (votelistFile.exists()) votelistFile.delete();
         if (wishlistFile.exists()) wishlistFile.delete();
+        if (vnFile.exists()) vnFile.delete();
         if (charactersFile.exists()) charactersFile.delete();
         if (releasesFile.exists()) releasesFile.delete();
 
         vnlist = new LinkedHashMap<>();
         votelist = new LinkedHashMap<>();
         wishlist = new LinkedHashMap<>();
+        vns = new LinkedHashMap<>();
         loadedFromCache = false;
     }
 
@@ -336,86 +376,98 @@ public class Cache {
         sort(context, wishlist);
     }
 
-    public static void sort(final Context context, LinkedHashMap<Integer, Item> list) {
-        List<Map.Entry<Integer, Item>> entries = new ArrayList<>(list.entrySet());
-        Collections.sort(entries, new Comparator<Map.Entry<Integer, Item>>() {
-            public int compare(Map.Entry<Integer, Item> a, Map.Entry<Integer, Item> b) {
-                Map.Entry<Integer, Item> first = a, second = b;
+    public static <V extends CacheItem> void sort(final Context context, LinkedHashMap<Integer, V> list) {
+        List<Map.Entry<Integer, V>> entries = new ArrayList<>(list.entrySet());
+        Collections.sort(entries, new Comparator<Map.Entry<Integer, V>>() {
+            public int compare(Map.Entry<Integer, V> a, Map.Entry<Integer, V> b) {
+                Map.Entry<Integer, V> first = a, second = b;
                 if (SettingsManager.getReverseSort(context)) {
                     // Reverse sort : swapping a and b
                     first = b;
                     second = a;
                 }
+                Item firstValue;
+                Item secondValue;
 
                 switch (SettingsManager.getSort(context)) {
                     case 1:
-                        return first.getValue().getTitle().compareTo(second.getValue().getTitle());
+                        firstValue = vns.get(a.getKey());
+                        secondValue = vns.get(b.getKey());
+                        return firstValue.getTitle().compareTo(secondValue.getTitle());
                     case 2:
-                        String releasedA = first.getValue().getReleased();
-                        String releasedB = second.getValue().getReleased();
+                        firstValue = vns.get(a.getKey());
+                        secondValue = vns.get(b.getKey());
+                        String releasedA = firstValue.getReleased();
+                        String releasedB = secondValue.getReleased();
                         if (releasedA == null) return -1;
                         if (releasedB == null) return 1;
                         return releasedA.compareTo(releasedB);
                     case 3:
-                        return Integer.valueOf(first.getValue().getLength()).compareTo(second.getValue().getLength());
+                        firstValue = vns.get(a.getKey());
+                        secondValue = vns.get(b.getKey());
+                        return Integer.valueOf(firstValue.getLength()).compareTo(secondValue.getLength());
                     case 4:
-                        return Double.valueOf(first.getValue().getPopularity()).compareTo(second.getValue().getPopularity());
+                        firstValue = vns.get(a.getKey());
+                        secondValue = vns.get(b.getKey());
+                        return Double.valueOf(firstValue.getPopularity()).compareTo(secondValue.getPopularity());
                     case 5:
-                        return Double.valueOf(first.getValue().getRating()).compareTo(second.getValue().getRating());
+                        firstValue = vns.get(a.getKey());
+                        secondValue = vns.get(b.getKey());
+                        return Double.valueOf(firstValue.getRating()).compareTo(secondValue.getRating());
                     case 6:
-                        Item vnlistA = Cache.vnlist.get(first.getKey());
-                        Item vnlistB = Cache.vnlist.get(second.getKey());
+                        VNlistItem vnlistA = Cache.vnlist.get(first.getKey());
+                        VNlistItem vnlistB = Cache.vnlist.get(second.getKey());
                         if (vnlistA == null && vnlistB == null) return 0;
                         if (vnlistA == null) return -1;
                         if (vnlistB == null) return 1;
                         return Integer.valueOf(vnlistA.getStatus()).compareTo(vnlistB.getStatus());
                     case 7:
-                        Item votelistA = Cache.votelist.get(first.getKey());
-                        Item votelistB = Cache.votelist.get(second.getKey());
+                        VotelistItem votelistA = Cache.votelist.get(first.getKey());
+                        VotelistItem votelistB = Cache.votelist.get(second.getKey());
                         if (votelistA == null && votelistB == null) return 0;
                         if (votelistA == null) return -1;
                         if (votelistB == null) return 1;
                         return Integer.valueOf(votelistA.getVote()).compareTo(votelistB.getVote());
                     case 8:
-                        Item wishlistA = Cache.wishlist.get(first.getKey());
-                        Item wishlistB = Cache.wishlist.get(second.getKey());
+                        WishlistItem wishlistA = Cache.wishlist.get(first.getKey());
+                        WishlistItem wishlistB = Cache.wishlist.get(second.getKey());
                         if (wishlistA == null && wishlistB == null) return 0;
                         if (wishlistA == null) return -1;
                         if (wishlistB == null) return 1;
                         return Integer.valueOf(wishlistA.getPriority()).compareTo(wishlistB.getPriority());
                     default:
-                        return Integer.valueOf(first.getValue().getId()).compareTo(second.getValue().getId());
+                        return first.getKey().compareTo(second.getKey());
                 }
             }
         });
         list.clear();
-        for (Map.Entry<Integer, Item> entry : entries) {
+        for (Map.Entry<Integer, V> entry : entries) {
             list.put(entry.getKey(), entry.getValue());
         }
     }
 
     public static int getStatusNumber(final int status) {
-        return Predicate.filter(vnlist.values(), new IPredicate<Item>() {
+        return Predicate.filter(vnlist.values(), new IPredicate<VNlistItem>() {
             @Override
-            public boolean apply(Item element) {
+            public boolean apply(VNlistItem element) {
                 return element.getStatus() == status;
             }
         }).size();
     }
 
     public static int getWishNumber(final int priority) {
-        return Predicate.filter(wishlist.values(), new IPredicate<Item>() {
+        return Predicate.filter(wishlist.values(), new IPredicate<WishlistItem>() {
             @Override
-            public boolean apply(Item element) {
+            public boolean apply(WishlistItem element) {
                 return element.getPriority() == priority;
             }
         }).size();
     }
 
     public static int getVoteNumber(final int vote) {
-        return Predicate.filter(votelist.values(), new IPredicate<Item>() {
+        return Predicate.filter(votelist.values(), new IPredicate<VotelistItem>() {
             @Override
-            public boolean apply(Item element) {
+            public boolean apply(VotelistItem element) {
                 return element.getVote() / 10 == vote || element.getVote() / 10 == vote - 1;
             }
         }).size();

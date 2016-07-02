@@ -10,7 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
-import com.booboot.vndbandroid.api.bean.Tag;
+import com.booboot.vndbandroid.bean.Tag;
 import com.tokenautocomplete.TokenCompleteTextView;
 
 /**

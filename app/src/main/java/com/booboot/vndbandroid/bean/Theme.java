@@ -1,4 +1,4 @@
-package com.booboot.vndbandroid.api.bean;
+package com.booboot.vndbandroid.bean;
 
 /**
  * Created by od on 16/04/2016.

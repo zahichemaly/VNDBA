@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.adapter.doublelist.DoubleListListener;
-import com.booboot.vndbandroid.api.bean.Tag;
+import com.booboot.vndbandroid.bean.Tag;
 import com.booboot.vndbandroid.factory.TagDataFactory;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.view.TagAutoCompleteView;

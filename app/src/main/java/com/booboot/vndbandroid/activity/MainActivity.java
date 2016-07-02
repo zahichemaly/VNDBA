@@ -40,7 +40,7 @@ import com.booboot.vndbandroid.activity.ranking.RankingPopularFragment;
 import com.booboot.vndbandroid.activity.ranking.RankingTopFragment;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.VNDBServer;
-import com.booboot.vndbandroid.api.bean.ListType;
+import com.booboot.vndbandroid.bean.ListType;
 import com.booboot.vndbandroid.factory.PlaceholderPictureFactory;
 import com.booboot.vndbandroid.util.Pixels;
 import com.booboot.vndbandroid.util.SettingsManager;
