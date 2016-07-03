@@ -123,7 +123,7 @@ public class VNDetailsActivity extends AppCompatActivity {
         wishlistButton = (Button) findViewById(R.id.wishlistButton);
         votesButton = (Button) findViewById(R.id.votesButton);
         notesTextView = (TextView) findViewById(R.id.notesTextView);
-        notesTextView.setText(vnlistVn.getNotes());
+        notesTextView.setText(vnlistVn != null ? vnlistVn.getNotes() : "");
         listener = new VNDetailsListener(this, vn, notesTextView);
 
         notesEditButton = (ImageButton) findViewById(R.id.notesEditButton);
@@ -153,6 +153,7 @@ public class VNDetailsActivity extends AppCompatActivity {
                         params.addView(input, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                         builder.setView(params);
                         listener.setNotesInput(input);
+                        listener.setPopupButton(statusButton);
                         builder.setPositiveButton("Save", listener);
                         builder.setNegativeButton("Cancel", listener);
                         builder.setNeutralButton("Clear", listener);

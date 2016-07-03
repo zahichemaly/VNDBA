@@ -98,7 +98,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
 
             case R.id.item_no_status:
                 type = "vnlist";
-                fields.setStatus(0);
+                fields = null;
                 break;
 
             case R.id.item_high:
@@ -283,6 +283,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
                     case R.id.item_no_status:
                         Cache.vnlist.remove(vn.getId());
                         popupButton.setText(Status.DEFAULT);
+                        notesTextView.setText("");
                         break;
 
                     case R.id.item_high:
@@ -423,6 +424,14 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
             @Override
             protected void config() {
                 VNlistItem vnlistItem = Cache.vnlist.get(vn.getId());
+                if (vnlistItem == null) {
+                    vnlistItem = new VNlistItem();
+                    vnlistItem.setVn(vn.getId());
+                    vnlistItem.setStatus(Status.UNKNOWN);
+                    vnlistItem.setAdded((int) new Date().getTime());
+                    if (popupButton != null)
+                        popupButton.setText(Status.toString(Status.UNKNOWN));
+                }
                 vnlistItem.setNotes(fields.getNotes());
                 notesTextView.setText(fields.getNotes());
                 Cache.vnlist.put(vn.getId(), vnlistItem);
@@ -440,7 +449,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
         switch (which) {
             case DialogInterface.BUTTON_POSITIVE:
                 vnlistItem = Cache.vnlist.get(vn.getId());
-                fields.setStatus(vnlistItem == null ? 0 : vnlistItem.getStatus());
+                fields.setStatus(vnlistItem == null ? Status.UNKNOWN : vnlistItem.getStatus());
                 fields.setNotes(notesInput.getText().toString());
                 sendNotesRequest("vnlist", fields);
                 break;
@@ -452,7 +461,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
             case DialogInterface.BUTTON_NEUTRAL:
                 dialog.cancel();
                 vnlistItem = Cache.vnlist.get(vn.getId());
-                fields.setStatus(vnlistItem == null ? 0 : vnlistItem.getStatus());
+                fields.setStatus(vnlistItem == null ? Status.UNKNOWN : vnlistItem.getStatus());
                 fields.setNotes("");
                 sendNotesRequest("vnlist", fields);
                 break;
