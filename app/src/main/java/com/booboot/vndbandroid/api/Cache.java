@@ -271,7 +271,7 @@ public class Cache {
                         castObject.remove(vnId);
                 }
                 JSON.mapper.writeValue(file, castObject);
-            } else if (filename.equals(RELEASES_CACHE²  )) {
+            } else if (filename.equals(RELEASES_CACHE)) {
                 /* Optimization : saving to cache releases that only are in the lists (to save space) */
                 @SuppressWarnings("unchecked")
                 LinkedHashMap<Integer, List<Item>> castObject = new LinkedHashMap<>(releases);
