@@ -24,6 +24,8 @@ import com.booboot.vndbandroid.util.Utils;
 import com.dexafree.materialList.card.Card;
 import com.dexafree.materialList.listeners.RecyclerItemClickListener;
 
+import java.util.ArrayList;
+
 /**
  * Created by od on 09/03/2016.
  */
@@ -49,23 +51,26 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
         switch (type) {
             case ListType.VNLIST:
-                for (final VNlistItem vn : Cache.vnlist.values()) {
-                    if (vn.getStatus() != tabValue) continue;
+                for (final VNlistItem vn : new ArrayList<>(Cache.vnlist.values())) {
+                    if (Cache.vns.get(vn.getVn()) == null) Cache.vnlist.remove(vn.getVn());
+                    if (vn.getStatus() != tabValue || Cache.vns.get(vn.getVn()) == null) continue;
                     VNCardFactory.buildCard(getActivity(), Cache.vns.get(vn.getVn()), materialListView, false, false, false, false, false);
                 }
                 break;
 
             case ListType.VOTELIST:
-                for (final VotelistItem vn : Cache.votelist.values()) {
-                    if (type == ListType.VOTELIST && vn.getVote() / 10 != tabValue && vn.getVote() / 10 != tabValue - 1)
+                for (final VotelistItem vn : new ArrayList<>(Cache.votelist.values())) {
+                    if (Cache.vns.get(vn.getVn()) == null) Cache.votelist.remove(vn.getVn());
+                    if (type == ListType.VOTELIST && vn.getVote() / 10 != tabValue && vn.getVote() / 10 != tabValue - 1 || Cache.vns.get(vn.getVn()) == null)
                         continue;
                     VNCardFactory.buildCard(getActivity(), Cache.vns.get(vn.getVn()), materialListView, false, false, false, false, false);
                 }
                 break;
 
             case ListType.WISHLIST:
-                for (final WishlistItem vn : Cache.wishlist.values()) {
-                    if (type == ListType.WISHLIST && vn.getPriority() != tabValue) continue;
+                for (final WishlistItem vn : new ArrayList<>(Cache.wishlist.values())) {
+                    if (Cache.vns.get(vn.getVn()) == null) Cache.wishlist.remove(vn.getVn());
+                    if (type == ListType.WISHLIST && vn.getPriority() != tabValue || Cache.vns.get(vn.getVn()) == null) continue;
                     VNCardFactory.buildCard(getActivity(), Cache.vns.get(vn.getVn()), materialListView, false, false, false, false, false);
                 }
                 break;

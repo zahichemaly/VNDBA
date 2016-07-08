@@ -419,6 +419,7 @@ public class VNDetailsActivity extends AppCompatActivity {
         Cache.saveToCache(this, Cache.VNLIST_CACHE, Cache.vnlist);
         Cache.saveToCache(this, Cache.VOTELIST_CACHE, Cache.votelist);
         Cache.saveToCache(this, Cache.WISHLIST_CACHE, Cache.wishlist);
+        Cache.saveToCache(this, Cache.VN_CACHE, Cache.vns);
         super.onDestroy();
     }
 

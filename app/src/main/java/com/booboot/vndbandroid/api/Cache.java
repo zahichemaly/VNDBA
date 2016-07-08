@@ -262,7 +262,27 @@ public class Cache {
     public static void saveToCache(Context context, String filename, Object object) {
         File file = new File(context.getFilesDir(), filename);
         try {
-            JSON.mapper.writeValue(file, object);
+            if (filename.equals(CHARACTERS_CACHE)) {
+                /* Optimization : saving to cache characters that only are in the lists (to save space) */
+                @SuppressWarnings("unchecked")
+                LinkedHashMap<Integer, List<Item>> castObject = new LinkedHashMap<>(characters);
+                for (int vnId : new ArrayList<>(castObject.keySet())) {
+                    if (vnlist.get(vnId) == null && votelist.get(vnId) == null && wishlist.get(vnId) == null)
+                        castObject.remove(vnId);
+                }
+                JSON.mapper.writeValue(file, castObject);
+            } else if (filename.equals(RELEASES_CACHE²  )) {
+                /* Optimization : saving to cache releases that only are in the lists (to save space) */
+                @SuppressWarnings("unchecked")
+                LinkedHashMap<Integer, List<Item>> castObject = new LinkedHashMap<>(releases);
+                for (int vnId : new ArrayList<>(castObject.keySet())) {
+                    if (vnlist.get(vnId) == null && votelist.get(vnId) == null && wishlist.get(vnId) == null)
+                        castObject.remove(vnId);
+                }
+                JSON.mapper.writeValue(file, castObject);
+            } else {
+                JSON.mapper.writeValue(file, object);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -459,5 +479,9 @@ public class Cache {
                 return element.getVote() / 10 == vote || element.getVote() / 10 == vote - 1;
             }
         }).size();
+    }
+
+    public static void removeFromVns(int id) {
+        if (vnlist.get(id) == null && votelist.get(id) == null && wishlist.get(id) == null && vns.get(id) != null) vns.remove(id);
     }
 }

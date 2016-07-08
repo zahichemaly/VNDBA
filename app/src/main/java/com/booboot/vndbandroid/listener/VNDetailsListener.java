@@ -234,6 +234,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
                         }
                         vnlistItem.setStatus(Status.PLAYING);
                         Cache.vnlist.put(vn.getId(), vnlistItem);
+                        if (Cache.vns.get(vn.getId()) == null) Cache.vns.put(vn.getId(), vn);
                         break;
 
                     case R.id.item_finished:
@@ -245,6 +246,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
                         }
                         vnlistItem.setStatus(Status.FINISHED);
                         Cache.vnlist.put(vn.getId(), vnlistItem);
+                        if (Cache.vns.get(vn.getId()) == null) Cache.vns.put(vn.getId(), vn);
                         break;
 
                     case R.id.item_stalled:
@@ -256,8 +258,9 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
                         }
                         vnlistItem.setStatus(Status.STALLED);
                         Cache.vnlist.put(vn.getId(), vnlistItem);
-
+                        if (Cache.vns.get(vn.getId()) == null) Cache.vns.put(vn.getId(), vn);
                         break;
+
                     case R.id.item_dropped:
                         vnlistItem = Cache.vnlist.get(vn.getId());
                         if (vnlistItem == null) {
@@ -267,6 +270,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
                         }
                         vnlistItem.setStatus(Status.DROPPED);
                         Cache.vnlist.put(vn.getId(), vnlistItem);
+                        if (Cache.vns.get(vn.getId()) == null) Cache.vns.put(vn.getId(), vn);
                         break;
 
                     case R.id.item_unknown:
@@ -278,10 +282,12 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
                         }
                         vnlistItem.setStatus(Status.UNKNOWN);
                         Cache.vnlist.put(vn.getId(), vnlistItem);
+                        if (Cache.vns.get(vn.getId()) == null) Cache.vns.put(vn.getId(), vn);
                         break;
 
                     case R.id.item_no_status:
                         Cache.vnlist.remove(vn.getId());
+                        Cache.removeFromVns(vn.getId());
                         popupButton.setText(Status.DEFAULT);
                         notesTextView.setText("");
                         break;
@@ -295,6 +301,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
                         }
                         wishlistItem.setPriority(Priority.HIGH);
                         Cache.wishlist.put(vn.getId(), wishlistItem);
+                        if (Cache.vns.get(vn.getId()) == null) Cache.vns.put(vn.getId(), vn);
                         break;
 
                     case R.id.item_medium:
@@ -306,6 +313,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
                         }
                         wishlistItem.setPriority(Priority.MEDIUM);
                         Cache.wishlist.put(vn.getId(), wishlistItem);
+                        if (Cache.vns.get(vn.getId()) == null) Cache.vns.put(vn.getId(), vn);
                         break;
 
                     case R.id.item_low:
@@ -317,6 +325,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
                         }
                         wishlistItem.setPriority(Priority.LOW);
                         Cache.wishlist.put(vn.getId(), wishlistItem);
+                        if (Cache.vns.get(vn.getId()) == null) Cache.vns.put(vn.getId(), vn);
                         break;
 
                     case R.id.item_blacklist:
@@ -328,10 +337,12 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
                         }
                         wishlistItem.setPriority(Priority.BLACKLIST);
                         Cache.wishlist.put(vn.getId(), wishlistItem);
+                        if (Cache.vns.get(vn.getId()) == null) Cache.vns.put(vn.getId(), vn);
                         break;
 
                     case R.id.item_no_wishlist:
                         Cache.wishlist.remove(vn.getId());
+                        Cache.removeFromVns(vn.getId());
                         popupButton.setText(Priority.DEFAULT);
                         break;
 
@@ -354,11 +365,13 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
                         }
                         votelistItem.setVote(fields.getVote());
                         Cache.votelist.put(vn.getId(), votelistItem);
+                        if (Cache.vns.get(vn.getId()) == null) Cache.vns.put(vn.getId(), vn);
                         popupButton.setText(Vote.toString(fields.getVote()));
                         break;
 
                     case R.id.item_no_vote:
                         Cache.votelist.remove(vn.getId());
+                        Cache.removeFromVns(vn.getId());
                         popupButton.setText(Vote.DEFAULT);
                         break;
 
