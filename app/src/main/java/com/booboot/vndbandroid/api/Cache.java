@@ -194,22 +194,43 @@ public class Cache {
         /* 1 - Checking for VNs that have been removed overtime */
         boolean vnlistHasChanged = false;
         for (int id : new HashSet<>(vnlist.keySet())) {
-            if (vnlistIds.get(id) == null) {
+            Item vnlistItem = vnlistIds.get(id);
+            if (vnlistItem == null) {
                 vnlist.remove(id);
                 vnlistHasChanged = true;
+            } else if (vnlist.get(id) != null) {
+                String cachedNotes = vnlistItem.getNotes();
+                String onlineNotes = vnlist.get(id).getNotes();
+                boolean itemHasChanged = vnlistItem.getStatus() != vnlist.get(id).getStatus();
+                itemHasChanged = itemHasChanged || cachedNotes == null && onlineNotes != null;
+                itemHasChanged = itemHasChanged || cachedNotes != null && onlineNotes == null;
+                itemHasChanged = itemHasChanged || cachedNotes != null && !cachedNotes.equals(onlineNotes);
+                if (itemHasChanged) {
+                    vnlist.get(id).setStatus(vnlistItem.getStatus());
+                    vnlist.get(id).setNotes(vnlistItem.getNotes());
+                    vnlistHasChanged = true;
+                }
             }
         }
         boolean votelistHasChanged = false;
         for (int id : new HashSet<>(votelist.keySet())) {
-            if (votelistIds.get(id) == null) {
+            Item votelistItem = votelistIds.get(id);
+            if (votelistItem == null) {
                 votelist.remove(id);
+                votelistHasChanged = true;
+            } else if (votelist.get(id) != null && votelistItem.getVote() != votelist.get(id).getVote()) {
+                votelist.get(id).setVote(votelistItem.getVote());
                 votelistHasChanged = true;
             }
         }
         boolean wishlistHasChanged = false;
         for (int id : new HashSet<>(wishlist.keySet())) {
-            if (wishlistIds.get(id) == null) {
+            Item wishlistItem = wishlistIds.get(id);
+            if (wishlistItem == null) {
                 wishlist.remove(id);
+                wishlistHasChanged = true;
+            } else if (wishlist.get(id) != null && wishlistItem.getPriority() != wishlist.get(id).getPriority()) {
+                wishlist.get(id).setPriority(wishlistItem.getPriority());
                 wishlistHasChanged = true;
             }
         }
@@ -221,25 +242,14 @@ public class Cache {
             Item wishlistItem = wishlistIds.get(id);
 
             /* 2 - Checking for VNs that have been added or modified overtime */
-            if (vnlistItem != null) {
-                if (vnlist.get(id) == null || vnlistItem.getStatus() != vnlist.get(id).getStatus())
-                    filteredMergedIds.add(id);
-                else {
-                    String cachedNotes = vnlistItem.getNotes();
-                    String onlineNotes = vnlist.get(id).getNotes();
-                    boolean notesHaveChanged = cachedNotes == null && onlineNotes != null ||
-                            cachedNotes != null && onlineNotes == null ||
-                            cachedNotes != null && onlineNotes != null && !cachedNotes.equals(onlineNotes);
-                    if (notesHaveChanged) filteredMergedIds.add(id);
-                }
+            if (vnlistItem != null && vnlist.get(id) == null) {
+                filteredMergedIds.add(id);
             }
-            if (votelistItem != null) {
-                if (votelist.get(id) == null || votelistItem.getVote() != votelist.get(id).getVote())
-                    filteredMergedIds.add(id);
+            if (votelistItem != null && votelist.get(id) == null) {
+                filteredMergedIds.add(id);
             }
-            if (wishlistItem != null) {
-                if (wishlist.get(id) == null || wishlistItem.getPriority() != wishlist.get(id).getPriority())
-                    filteredMergedIds.add(id);
+            if (wishlistItem != null && wishlist.get(id) == null) {
+                filteredMergedIds.add(id);
             }
         }
 
