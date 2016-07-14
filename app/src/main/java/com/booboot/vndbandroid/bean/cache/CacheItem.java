@@ -10,6 +10,14 @@ public abstract class CacheItem {
     protected int vn;
     protected int added;
 
+    public CacheItem() {
+    }
+
+    public CacheItem(int vn, int added) {
+        this.vn = vn;
+        this.added = added;
+    }
+
     public int getVn() {
         return vn;
     }

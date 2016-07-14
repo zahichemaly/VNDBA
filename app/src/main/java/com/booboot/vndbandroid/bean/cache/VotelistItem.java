@@ -9,6 +9,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class VotelistItem extends CacheItem {
     protected int vote;
 
+    public VotelistItem() {
+    }
+
+    public VotelistItem(int vn, int added, int vote) {
+        super(vn, added);
+        this.vote = vote;
+    }
+
     public int getVote() {
         return vote;
     }

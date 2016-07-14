@@ -14,8 +14,7 @@ public class VNlistItem extends CacheItem {
     }
 
     public VNlistItem(int vn, int added, int status, String notes) {
-        this.vn = vn;
-        this.added = added;
+        super(vn, added);
         this.status = status;
         this.notes = notes;
     }

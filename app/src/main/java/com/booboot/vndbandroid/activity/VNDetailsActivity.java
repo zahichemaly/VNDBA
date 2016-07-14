@@ -31,6 +31,7 @@ import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.adapter.vndetails.VNDetailsElement;
 import com.booboot.vndbandroid.adapter.vndetails.VNExpandableListAdapter;
 import com.booboot.vndbandroid.api.Cache;
+import com.booboot.vndbandroid.api.DB;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.bean.Item;
 import com.booboot.vndbandroid.bean.Links;
@@ -420,6 +421,10 @@ public class VNDetailsActivity extends AppCompatActivity {
         Cache.saveToCache(this, Cache.VOTELIST_CACHE, Cache.votelist);
         Cache.saveToCache(this, Cache.WISHLIST_CACHE, Cache.wishlist);
         Cache.saveToCache(this, Cache.VN_CACHE, Cache.vns);
+
+        DB.saveVnlist(this);
+        DB.saveVotelist(this);
+        DB.saveWishlist(this);
         super.onDestroy();
     }
 

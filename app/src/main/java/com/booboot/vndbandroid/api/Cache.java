@@ -179,6 +179,11 @@ public class Cache {
                         saveToCache(context, VOTELIST_CACHE, votelist);
                         saveToCache(context, WISHLIST_CACHE, wishlist);
                         saveToCache(context, VN_CACHE, vns);
+
+                        DB.saveVnlist(context);
+                        DB.saveVotelist(context);
+                        DB.saveWishlist(context);
+
                         shouldRefreshView = true;
                         successCallback.call();
                     }
@@ -254,9 +259,18 @@ public class Cache {
             return true;
         } else {
             /* Updating persistent cache if VNs have been removed */
-            if (vnlistHasChanged) saveToCache(context, VNLIST_CACHE, vnlist);
-            if (votelistHasChanged) saveToCache(context, VOTELIST_CACHE, votelist);
-            if (wishlistHasChanged) saveToCache(context, WISHLIST_CACHE, wishlist);
+            if (vnlistHasChanged) {
+                saveToCache(context, VNLIST_CACHE, vnlist);
+                DB.saveVnlist(context);
+            }
+            if (votelistHasChanged) {
+                saveToCache(context, VOTELIST_CACHE, votelist);
+                DB.saveVotelist(context);
+            }
+            if (wishlistHasChanged) {
+                saveToCache(context, WISHLIST_CACHE, wishlist);
+                DB.saveWishlist(context);
+            }
             if (vnlistHasChanged || votelistHasChanged || wishlistHasChanged) shouldRefreshView = true;
         }
 
@@ -278,7 +292,6 @@ public class Cache {
             if (filename.equals(CHARACTERS_CACHE)) {
                 /* Optimization : saving to cache characters that only are in the lists (to save space) */
                 @SuppressWarnings("unchecked")
-
                 LinkedHashMap<Integer, List<Item>> castObject = new LinkedHashMap<>(characters);
                 for (int vnId : new ArrayList<>(castObject.keySet())) {
                     if (vnlist.get(vnId) == null && votelist.get(vnId) == null && wishlist.get(vnId) == null)
@@ -288,7 +301,6 @@ public class Cache {
             } else if (filename.equals(RELEASES_CACHE)) {
                 /* Optimization : saving to cache releases that only are in the lists (to save space) */
                 @SuppressWarnings("unchecked")
-
                 LinkedHashMap<Integer, List<Item>> castObject = new LinkedHashMap<>(releases);
                 for (int vnId : new ArrayList<>(castObject.keySet())) {
                     if (vnlist.get(vnId) == null && votelist.get(vnId) == null && wishlist.get(vnId) == null)
@@ -303,7 +315,6 @@ public class Cache {
         }
 
         /* TODO : everything above kept just to make everything work. Remove when everything below is okay */
-        DB.saveToCache(context, filename, object);
     }
 
     public static boolean loadFromCache(Context context) {

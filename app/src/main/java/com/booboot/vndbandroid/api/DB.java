@@ -5,13 +5,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.booboot.vndbandroid.bean.cache.VNlistItem;
+import com.booboot.vndbandroid.bean.cache.VotelistItem;
+import com.booboot.vndbandroid.bean.cache.WishlistItem;
 
-import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -227,57 +226,140 @@ public class DB extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public static void saveToCache(Context context, String filename, Object object) {
+    public static void saveVnlist(Context context) {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
         // db.execSQL("DELETE FROM " + TABLE_VNLIST);
 
         StringBuilder query = new StringBuilder();
 
-        switch (filename) {
-            case Cache.VNLIST_CACHE:
-                LinkedHashMap<Integer, VNlistItem> params = (LinkedHashMap<Integer, VNlistItem>) object;
+        /* Retrieving all items to check if we have TO INSERT or UPDATE */
+        Cursor cursor = db.rawQuery("select * from " + TABLE_VNLIST, new String[]{});
+        Map<Integer, VNlistItem> alreadyInsertedItems = new HashMap<>();
+        while (cursor.moveToNext()) {
+            alreadyInsertedItems.put(cursor.getInt(0), new VNlistItem(cursor.getInt(0), cursor.getInt(1), cursor.getInt(2), cursor.getString(3)));
+        }
+        cursor.close();
 
-                /* Retrieving all items to check if we have TO INSERT or UPDATE */
-                Cursor cursor = db.rawQuery("select * from " + TABLE_VNLIST, new String[]{});
-                Map<Integer, VNlistItem> alreadyInsertedItems = new HashMap<>();
-                while (cursor.moveToNext()) {
-                    alreadyInsertedItems.put(cursor.getInt(0), new VNlistItem(cursor.getInt(0), cursor.getInt(1), cursor.getInt(2), cursor.getString(3)));
+        boolean somethingToInsert = false;
+        query.append("INSERT INTO ").append(TABLE_VNLIST).append(" VALUES ");
+        for (int vn : Cache.vnlist.keySet()) {
+            VNlistItem item = Cache.vnlist.get(vn);
+
+            if (alreadyInsertedItems.get(vn) != null) {
+                VNlistItem existingItem = alreadyInsertedItems.get(vn);
+
+                if (Cache.vnlistItemHasChanged(existingItem, item.getStatus(), item.getNotes())) {
+                    ContentValues values = new ContentValues();
+                    values.put("status", item.getStatus());
+                    values.put("notes", item.getNotes());
+                    db.update(TABLE_VNLIST, values, "vn=?", new String[]{item.getVn() + ""});
                 }
-                cursor.close();
+                continue;
+            }
 
-                boolean somethingToInsert = false;
-                query.append("INSERT INTO ").append(TABLE_VNLIST).append(" VALUES ");
-                for (int vn : params.keySet()) {
-                    VNlistItem item = params.get(vn);
+            query.append("(")
+                    .append(item.getVn()).append(",")
+                    .append(item.getAdded()).append(",")
+                    .append(item.getStatus()).append(",")
+                    .append(formatString(item.getNotes()))
+                    .append("),");
+            somethingToInsert = true;
+        }
 
-                    if (alreadyInsertedItems.get(vn) != null) {
-                        VNlistItem existingItem = alreadyInsertedItems.get(vn);
+        if (somethingToInsert) {
+            query.setLength(query.length() - 1);
+            db.execSQL(query.toString());
+        }
+    }
 
-                        if (Cache.vnlistItemHasChanged(existingItem, item.getStatus(), item.getNotes())) {
-                            ContentValues values = new ContentValues();
-                            values.put("status", item.getStatus());
-                            values.put("notes", item.getNotes());
-                            db.update(TABLE_VNLIST, values, "vn=?", new String[]{item.getVn() + ""});
-                        }
-                        continue;
-                    }
+    public static void saveVotelist(Context context) {
+        if (instance == null) instance = new DB(context);
+        SQLiteDatabase db = instance.getWritableDatabase();
+        // db.execSQL("DELETE FROM " + TABLE_VNLIST);
 
-                    query.append("(")
-                            .append(item.getVn()).append(",")
-                            .append(item.getAdded()).append(",")
-                            .append(item.getStatus()).append(",")
-                            .append(formatString(item.getNotes()))
-                            .append("),");
-                    somethingToInsert = true;
+        StringBuilder query = new StringBuilder();
+
+        /* Retrieving all items to check if we have TO INSERT or UPDATE */
+        Cursor cursor = db.rawQuery("select * from " + TABLE_VOTELIST, new String[]{});
+        Map<Integer, VotelistItem> alreadyInsertedItems = new HashMap<>();
+        while (cursor.moveToNext()) {
+            alreadyInsertedItems.put(cursor.getInt(0), new VotelistItem(cursor.getInt(0), cursor.getInt(1), cursor.getInt(2)));
+        }
+        cursor.close();
+
+        boolean somethingToInsert = false;
+        query.append("INSERT INTO ").append(TABLE_VNLIST).append(" VALUES ");
+        for (int vn : Cache.votelist.keySet()) {
+            VotelistItem item = Cache.votelist.get(vn);
+
+            if (alreadyInsertedItems.get(vn) != null) {
+                VotelistItem existingItem = alreadyInsertedItems.get(vn);
+
+                if (existingItem.getVote() != item.getVote()) {
+                    ContentValues values = new ContentValues();
+                    values.put("vote", item.getVote());
+                    db.update(TABLE_VOTELIST, values, "vn=?", new String[]{item.getVn() + ""});
                 }
+                continue;
+            }
 
-                if (somethingToInsert) {
-                    query.setLength(query.length() - 1);
-                    db.execSQL(query.toString());
+            query.append("(")
+                    .append(item.getVn()).append(",")
+                    .append(item.getAdded()).append(",")
+                    .append(item.getVote()).append(",")
+                    .append("),");
+            somethingToInsert = true;
+        }
+
+        if (somethingToInsert) {
+            query.setLength(query.length() - 1);
+            db.execSQL(query.toString());
+        }
+    }
+
+    public static void saveWishlist(Context context) {
+        if (instance == null) instance = new DB(context);
+        SQLiteDatabase db = instance.getWritableDatabase();
+        // db.execSQL("DELETE FROM " + TABLE_VNLIST);
+
+        StringBuilder query = new StringBuilder();
+
+        /* Retrieving all items to check if we have TO INSERT or UPDATE */
+        Cursor cursor = db.rawQuery("select * from " + TABLE_WISHLIST, new String[]{});
+        Map<Integer, WishlistItem> alreadyInsertedItems = new HashMap<>();
+        while (cursor.moveToNext()) {
+            alreadyInsertedItems.put(cursor.getInt(0), new WishlistItem(cursor.getInt(0), cursor.getInt(1), cursor.getInt(2)));
+        }
+        cursor.close();
+
+        boolean somethingToInsert = false;
+        query.append("INSERT INTO ").append(TABLE_WISHLIST).append(" VALUES ");
+        for (int vn : Cache.wishlist.keySet()) {
+            WishlistItem item = Cache.wishlist.get(vn);
+
+            if (alreadyInsertedItems.get(vn) != null) {
+                WishlistItem existingItem = alreadyInsertedItems.get(vn);
+
+                if (existingItem.getPriority() != item.getPriority()) {
+                    ContentValues values = new ContentValues();
+                    values.put("priority", item.getPriority());
+                    db.update(TABLE_WISHLIST, values, "vn=?", new String[]{item.getVn() + ""});
                 }
-                break;
+                continue;
+            }
 
+            query.append("(")
+                    .append(item.getVn()).append(",")
+                    .append(item.getAdded()).append(",")
+                    .append(item.getPriority()).append(",")
+                    .append("),");
+            somethingToInsert = true;
+        }
+
+        if (somethingToInsert) {
+            query.setLength(query.length() - 1);
+            db.execSQL(query.toString());
         }
     }
 
