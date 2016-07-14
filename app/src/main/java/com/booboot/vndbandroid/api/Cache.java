@@ -199,13 +199,7 @@ public class Cache {
                 vnlist.remove(id);
                 vnlistHasChanged = true;
             } else if (vnlist.get(id) != null) {
-                String cachedNotes = vnlistItem.getNotes();
-                String onlineNotes = vnlist.get(id).getNotes();
-                boolean itemHasChanged = vnlistItem.getStatus() != vnlist.get(id).getStatus();
-                itemHasChanged = itemHasChanged || cachedNotes == null && onlineNotes != null;
-                itemHasChanged = itemHasChanged || cachedNotes != null && onlineNotes == null;
-                itemHasChanged = itemHasChanged || cachedNotes != null && !cachedNotes.equals(onlineNotes);
-                if (itemHasChanged) {
+                if (vnlistItemHasChanged(vnlist.get(id), vnlistItem.getStatus(), vnlistItem.getNotes())) {
                     vnlist.get(id).setStatus(vnlistItem.getStatus());
                     vnlist.get(id).setNotes(vnlistItem.getNotes());
                     vnlistHasChanged = true;
@@ -269,12 +263,22 @@ public class Cache {
         return false;
     }
 
+    public static boolean vnlistItemHasChanged(VNlistItem cachedItem, int newStatus, String newNotes) {
+        String cachedNotes = cachedItem.getNotes();
+        boolean itemHasChanged = newStatus != cachedItem.getStatus();
+        itemHasChanged = itemHasChanged || cachedNotes == null && newNotes != null;
+        itemHasChanged = itemHasChanged || cachedNotes != null && newNotes == null;
+        itemHasChanged = itemHasChanged || cachedNotes != null && !cachedNotes.equals(newNotes);
+        return itemHasChanged;
+    }
+
     public static void saveToCache(Context context, String filename, Object object) {
         File file = new File(context.getFilesDir(), filename);
         try {
             if (filename.equals(CHARACTERS_CACHE)) {
                 /* Optimization : saving to cache characters that only are in the lists (to save space) */
                 @SuppressWarnings("unchecked")
+
                 LinkedHashMap<Integer, List<Item>> castObject = new LinkedHashMap<>(characters);
                 for (int vnId : new ArrayList<>(castObject.keySet())) {
                     if (vnlist.get(vnId) == null && votelist.get(vnId) == null && wishlist.get(vnId) == null)
@@ -284,6 +288,7 @@ public class Cache {
             } else if (filename.equals(RELEASES_CACHE)) {
                 /* Optimization : saving to cache releases that only are in the lists (to save space) */
                 @SuppressWarnings("unchecked")
+
                 LinkedHashMap<Integer, List<Item>> castObject = new LinkedHashMap<>(releases);
                 for (int vnId : new ArrayList<>(castObject.keySet())) {
                     if (vnlist.get(vnId) == null && votelist.get(vnId) == null && wishlist.get(vnId) == null)
@@ -296,6 +301,9 @@ public class Cache {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        /* TODO : everything above kept just to make everything work. Remove when everything below is okay */
+        DB.saveToCache(context, filename, object);
     }
 
     public static boolean loadFromCache(Context context) {
@@ -320,6 +328,7 @@ public class Cache {
             });
             vns = JSON.mapper.readValue(vnFile, new TypeReference<LinkedHashMap<Integer, Item>>() {
             });
+            /*
             if (charactersFile.exists()) {
                 characters = JSON.mapper.readValue(charactersFile, new TypeReference<LinkedHashMap<Integer, List<Item>>>() {
                 });
@@ -328,6 +337,7 @@ public class Cache {
                 releases = JSON.mapper.readValue(releasesFile, new TypeReference<LinkedHashMap<Integer, List<Item>>>() {
                 });
             }
+            */
             Log.d("D", "6 : " + (new Date().getTime() - start) + " ms");
         } catch (IOException e) {
             e.printStackTrace();

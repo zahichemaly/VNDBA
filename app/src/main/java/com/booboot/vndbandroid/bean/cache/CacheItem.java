@@ -25,4 +25,17 @@ public abstract class CacheItem {
     public void setAdded(int added) {
         this.added = added;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CacheItem cacheItem = (CacheItem) o;
+        return vn == cacheItem.vn;
+    }
+
+    @Override
+    public int hashCode() {
+        return vn;
+    }
 }

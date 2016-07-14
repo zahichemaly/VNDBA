@@ -10,6 +10,16 @@ public class VNlistItem extends CacheItem {
     protected int status;
     protected String notes;
 
+    public VNlistItem() {
+    }
+
+    public VNlistItem(int vn, int added, int status, String notes) {
+        this.vn = vn;
+        this.added = added;
+        this.status = status;
+        this.notes = notes;
+    }
+
     public int getStatus() {
         return status;
     }
