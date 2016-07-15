@@ -79,6 +79,13 @@ public class Item extends VNDBCommand {
     private List<Media> media;
     private List<Producer> producers;
 
+    public Item() {
+    }
+
+    public Item(int id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }

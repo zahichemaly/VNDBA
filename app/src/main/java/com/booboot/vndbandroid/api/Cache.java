@@ -183,6 +183,7 @@ public class Cache {
                         DB.saveVnlist(context);
                         DB.saveVotelist(context);
                         DB.saveWishlist(context);
+                        DB.saveVNs(context);
 
                         shouldRefreshView = true;
                         successCallback.call();

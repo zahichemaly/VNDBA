@@ -9,7 +9,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -425,6 +424,7 @@ public class VNDetailsActivity extends AppCompatActivity {
         DB.saveVnlist(this);
         DB.saveVotelist(this);
         DB.saveWishlist(this);
+        DB.saveVNs(this);
         super.onDestroy();
     }
 

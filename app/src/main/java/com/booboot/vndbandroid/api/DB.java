@@ -6,11 +6,15 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.booboot.vndbandroid.bean.Anime;
+import com.booboot.vndbandroid.bean.Item;
+import com.booboot.vndbandroid.bean.Relation;
 import com.booboot.vndbandroid.bean.cache.VNlistItem;
 import com.booboot.vndbandroid.bean.cache.VotelistItem;
 import com.booboot.vndbandroid.bean.cache.WishlistItem;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -307,7 +311,7 @@ public class DB extends SQLiteOpenHelper {
             query.append("(")
                     .append(item.getVn()).append(",")
                     .append(item.getAdded()).append(",")
-                    .append(item.getVote()).append(",")
+                    .append(item.getVote())
                     .append("),");
             somethingToInsert = true;
         }
@@ -352,7 +356,7 @@ public class DB extends SQLiteOpenHelper {
             query.append("(")
                     .append(item.getVn()).append(",")
                     .append(item.getAdded()).append(",")
-                    .append(item.getPriority()).append(",")
+                    .append(item.getPriority())
                     .append("),");
             somethingToInsert = true;
         }
@@ -363,7 +367,128 @@ public class DB extends SQLiteOpenHelper {
         }
     }
 
+    public static void saveVNs(Context context) {
+        if (instance == null) instance = new DB(context);
+        SQLiteDatabase db = instance.getWritableDatabase();
+        // db.execSQL("DELETE FROM " + TABLE_VNLIST);
+
+        boolean somethingToInsert[] = new boolean[7];
+        StringBuilder[] queries = new StringBuilder[7];
+        queries[0] = new StringBuilder("INSERT INTO ").append(TABLE_VN).append(" VALUES ");
+        queries[1] = new StringBuilder("INSERT INTO ").append(TABLE_LANGUAGES).append(" VALUES ");
+        queries[2] = new StringBuilder("INSERT INTO ").append(TABLE_ORIG_LANG).append(" VALUES ");
+        queries[3] = new StringBuilder("INSERT INTO ").append(TABLE_PLATFORMS).append(" VALUES ");
+        queries[4] = new StringBuilder("INSERT INTO ").append(TABLE_ANIME).append(" VALUES ");
+        queries[5] = new StringBuilder("INSERT INTO ").append(TABLE_RELATION).append(" VALUES ");
+        queries[6] = new StringBuilder("INSERT INTO ").append(TABLE_TAGS).append(" VALUES ");
+
+        /* Retrieving all items to check if we have TO INSERT or UPDATE */
+        Cursor cursor = db.rawQuery("select id from " + TABLE_VN, new String[]{});
+        Map<Integer, Item> alreadyInsertedItems = new HashMap<>();
+        while (cursor.moveToNext()) {
+            alreadyInsertedItems.put(cursor.getInt(0), new Item(cursor.getInt(0)));
+        }
+        cursor.close();
+
+        for (int vn : Cache.vns.keySet()) {
+            /* Do not insert if already inserted OR not present in any of the lists (not very useful to fill the database with VNs that are not even in any list) */
+            if (alreadyInsertedItems.get(vn) != null || Cache.vnlist.get(vn) == null && Cache.votelist.get(vn) == null && Cache.wishlist.get(vn) == null) {
+                continue;
+            }
+
+            Item item = Cache.vns.get(vn);
+            queries[0].append("(")
+                    .append(item.getId()).append(",")
+                    .append(formatString(item.getTitle())).append(",")
+                    .append(formatString(item.getOriginal())).append(",")
+                    .append(formatString(item.getReleased())).append(",")
+                    .append(formatString(item.getAliases())).append(",")
+                    .append(item.getLength()).append(",")
+                    .append(formatString(item.getDescription())).append(",")
+                    .append(formatString(item.getLinks().getWikipedia())).append(",")
+                    .append(formatString(item.getLinks().getEncubed())).append(",")
+                    .append(formatString(item.getLinks().getRenai())).append(",")
+                    .append(formatString(item.getImage())).append(",")
+                    .append(formatBool(item.isImage_nsfw())).append(",")
+                    .append(item.getPopularity()).append(",")
+                    .append(item.getRating()).append(",")
+                    .append(item.getVotecount())
+                    .append("),");
+            somethingToInsert[0] = true;
+
+            for (String language : item.getLanguages()) {
+                queries[1].append("(")
+                        .append(item.getId()).append(",")
+                        .append(formatString(language))
+                        .append("),");
+                somethingToInsert[1] = true;
+            }
+
+            for (String origLang : item.getOrig_lang()) {
+                queries[2].append("(")
+                        .append(item.getId()).append(",")
+                        .append(formatString(origLang))
+                        .append("),");
+                somethingToInsert[2] = true;
+            }
+
+            for (String platform : item.getPlatforms()) {
+                queries[3].append("(")
+                        .append(item.getId()).append(",")
+                        .append(formatString(platform))
+                        .append("),");
+                somethingToInsert[3] = true;
+            }
+
+            for (Anime anime : item.getAnime()) {
+                queries[4].append("(")
+                        .append(anime.getId()).append(",")
+                        .append(item.getId()).append(",")
+                        .append(anime.getAnn_id()).append(",")
+                        .append(anime.getNfo_id()).append(",")
+                        .append(formatString(anime.getTitle_romaji())).append(",")
+                        .append(formatString(anime.getTitle_kanji())).append(",")
+                        .append(anime.getYear()).append(",")
+                        .append(formatString(anime.getType()))
+                        .append("),");
+                somethingToInsert[4] = true;
+            }
+
+            for (Relation relation : item.getRelations()) {
+                queries[5].append("(")
+                        .append(relation.getId()).append(",")
+                        .append(item.getId()).append(",")
+                        .append(formatString(relation.getRelation())).append(",")
+                        .append(formatString(relation.getTitle())).append(",")
+                        .append(formatString(relation.getOriginal()))
+                        .append("),");
+                somethingToInsert[5] = true;
+            }
+
+            for (List<Number> tagInfo : item.getTags()) {
+                queries[6].append("(")
+                        .append(tagInfo.get(0)).append(",")
+                        .append(item.getId()).append(",")
+                        .append(tagInfo.get(1)).append(",")
+                        .append(tagInfo.get(2))
+                        .append("),");
+                somethingToInsert[6] = true;
+            }
+        }
+
+        for (int i = 0; i < queries.length; i++) {
+            if (somethingToInsert[i]) {
+                queries[i].setLength(queries[i].length() - 1);
+                db.execSQL(queries[i].toString());
+            }
+        }
+    }
+
     private static String formatString(String value) {
         return value == null ? value : "'" + value + "'";
+    }
+
+    private static int formatBool(boolean value) {
+        return value ? 1 : 0;
     }
 }
