@@ -242,6 +242,7 @@ public class DB extends SQLiteOpenHelper {
         boolean somethingToInsert = false;
         /* Retrieving all items to check if we have TO INSERT or UPDATE */
         LinkedHashMap<Integer, VNlistItem> alreadyInsertedItems = loadVnlist(context);
+        db.beginTransaction();
 
         for (int vn : Cache.vnlist.keySet()) {
             VNlistItem item = Cache.vnlist.get(vn);
@@ -271,6 +272,9 @@ public class DB extends SQLiteOpenHelper {
             query.setLength(query.length() - 1);
             db.execSQL(query.toString());
         }
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
     }
 
     public static void saveVotelist(Context context) {
@@ -282,6 +286,7 @@ public class DB extends SQLiteOpenHelper {
         boolean somethingToInsert = false;
         /* Retrieving all items to check if we have TO INSERT or UPDATE */
         LinkedHashMap<Integer, VotelistItem> alreadyInsertedItems = loadVotelist(context);
+        db.beginTransaction();
 
         for (int vn : Cache.votelist.keySet()) {
             VotelistItem item = Cache.votelist.get(vn);
@@ -309,6 +314,9 @@ public class DB extends SQLiteOpenHelper {
             query.setLength(query.length() - 1);
             db.execSQL(query.toString());
         }
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
     }
 
     public static void saveWishlist(Context context) {
@@ -320,6 +328,7 @@ public class DB extends SQLiteOpenHelper {
         boolean somethingToInsert = false;
         /* Retrieving all items to check if we have TO INSERT or UPDATE */
         LinkedHashMap<Integer, WishlistItem> alreadyInsertedItems = loadWishlist(context);
+        db.beginTransaction();
 
         for (int vn : Cache.wishlist.keySet()) {
             WishlistItem item = Cache.wishlist.get(vn);
@@ -347,6 +356,9 @@ public class DB extends SQLiteOpenHelper {
             query.setLength(query.length() - 1);
             db.execSQL(query.toString());
         }
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
     }
 
     public static void saveVNs(Context context) {
@@ -364,6 +376,7 @@ public class DB extends SQLiteOpenHelper {
         queries[5] = new StringBuilder("INSERT INTO ").append(TABLE_RELATION).append(" VALUES ");
         queries[6] = new StringBuilder("INSERT INTO ").append(TABLE_TAGS).append(" VALUES ");
 
+        db.beginTransaction();
         /* Retrieving all items to check if we have TO INSERT or UPDATE */
         Cursor cursor = db.rawQuery("select id from " + TABLE_VN, new String[]{});
         Map<Integer, Item> alreadyInsertedItems = new HashMap<>();
@@ -464,6 +477,9 @@ public class DB extends SQLiteOpenHelper {
                 db.execSQL(queries[i].toString());
             }
         }
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
     }
 
     public static LinkedHashMap<Integer, VNlistItem> loadVnlist(Context context) {
@@ -616,8 +632,34 @@ public class DB extends SQLiteOpenHelper {
         return res;
     }
 
+    public static void clear(Context context) {
+        if (instance == null) instance = new DB(context);
+        SQLiteDatabase db = instance.getWritableDatabase();
+
+        db.execSQL("DELETE FROM " + TABLE_VNLIST);
+        db.execSQL("DELETE FROM " + TABLE_VOTELIST);
+        db.execSQL("DELETE FROM " + TABLE_WISHLIST);
+        db.execSQL("DELETE FROM " + TABLE_VN);
+        db.execSQL("DELETE FROM " + TABLE_LANGUAGES);
+        db.execSQL("DELETE FROM " + TABLE_ORIG_LANG);
+        db.execSQL("DELETE FROM " + TABLE_PLATFORMS);
+        db.execSQL("DELETE FROM " + TABLE_ANIME);
+        db.execSQL("DELETE FROM " + TABLE_RELATION);
+        db.execSQL("DELETE FROM " + TABLE_TAGS);
+        db.execSQL("DELETE FROM " + TABLE_VN_CHARACTER);
+        db.execSQL("DELETE FROM " + TABLE_CHARACTER);
+        db.execSQL("DELETE FROM " + TABLE_TRAITS);
+        db.execSQL("DELETE FROM " + TABLE_VN_RELEASE);
+        db.execSQL("DELETE FROM " + TABLE_RELEASE);
+        db.execSQL("DELETE FROM " + TABLE_RELEASE_LANGUAGES);
+        db.execSQL("DELETE FROM " + TABLE_RELEASE_PLATFORMS);
+        db.execSQL("DELETE FROM " + TABLE_RELEASE_MEDIA);
+        db.execSQL("DELETE FROM " + TABLE_RELEASE_PRODUCER);
+        db.execSQL("DELETE FROM " + TABLE_PRODUCER);
+    }
+
     private static String formatString(String value) {
-        return value == null ? null : "'" + value + "'";
+        return value == null ? null : "'" + value.replaceAll("\'", "''") + "'";
     }
 
     private static int formatBool(boolean value) {

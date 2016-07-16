@@ -251,7 +251,11 @@ public class Item extends VNDBCommand {
     }
 
     public void setLanguages(List<String> languages) {
-        this.languages = languages;
+        if (languages == null) {
+            this.languages = new ArrayList<>();
+        } else {
+            this.languages = languages;
+        }
     }
 
     public List<String> getOrig_lang() {
@@ -259,7 +263,12 @@ public class Item extends VNDBCommand {
     }
 
     public void setOrig_lang(List<String> orig_lang) {
-        this.orig_lang = orig_lang;
+
+        if (orig_lang == null) {
+            this.orig_lang = new ArrayList<>();
+        } else {
+            this.orig_lang = orig_lang;
+        }
     }
 
     public List<String> getPlatforms() {
@@ -267,7 +276,11 @@ public class Item extends VNDBCommand {
     }
 
     public void setPlatforms(List<String> platforms) {
-        this.platforms = platforms;
+        if (platforms == null) {
+            this.platforms = new ArrayList<>();
+        } else {
+            this.platforms = platforms;
+        }
     }
 
     public String getAliases() {
@@ -323,6 +336,9 @@ public class Item extends VNDBCommand {
     }
 
     public void setAnime(List<Anime> anime) {
+        if (anime == null) {
+            this.anime = new ArrayList<>();
+        }
         this.anime = anime;
     }
 
@@ -331,13 +347,17 @@ public class Item extends VNDBCommand {
     }
 
     public void setRelations(List<Relation> relations) {
-        Collections.sort(relations, new Comparator<Relation>() {
-            @Override
-            public int compare(Relation lhs, Relation rhs) {
-                return Integer.valueOf(Relation.TYPES_KEY.indexOf(lhs.getRelation())).compareTo(Relation.TYPES_KEY.indexOf(rhs.getRelation()));
-            }
-        });
-        this.relations = relations;
+        if (relations == null) {
+            this.relations = new ArrayList<>();
+        } else {
+            Collections.sort(relations, new Comparator<Relation>() {
+                @Override
+                public int compare(Relation lhs, Relation rhs) {
+                    return Integer.valueOf(Relation.TYPES_KEY.indexOf(lhs.getRelation())).compareTo(Relation.TYPES_KEY.indexOf(rhs.getRelation()));
+                }
+            });
+            this.relations = relations;
+        }
     }
 
     public List<List<Number>> getTags() {
@@ -345,13 +365,17 @@ public class Item extends VNDBCommand {
     }
 
     public void setTags(List<List<Number>> tags) {
-        Collections.sort(tags, new Comparator<List<Number>>() {
-            @Override
-            public int compare(List<Number> lhs, List<Number> rhs) {
-                return Double.valueOf(rhs.get(1).doubleValue()).compareTo(lhs.get(1).doubleValue());
-            }
-        });
-        this.tags = tags;
+        if (tags == null) {
+            this.tags = new ArrayList<>();
+        } else {
+            Collections.sort(tags, new Comparator<List<Number>>() {
+                @Override
+                public int compare(List<Number> lhs, List<Number> rhs) {
+                    return Double.valueOf(rhs.get(1).doubleValue()).compareTo(lhs.get(1).doubleValue());
+                }
+            });
+            this.tags = tags;
+        }
     }
 
     public double getPopularity() {

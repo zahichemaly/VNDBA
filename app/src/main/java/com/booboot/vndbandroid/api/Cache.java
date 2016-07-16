@@ -16,7 +16,6 @@ import com.booboot.vndbandroid.util.JSON;
 import com.booboot.vndbandroid.util.Predicate;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.io.File;
 import java.io.IOException;
@@ -175,11 +174,6 @@ public class Cache {
                         }
 
                         sortAll(context);
-                        saveToCache(context, VNLIST_CACHE, vnlist);
-                        saveToCache(context, VOTELIST_CACHE, votelist);
-                        saveToCache(context, WISHLIST_CACHE, wishlist);
-                        saveToCache(context, VN_CACHE, vns);
-
                         DB.saveVnlist(context);
                         DB.saveVotelist(context);
                         DB.saveWishlist(context);
@@ -261,15 +255,12 @@ public class Cache {
         } else {
             /* Updating persistent cache if VNs have been removed */
             if (vnlistHasChanged) {
-                saveToCache(context, VNLIST_CACHE, vnlist);
                 DB.saveVnlist(context);
             }
             if (votelistHasChanged) {
-                saveToCache(context, VOTELIST_CACHE, votelist);
                 DB.saveVotelist(context);
             }
             if (wishlistHasChanged) {
-                saveToCache(context, WISHLIST_CACHE, wishlist);
                 DB.saveWishlist(context);
             }
             if (vnlistHasChanged || votelistHasChanged || wishlistHasChanged) shouldRefreshView = true;
@@ -330,8 +321,16 @@ public class Cache {
         if (!vnlistFile.exists() || !votelistFile.exists() || !wishlistFile.exists())
             return false;
 
-        try {
-            long start = new Date().getTime();
+        long start = new Date().getTime();
+        vnlist = DB.loadVnlist(context);
+        votelist = DB.loadVotelist(context);
+        wishlist = DB.loadWishlist(context);
+        vns = DB.loadVns(context);
+
+         /*
+           try {
+
+
             vnlist = JSON.mapper.readValue(vnlistFile, new TypeReference<LinkedHashMap<Integer, VNlistItem>>() {
             });
             votelist = JSON.mapper.readValue(votelistFile, new TypeReference<LinkedHashMap<Integer, VotelistItem>>() {
@@ -340,7 +339,6 @@ public class Cache {
             });
             vns = JSON.mapper.readValue(vnFile, new TypeReference<LinkedHashMap<Integer, Item>>() {
             });
-            /*
             if (charactersFile.exists()) {
                 characters = JSON.mapper.readValue(charactersFile, new TypeReference<LinkedHashMap<Integer, List<Item>>>() {
                 });
@@ -349,15 +347,15 @@ public class Cache {
                 releases = JSON.mapper.readValue(releasesFile, new TypeReference<LinkedHashMap<Integer, List<Item>>>() {
                 });
             }
-            */
-            Log.d("D", "6 : " + (new Date().getTime() - start) + " ms");
         } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
+            */
 
+        Log.d("D", "6 : " + (new Date().getTime() - start) + " ms");
         sortAll(context);
-        loadedFromCache = true;
+        loadedFromCache = vnlist.size() > 0 || votelist.size() > 0 || wishlist.size() > 0;
         return true;
     }
 

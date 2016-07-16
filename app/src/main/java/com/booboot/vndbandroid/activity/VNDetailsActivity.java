@@ -9,6 +9,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -54,6 +55,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -416,11 +418,6 @@ public class VNDetailsActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        Cache.saveToCache(this, Cache.VNLIST_CACHE, Cache.vnlist);
-        Cache.saveToCache(this, Cache.VOTELIST_CACHE, Cache.votelist);
-        Cache.saveToCache(this, Cache.WISHLIST_CACHE, Cache.wishlist);
-        Cache.saveToCache(this, Cache.VN_CACHE, Cache.vns);
-
         DB.saveVnlist(this);
         DB.saveVotelist(this);
         DB.saveWishlist(this);

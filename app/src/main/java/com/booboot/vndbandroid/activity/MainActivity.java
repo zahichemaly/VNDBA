@@ -39,6 +39,7 @@ import com.booboot.vndbandroid.activity.ranking.RankingNewlyReleasedFragment;
 import com.booboot.vndbandroid.activity.ranking.RankingPopularFragment;
 import com.booboot.vndbandroid.activity.ranking.RankingTopFragment;
 import com.booboot.vndbandroid.api.Cache;
+import com.booboot.vndbandroid.api.DB;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.bean.ListType;
 import com.booboot.vndbandroid.factory.PlaceholderPictureFactory;
@@ -265,7 +266,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             directSubfragment = new AboutFragment();
         } else if (id == R.id.nav_logout) {
             VNDBServer.closeAll();
-            Cache.clearCache(this);
+            //Cache.clearCache(this);
+            DB.clear(this);
             LoginActivity.instance.enableAll();
             Utils.recreate(LoginActivity.instance);
             selectedItem = 0;
