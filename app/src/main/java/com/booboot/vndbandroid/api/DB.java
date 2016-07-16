@@ -8,12 +8,15 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.booboot.vndbandroid.bean.Anime;
 import com.booboot.vndbandroid.bean.Item;
+import com.booboot.vndbandroid.bean.Links;
 import com.booboot.vndbandroid.bean.Relation;
 import com.booboot.vndbandroid.bean.cache.VNlistItem;
 import com.booboot.vndbandroid.bean.cache.VotelistItem;
 import com.booboot.vndbandroid.bean.cache.WishlistItem;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -235,18 +238,11 @@ public class DB extends SQLiteOpenHelper {
         SQLiteDatabase db = instance.getWritableDatabase();
         // db.execSQL("DELETE FROM " + TABLE_VNLIST);
 
-        StringBuilder query = new StringBuilder();
-
-        /* Retrieving all items to check if we have TO INSERT or UPDATE */
-        Cursor cursor = db.rawQuery("select * from " + TABLE_VNLIST, new String[]{});
-        Map<Integer, VNlistItem> alreadyInsertedItems = new HashMap<>();
-        while (cursor.moveToNext()) {
-            alreadyInsertedItems.put(cursor.getInt(0), new VNlistItem(cursor.getInt(0), cursor.getInt(1), cursor.getInt(2), cursor.getString(3)));
-        }
-        cursor.close();
-
+        StringBuilder query = new StringBuilder("INSERT INTO ").append(TABLE_VNLIST).append(" VALUES ");
         boolean somethingToInsert = false;
-        query.append("INSERT INTO ").append(TABLE_VNLIST).append(" VALUES ");
+        /* Retrieving all items to check if we have TO INSERT or UPDATE */
+        LinkedHashMap<Integer, VNlistItem> alreadyInsertedItems = loadVnlist(context);
+
         for (int vn : Cache.vnlist.keySet()) {
             VNlistItem item = Cache.vnlist.get(vn);
 
@@ -282,18 +278,11 @@ public class DB extends SQLiteOpenHelper {
         SQLiteDatabase db = instance.getWritableDatabase();
         // db.execSQL("DELETE FROM " + TABLE_VNLIST);
 
-        StringBuilder query = new StringBuilder();
-
-        /* Retrieving all items to check if we have TO INSERT or UPDATE */
-        Cursor cursor = db.rawQuery("select * from " + TABLE_VOTELIST, new String[]{});
-        Map<Integer, VotelistItem> alreadyInsertedItems = new HashMap<>();
-        while (cursor.moveToNext()) {
-            alreadyInsertedItems.put(cursor.getInt(0), new VotelistItem(cursor.getInt(0), cursor.getInt(1), cursor.getInt(2)));
-        }
-        cursor.close();
-
+        StringBuilder query = new StringBuilder("INSERT INTO ").append(TABLE_VNLIST).append(" VALUES ");
         boolean somethingToInsert = false;
-        query.append("INSERT INTO ").append(TABLE_VNLIST).append(" VALUES ");
+        /* Retrieving all items to check if we have TO INSERT or UPDATE */
+        LinkedHashMap<Integer, VotelistItem> alreadyInsertedItems = loadVotelist(context);
+
         for (int vn : Cache.votelist.keySet()) {
             VotelistItem item = Cache.votelist.get(vn);
 
@@ -327,18 +316,11 @@ public class DB extends SQLiteOpenHelper {
         SQLiteDatabase db = instance.getWritableDatabase();
         // db.execSQL("DELETE FROM " + TABLE_VNLIST);
 
-        StringBuilder query = new StringBuilder();
-
-        /* Retrieving all items to check if we have TO INSERT or UPDATE */
-        Cursor cursor = db.rawQuery("select * from " + TABLE_WISHLIST, new String[]{});
-        Map<Integer, WishlistItem> alreadyInsertedItems = new HashMap<>();
-        while (cursor.moveToNext()) {
-            alreadyInsertedItems.put(cursor.getInt(0), new WishlistItem(cursor.getInt(0), cursor.getInt(1), cursor.getInt(2)));
-        }
-        cursor.close();
-
+        StringBuilder query = new StringBuilder("INSERT INTO ").append(TABLE_WISHLIST).append(" VALUES ");
         boolean somethingToInsert = false;
-        query.append("INSERT INTO ").append(TABLE_WISHLIST).append(" VALUES ");
+        /* Retrieving all items to check if we have TO INSERT or UPDATE */
+        LinkedHashMap<Integer, WishlistItem> alreadyInsertedItems = loadWishlist(context);
+
         for (int vn : Cache.wishlist.keySet()) {
             WishlistItem item = Cache.wishlist.get(vn);
 
@@ -445,7 +427,7 @@ public class DB extends SQLiteOpenHelper {
                         .append(anime.getId()).append(",")
                         .append(item.getId()).append(",")
                         .append(anime.getAnn_id()).append(",")
-                        .append(anime.getNfo_id()).append(",")
+                        .append(formatString(anime.getNfo_id())).append(",")
                         .append(formatString(anime.getTitle_romaji())).append(",")
                         .append(formatString(anime.getTitle_kanji())).append(",")
                         .append(anime.getYear()).append(",")
@@ -484,8 +466,158 @@ public class DB extends SQLiteOpenHelper {
         }
     }
 
+    public static LinkedHashMap<Integer, VNlistItem> loadVnlist(Context context) {
+        if (instance == null) instance = new DB(context);
+        SQLiteDatabase db = instance.getWritableDatabase();
+
+        /* Retrieving all items to check if we have TO INSERT or UPDATE */
+        LinkedHashMap<Integer, VNlistItem> res = new LinkedHashMap<>();
+        Cursor cursor = db.rawQuery("select * from " + TABLE_VNLIST, new String[]{});
+        while (cursor.moveToNext()) {
+            res.put(cursor.getInt(0), new VNlistItem(cursor.getInt(0), cursor.getInt(1), cursor.getInt(2), cursor.getString(3)));
+        }
+        cursor.close();
+
+        return res;
+    }
+
+    public static LinkedHashMap<Integer, VotelistItem> loadVotelist(Context context) {
+        if (instance == null) instance = new DB(context);
+        SQLiteDatabase db = instance.getWritableDatabase();
+
+        Cursor cursor = db.rawQuery("select * from " + TABLE_VOTELIST, new String[]{});
+        LinkedHashMap<Integer, VotelistItem> res = new LinkedHashMap<>();
+        while (cursor.moveToNext()) {
+            res.put(cursor.getInt(0), new VotelistItem(cursor.getInt(0), cursor.getInt(1), cursor.getInt(2)));
+        }
+        cursor.close();
+
+        return res;
+    }
+
+    public static LinkedHashMap<Integer, WishlistItem> loadWishlist(Context context) {
+        if (instance == null) instance = new DB(context);
+        SQLiteDatabase db = instance.getWritableDatabase();
+
+        Cursor cursor = db.rawQuery("select * from " + TABLE_WISHLIST, new String[]{});
+        LinkedHashMap<Integer, WishlistItem> res = new LinkedHashMap<>();
+        while (cursor.moveToNext()) {
+            res.put(cursor.getInt(0), new WishlistItem(cursor.getInt(0), cursor.getInt(1), cursor.getInt(2)));
+        }
+        cursor.close();
+
+        return res;
+    }
+
+    public static LinkedHashMap<Integer, Item> loadVns(Context context) {
+        if (instance == null) instance = new DB(context);
+        SQLiteDatabase db = instance.getWritableDatabase();
+
+        LinkedHashMap<Integer, Item> res = new LinkedHashMap<>();
+        LinkedHashMap<Integer, List<String>> languagesRes = new LinkedHashMap<>();
+        LinkedHashMap<Integer, List<String>> origLangsRes = new LinkedHashMap<>();
+        LinkedHashMap<Integer, List<String>> platformsRes = new LinkedHashMap<>();
+        LinkedHashMap<Integer, List<Anime>> animesRes = new LinkedHashMap<>();
+        LinkedHashMap<Integer, List<Relation>> relationsRes = new LinkedHashMap<>();
+        LinkedHashMap<Integer, List<List<Number>>> tagsRes = new LinkedHashMap<>();
+
+        Cursor[] cursor = new Cursor[7];
+        cursor[0] = db.rawQuery("select * from " + TABLE_VN, new String[]{});
+        cursor[1] = db.rawQuery("select * from " + TABLE_LANGUAGES, new String[]{});
+        cursor[2] = db.rawQuery("select * from " + TABLE_ORIG_LANG, new String[]{});
+        cursor[3] = db.rawQuery("select * from " + TABLE_PLATFORMS, new String[]{});
+        cursor[4] = db.rawQuery("select * from " + TABLE_ANIME, new String[]{});
+        cursor[5] = db.rawQuery("select * from " + TABLE_RELATION, new String[]{});
+        cursor[6] = db.rawQuery("select * from " + TABLE_TAGS, new String[]{});
+
+        while (cursor[1].moveToNext()) {
+            if (languagesRes.get(cursor[1].getInt(0)) == null)
+                languagesRes.put(cursor[1].getInt(0), new ArrayList<String>());
+            languagesRes.get(cursor[1].getInt(0)).add(cursor[1].getString(1));
+        }
+
+        while (cursor[2].moveToNext()) {
+            if (origLangsRes.get(cursor[2].getInt(0)) == null)
+                origLangsRes.put(cursor[2].getInt(0), new ArrayList<String>());
+            origLangsRes.get(cursor[2].getInt(0)).add(cursor[2].getString(1));
+        }
+
+        while (cursor[3].moveToNext()) {
+            if (platformsRes.get(cursor[3].getInt(0)) == null)
+                platformsRes.put(cursor[3].getInt(0), new ArrayList<String>());
+            platformsRes.get(cursor[3].getInt(0)).add(cursor[3].getString(1));
+        }
+
+        while (cursor[4].moveToNext()) {
+            if (animesRes.get(cursor[4].getInt(1)) == null)
+                animesRes.put(cursor[4].getInt(1), new ArrayList<Anime>());
+            Anime anime = new Anime();
+            anime.setId(cursor[4].getInt(0));
+            anime.setAnn_id(cursor[4].getInt(2));
+            anime.setNfo_id(cursor[4].getString(3));
+            anime.setTitle_romaji(cursor[4].getString(4));
+            anime.setTitle_kanji(cursor[4].getString(5));
+            anime.setYear(cursor[4].getInt(6));
+            anime.setType(cursor[4].getString(7));
+            animesRes.get(cursor[4].getInt(1)).add(anime);
+        }
+
+        while (cursor[5].moveToNext()) {
+            if (relationsRes.get(cursor[5].getInt(1)) == null)
+                relationsRes.put(cursor[5].getInt(1), new ArrayList<Relation>());
+            Relation relation = new Relation();
+            relation.setId(cursor[5].getInt(0));
+            relation.setRelation(cursor[5].getString(2));
+            relation.setTitle(cursor[5].getString(3));
+            relation.setOriginal(cursor[5].getString(4));
+            relationsRes.get(cursor[5].getInt(1)).add(relation);
+        }
+
+        while (cursor[6].moveToNext()) {
+            if (tagsRes.get(cursor[6].getInt(1)) == null)
+                tagsRes.put(cursor[6].getInt(1), new ArrayList<List<Number>>());
+            List<Number> tag = new ArrayList<>();
+            tag.add(cursor[6].getInt(0));
+            tag.add(cursor[6].getInt(2));
+            tag.add(cursor[6].getInt(3));
+            tagsRes.get(cursor[6].getInt(1)).add(tag);
+        }
+
+        while (cursor[0].moveToNext()) {
+            Item vn = new Item(cursor[0].getInt(0));
+            vn.setTitle(cursor[0].getString(1));
+            vn.setOriginal(cursor[0].getString(2));
+            vn.setReleased(cursor[0].getString(3));
+            vn.setAliases(cursor[0].getString(4));
+            vn.setLength(cursor[0].getInt(5));
+            vn.setDescription(cursor[0].getString(6));
+            Links links = new Links();
+            links.setWikipedia(cursor[0].getString(7));
+            links.setEncubed(cursor[0].getString(8));
+            links.setRenai(cursor[0].getString(9));
+            vn.setLinks(links);
+            vn.setImage(cursor[0].getString(10));
+            vn.setImage_nsfw(cursor[0].getInt(11) == 1);
+            vn.setPopularity(cursor[0].getDouble(12));
+            vn.setRating(cursor[0].getDouble(13));
+            vn.setVotecount(cursor[0].getInt(14));
+            vn.setLanguages(languagesRes.get(vn.getId()));
+            vn.setOrig_lang(origLangsRes.get(vn.getId()));
+            vn.setPlatforms(platformsRes.get(vn.getId()));
+            vn.setAnime(animesRes.get(vn.getId()));
+            vn.setRelations(relationsRes.get(vn.getId()));
+            vn.setTags(tagsRes.get(vn.getId()));
+
+            res.put(vn.getId(), vn);
+        }
+
+        for (Cursor c : cursor) c.close();
+
+        return res;
+    }
+
     private static String formatString(String value) {
-        return value == null ? value : "'" + value + "'";
+        return value == null ? null : "'" + value + "'";
     }
 
     private static int formatBool(boolean value) {
