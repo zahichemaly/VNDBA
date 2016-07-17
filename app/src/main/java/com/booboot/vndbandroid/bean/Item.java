@@ -407,7 +407,11 @@ public class Item extends VNDBCommand {
     }
 
     public void setScreens(List<Screen> screens) {
-        this.screens = screens;
+        if (screens == null) {
+            this.screens = new ArrayList<>();
+        } else {
+            this.screens = screens;
+        }
     }
 
     private List<Screen> screens;

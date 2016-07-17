@@ -10,6 +10,7 @@ import com.booboot.vndbandroid.bean.Anime;
 import com.booboot.vndbandroid.bean.Item;
 import com.booboot.vndbandroid.bean.Links;
 import com.booboot.vndbandroid.bean.Relation;
+import com.booboot.vndbandroid.bean.Screen;
 import com.booboot.vndbandroid.bean.cache.VNlistItem;
 import com.booboot.vndbandroid.bean.cache.VotelistItem;
 import com.booboot.vndbandroid.bean.cache.WishlistItem;
@@ -38,6 +39,7 @@ public class DB extends SQLiteOpenHelper {
     public final static String TABLE_ANIME = "anime";
     public final static String TABLE_RELATION = "relation";
     public final static String TABLE_TAGS = "tags";
+    public final static String TABLE_SCREENS = "screens";
     public final static String TABLE_VN_CHARACTER = "vn_character";
     public final static String TABLE_CHARACTER = "character";
     public final static String TABLE_TRAITS = "traits";
@@ -137,6 +139,16 @@ public class DB extends SQLiteOpenHelper {
                 "score INTEGER, " +
                 "spoiler_level INTEGER, " +
                 "PRIMARY KEY (id, vn)" +
+                ")");
+
+        db.execSQL("CREATE TABLE " + TABLE_SCREENS + " (" +
+                "vn INTEGER, " +
+                "image TEXT, " +
+                "rid INTEGER, " +
+                "nsfw INTEGER, " +
+                "height INTEGER, " +
+                "width INTEGER, " +
+                "PRIMARY KEY (vn, image)" +
                 ")");
 
         db.execSQL("CREATE TABLE " + TABLE_VN_CHARACTER + " (" +
@@ -366,8 +378,8 @@ public class DB extends SQLiteOpenHelper {
         SQLiteDatabase db = instance.getWritableDatabase();
         // db.execSQL("DELETE FROM " + TABLE_VNLIST);
 
-        boolean somethingToInsert[] = new boolean[7];
-        StringBuilder[] queries = new StringBuilder[7];
+        boolean somethingToInsert[] = new boolean[8];
+        StringBuilder[] queries = new StringBuilder[8];
         queries[0] = new StringBuilder("INSERT INTO ").append(TABLE_VN).append(" VALUES ");
         queries[1] = new StringBuilder("INSERT INTO ").append(TABLE_LANGUAGES).append(" VALUES ");
         queries[2] = new StringBuilder("INSERT INTO ").append(TABLE_ORIG_LANG).append(" VALUES ");
@@ -375,6 +387,7 @@ public class DB extends SQLiteOpenHelper {
         queries[4] = new StringBuilder("INSERT INTO ").append(TABLE_ANIME).append(" VALUES ");
         queries[5] = new StringBuilder("INSERT INTO ").append(TABLE_RELATION).append(" VALUES ");
         queries[6] = new StringBuilder("INSERT INTO ").append(TABLE_TAGS).append(" VALUES ");
+        queries[7] = new StringBuilder("INSERT INTO ").append(TABLE_SCREENS).append(" VALUES ");
 
         db.beginTransaction();
         /* Retrieving all items to check if we have TO INSERT or UPDATE */
@@ -469,6 +482,17 @@ public class DB extends SQLiteOpenHelper {
                         .append("),");
                 somethingToInsert[6] = true;
             }
+            for (Screen screen : item.getScreens()) {
+                queries[7].append("(")
+                        .append(item.getId()).append(",")
+                        .append(formatString(screen.getImage())).append(",")
+                        .append(screen.getRid()).append(",")
+                        .append(formatBool(screen.isNsfw())).append(",")
+                        .append(screen.getHeight()).append(",")
+                        .append(screen.getWidth())
+                        .append("),");
+                somethingToInsert[7] = true;
+            }
         }
 
         for (int i = 0; i < queries.length; i++) {
@@ -536,8 +560,9 @@ public class DB extends SQLiteOpenHelper {
         LinkedHashMap<Integer, List<Anime>> animesRes = new LinkedHashMap<>();
         LinkedHashMap<Integer, List<Relation>> relationsRes = new LinkedHashMap<>();
         LinkedHashMap<Integer, List<List<Number>>> tagsRes = new LinkedHashMap<>();
+        LinkedHashMap<Integer, List<Screen>> screensRes = new LinkedHashMap<>();
 
-        Cursor[] cursor = new Cursor[7];
+        Cursor[] cursor = new Cursor[8];
         cursor[0] = db.rawQuery("select * from " + TABLE_VN, new String[]{});
         cursor[1] = db.rawQuery("select * from " + TABLE_LANGUAGES, new String[]{});
         cursor[2] = db.rawQuery("select * from " + TABLE_ORIG_LANG, new String[]{});
@@ -545,6 +570,7 @@ public class DB extends SQLiteOpenHelper {
         cursor[4] = db.rawQuery("select * from " + TABLE_ANIME, new String[]{});
         cursor[5] = db.rawQuery("select * from " + TABLE_RELATION, new String[]{});
         cursor[6] = db.rawQuery("select * from " + TABLE_TAGS, new String[]{});
+        cursor[7] = db.rawQuery("select * from " + TABLE_SCREENS, new String[]{});
 
         while (cursor[1].moveToNext()) {
             if (languagesRes.get(cursor[1].getInt(0)) == null)
@@ -599,6 +625,18 @@ public class DB extends SQLiteOpenHelper {
             tagsRes.get(cursor[6].getInt(1)).add(tag);
         }
 
+        while (cursor[7].moveToNext()) {
+            if (screensRes.get(cursor[7].getInt(0)) == null)
+                screensRes.put(cursor[7].getInt(0), new ArrayList<Screen>());
+            Screen screen = new Screen();
+            screen.setImage(cursor[7].getString(1));
+            screen.setRid(cursor[7].getInt(2));
+            screen.setNsfw(cursor[7].getInt(3) == 1);
+            screen.setHeight(cursor[7].getInt(4));
+            screen.setWidth(cursor[7].getInt(5));
+            screensRes.get(cursor[7].getInt(0)).add(screen);
+        }
+
         while (cursor[0].moveToNext()) {
             Item vn = new Item(cursor[0].getInt(0));
             vn.setTitle(cursor[0].getString(1));
@@ -623,6 +661,7 @@ public class DB extends SQLiteOpenHelper {
             vn.setAnime(animesRes.get(vn.getId()));
             vn.setRelations(relationsRes.get(vn.getId()));
             vn.setTags(tagsRes.get(vn.getId()));
+            vn.setScreens(screensRes.get(vn.getId()));
 
             res.put(vn.getId(), vn);
         }
@@ -646,6 +685,7 @@ public class DB extends SQLiteOpenHelper {
         db.execSQL("DELETE FROM " + TABLE_ANIME);
         db.execSQL("DELETE FROM " + TABLE_RELATION);
         db.execSQL("DELETE FROM " + TABLE_TAGS);
+        db.execSQL("DELETE FROM " + TABLE_SCREENS);
         db.execSQL("DELETE FROM " + TABLE_VN_CHARACTER);
         db.execSQL("DELETE FROM " + TABLE_CHARACTER);
         db.execSQL("DELETE FROM " + TABLE_TRAITS);
