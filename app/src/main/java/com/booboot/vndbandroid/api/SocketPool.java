@@ -16,6 +16,7 @@ public class SocketPool {
     public final static int MAX_SOCKETS = 5;
     public final static SSLSocket[] SOCKETS = new SSLSocket[MAX_SOCKETS];
     public final static ConcurrentMap<Integer, Integer> LOCKS = new ConcurrentHashMap<>();
+    public static int throttleHandlingSocket = -1;
 
     public static SSLSocket getSocket(Context context, int socketIndex, Callback errorCallback) {
         socketIndex %= SOCKETS.length;

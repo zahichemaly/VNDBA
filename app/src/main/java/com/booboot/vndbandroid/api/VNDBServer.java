@@ -19,7 +19,6 @@ import com.booboot.vndbandroid.util.ConnectionReceiver;
 import com.booboot.vndbandroid.util.JSON;
 import com.booboot.vndbandroid.util.NumberedThread;
 import com.booboot.vndbandroid.util.SettingsManager;
-import com.booboot.vndbandroid.util.Utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.io.IOException;
@@ -59,7 +58,6 @@ public class VNDBServer {
     /* Pipelining variables */
     private static ExecutorService threadManager;
     private static VNDBCommand[] plPageResults;
-    private static int throttleHandlingSocket = -1;
 
     private static void init(Context c, Callback sc, Callback ec, boolean ucie) {
         context = c;
@@ -257,14 +255,14 @@ public class VNDBServer {
                         Error error = (Error) response;
                         isThrottled = error.getId().equals("throttled");
                         if (isThrottled) {
-                            if (throttleHandlingSocket < 0) throttleHandlingSocket = socketIndex;
+                            if (SocketPool.throttleHandlingSocket < 0) SocketPool.throttleHandlingSocket = socketIndex;
 
                             /* We got throttled by the server. Displaying a warning message */
                             long fullwait = Math.round(error.getFullwait() / 60);
                             Callback.showToast(context, String.format(context.getString(R.string.throttle_warning), fullwait));
                             try {
-                                /* Waiting ~minwait if the we are in the thread that handles the throttle, 5-10 minwaits otherwise */
-                                long waitingFactor = throttleHandlingSocket == socketIndex ? Utils.randInt(1000, 2000) : Utils.randInt(5000, 10000);
+                                /* Waiting ~minwait if the we are in the thread that handles the throttle, 5+ minwaits otherwise */
+                                long waitingFactor = SocketPool.throttleHandlingSocket == socketIndex ? 1050 : 5000 + 500 * socketIndex;
                                 Thread.sleep(Math.round(error.getMinwait() * waitingFactor));
                             } catch (InterruptedException e) {
                                 /* For some reason we weren't able to sleep, so we can ignore the exception and keep rolling anyway */
@@ -300,8 +298,8 @@ public class VNDBServer {
                 errorCallback.call();
                 return null;
             } finally {
-                if (throttleHandlingSocket > -1 && throttleHandlingSocket == socketIndex)
-                    throttleHandlingSocket = -1;
+                if (SocketPool.throttleHandlingSocket > -1 && SocketPool.throttleHandlingSocket == socketIndex)
+                    SocketPool.throttleHandlingSocket = -1;
             }
 
             return response;
@@ -337,7 +335,8 @@ public class VNDBServer {
                     errorCallback.message = "An error occurred while reading the response from the API. Aborting operation.";
                     errorCallback.call();
                 }
-                return null;
+                /* Undocumented error : the server returned an empty response (""), which (most of the time) means we have been throttled */
+                return new Error("throttled", 6, 10 * 60);
             }
         }
 

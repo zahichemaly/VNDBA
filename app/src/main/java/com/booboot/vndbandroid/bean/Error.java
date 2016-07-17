@@ -13,6 +13,15 @@ public class Error extends VNDBCommand {
     private double minwait;
     private double fullwait;
 
+    public Error() {
+    }
+
+    public Error(String id, int minwait, int fullwait) {
+        this.id = id;
+        this.minwait = minwait;
+        this.fullwait = fullwait;
+    }
+
     public String getFullMessage() {
         switch (id) {
             case "throttled":

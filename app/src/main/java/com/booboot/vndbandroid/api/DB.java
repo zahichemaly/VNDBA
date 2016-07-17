@@ -282,7 +282,7 @@ public class DB extends SQLiteOpenHelper {
         SQLiteDatabase db = instance.getWritableDatabase();
         // db.execSQL("DELETE FROM " + TABLE_VNLIST);
 
-        StringBuilder query = new StringBuilder("INSERT INTO ").append(TABLE_VNLIST).append(" VALUES ");
+        StringBuilder query = new StringBuilder("INSERT INTO ").append(TABLE_VOTELIST).append(" VALUES ");
         boolean somethingToInsert = false;
         /* Retrieving all items to check if we have TO INSERT or UPDATE */
         LinkedHashMap<Integer, VotelistItem> alreadyInsertedItems = loadVotelist(context);

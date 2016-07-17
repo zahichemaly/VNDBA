@@ -1,7 +1,6 @@
 package com.booboot.vndbandroid.api;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.booboot.vndbandroid.bean.DbStats;
 import com.booboot.vndbandroid.bean.Item;
@@ -22,7 +21,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -46,10 +44,6 @@ public class Cache {
     public final static String CHARACTER_FLAGS = "basic,details,meas,traits,vns";
     public final static String RELEASE_FLAGS = "basic,details,producers";
 
-    public final static String VNLIST_CACHE = "vnlist.2.data";
-    public final static String VOTELIST_CACHE = "votelist.2.data";
-    public final static String WISHLIST_CACHE = "wishlist.2.data";
-    public final static String VN_CACHE = "vn.data";
     public final static String CHARACTERS_CACHE = "characters.data";
     public final static String RELEASES_CACHE = "releases.data";
     public final static String DBSTATS_CACHE = "dbstats.data";
@@ -311,49 +305,12 @@ public class Cache {
 
     public static boolean loadFromCache(Context context) {
         if (loadedFromCache) return true;
-        File vnlistFile = new File(context.getFilesDir(), VNLIST_CACHE);
-        File votelistFile = new File(context.getFilesDir(), VOTELIST_CACHE);
-        File wishlistFile = new File(context.getFilesDir(), WISHLIST_CACHE);
-        File vnFile = new File(context.getFilesDir(), VN_CACHE);
-        File charactersFile = new File(context.getFilesDir(), CHARACTERS_CACHE);
-        File releasesFile = new File(context.getFilesDir(), RELEASES_CACHE);
 
-        if (!vnlistFile.exists() || !votelistFile.exists() || !wishlistFile.exists())
-            return false;
-
-        long start = new Date().getTime();
         vnlist = DB.loadVnlist(context);
         votelist = DB.loadVotelist(context);
         wishlist = DB.loadWishlist(context);
         vns = DB.loadVns(context);
 
-         /*
-           try {
-
-
-            vnlist = JSON.mapper.readValue(vnlistFile, new TypeReference<LinkedHashMap<Integer, VNlistItem>>() {
-            });
-            votelist = JSON.mapper.readValue(votelistFile, new TypeReference<LinkedHashMap<Integer, VotelistItem>>() {
-            });
-            wishlist = JSON.mapper.readValue(wishlistFile, new TypeReference<LinkedHashMap<Integer, WishlistItem>>() {
-            });
-            vns = JSON.mapper.readValue(vnFile, new TypeReference<LinkedHashMap<Integer, Item>>() {
-            });
-            if (charactersFile.exists()) {
-                characters = JSON.mapper.readValue(charactersFile, new TypeReference<LinkedHashMap<Integer, List<Item>>>() {
-                });
-            }
-            if (releasesFile.exists()) {
-                releases = JSON.mapper.readValue(releasesFile, new TypeReference<LinkedHashMap<Integer, List<Item>>>() {
-                });
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-            */
-
-        Log.d("D", "6 : " + (new Date().getTime() - start) + " ms");
         sortAll(context);
         loadedFromCache = vnlist.size() > 0 || votelist.size() > 0 || wishlist.size() > 0;
         return true;
@@ -371,20 +328,7 @@ public class Cache {
     }
 
     public static void clearCache(Context context) {
-        File vnlistFile = new File(context.getFilesDir(), VNLIST_CACHE);
-        File votelistFile = new File(context.getFilesDir(), VOTELIST_CACHE);
-        File wishlistFile = new File(context.getFilesDir(), WISHLIST_CACHE);
-        File vnFile = new File(context.getFilesDir(), VN_CACHE);
-        File charactersFile = new File(context.getFilesDir(), CHARACTERS_CACHE);
-        File releasesFile = new File(context.getFilesDir(), RELEASES_CACHE);
-
-        if (vnlistFile.exists()) vnlistFile.delete();
-        if (votelistFile.exists()) votelistFile.delete();
-        if (wishlistFile.exists()) wishlistFile.delete();
-        if (vnFile.exists()) vnFile.delete();
-        if (charactersFile.exists()) charactersFile.delete();
-        if (releasesFile.exists()) releasesFile.delete();
-
+        DB.clear(context);
         vnlist = new LinkedHashMap<>();
         votelist = new LinkedHashMap<>();
         wishlist = new LinkedHashMap<>();
