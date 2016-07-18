@@ -338,8 +338,9 @@ public class Item extends VNDBCommand {
     public void setAnime(List<Anime> anime) {
         if (anime == null) {
             this.anime = new ArrayList<>();
+        } else {
+            this.anime = anime;
         }
-        this.anime = anime;
     }
 
     public List<Relation> getRelations() {
