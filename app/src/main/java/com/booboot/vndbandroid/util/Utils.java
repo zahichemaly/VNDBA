@@ -10,6 +10,7 @@ import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
 import android.support.customtabs.CustomTabsIntent;
@@ -26,6 +27,7 @@ import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.booboot.vndbandroid.BuildConfig;
@@ -227,5 +229,15 @@ public class Utils {
                 }
             }
         }.start();
+    }
+
+    public static void tintImage(Context context, ImageView imageView, int res, boolean attribute) {
+        if (attribute) {
+            imageView.setColorFilter(Utils.getThemeColor(context, res), PorterDuff.Mode.SRC_ATOP);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            imageView.setColorFilter(context.getResources().getColor(res, context.getTheme()), PorterDuff.Mode.SRC_ATOP);
+        } else {
+            imageView.setColorFilter(context.getResources().getColor(res), PorterDuff.Mode.SRC_ATOP);
+        }
     }
 }

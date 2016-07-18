@@ -9,7 +9,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,12 +16,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,7 +56,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -102,7 +102,6 @@ public class VNDetailsActivity extends AppCompatActivity {
                 spoilerLevel = SettingsManager.getSpoilerLevel(this);
         }
 
-        initCharacters();
         initReleases();
         init();
     }
@@ -233,9 +232,18 @@ public class VNDetailsActivity extends AppCompatActivity {
 
         /* Disables click on certain elements if they have finished loading */
         expandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
-            public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
-                if (parent.getExpandableListAdapter().getChildrenCount(groupPosition) < 1) {
-                    Toast.makeText(VNDetailsActivity.this, "Nothing to show here yet...", Toast.LENGTH_SHORT).show();
+            public boolean onGroupClick(ExpandableListView parent, View groupView, int groupPosition, long id) {
+                boolean async = false;
+                switch ((String) parent.getExpandableListAdapter().getGroup(groupPosition)) {
+                    case VNDetailsFactory.TITLE_CHARACTERS:
+                        async = initCharacters(groupView, groupPosition);
+                        break;
+                }
+
+                if (async) {
+                    return true;
+                } else if (parent.getExpandableListAdapter().getChildrenCount(groupPosition) < 1) {
+                    Toast.makeText(VNDetailsActivity.this, "Nothing to show here...", Toast.LENGTH_SHORT).show();
                     return true;
                 } else
                     return false;
@@ -243,9 +251,11 @@ public class VNDetailsActivity extends AppCompatActivity {
         });
     }
 
-    private void initCharacters() {
+    private boolean initCharacters(final View groupView, final int groupPosition) {
         if (Cache.characters.get(vn.getId()) == null) {
-            VNDBServer.get("character", Cache.CHARACTER_FLAGS, "(vn = " + vn.getId() + ")", Options.create(true, true, 0), 4, this, new Callback() {
+            showGroupLoader(groupView);
+
+            VNDBServer.get("character", Cache.CHARACTER_FLAGS, "(vn = " + vn.getId() + ")", Options.create(true, true, 0), 0, this, new Callback() {
                 @Override
                 protected void config() {
                     if (results.getItems().isEmpty()) {
@@ -267,20 +277,43 @@ public class VNDetailsActivity extends AppCompatActivity {
                         Cache.saveToCache(VNDetailsActivity.this, Cache.CHARACTERS_CACHE, Cache.characters);
                     }
 
-                    if (characters == null) return;
+                    if (characters == null) {
+                        hideGroupLoader(groupView, groupPosition);
+                        return;
+                    }
 
                     VNDetailsFactory.CharacterElementWrapper characterElementWrapper = VNDetailsFactory.getCharacters(VNDetailsActivity.this);
                     characterElement.setPrimaryData(characterElementWrapper.character_names);
                     characterElement.setSecondaryData(characterElementWrapper.character_subnames);
                     characterElement.setUrlImages(characterElementWrapper.character_images);
+
+                    hideGroupLoader(groupView, groupPosition);
                 }
             }, Callback.errorCallback(this));
+            return true;
         }
+        return false;
+    }
+
+    private void hideGroupLoader(View groupView, int groupPosition) {
+        expandableListView.expandGroup(groupPosition);
+        ImageView groupLoader = (ImageView) groupView.findViewById(R.id.groupLoader);
+        groupLoader.clearAnimation();
+        groupLoader.setVisibility(View.INVISIBLE);
+        groupView.setEnabled(true);
+    }
+
+    private void showGroupLoader(View groupView) {
+        groupView.setEnabled(false);
+        ImageView groupLoader = (ImageView) groupView.findViewById(R.id.groupLoader);
+        Utils.tintImage(this, groupLoader, R.attr.colorPrimaryDark, true);
+        groupLoader.startAnimation(AnimationUtils.loadAnimation(VNDetailsActivity.this, R.anim.infinite_rotation));
+        groupLoader.setVisibility(View.VISIBLE);
     }
 
     private void initReleases() {
         if (Cache.releases.get(vn.getId()) == null) {
-            VNDBServer.get("release", Cache.RELEASE_FLAGS, "(vn = " + vn.getId() + ")", Options.create(1, 25, "released", false, true, true, 0), 5, this, new Callback() {
+            VNDBServer.get("release", Cache.RELEASE_FLAGS, "(vn = " + vn.getId() + ")", Options.create(1, 25, "released", false, true, true, 0), 1, this, new Callback() {
                 @Override
                 protected void config() {
                     List<Item> releasesList;

@@ -238,6 +238,8 @@ public class DB extends SQLiteOpenHelper {
                 "original TEXT, " +
                 "type TEXT " +
                 ")");
+
+        db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_VN_CHARACTER + "_vn ON " + TABLE_VN_CHARACTER + "(vn)");
     }
 
     @Override

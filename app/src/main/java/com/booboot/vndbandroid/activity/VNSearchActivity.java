@@ -2,7 +2,6 @@ package com.booboot.vndbandroid.activity;
 
 import android.app.SearchManager;
 import android.content.Context;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v7.app.ActionBar;
@@ -29,6 +28,7 @@ import com.booboot.vndbandroid.factory.ProgressiveResultLoader;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.JSON;
 import com.booboot.vndbandroid.util.SettingsManager;
+import com.booboot.vndbandroid.util.Utils;
 import com.booboot.vndbandroid.view.TagAutoCompleteView;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tokenautocomplete.TokenCompleteTextView;
@@ -108,9 +108,9 @@ public class VNSearchActivity extends AppCompatActivity {
         initCompletionView(includeTagsInput, VNSearchActivity.INCLUDE_TAGS_STATE, includeTags);
         initCompletionView(excludeTagsInput, VNSearchActivity.EXCLUDE_TAGS_STATE, excludeTags);
 
-        includeTagsIcon.setColorFilter(getResources().getColor(R.color.green), PorterDuff.Mode.SRC_ATOP);
-        includeTagsDropdown.setColorFilter(getResources().getColor(R.color.green), PorterDuff.Mode.SRC_ATOP);
-        excludeTagsIcon.setColorFilter(getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
+        Utils.tintImage(this, includeTagsIcon, R.color.green, false);
+        Utils.tintImage(this, includeTagsDropdown, R.color.green, false);
+        Utils.tintImage(this, excludeTagsIcon, R.color.red, false);
 
         LinearLayout includeTagsLayout = (LinearLayout) findViewById(R.id.includeTagsLayout);
         assert includeTagsLayout != null;
