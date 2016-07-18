@@ -35,7 +35,7 @@
     <string name="signing_in">Signing in, please be patient…</string>
     <string name="throttle_warning">VNDB.org is a bit busy right now, so it may take some time to complete your request. Please wait a bit or try again in %d minutes!</string>
     <string name="about">About</string>
-    <string name="customactivityoncrash_error_activity_error_occurred_explanation">An unexpected error occurred.\nSorry for the inconvenience.\nThe error details have been sent to the developer and we\'ll take a look as soon as possible!</string>
+    <string name="customactivityoncrash_error_activity_error_occurred_explanation">An unexpected error occurred.\nSorry for the inconvenience.\nThe error details have been sent to us and we\'ll take a look as soon as possible!</string>
     <string name="sign_up_here">Don\'t have a VNDB account yet? Sign up here.</string>
     <string name="pref_key_browser">browser</string>
     <string name="action_send">Send</string>

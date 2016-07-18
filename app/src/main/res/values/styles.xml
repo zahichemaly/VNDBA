@@ -241,7 +241,7 @@
     <style name="SplashScreen" parent="AppTheme">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowBackground">?attr/colorPrimary</item>
+        <item name="android:windowBackground">@drawable/splash_logo</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
