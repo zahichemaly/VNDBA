@@ -286,6 +286,7 @@ public class VNDetailsActivity extends AppCompatActivity {
                     characterElement.setPrimaryData(characterElementWrapper.character_names);
                     characterElement.setSecondaryData(characterElementWrapper.character_subnames);
                     characterElement.setUrlImages(characterElementWrapper.character_images);
+                    characterElement.setPrimaryImages(characterElementWrapper.character_ids);
 
                     hideGroupLoader(groupView, groupPosition);
                 }

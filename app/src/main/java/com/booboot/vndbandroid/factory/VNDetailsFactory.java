@@ -97,7 +97,7 @@ public class VNDetailsFactory {
             activity.setCharacterElement(new VNDetailsElement(null, new ArrayList<String>(), null, null, null, VNDetailsElement.TYPE_SUBTITLE));
         } else {
             CharacterElementWrapper characters = getCharacters(activity);
-            activity.setCharacterElement(new VNDetailsElement(null, characters.character_names, characters.character_subnames, null, characters.character_images, VNDetailsElement.TYPE_SUBTITLE));
+            activity.setCharacterElement(new VNDetailsElement(characters.character_ids, characters.character_names, characters.character_subnames, null, characters.character_images, VNDetailsElement.TYPE_SUBTITLE));
         }
 
         if (activity.getReleases() == null) {
@@ -218,6 +218,7 @@ public class VNDetailsFactory {
             characterElementWrapper.character_images.add(character.getImage());
             characterElementWrapper.character_names.add(character.getName());
             characterElementWrapper.character_subnames.add(Item.ROLES.get(character.getVns().get(0)[Item.ROLE_INDEX].toString()));
+            characterElementWrapper.character_ids.add(character.getId());
         }
         return characterElementWrapper;
     }
@@ -248,6 +249,7 @@ public class VNDetailsFactory {
         public List<String> character_images = new ArrayList<>();
         public List<String> character_names = new ArrayList<>();
         public List<String> character_subnames = new ArrayList<>();
+        public List<Integer> character_ids = new ArrayList<>();
     }
 
     public static class ReleaseElementWrapper {

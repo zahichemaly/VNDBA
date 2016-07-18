@@ -189,8 +189,13 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                         break;
 
                     case VNDetailsFactory.TITLE_CHARACTERS:
-                        final Item character = activity.getCharacters().get(expandedListPosition);
-                        convertView.setOnClickListener(new DoubleListListener(activity, character.getName(), CharacterDataFactory.getData(activity, character), null));
+                        int characterId = getElement(listPosition).getPrimaryImages().get(expandedListPosition);
+                        for (Item character : activity.getCharacters()) {
+                            if (character.getId() == characterId) {
+                                convertView.setOnClickListener(new DoubleListListener(activity, character.getName(), CharacterDataFactory.getData(activity, character), null));
+                                break;
+                            }
+                        }
                         break;
 
                     case VNDetailsFactory.TITLE_RELEASES:
