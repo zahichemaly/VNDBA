@@ -13,11 +13,15 @@ public class ConnectionReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        /*
         ConnectivityManager conMan = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = conMan.getActiveNetworkInfo();
+
         if (netInfo == null) {
-            VNDBServer.closeAll();
-        }
+        */
+
+        /* Resetting the sockets everytime the connection changes, to avoid dead sockets */
+        VNDBServer.closeAll();
     }
 
     public static boolean isConnected() {
