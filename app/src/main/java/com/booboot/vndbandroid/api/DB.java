@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.TextUtils;
 
 import com.booboot.vndbandroid.bean.Anime;
 import com.booboot.vndbandroid.bean.Item;
@@ -14,7 +15,11 @@ import com.booboot.vndbandroid.bean.Screen;
 import com.booboot.vndbandroid.bean.cache.VNlistItem;
 import com.booboot.vndbandroid.bean.cache.VotelistItem;
 import com.booboot.vndbandroid.bean.cache.WishlistItem;
+import com.booboot.vndbandroid.util.JSON;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -172,13 +177,13 @@ public class DB extends SQLiteOpenHelper {
                 "waist INTEGER, " +
                 "hip INTEGER, " +
                 "height INTEGER, " +
-                "weight INTEGER " +
+                "weight INTEGER, " +
                 "vns TEXT " + // serialized JSON
                 ")");
 
         db.execSQL("CREATE TABLE " + TABLE_TRAITS + " (" +
                 "character INTEGER, " +
-                "trait TEXT, " +
+                "trait INTEGER, " +
                 "spoiler_level INTEGER, " +
                 "PRIMARY KEY (character, trait) " +
                 ")");
@@ -506,6 +511,136 @@ public class DB extends SQLiteOpenHelper {
 
         db.setTransactionSuccessful();
         db.endTransaction();
+    }
+
+    public static void saveCharacters(Context context, List<Item> characters, int vnId) {
+        if (instance == null) instance = new DB(context);
+        SQLiteDatabase db = instance.getWritableDatabase();
+        // db.execSQL("DELETE FROM " + TABLE_VNLIST);
+
+        StringBuilder[] queries = new StringBuilder[3];
+        queries[0] = new StringBuilder("INSERT INTO ").append(TABLE_VN_CHARACTER).append(" VALUES ");
+        queries[1] = new StringBuilder("INSERT INTO ").append(TABLE_CHARACTER).append(" VALUES ");
+        queries[2] = new StringBuilder("INSERT INTO ").append(TABLE_TRAITS).append(" VALUES ");
+        boolean[] somethingToInsert = new boolean[3];
+
+        /* Retrieving all items to check if we have TO INSERT or UPDATE */
+        LinkedHashMap<Integer, Boolean> alreadyInsertedItems = new LinkedHashMap<>();
+        List<Integer> characterIds = new ArrayList<>();
+        for (Item character : characters) {
+            characterIds.add(character.getId());
+        }
+
+        Cursor cursor = db.rawQuery("SELECT id FROM " + TABLE_CHARACTER + " WHERE id IN (" + TextUtils.join(",", characterIds) + ")", new String[]{});
+        while (cursor.moveToNext()) {
+            alreadyInsertedItems.put(cursor.getInt(0), true);
+        }
+        cursor.close();
+        db.beginTransaction();
+
+        for (Item character : characters) {
+            if (alreadyInsertedItems.get(character.getId()) == null) {
+                String vns = null;
+                try {
+                    vns = JSON.mapper.writeValueAsString(character.getVns());
+                } catch (JsonProcessingException e) {
+                }
+                queries[1].append("(")
+                        .append(character.getId()).append(",")
+                        .append(formatString(character.getName())).append(",")
+                        .append(formatString(character.getOriginal())).append(",")
+                        .append(formatString(character.getGender())).append(",")
+                        .append(formatString(character.getBloodt())).append(",")
+                        .append(character.getBirthday()[0]).append(",")
+                        .append(character.getBirthday()[1]).append(",")
+                        .append(formatString(character.getAliases())).append(",")
+                        .append(formatString(character.getDescription())).append(",")
+                        .append(formatString(character.getImage())).append(",")
+                        .append(character.getBust()).append(",")
+                        .append(character.getWaist()).append(",")
+                        .append(character.getHip()).append(",")
+                        .append(character.getHeight()).append(",")
+                        .append(character.getWeight()).append(",")
+                        .append(formatString(vns))
+                        .append("),");
+                somethingToInsert[1] = true;
+
+                for (int[] trait : character.getTraits()) {
+                    queries[2].append("(")
+                            .append(character.getId()).append(",")
+                            .append(trait[0]).append(",")
+                            .append(trait[1])
+                            .append("),");
+                    somethingToInsert[2] = true;
+                }
+            }
+
+            queries[0].append("(")
+                    .append(vnId).append(",")
+                    .append(character.getId())
+                    .append("),");
+            somethingToInsert[0] = true;
+        }
+
+        for (int i = 0; i < queries.length; i++) {
+            if (somethingToInsert[i]) {
+                queries[i].setLength(queries[i].length() - 1);
+                db.execSQL(queries[i].toString());
+            }
+        }
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
+    public static List<Item> loadCharacters(Context context, int vnId) {
+        if (instance == null) instance = new DB(context);
+        SQLiteDatabase db = instance.getWritableDatabase();
+
+        LinkedHashMap<Integer, Item> res = new LinkedHashMap<>(); // vn -> character
+
+        Cursor[] cursor = new Cursor[2];
+        cursor[0] = db.rawQuery("SELECT c.* FROM  " + TABLE_VN_CHARACTER + " vnc INNER JOIN " + TABLE_CHARACTER + " c ON vnc.character = c.id WHERE vnc.vn = " + vnId, new String[]{});
+
+        while (cursor[0].moveToNext()) {
+            Item character = new Item(cursor[0].getInt(0));
+            character.setName(cursor[0].getString(1));
+            character.setOriginal(cursor[0].getString(2));
+            character.setGender(cursor[0].getString(3));
+            character.setBloodt(cursor[0].getString(4));
+            character.setBirthday(new int[]{cursor[0].getInt(5), cursor[0].getInt(6)});
+            character.setAliases(cursor[0].getString(7));
+            character.setDescription(cursor[0].getString(8));
+            character.setImage(cursor[0].getString(9));
+            character.setBust(cursor[0].getInt(10));
+            character.setWaist(cursor[0].getInt(11));
+            character.setHip(cursor[0].getInt(12));
+            character.setHeight(cursor[0].getInt(13));
+            character.setWeight(cursor[0].getInt(14));
+            try {
+                //noinspection unchecked
+                character.setVns((List<Object[]>) JSON.mapper.readValue(cursor[0].getString(15), new TypeReference<List<Object[]>>() {
+                }));
+            } catch (IOException e) {
+                character.setVns(null);
+            }
+
+            res.put(cursor[0].getInt(0), character);
+        }
+
+        cursor[1] = db.rawQuery("SELECT * FROM " + TABLE_TRAITS + " WHERE character IN (" + TextUtils.join(",", res.keySet()) + ")", new String[]{});
+
+        while (cursor[1].moveToNext()) {
+            Item character = res.get(cursor[1].getInt(0));
+            if (character == null) continue;
+            if (character.getTraits() == null)
+                character.setTraits(new ArrayList<int[]>());
+            character.getTraits().add(new int[]{cursor[1].getInt(1), cursor[1].getInt(2)});
+        }
+
+        for (Cursor c : cursor) c.close();
+
+        return new ArrayList<>(res.values());
     }
 
     public static LinkedHashMap<Integer, VNlistItem> loadVnlist(Context context) {

@@ -469,7 +469,11 @@ public class Item extends VNDBCommand {
     }
 
     public void setVns(List<Object[]> vns) {
-        this.vns = vns;
+        if (vns == null) {
+            this.vns = new ArrayList<>();
+        } else {
+            this.vns = vns;
+        }
     }
 
     public String getType() {

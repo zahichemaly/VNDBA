@@ -5,6 +5,8 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -233,20 +235,18 @@ public class VNDetailsActivity extends AppCompatActivity {
         /* Disables click on certain elements if they have finished loading */
         expandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
             public boolean onGroupClick(ExpandableListView parent, View groupView, int groupPosition, long id) {
-                boolean async = false;
+                boolean hasChildren = parent.getExpandableListAdapter().getChildrenCount(groupPosition) > 0;
+                boolean handledAsynchronously = false;
                 switch ((String) parent.getExpandableListAdapter().getGroup(groupPosition)) {
                     case VNDetailsFactory.TITLE_CHARACTERS:
-                        async = initCharacters(groupView, groupPosition);
+                        handledAsynchronously = initCharacters(groupView, groupPosition);
                         break;
                 }
 
-                if (async) {
-                    return true;
-                } else if (parent.getExpandableListAdapter().getChildrenCount(groupPosition) < 1) {
+                if (!handledAsynchronously && !hasChildren) {
                     Toast.makeText(VNDetailsActivity.this, "Nothing to show here...", Toast.LENGTH_SHORT).show();
-                    return true;
-                } else
-                    return false;
+                }
+                return handledAsynchronously || !hasChildren;
             }
         });
     }
@@ -255,48 +255,73 @@ public class VNDetailsActivity extends AppCompatActivity {
         if (Cache.characters.get(vn.getId()) == null) {
             showGroupLoader(groupView);
 
-            VNDBServer.get("character", Cache.CHARACTER_FLAGS, "(vn = " + vn.getId() + ")", Options.create(true, true, 0), 0, this, new Callback() {
-                @Override
-                protected void config() {
-                    if (results.getItems().isEmpty()) {
-                        characters = Cache.characters.get(vn.getId());
-                    } else {
-                        characters = results.getItems();
-                        /* Sorting the characters with their role (Protagonist then main characters etc.) */
-                        Collections.sort(characters, new Comparator<Item>() {
+            new Thread() {
+                public void run() {
+                    characters = DB.loadCharacters(VNDetailsActivity.this, vn.getId());
+                    if (characters.size() > 0) {
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
                             @Override
-                            public int compare(Item lhs, Item rhs) {
-                                if (lhs.getVns() == null || lhs.getVns().size() < 1 || lhs.getVns().get(0).length < 1 || rhs.getVns() == null || rhs.getVns().size() < 1 || rhs.getVns().get(0).length < 1)
-                                    return 0;
-                                String leftRole = (String) lhs.getVns().get(0)[Item.ROLE_INDEX];
-                                String rightRole = (String) rhs.getVns().get(0)[Item.ROLE_INDEX];
-                                return Integer.valueOf(Item.ROLES_KEY.indexOf(leftRole)).compareTo(Item.ROLES_KEY.indexOf(rightRole));
+                            public void run() {
+                                Cache.characters.put(vn.getId(), characters);
+                                initCharacterElement(groupView, groupPosition);
                             }
                         });
-                        Cache.characters.put(vn.getId(), characters);
-                        Cache.saveToCache(VNDetailsActivity.this, Cache.CHARACTERS_CACHE, Cache.characters);
+                    } else {
+                        VNDBServer.get("character", Cache.CHARACTER_FLAGS, "(vn = " + vn.getId() + ")", Options.create(true, true, 0), 0, VNDetailsActivity.this, new Callback() {
+                            @Override
+                            protected void config() {
+                                if (results.getItems().isEmpty()) {
+                                    characters = Cache.characters.get(vn.getId());
+                                } else {
+                                    characters = results.getItems();
+                                    /* Sorting the characters with their role (Protagonist then main characters etc.) */
+                                    Collections.sort(characters, new Comparator<Item>() {
+                                        @Override
+                                        public int compare(Item lhs, Item rhs) {
+                                            if (lhs.getVns() == null || lhs.getVns().size() < 1 || lhs.getVns().get(0).length < 1 || rhs.getVns() == null || rhs.getVns().size() < 1 || rhs.getVns().get(0).length < 1)
+                                                return 0;
+                                            String leftRole = (String) lhs.getVns().get(0)[Item.ROLE_INDEX];
+                                            String rightRole = (String) rhs.getVns().get(0)[Item.ROLE_INDEX];
+                                            return Integer.valueOf(Item.ROLES_KEY.indexOf(leftRole)).compareTo(Item.ROLES_KEY.indexOf(rightRole));
+                                        }
+                                    });
+                                    Cache.characters.put(vn.getId(), characters);
+                                    DB.saveCharacters(VNDetailsActivity.this, characters, vn.getId());
+                                }
+
+                                if (characters == null) {
+                                    hideGroupLoader(groupView, groupPosition);
+                                    return;
+                                }
+
+                                initCharacterElement(groupView, groupPosition);
+                            }
+                        }, new Callback() {
+                            @Override
+                            public void config() {
+                                showToast(VNDetailsActivity.this, message);
+                                hideGroupLoader(groupView, groupPosition);
+                            }
+                        });
                     }
-
-                    if (characters == null) {
-                        hideGroupLoader(groupView, groupPosition);
-                        return;
-                    }
-
-                    VNDetailsFactory.CharacterElementWrapper characterElementWrapper = VNDetailsFactory.getCharacters(VNDetailsActivity.this);
-                    characterElement.setPrimaryData(characterElementWrapper.character_names);
-                    characterElement.setSecondaryData(characterElementWrapper.character_subnames);
-                    characterElement.setUrlImages(characterElementWrapper.character_images);
-                    characterElement.setPrimaryImages(characterElementWrapper.character_ids);
-
-                    hideGroupLoader(groupView, groupPosition);
                 }
-            }, Callback.errorCallback(this));
+            }.start();
             return true;
         }
         return false;
     }
 
-    private void hideGroupLoader(View groupView, int groupPosition) {
+    private void initCharacterElement(View groupView, int groupPosition) {
+        VNDetailsFactory.CharacterElementWrapper characterElementWrapper = VNDetailsFactory.getCharacters(VNDetailsActivity.this);
+        characterElement.setPrimaryData(characterElementWrapper.character_names);
+        characterElement.setSecondaryData(characterElementWrapper.character_subnames);
+        characterElement.setUrlImages(characterElementWrapper.character_images);
+        characterElement.setPrimaryImages(characterElementWrapper.character_ids);
+
+        hideGroupLoader(groupView, groupPosition);
+    }
+
+    private void hideGroupLoader(final View groupView, final int groupPosition) {
         expandableListView.expandGroup(groupPosition);
         ImageView groupLoader = (ImageView) groupView.findViewById(R.id.groupLoader);
         groupLoader.clearAnimation();
