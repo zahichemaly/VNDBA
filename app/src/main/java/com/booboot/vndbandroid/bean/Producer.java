@@ -14,6 +14,18 @@ public class Producer extends VNDBCommand {
     private String original;
     private String type;
 
+    public Producer() {
+    }
+
+    public Producer(int id, boolean developer, boolean publisher, String name, String original, String type) {
+        this.id = id;
+        this.developer = developer;
+        this.publisher = publisher;
+        this.name = name;
+        this.original = original;
+        this.type = type;
+    }
+
     public int getId() {
         return id;
     }

@@ -28,6 +28,14 @@ public class Media extends VNDBCommand {
         FULL_TEXT.put("otc", "Other");
     }
 
+    public Media() {
+    }
+
+    public Media(String medium, int qty) {
+        this.medium = medium;
+        this.qty = qty;
+    }
+
     public String getMedium() {
         return medium;
     }

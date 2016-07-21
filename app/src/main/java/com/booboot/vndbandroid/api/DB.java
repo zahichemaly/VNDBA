@@ -10,6 +10,8 @@ import android.text.TextUtils;
 import com.booboot.vndbandroid.bean.Anime;
 import com.booboot.vndbandroid.bean.Item;
 import com.booboot.vndbandroid.bean.Links;
+import com.booboot.vndbandroid.bean.Media;
+import com.booboot.vndbandroid.bean.Producer;
 import com.booboot.vndbandroid.bean.Relation;
 import com.booboot.vndbandroid.bean.Screen;
 import com.booboot.vndbandroid.bean.cache.VNlistItem;
@@ -22,9 +24,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by od on 05/07/2016.
@@ -245,6 +249,12 @@ public class DB extends SQLiteOpenHelper {
                 ")");
 
         db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_VN_CHARACTER + "_vn ON " + TABLE_VN_CHARACTER + "(vn)");
+        db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_TRAITS + "_character ON " + TABLE_TRAITS + "(character)");
+        db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_VN_RELEASE + "_vn ON " + TABLE_VN_RELEASE + "(vn)");
+        db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_RELEASE_LANGUAGES + "_release ON " + TABLE_RELEASE_LANGUAGES + "(release)");
+        db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_RELEASE_PLATFORMS + "_release ON " + TABLE_RELEASE_PLATFORMS + "(release)");
+        db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_RELEASE_MEDIA + "_release ON " + TABLE_RELEASE_MEDIA + "(release)");
+        db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_RELEASE_PRODUCER + "_release ON " + TABLE_RELEASE_PRODUCER + "(release)");
     }
 
     @Override
@@ -502,12 +512,7 @@ public class DB extends SQLiteOpenHelper {
             }
         }
 
-        for (int i = 0; i < queries.length; i++) {
-            if (somethingToInsert[i]) {
-                queries[i].setLength(queries[i].length() - 1);
-                db.execSQL(queries[i].toString());
-            }
-        }
+        exec(db, queries, somethingToInsert);
 
         db.setTransactionSuccessful();
         db.endTransaction();
@@ -526,7 +531,7 @@ public class DB extends SQLiteOpenHelper {
 
         /* Retrieving all items to check if we have TO INSERT or UPDATE */
         LinkedHashMap<Integer, Boolean> alreadyInsertedItems = new LinkedHashMap<>();
-        List<Integer> characterIds = new ArrayList<>();
+        Set<Integer> characterIds = new HashSet<>();
         for (Item character : characters) {
             characterIds.add(character.getId());
         }
@@ -582,12 +587,7 @@ public class DB extends SQLiteOpenHelper {
             somethingToInsert[0] = true;
         }
 
-        for (int i = 0; i < queries.length; i++) {
-            if (somethingToInsert[i]) {
-                queries[i].setLength(queries[i].length() - 1);
-                db.execSQL(queries[i].toString());
-            }
-        }
+        exec(db, queries, somethingToInsert);
 
         db.setTransactionSuccessful();
         db.endTransaction();
@@ -629,13 +629,198 @@ public class DB extends SQLiteOpenHelper {
         }
 
         cursor[1] = db.rawQuery("SELECT * FROM " + TABLE_TRAITS + " WHERE character IN (" + TextUtils.join(",", res.keySet()) + ")", new String[]{});
-
         while (cursor[1].moveToNext()) {
             Item character = res.get(cursor[1].getInt(0));
             if (character == null) continue;
             if (character.getTraits() == null)
                 character.setTraits(new ArrayList<int[]>());
             character.getTraits().add(new int[]{cursor[1].getInt(1), cursor[1].getInt(2)});
+        }
+
+        for (Cursor c : cursor) c.close();
+
+        return new ArrayList<>(res.values());
+    }
+
+    public static void saveReleases(Context context, List<Item> releases, int vnId) {
+        if (instance == null) instance = new DB(context);
+        SQLiteDatabase db = instance.getWritableDatabase();
+        // db.execSQL("DELETE FROM " + TABLE_VNLIST);
+
+        StringBuilder[] queries = new StringBuilder[7];
+        queries[0] = new StringBuilder("INSERT INTO ").append(TABLE_VN_RELEASE).append(" VALUES ");
+        queries[1] = new StringBuilder("INSERT INTO ").append(TABLE_RELEASE).append(" VALUES ");
+        queries[2] = new StringBuilder("INSERT INTO ").append(TABLE_RELEASE_LANGUAGES).append(" VALUES ");
+        queries[3] = new StringBuilder("INSERT INTO ").append(TABLE_RELEASE_PLATFORMS).append(" VALUES ");
+        queries[4] = new StringBuilder("INSERT INTO ").append(TABLE_RELEASE_MEDIA).append(" VALUES ");
+        queries[5] = new StringBuilder("INSERT INTO ").append(TABLE_RELEASE_PRODUCER).append(" VALUES ");
+        queries[6] = new StringBuilder("INSERT INTO ").append(TABLE_PRODUCER).append(" VALUES ");
+        boolean[] somethingToInsert = new boolean[7];
+
+        /* Retrieving all items to check if we have to INSERT or UPDATE */
+        LinkedHashMap<Integer, Boolean> alreadyInsertedReleases = new LinkedHashMap<>();
+        LinkedHashMap<Integer, Boolean> alreadyInsertedProducers = new LinkedHashMap<>();
+        Set<Integer> releasesIds = new HashSet<>();
+        Set<Integer> producersIds = new HashSet<>();
+        for (Item release : releases) {
+            releasesIds.add(release.getId());
+            for (Producer producer : release.getProducers()) {
+                producersIds.add(producer.getId());
+            }
+        }
+
+        Cursor cursor = db.rawQuery("SELECT id FROM " + TABLE_RELEASE + " WHERE id IN (" + TextUtils.join(",", releasesIds) + ")", new String[]{});
+        while (cursor.moveToNext()) {
+            alreadyInsertedReleases.put(cursor.getInt(0), true);
+        }
+        cursor.close();
+        cursor = db.rawQuery("SELECT id FROM " + TABLE_PRODUCER + " WHERE id IN (" + TextUtils.join(",", producersIds) + ")", new String[]{});
+        while (cursor.moveToNext()) {
+            alreadyInsertedProducers.put(cursor.getInt(0), true);
+        }
+        cursor.close();
+        db.beginTransaction();
+
+        for (Item release : releases) {
+            if (alreadyInsertedReleases.get(release.getId()) == null) {
+                queries[1].append("(")
+                        .append(release.getId()).append(",")
+                        .append(formatString(release.getTitle())).append(",")
+                        .append(formatString(release.getOriginal())).append(",")
+                        .append(formatString(release.getReleased())).append(",")
+                        .append(formatString(release.getType())).append(",")
+                        .append(formatBool(release.isPatch())).append(",")
+                        .append(formatBool(release.isFreeware())).append(",")
+                        .append(formatBool(release.isDoujin())).append(",")
+                        .append(formatString(release.getWebsite())).append(",")
+                        .append(formatString(release.getNotes())).append(",")
+                        .append(release.getMinage()).append(",")
+                        .append(formatString(release.getGtin())).append(",")
+                        .append(formatString(release.getCatalog()))
+                        .append("),");
+                somethingToInsert[1] = true;
+
+                for (String language : release.getLanguages()) {
+                    queries[2].append("(")
+                            .append(release.getId()).append(",")
+                            .append(formatString(language))
+                            .append("),");
+                    somethingToInsert[2] = true;
+                }
+
+                for (String platform : release.getPlatforms()) {
+                    queries[3].append("(")
+                            .append(release.getId()).append(",")
+                            .append(formatString(platform))
+                            .append("),");
+                    somethingToInsert[3] = true;
+                }
+
+                for (Media media : release.getMedia()) {
+                    queries[4].append("(")
+                            .append(release.getId()).append(",")
+                            .append(formatString(media.getMedium())).append(",")
+                            .append(media.getQty())
+                            .append("),");
+                    somethingToInsert[4] = true;
+                }
+
+                for (Producer producer : release.getProducers()) {
+                    queries[5].append("(")
+                            .append(release.getId()).append(",")
+                            .append(producer.getId()).append(",")
+                            .append(formatBool(producer.isDeveloper())).append(",")
+                            .append(formatBool(producer.isPublisher()))
+                            .append("),");
+                    somethingToInsert[5] = true;
+
+                    if (alreadyInsertedProducers.get(producer.getId()) == null) {
+                        queries[6].append("(")
+                                .append(producer.getId()).append(",")
+                                .append(formatString(producer.getName())).append(",")
+                                .append(formatString(producer.getOriginal())).append(",")
+                                .append(formatString(producer.getType()))
+                                .append("),");
+                        somethingToInsert[6] = true;
+                    }
+                }
+            }
+
+            queries[0].append("(")
+                    .append(vnId).append(",")
+                    .append(release.getId())
+                    .append("),");
+            somethingToInsert[0] = true;
+        }
+
+        exec(db, queries, somethingToInsert);
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
+    public static List<Item> loadReleases(Context context, int vnId) {
+        if (instance == null) instance = new DB(context);
+        SQLiteDatabase db = instance.getWritableDatabase();
+
+        LinkedHashMap<Integer, Item> res = new LinkedHashMap<>(); // vn -> release
+
+        Cursor[] cursor = new Cursor[5];
+
+        cursor[0] = db.rawQuery("SELECT r.* FROM  " + TABLE_VN_RELEASE + " vnr INNER JOIN " + TABLE_RELEASE + " r ON vnr.release = r.id WHERE vnr.vn = " + vnId, new String[]{});
+        while (cursor[0].moveToNext()) {
+            Item release = new Item(cursor[0].getInt(0));
+            release.setTitle(cursor[0].getString(1));
+            release.setOriginal(cursor[0].getString(2));
+            release.setReleased(cursor[0].getString(3));
+            release.setType(cursor[0].getString(4));
+            release.setPatch(cursor[0].getInt(5) == 1);
+            release.setFreeware(cursor[0].getInt(6) == 1);
+            release.setDoujin(cursor[0].getInt(7) == 1);
+            release.setWebsite(cursor[0].getString(8));
+            release.setNotes(cursor[0].getString(9));
+            release.setMinage(cursor[0].getInt(10));
+            release.setGtin(cursor[0].getString(11));
+            release.setCatalog(cursor[0].getString(12));
+
+            res.put(cursor[0].getInt(0), release);
+        }
+
+        String releasesIds = TextUtils.join(",", res.keySet());
+        cursor[1] = db.rawQuery("SELECT * FROM " + TABLE_RELEASE_LANGUAGES + " WHERE release IN (" + releasesIds + ")", new String[]{});
+        while (cursor[1].moveToNext()) {
+            Item release = res.get(cursor[1].getInt(0));
+            if (release == null) continue;
+            if (release.getLanguages() == null)
+                release.setLanguages(new ArrayList<String>());
+            release.getLanguages().add(cursor[1].getString(1));
+        }
+
+        cursor[2] = db.rawQuery("SELECT * FROM " + TABLE_RELEASE_PLATFORMS + " WHERE release IN (" + releasesIds + ")", new String[]{});
+        while (cursor[2].moveToNext()) {
+            Item release = res.get(cursor[2].getInt(0));
+            if (release == null) continue;
+            if (release.getPlatforms() == null)
+                release.setPlatforms(new ArrayList<String>());
+            release.getPlatforms().add(cursor[2].getString(1));
+        }
+
+        cursor[3] = db.rawQuery("SELECT * FROM " + TABLE_RELEASE_MEDIA + " WHERE release IN (" + releasesIds + ")", new String[]{});
+        while (cursor[3].moveToNext()) {
+            Item release = res.get(cursor[3].getInt(0));
+            if (release == null) continue;
+            if (release.getMedia() == null)
+                release.setMedia(new ArrayList<Media>());
+            release.getMedia().add(new Media(cursor[3].getString(1), cursor[3].getInt(2)));
+        }
+
+        cursor[4] = db.rawQuery("SELECT * FROM  " + TABLE_RELEASE_PRODUCER + " rp INNER JOIN " + TABLE_PRODUCER + " p ON rp.producer = p.id WHERE rp.release IN (" + releasesIds + ")", new String[]{});
+        while (cursor[4].moveToNext()) {
+            Item release = res.get(cursor[4].getInt(0));
+            if (release == null) continue;
+            if (release.getProducers() == null)
+                release.setProducers(new ArrayList<Producer>());
+            release.getProducers().add(new Producer(cursor[3].getInt(1), cursor[3].getInt(2) == 1, cursor[3].getInt(3) == 1, cursor[3].getString(4), cursor[3].getString(5), cursor[3].getString(6)));
         }
 
         for (Cursor c : cursor) c.close();
@@ -833,6 +1018,15 @@ public class DB extends SQLiteOpenHelper {
         db.execSQL("DELETE FROM " + TABLE_RELEASE_MEDIA);
         db.execSQL("DELETE FROM " + TABLE_RELEASE_PRODUCER);
         db.execSQL("DELETE FROM " + TABLE_PRODUCER);
+    }
+
+    private static void exec(SQLiteDatabase db, StringBuilder[] queries, boolean[] somethingToInsert) {
+        for (int i = 0; i < queries.length; i++) {
+            if (somethingToInsert[i]) {
+                queries[i].setLength(queries[i].length() - 1);
+                db.execSQL(queries[i].toString());
+            }
+        }
     }
 
     private static String formatString(String value) {
