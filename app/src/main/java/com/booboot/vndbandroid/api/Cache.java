@@ -275,32 +275,10 @@ public class Cache {
     public static void saveToCache(Context context, String filename, Object object) {
         File file = new File(context.getFilesDir(), filename);
         try {
-            if (filename.equals(CHARACTERS_CACHE)) {
-                /* Optimization : saving to cache characters that only are in the lists (to save space) */
-                @SuppressWarnings("unchecked")
-                LinkedHashMap<Integer, List<Item>> castObject = new LinkedHashMap<>(characters);
-                for (int vnId : new ArrayList<>(castObject.keySet())) {
-                    if (vnlist.get(vnId) == null && votelist.get(vnId) == null && wishlist.get(vnId) == null)
-                        castObject.remove(vnId);
-                }
-                JSON.mapper.writeValue(file, castObject);
-            } else if (filename.equals(RELEASES_CACHE)) {
-                /* Optimization : saving to cache releases that only are in the lists (to save space) */
-                @SuppressWarnings("unchecked")
-                LinkedHashMap<Integer, List<Item>> castObject = new LinkedHashMap<>(releases);
-                for (int vnId : new ArrayList<>(castObject.keySet())) {
-                    if (vnlist.get(vnId) == null && votelist.get(vnId) == null && wishlist.get(vnId) == null)
-                        castObject.remove(vnId);
-                }
-                JSON.mapper.writeValue(file, castObject);
-            } else {
-                JSON.mapper.writeValue(file, object);
-            }
+            JSON.mapper.writeValue(file, object);
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        /* TODO : everything above kept just to make everything work. Remove when everything below is okay */
     }
 
     public static boolean loadFromCache(Context context) {

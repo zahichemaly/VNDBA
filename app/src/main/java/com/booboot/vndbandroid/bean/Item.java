@@ -18,17 +18,17 @@ public class Item extends VNDBCommand {
     private String title;
     private String original;
     private String released;
-    private List<String> languages;
-    private List<String> orig_lang;
-    private List<String> platforms;
+    private List<String> languages = new ArrayList<>();
+    private List<String> orig_lang = new ArrayList<>();
+    private List<String> platforms = new ArrayList<>();
     private String aliases;
     private int length;
     private String description;
     private Links links;
     private String image;
     private boolean image_nsfw;
-    private List<Anime> anime;
-    private List<Relation> relations;
+    private List<Anime> anime = new ArrayList<>();
+    private List<Relation> relations = new ArrayList<>();
     private List<List<Number>> tags;
     private double popularity;
     private double rating;
@@ -64,8 +64,8 @@ public class Item extends VNDBCommand {
     private int hip;
     private int height;
     private int weight;
-    private List<int[]> traits;
-    private List<Object[]> vns;
+    private List<int[]> traits = new ArrayList<>();
+    private List<Object[]> vns = new ArrayList<>();
 
     /* Release-specific properties */
     private String type;
@@ -76,8 +76,8 @@ public class Item extends VNDBCommand {
     private int minage;
     private String gtin;
     private String catalog;
-    private List<Media> media;
-    private List<Producer> producers;
+    private List<Media> media = new ArrayList<>();
+    private List<Producer> producers = new ArrayList<>();
 
     public Item() {
     }
@@ -545,7 +545,11 @@ public class Item extends VNDBCommand {
     }
 
     public void setMedia(List<Media> media) {
-        this.media = media;
+        if (media == null) {
+            this.media = new ArrayList<>();
+        } else {
+            this.media = media;
+        }
     }
 
     public List<Producer> getProducers() {
@@ -553,6 +557,10 @@ public class Item extends VNDBCommand {
     }
 
     public void setProducers(List<Producer> producers) {
-        this.producers = producers;
+        if (producers == null) {
+            this.producers = new ArrayList<>();
+        } else {
+            this.producers = producers;
+        }
     }
 }

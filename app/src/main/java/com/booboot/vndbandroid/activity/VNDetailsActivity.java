@@ -104,7 +104,6 @@ public class VNDetailsActivity extends AppCompatActivity {
                 spoilerLevel = SettingsManager.getSpoilerLevel(this);
         }
 
-        initReleases();
         init();
     }
 
@@ -241,6 +240,9 @@ public class VNDetailsActivity extends AppCompatActivity {
                     case VNDetailsFactory.TITLE_CHARACTERS:
                         handledAsynchronously = initCharacters(groupView, groupPosition);
                         break;
+                    case VNDetailsFactory.TITLE_RELEASES:
+                        handledAsynchronously = initReleases(groupView, groupPosition);
+                        break;
                 }
 
                 if (!handledAsynchronously && !hasChildren) {
@@ -337,31 +339,62 @@ public class VNDetailsActivity extends AppCompatActivity {
         groupLoader.setVisibility(View.VISIBLE);
     }
 
-    private void initReleases() {
+    private void initReleaseElement(List<Item> releasesList, View groupView, int groupPosition) {
+        groupReleasesByLanguage(releasesList);
+
+        VNDetailsFactory.ReleaseElementWrapper releaseElementWrapper = VNDetailsFactory.getReleases(VNDetailsActivity.this);
+        releaseElement.setPrimaryImages(releaseElementWrapper.release_images);
+        releaseElement.setPrimaryData(releaseElementWrapper.release_names);
+        releaseElement.setSecondaryData(releaseElementWrapper.release_subnames);
+        releaseElement.setSecondaryImages(releaseElementWrapper.release_ids);
+
+        hideGroupLoader(groupView, groupPosition);
+    }
+
+    private boolean initReleases(final View groupView, final int groupPosition) {
         if (Cache.releases.get(vn.getId()) == null) {
-            VNDBServer.get("release", Cache.RELEASE_FLAGS, "(vn = " + vn.getId() + ")", Options.create(1, 25, "released", false, true, true, 0), 1, this, new Callback() {
-                @Override
-                protected void config() {
-                    List<Item> releasesList;
-                    if (results.getItems().isEmpty()) {
-                        releasesList = Cache.releases.get(vn.getId());
+            showGroupLoader(groupView);
+
+            new Thread() {
+                public void run() {
+                    final List<Item> releasesList = DB.loadReleases(VNDetailsActivity.this, vn.getId());
+                    if (releasesList.size() > 0) {
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Cache.releases.put(vn.getId(), releasesList);
+                                initReleaseElement(releasesList, groupView, groupPosition);
+                            }
+                        });
                     } else {
-                        releasesList = results.getItems();
-                        Cache.releases.put(vn.getId(), releasesList);
-                        Cache.saveToCache(VNDetailsActivity.this, Cache.RELEASES_CACHE, Cache.releases);
+                        VNDBServer.get("release", Cache.RELEASE_FLAGS, "(vn = " + vn.getId() + ")", Options.create(1, 25, "released", false, true, true, 0), 1, VNDetailsActivity.this, new Callback() {
+                            @Override
+                            protected void config() {
+                                List<Item> releasesList;
+                                if (results.getItems().isEmpty()) {
+                                    releasesList = Cache.releases.get(vn.getId());
+                                } else {
+                                    releasesList = results.getItems();
+                                    Cache.releases.put(vn.getId(), releasesList);
+                                    DB.saveReleases(VNDetailsActivity.this, releasesList, vn.getId());
+                                }
+
+                                if (releasesList == null) return;
+                                initReleaseElement(releasesList, groupView, groupPosition);
+                            }
+                        }, new Callback() {
+                            @Override
+                            public void config() {
+                                showToast(VNDetailsActivity.this, message);
+                                hideGroupLoader(groupView, groupPosition);
+                            }
+                        });
                     }
-
-                    if (releasesList == null) return;
-                    groupReleasesByLanguage(releasesList);
-
-                    VNDetailsFactory.ReleaseElementWrapper releaseElementWrapper = VNDetailsFactory.getReleases(VNDetailsActivity.this);
-                    releaseElement.setPrimaryImages(releaseElementWrapper.release_images);
-                    releaseElement.setPrimaryData(releaseElementWrapper.release_names);
-                    releaseElement.setSecondaryData(releaseElementWrapper.release_subnames);
-                    releaseElement.setSecondaryImages(releaseElementWrapper.release_ids);
                 }
-            }, Callback.errorCallback(this));
+            }.start();
+            return true;
         }
+        return false;
     }
 
     /**

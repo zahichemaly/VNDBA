@@ -699,6 +699,7 @@ public class DB extends SQLiteOpenHelper {
                         .append(formatString(release.getCatalog()))
                         .append("),");
                 somethingToInsert[1] = true;
+                alreadyInsertedReleases.put(release.getId(), true);
 
                 for (String language : release.getLanguages()) {
                     queries[2].append("(")
@@ -742,6 +743,7 @@ public class DB extends SQLiteOpenHelper {
                                 .append(formatString(producer.getType()))
                                 .append("),");
                         somethingToInsert[6] = true;
+                        alreadyInsertedProducers.put(producer.getId(), true);
                     }
                 }
             }
@@ -820,7 +822,7 @@ public class DB extends SQLiteOpenHelper {
             if (release == null) continue;
             if (release.getProducers() == null)
                 release.setProducers(new ArrayList<Producer>());
-            release.getProducers().add(new Producer(cursor[3].getInt(1), cursor[3].getInt(2) == 1, cursor[3].getInt(3) == 1, cursor[3].getString(4), cursor[3].getString(5), cursor[3].getString(6)));
+            release.getProducers().add(new Producer(cursor[4].getInt(1), cursor[4].getInt(2) == 1, cursor[4].getInt(3) == 1, cursor[4].getString(4), cursor[4].getString(5), cursor[4].getString(6)));
         }
 
         for (Cursor c : cursor) c.close();
