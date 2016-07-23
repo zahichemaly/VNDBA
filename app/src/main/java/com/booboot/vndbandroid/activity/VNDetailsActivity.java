@@ -82,8 +82,10 @@ public class VNDetailsActivity extends AppCompatActivity {
 
     private ExpandableListView expandableListView;
     private ExpandableListAdapter expandableListAdapter;
-    private VNDetailsElement characterElement;
-    private VNDetailsElement releaseElement;
+
+    private VNDetailsElement charactersSubmenu;
+    private VNDetailsElement releasesSubmenu;
+    private VNDetailsElement languagesSubmenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +118,9 @@ public class VNDetailsActivity extends AppCompatActivity {
         }
         if (Cache.releases.get(vn.getId()) != null) {
             groupReleasesByLanguage(Cache.releases.get(vn.getId()));
+        }
+        if (vn.getLanguages() == null && Cache.vns.get(vn.getId()) != null && Cache.vns.get(vn.getId()).getLanguages() != null) {
+            vn.setLanguages(Cache.vns.get(vn.getId()).getLanguages());
         }
 
         initExpandableListView();
@@ -243,6 +248,9 @@ public class VNDetailsActivity extends AppCompatActivity {
                     case VNDetailsFactory.TITLE_RELEASES:
                         handledAsynchronously = initReleases(groupView, groupPosition);
                         break;
+                    case VNDetailsFactory.TITLE_LANGUAGES:
+                        handledAsynchronously = initLanguages(groupView, groupPosition);
+                        break;
                 }
 
                 if (!handledAsynchronously && !hasChildren) {
@@ -273,6 +281,7 @@ public class VNDetailsActivity extends AppCompatActivity {
                             @Override
                             protected void config() {
                                 if (results.getItems().isEmpty()) {
+                                    Cache.characters.put(vn.getId(), new ArrayList<Item>());
                                     characters = Cache.characters.get(vn.getId());
                                 } else {
                                     characters = results.getItems();
@@ -314,21 +323,21 @@ public class VNDetailsActivity extends AppCompatActivity {
     }
 
     private void initCharacterElement(View groupView, int groupPosition) {
-        VNDetailsFactory.CharacterElementWrapper characterElementWrapper = VNDetailsFactory.getCharacters(VNDetailsActivity.this);
-        characterElement.setPrimaryData(characterElementWrapper.character_names);
-        characterElement.setSecondaryData(characterElementWrapper.character_subnames);
-        characterElement.setUrlImages(characterElementWrapper.character_images);
-        characterElement.setPrimaryImages(characterElementWrapper.character_ids);
-
+        VNDetailsFactory.setCharactersSubmenu(VNDetailsActivity.this);
         hideGroupLoader(groupView, groupPosition);
     }
 
     private void hideGroupLoader(final View groupView, final int groupPosition) {
-        expandableListView.expandGroup(groupPosition);
+        expandableListView.expandGroup(groupPosition, true);
         ImageView groupLoader = (ImageView) groupView.findViewById(R.id.groupLoader);
         groupLoader.clearAnimation();
         groupLoader.setVisibility(View.INVISIBLE);
         groupView.setEnabled(true);
+
+        boolean hasChildren = expandableListAdapter.getChildrenCount(groupPosition) > 0;
+        if (!hasChildren) {
+            Toast.makeText(VNDetailsActivity.this, "Nothing to show here...", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void showGroupLoader(View groupView) {
@@ -341,13 +350,12 @@ public class VNDetailsActivity extends AppCompatActivity {
 
     private void initReleaseElement(List<Item> releasesList, View groupView, int groupPosition) {
         groupReleasesByLanguage(releasesList);
+        VNDetailsFactory.setReleasesSubmenu(VNDetailsActivity.this);
+        hideGroupLoader(groupView, groupPosition);
+    }
 
-        VNDetailsFactory.ReleaseElementWrapper releaseElementWrapper = VNDetailsFactory.getReleases(VNDetailsActivity.this);
-        releaseElement.setPrimaryImages(releaseElementWrapper.release_images);
-        releaseElement.setPrimaryData(releaseElementWrapper.release_names);
-        releaseElement.setSecondaryData(releaseElementWrapper.release_subnames);
-        releaseElement.setSecondaryImages(releaseElementWrapper.release_ids);
-
+    private void initLanguageElement(View groupView, int groupPosition) {
+        VNDetailsFactory.setLanguagesSubmenu(this);
         hideGroupLoader(groupView, groupPosition);
     }
 
@@ -372,6 +380,7 @@ public class VNDetailsActivity extends AppCompatActivity {
                             protected void config() {
                                 List<Item> releasesList;
                                 if (results.getItems().isEmpty()) {
+                                    Cache.releases.put(vn.getId(), new ArrayList<Item>());
                                     releasesList = Cache.releases.get(vn.getId());
                                 } else {
                                     releasesList = results.getItems();
@@ -390,6 +399,27 @@ public class VNDetailsActivity extends AppCompatActivity {
                             }
                         });
                     }
+                }
+            }.start();
+            return true;
+        }
+        return false;
+    }
+
+    private boolean initLanguages(final View groupView, final int groupPosition) {
+        if (vn.getLanguages() == null) {
+            showGroupLoader(groupView);
+
+            new Thread() {
+                public void run() {
+                    vn.setLanguages(DB.loadLanguages(VNDetailsActivity.this, vn.getId()));
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Cache.vns.put(vn.getId(), vn);
+                            initLanguageElement(groupView, groupPosition);
+                        }
+                    });
                 }
             }.start();
             return true;
@@ -517,20 +547,20 @@ public class VNDetailsActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    public void setCharacterElement(VNDetailsElement characterElement) {
-        this.characterElement = characterElement;
+    public void setCharactersSubmenu(VNDetailsElement characterElement) {
+        this.charactersSubmenu = characterElement;
     }
 
-    public VNDetailsElement getReleaseElement() {
-        return releaseElement;
+    public VNDetailsElement getReleasesSubmenu() {
+        return releasesSubmenu;
     }
 
-    public void setReleaseElement(VNDetailsElement releaseElement) {
-        this.releaseElement = releaseElement;
+    public void setReleasesSubmenu(VNDetailsElement releasesSubmenu) {
+        this.releasesSubmenu = releasesSubmenu;
     }
 
-    public VNDetailsElement getCharacterElement() {
-        return characterElement;
+    public VNDetailsElement getCharactersSubmenu() {
+        return charactersSubmenu;
     }
 
     public Item getVn() {
@@ -543,5 +573,13 @@ public class VNDetailsActivity extends AppCompatActivity {
 
     public LinkedHashMap<String, List<Item>> getReleases() {
         return releases;
+    }
+
+    public void setLanguagesSubmenu(VNDetailsElement languagesSubmenu) {
+        this.languagesSubmenu = languagesSubmenu;
+    }
+
+    public VNDetailsElement getLanguagesSubmenu() {
+        return languagesSubmenu;
     }
 }

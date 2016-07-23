@@ -322,7 +322,7 @@ public class VNDBServer {
             return null;
         }
         if (BuildConfig.DEBUG) {
-            //   log(response.toString());
+           //    log(response.toString());
         }
 
         int delimiterIndex = response.indexOf("{");

@@ -18,7 +18,7 @@ public class Item extends VNDBCommand {
     private String title;
     private String original;
     private String released;
-    private List<String> languages = new ArrayList<>();
+    private List<String> languages;
     private List<String> orig_lang = new ArrayList<>();
     private List<String> platforms = new ArrayList<>();
     private String aliases;

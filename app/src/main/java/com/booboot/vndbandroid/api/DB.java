@@ -248,6 +248,7 @@ public class DB extends SQLiteOpenHelper {
                 "type TEXT " +
                 ")");
 
+        db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_LANGUAGES + "_vn ON " + TABLE_LANGUAGES + "(vn)");
         db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_VN_CHARACTER + "_vn ON " + TABLE_VN_CHARACTER + "(vn)");
         db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_TRAITS + "_character ON " + TABLE_TRAITS + "(character)");
         db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_VN_RELEASE + "_vn ON " + TABLE_VN_RELEASE + "(vn)");
@@ -878,7 +879,6 @@ public class DB extends SQLiteOpenHelper {
         SQLiteDatabase db = instance.getWritableDatabase();
 
         LinkedHashMap<Integer, Item> res = new LinkedHashMap<>();
-        LinkedHashMap<Integer, List<String>> languagesRes = new LinkedHashMap<>();
         LinkedHashMap<Integer, List<String>> origLangsRes = new LinkedHashMap<>();
         LinkedHashMap<Integer, List<String>> platformsRes = new LinkedHashMap<>();
         LinkedHashMap<Integer, List<Anime>> animesRes = new LinkedHashMap<>();
@@ -886,79 +886,72 @@ public class DB extends SQLiteOpenHelper {
         LinkedHashMap<Integer, List<List<Number>>> tagsRes = new LinkedHashMap<>();
         LinkedHashMap<Integer, List<Screen>> screensRes = new LinkedHashMap<>();
 
-        Cursor[] cursor = new Cursor[8];
+        Cursor[] cursor = new Cursor[7];
         cursor[0] = db.rawQuery("select * from " + TABLE_VN, new String[]{});
-        cursor[1] = db.rawQuery("select * from " + TABLE_LANGUAGES, new String[]{});
-        cursor[2] = db.rawQuery("select * from " + TABLE_ORIG_LANG, new String[]{});
-        cursor[3] = db.rawQuery("select * from " + TABLE_PLATFORMS, new String[]{});
-        cursor[4] = db.rawQuery("select * from " + TABLE_ANIME, new String[]{});
-        cursor[5] = db.rawQuery("select * from " + TABLE_RELATION, new String[]{});
-        cursor[6] = db.rawQuery("select * from " + TABLE_TAGS, new String[]{});
-        cursor[7] = db.rawQuery("select * from " + TABLE_SCREENS, new String[]{});
+        cursor[1] = db.rawQuery("select * from " + TABLE_ORIG_LANG, new String[]{});
+        cursor[2] = db.rawQuery("select * from " + TABLE_PLATFORMS, new String[]{});
+        cursor[3] = db.rawQuery("select * from " + TABLE_ANIME, new String[]{});
+        cursor[4] = db.rawQuery("select * from " + TABLE_RELATION, new String[]{});
+        cursor[5] = db.rawQuery("select * from " + TABLE_TAGS, new String[]{});
+        cursor[6] = db.rawQuery("select * from " + TABLE_SCREENS, new String[]{});
 
         while (cursor[1].moveToNext()) {
-            if (languagesRes.get(cursor[1].getInt(0)) == null)
-                languagesRes.put(cursor[1].getInt(0), new ArrayList<String>());
-            languagesRes.get(cursor[1].getInt(0)).add(cursor[1].getString(1));
+            if (origLangsRes.get(cursor[1].getInt(0)) == null)
+                origLangsRes.put(cursor[1].getInt(0), new ArrayList<String>());
+            origLangsRes.get(cursor[1].getInt(0)).add(cursor[1].getString(1));
         }
 
         while (cursor[2].moveToNext()) {
-            if (origLangsRes.get(cursor[2].getInt(0)) == null)
-                origLangsRes.put(cursor[2].getInt(0), new ArrayList<String>());
-            origLangsRes.get(cursor[2].getInt(0)).add(cursor[2].getString(1));
+            if (platformsRes.get(cursor[2].getInt(0)) == null)
+                platformsRes.put(cursor[2].getInt(0), new ArrayList<String>());
+            platformsRes.get(cursor[2].getInt(0)).add(cursor[2].getString(1));
         }
 
         while (cursor[3].moveToNext()) {
-            if (platformsRes.get(cursor[3].getInt(0)) == null)
-                platformsRes.put(cursor[3].getInt(0), new ArrayList<String>());
-            platformsRes.get(cursor[3].getInt(0)).add(cursor[3].getString(1));
+            if (animesRes.get(cursor[3].getInt(1)) == null)
+                animesRes.put(cursor[3].getInt(1), new ArrayList<Anime>());
+            Anime anime = new Anime();
+            anime.setId(cursor[3].getInt(0));
+            anime.setAnn_id(cursor[3].getInt(2));
+            anime.setNfo_id(cursor[3].getString(3));
+            anime.setTitle_romaji(cursor[3].getString(4));
+            anime.setTitle_kanji(cursor[3].getString(5));
+            anime.setYear(cursor[3].getInt(6));
+            anime.setType(cursor[3].getString(7));
+            animesRes.get(cursor[3].getInt(1)).add(anime);
         }
 
         while (cursor[4].moveToNext()) {
-            if (animesRes.get(cursor[4].getInt(1)) == null)
-                animesRes.put(cursor[4].getInt(1), new ArrayList<Anime>());
-            Anime anime = new Anime();
-            anime.setId(cursor[4].getInt(0));
-            anime.setAnn_id(cursor[4].getInt(2));
-            anime.setNfo_id(cursor[4].getString(3));
-            anime.setTitle_romaji(cursor[4].getString(4));
-            anime.setTitle_kanji(cursor[4].getString(5));
-            anime.setYear(cursor[4].getInt(6));
-            anime.setType(cursor[4].getString(7));
-            animesRes.get(cursor[4].getInt(1)).add(anime);
+            if (relationsRes.get(cursor[4].getInt(1)) == null)
+                relationsRes.put(cursor[4].getInt(1), new ArrayList<Relation>());
+            Relation relation = new Relation();
+            relation.setId(cursor[4].getInt(0));
+            relation.setRelation(cursor[4].getString(2));
+            relation.setTitle(cursor[4].getString(3));
+            relation.setOriginal(cursor[4].getString(4));
+            relationsRes.get(cursor[4].getInt(1)).add(relation);
         }
 
         while (cursor[5].moveToNext()) {
-            if (relationsRes.get(cursor[5].getInt(1)) == null)
-                relationsRes.put(cursor[5].getInt(1), new ArrayList<Relation>());
-            Relation relation = new Relation();
-            relation.setId(cursor[5].getInt(0));
-            relation.setRelation(cursor[5].getString(2));
-            relation.setTitle(cursor[5].getString(3));
-            relation.setOriginal(cursor[5].getString(4));
-            relationsRes.get(cursor[5].getInt(1)).add(relation);
+            if (tagsRes.get(cursor[5].getInt(1)) == null)
+                tagsRes.put(cursor[5].getInt(1), new ArrayList<List<Number>>());
+            List<Number> tag = new ArrayList<>();
+            tag.add(cursor[5].getInt(0));
+            tag.add(cursor[5].getInt(2));
+            tag.add(cursor[5].getInt(3));
+            tagsRes.get(cursor[5].getInt(1)).add(tag);
         }
 
         while (cursor[6].moveToNext()) {
-            if (tagsRes.get(cursor[6].getInt(1)) == null)
-                tagsRes.put(cursor[6].getInt(1), new ArrayList<List<Number>>());
-            List<Number> tag = new ArrayList<>();
-            tag.add(cursor[6].getInt(0));
-            tag.add(cursor[6].getInt(2));
-            tag.add(cursor[6].getInt(3));
-            tagsRes.get(cursor[6].getInt(1)).add(tag);
-        }
-
-        while (cursor[7].moveToNext()) {
-            if (screensRes.get(cursor[7].getInt(0)) == null)
-                screensRes.put(cursor[7].getInt(0), new ArrayList<Screen>());
+            if (screensRes.get(cursor[6].getInt(0)) == null)
+                screensRes.put(cursor[6].getInt(0), new ArrayList<Screen>());
             Screen screen = new Screen();
-            screen.setImage(cursor[7].getString(1));
-            screen.setRid(cursor[7].getInt(2));
-            screen.setNsfw(cursor[7].getInt(3) == 1);
-            screen.setHeight(cursor[7].getInt(4));
-            screen.setWidth(cursor[7].getInt(5));
-            screensRes.get(cursor[7].getInt(0)).add(screen);
+            screen.setImage(cursor[6].getString(1));
+            screen.setRid(cursor[6].getInt(2));
+            screen.setNsfw(cursor[6].getInt(3) == 1);
+            screen.setHeight(cursor[6].getInt(4));
+            screen.setWidth(cursor[6].getInt(5));
+            screensRes.get(cursor[6].getInt(0)).add(screen);
         }
 
         while (cursor[0].moveToNext()) {
@@ -979,7 +972,6 @@ public class DB extends SQLiteOpenHelper {
             vn.setPopularity(cursor[0].getDouble(12));
             vn.setRating(cursor[0].getDouble(13));
             vn.setVotecount(cursor[0].getInt(14));
-            vn.setLanguages(languagesRes.get(vn.getId()));
             vn.setOrig_lang(origLangsRes.get(vn.getId()));
             vn.setPlatforms(platformsRes.get(vn.getId()));
             vn.setAnime(animesRes.get(vn.getId()));
@@ -992,6 +984,21 @@ public class DB extends SQLiteOpenHelper {
 
         for (Cursor c : cursor) c.close();
 
+        return res;
+    }
+
+    public static List<String> loadLanguages(Context context, int vnId) {
+        if (instance == null) instance = new DB(context);
+        SQLiteDatabase db = instance.getWritableDatabase();
+
+        List<String> res = new ArrayList<>();
+        Cursor cursor = db.rawQuery("select * from " + TABLE_LANGUAGES + " WHERE vn = " + vnId, new String[]{});
+
+        while (cursor.moveToNext()) {
+            res.add(cursor.getString(1));
+        }
+
+        cursor.close();
         return res;
     }
 

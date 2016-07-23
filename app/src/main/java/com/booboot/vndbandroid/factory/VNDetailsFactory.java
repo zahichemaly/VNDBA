@@ -93,19 +93,8 @@ public class VNDetailsFactory {
             }
         }
 
-        if (activity.getCharacters() == null) {
-            activity.setCharacterElement(new VNDetailsElement(null, new ArrayList<String>(), null, null, null, VNDetailsElement.TYPE_SUBTITLE));
-        } else {
-            CharacterElementWrapper characters = getCharacters(activity);
-            activity.setCharacterElement(new VNDetailsElement(characters.character_ids, characters.character_names, characters.character_subnames, null, characters.character_images, VNDetailsElement.TYPE_SUBTITLE));
-        }
-
-        if (activity.getReleases() == null) {
-            activity.setReleaseElement(new VNDetailsElement(null, new ArrayList<String>(), null, null, null, VNDetailsElement.TYPE_SUBTITLE));
-        } else {
-            ReleaseElementWrapper releases = getReleases(activity);
-            activity.setReleaseElement(new VNDetailsElement(releases.release_images, releases.release_names, releases.release_subnames, releases.release_ids, null, VNDetailsElement.TYPE_SUBTITLE));
-        }
+        setCharactersSubmenu(activity);
+        setReleasesSubmenu(activity);
 
         List<String> tags = new ArrayList<>();
         List<Integer> tags_images = new ArrayList<>();
@@ -175,87 +164,116 @@ public class VNDetailsFactory {
             platforms_images.add(Platform.IMAGES.get(platform));
         }
 
-        List<String> languages = new ArrayList<>();
-        List<Integer> languages_flags = new ArrayList<>();
-        for (String language : vn.getLanguages()) {
-            languages.add(Language.FULL_TEXT.get(language));
-            languages_flags.add(Language.FLAGS.get(language));
-        }
+        setLanguagesSubmenu(activity);
 
         expandableListDetail.put(TITLE_INFORMATION, new VNDetailsElement(null, infoLeft, infoRight, infoRightImages, null, VNDetailsElement.TYPE_TEXT));
         expandableListDetail.put(TITLE_DESCRIPTION, new VNDetailsElement(null, description, null, null, null, VNDetailsElement.TYPE_TEXT));
         expandableListDetail.put(TITLE_GENRES, new VNDetailsElement(null, genres, null, null, null, VNDetailsElement.TYPE_TEXT));
-        expandableListDetail.put(TITLE_CHARACTERS, activity.getCharacterElement());
+        expandableListDetail.put(TITLE_CHARACTERS, activity.getCharactersSubmenu());
         expandableListDetail.put(TITLE_SCREENSHOTS, new VNDetailsElement(null, screenshots, null, null, null, VNDetailsElement.TYPE_IMAGES));
         expandableListDetail.put(TITLE_STATS, new VNDetailsElement(null, statLeft, statRight, statRightImages, null, VNDetailsElement.TYPE_TEXT));
         expandableListDetail.put(TITLE_TAGS, new VNDetailsElement(tags_images, tags, null, tags_ids, null, VNDetailsElement.TYPE_TEXT));
-        expandableListDetail.put(TITLE_RELEASES, activity.getReleaseElement());
+        expandableListDetail.put(TITLE_RELEASES, activity.getReleasesSubmenu());
         expandableListDetail.put(TITLE_RELATIONS, new VNDetailsElement(relation_ids, relation_titles, relation_types, null, null, VNDetailsElement.TYPE_SUBTITLE));
         expandableListDetail.put(TITLE_ANIME, new VNDetailsElement(anime_ids, anime_primary, anime_secondary, null, null, VNDetailsElement.TYPE_SUBTITLE));
         expandableListDetail.put(TITLE_PLATFORMS, new VNDetailsElement(platforms_images, platforms, null, null, null, VNDetailsElement.TYPE_TEXT));
-        expandableListDetail.put(TITLE_LANGUAGES, new VNDetailsElement(languages_flags, languages, null, null, null, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put(TITLE_LANGUAGES, activity.getLanguagesSubmenu());
 
         return expandableListDetail;
     }
 
-    public static CharacterElementWrapper getCharacters(VNDetailsActivity activity) {
-        CharacterElementWrapper characterElementWrapper = new CharacterElementWrapper();
-        for (Item character : activity.getCharacters()) {
-            /* Checking the spoiler level of the whole character */
-            boolean spoilerOk = true;
-            /* Looping through the "vns" attribute because the spoiler lever is stored for each vn */
-            for (Object[] spoilerInfo : character.getVns()) {
-                /* Checking only the character for the current VN */
-                if ((int) spoilerInfo[0] != activity.getVn().getId()) continue;
-                /* If at least one release tags the character's spoiler level beyond our desired spoiler level, we totally hide it */
-                if (!Tag.checkSpoilerLevel(activity, (int) spoilerInfo[2])) {
-                    spoilerOk = false;
-                    break;
+    public static void setLanguagesSubmenu(VNDetailsActivity activity) {
+        List<String> languages = new ArrayList<>();
+        List<Integer> languages_flags = new ArrayList<>();
+
+        if (activity.getVn().getLanguages() == null) {
+            activity.setLanguagesSubmenu(new VNDetailsElement(languages_flags, languages, null, null, null, VNDetailsElement.TYPE_TEXT));
+        } else {
+            for (String language : activity.getVn().getLanguages()) {
+                languages.add(Language.FULL_TEXT.get(language));
+                languages_flags.add(Language.FLAGS.get(language));
+            }
+
+            if (activity.getLanguagesSubmenu() == null) {
+                activity.setLanguagesSubmenu(new VNDetailsElement(languages_flags, languages, null, null, null, VNDetailsElement.TYPE_TEXT));
+            } else {
+                activity.getLanguagesSubmenu().setPrimaryImages(languages_flags);
+                activity.getLanguagesSubmenu().setPrimaryData(languages);
+            }
+        }
+    }
+
+    public static void setCharactersSubmenu(VNDetailsActivity activity) {
+        List<String> images = new ArrayList<>();
+        List<String> names = new ArrayList<>();
+        List<String> subnames = new ArrayList<>();
+        List<Integer> ids = new ArrayList<>();
+
+        if (activity.getCharacters() == null) {
+            activity.setCharactersSubmenu(new VNDetailsElement(ids, names, subnames, null, images, VNDetailsElement.TYPE_SUBTITLE));
+        } else {
+            for (Item character : activity.getCharacters()) {
+                /* Checking the spoiler level of the whole character */
+                boolean spoilerOk = true;
+                /* Looping through the "vns" attribute because the spoiler lever is stored for each vn */
+                for (Object[] spoilerInfo : character.getVns()) {
+                    /* Checking only the character for the current VN */
+                    if ((int) spoilerInfo[0] != activity.getVn().getId()) continue;
+                    /* If at least one release tags the character's spoiler level beyond our desired spoiler level, we totally hide it */
+                    if (!Tag.checkSpoilerLevel(activity, (int) spoilerInfo[2])) {
+                        spoilerOk = false;
+                        break;
+                    }
+                }
+                if (!spoilerOk) continue;
+
+                images.add(character.getImage());
+                names.add(character.getName());
+                subnames.add(Item.ROLES.get(character.getVns().get(0)[Item.ROLE_INDEX].toString()));
+                ids.add(character.getId());
+            }
+
+            if (activity.getCharactersSubmenu() == null) {
+                activity.setCharactersSubmenu(new VNDetailsElement(ids, names, subnames, null, images, VNDetailsElement.TYPE_SUBTITLE));
+            } else {
+                activity.getCharactersSubmenu().setPrimaryImages(ids);
+                activity.getCharactersSubmenu().setPrimaryData(names);
+                activity.getCharactersSubmenu().setSecondaryData(subnames);
+                activity.getCharactersSubmenu().setUrlImages(images);
+            }
+        }
+    }
+
+    public static void setReleasesSubmenu(VNDetailsActivity activity) {
+        List<Integer> images = new ArrayList<>();
+        List<String> names = new ArrayList<>();
+        List<String> subnames = new ArrayList<>();
+        List<Integer> ids = new ArrayList<>();
+
+        if (activity.getReleases() == null) {
+            activity.setReleasesSubmenu(new VNDetailsElement(images, names, subnames, ids, null, VNDetailsElement.TYPE_SUBTITLE));
+        } else {
+            for (String language : activity.getReleases().keySet()) {
+                images.add(Language.FLAGS.get(language));
+                names.add("<b>" + Language.FULL_TEXT.get(language) + " :</b>");
+                subnames.add(null);
+                ids.add(null);
+                for (Item release : activity.getReleases().get(language)) {
+                    images.add(null);
+                    names.add(release.getTitle());
+                    subnames.add(Utils.getDate(release.getReleased(), true) + " • " + Utils.capitalize(release.getType()));
+                    ids.add(release.getId());
+                }
+
+                if (activity.getReleasesSubmenu() == null) {
+                    activity.setReleasesSubmenu(new VNDetailsElement(images, names, subnames, ids, null, VNDetailsElement.TYPE_SUBTITLE));
+                } else {
+                    activity.getReleasesSubmenu().setPrimaryImages(images);
+                    activity.getReleasesSubmenu().setPrimaryData(names);
+                    activity.getReleasesSubmenu().setSecondaryData(subnames);
+                    activity.getReleasesSubmenu().setSecondaryImages(ids);
                 }
             }
-            if (!spoilerOk) continue;
-
-            characterElementWrapper.character_images.add(character.getImage());
-            characterElementWrapper.character_names.add(character.getName());
-            characterElementWrapper.character_subnames.add(Item.ROLES.get(character.getVns().get(0)[Item.ROLE_INDEX].toString()));
-            characterElementWrapper.character_ids.add(character.getId());
         }
-        return characterElementWrapper;
-    }
-
-    public static ReleaseElementWrapper getReleases(VNDetailsActivity activity) {
-        ReleaseElementWrapper releaseElementWrapper = new ReleaseElementWrapper();
-        for (String language : activity.getReleases().keySet()) {
-            releaseElementWrapper.release_images.add(Language.FLAGS.get(language));
-            releaseElementWrapper.release_names.add("<b>" + Language.FULL_TEXT.get(language) + " :</b>");
-            releaseElementWrapper.release_subnames.add(null);
-            releaseElementWrapper.release_ids.add(null);
-            for (Item release : activity.getReleases().get(language)) {
-                releaseElementWrapper.release_images.add(null);
-                releaseElementWrapper.release_names.add(release.getTitle());
-                releaseElementWrapper.release_subnames.add(Utils.getDate(release.getReleased(), true) + " • " + Utils.capitalize(release.getType()));
-                releaseElementWrapper.release_ids.add(release.getId());
-            }
-        }
-        return releaseElementWrapper;
-    }
-
-    /**
-     * CharacterElementWrapper and ReleaseElementWrapper are just wrapper classes for getCharacters() and getReleases(), because
-     * Java is so stubborn that it's the nicer way to return all these elements from a method. We don't bother putting this in
-     * a separate class because come on, there's already too many almost-empty beans in this project!
-     */
-    public static class CharacterElementWrapper {
-        public List<String> character_images = new ArrayList<>();
-        public List<String> character_names = new ArrayList<>();
-        public List<String> character_subnames = new ArrayList<>();
-        public List<Integer> character_ids = new ArrayList<>();
-    }
-
-    public static class ReleaseElementWrapper {
-        public List<Integer> release_images = new ArrayList<>();
-        public List<String> release_names = new ArrayList<>();
-        public List<String> release_subnames = new ArrayList<>();
-        public List<Integer> release_ids = new ArrayList<>();
     }
 }
