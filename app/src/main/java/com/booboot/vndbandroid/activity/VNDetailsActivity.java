@@ -87,6 +87,12 @@ public class VNDetailsActivity extends AppCompatActivity {
     private VNDetailsElement charactersSubmenu;
     private VNDetailsElement releasesSubmenu;
     private VNDetailsElement languagesSubmenu;
+    private VNDetailsElement platformsSubmenu;
+    private VNDetailsElement animesSubmenu;
+    private VNDetailsElement relationsSubmenu;
+    private VNDetailsElement tagsSubmenu;
+    private VNDetailsElement genresSubmenu;
+    private VNDetailsElement screensSubmenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,6 +120,7 @@ public class VNDetailsActivity extends AppCompatActivity {
         vnlistVn = Cache.vnlist.get(vn.getId());
         wishlistVn = Cache.wishlist.get(vn.getId());
         votelistVn = Cache.votelist.get(vn.getId());
+
         if (Cache.characters.get(vn.getId()) != null) {
             characters = Cache.characters.get(vn.getId());
         }
@@ -122,6 +129,21 @@ public class VNDetailsActivity extends AppCompatActivity {
         }
         if (vn.getLanguages() == null && Cache.vns.get(vn.getId()) != null && Cache.vns.get(vn.getId()).getLanguages() != null) {
             vn.setLanguages(Cache.vns.get(vn.getId()).getLanguages());
+        }
+        if (vn.getPlatforms() == null && Cache.vns.get(vn.getId()) != null && Cache.vns.get(vn.getId()).getPlatforms() != null) {
+            vn.setPlatforms(Cache.vns.get(vn.getId()).getPlatforms());
+        }
+        if (vn.getAnime() == null && Cache.vns.get(vn.getId()) != null && Cache.vns.get(vn.getId()).getAnime() != null) {
+            vn.setAnime(Cache.vns.get(vn.getId()).getAnime());
+        }
+        if (vn.getRelations() == null && Cache.vns.get(vn.getId()) != null && Cache.vns.get(vn.getId()).getRelations() != null) {
+            vn.setRelations(Cache.vns.get(vn.getId()).getRelations());
+        }
+        if (vn.getTags() == null && Cache.vns.get(vn.getId()) != null && Cache.vns.get(vn.getId()).getTags() != null) {
+            vn.setTags(Cache.vns.get(vn.getId()).getTags());
+        }
+        if (vn.getScreens() == null && Cache.vns.get(vn.getId()) != null && Cache.vns.get(vn.getId()).getScreens() != null) {
+            vn.setScreens(Cache.vns.get(vn.getId()).getScreens());
         }
 
         initExpandableListView();
@@ -240,8 +262,8 @@ public class VNDetailsActivity extends AppCompatActivity {
         expandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
             public boolean onGroupClick(ExpandableListView parent, View groupView, int groupPosition, long id) {
                 String groupName = (String) parent.getExpandableListAdapter().getGroup(groupPosition);
-                boolean hasChildren = parent.getExpandableListAdapter().getChildrenCount(groupPosition) > 0;
                 boolean handledAsynchronously = initSubmenu(groupView, groupPosition, groupName);
+                boolean hasChildren = parent.getExpandableListAdapter().getChildrenCount(groupPosition) > 0;
 
                 if (!handledAsynchronously && !hasChildren) {
                     Toast.makeText(VNDetailsActivity.this, "Nothing to show here...", Toast.LENGTH_SHORT).show();
@@ -254,13 +276,14 @@ public class VNDetailsActivity extends AppCompatActivity {
     /**
      * Loads and displays a submenu's content.
      * Pattern: check if the variables are already init, otherwise check the content in database, otherwise send an API query.
-     * @param groupView submenu's group view (to display an loader icon)
+     *
+     * @param groupView     submenu's group view (to display an loader icon)
      * @param groupPosition submenu's group position
-     * @param groupName submenu's group title to identify which content has to be fetched
+     * @param groupName     submenu's group title to identify which content has to be fetched
      * @return true if the data is fetched asynchronously. The submenu will then be expanded in a callback.
      */
     private boolean initSubmenu(final View groupView, final int groupPosition, final String groupName) {
-        boolean alreadyInit = true;
+        boolean alreadyInit = true, hasChildren = false;
         switch (groupName) {
             case VNDetailsFactory.TITLE_CHARACTERS:
                 alreadyInit = Cache.characters.get(vn.getId()) != null;
@@ -270,6 +293,28 @@ public class VNDetailsActivity extends AppCompatActivity {
                 break;
             case VNDetailsFactory.TITLE_LANGUAGES:
                 alreadyInit = vn.getLanguages() != null;
+                break;
+            case VNDetailsFactory.TITLE_PLATFORMS:
+                alreadyInit = vn.getPlatforms() != null;
+                break;
+            case VNDetailsFactory.TITLE_ANIME:
+                alreadyInit = vn.getAnime() != null;
+                break;
+            case VNDetailsFactory.TITLE_RELATIONS:
+                alreadyInit = vn.getRelations() != null;
+                break;
+            case VNDetailsFactory.TITLE_TAGS:
+                alreadyInit = vn.getTags() != null;
+                hasChildren = expandableListAdapter.getChildrenCount(groupPosition) > 0;
+                if (alreadyInit && !hasChildren) VNDetailsFactory.setTagsSubmenu(this);
+                break;
+            case VNDetailsFactory.TITLE_GENRES:
+                alreadyInit = vn.getTags() != null;
+                hasChildren = expandableListAdapter.getChildrenCount(groupPosition) > 0;
+                if (alreadyInit && !hasChildren) VNDetailsFactory.setGenresSubmenu(this);
+                break;
+            case VNDetailsFactory.TITLE_SCREENSHOTS:
+                alreadyInit = vn.getScreens() != null;
                 break;
         }
 
@@ -293,6 +338,27 @@ public class VNDetailsActivity extends AppCompatActivity {
                             vn.setLanguages(DB.loadLanguages(VNDetailsActivity.this, vn.getId()));
                             alreadyInDatabase = true;
                             break;
+                        case VNDetailsFactory.TITLE_PLATFORMS:
+                            vn.setPlatforms(DB.loadPlatforms(VNDetailsActivity.this, vn.getId()));
+                            alreadyInDatabase = true;
+                            break;
+                        case VNDetailsFactory.TITLE_ANIME:
+                            vn.setAnime(DB.loadAnimes(VNDetailsActivity.this, vn.getId()));
+                            alreadyInDatabase = true;
+                            break;
+                        case VNDetailsFactory.TITLE_RELATIONS:
+                            vn.setRelations(DB.loadRelations(VNDetailsActivity.this, vn.getId()));
+                            alreadyInDatabase = true;
+                            break;
+                        case VNDetailsFactory.TITLE_TAGS:
+                        case VNDetailsFactory.TITLE_GENRES:
+                            vn.setTags(DB.loadTags(VNDetailsActivity.this, vn.getId()));
+                            alreadyInDatabase = true;
+                            break;
+                        case VNDetailsFactory.TITLE_SCREENSHOTS:
+                            vn.setScreens(DB.loadScreens(VNDetailsActivity.this, vn.getId()));
+                            alreadyInDatabase = true;
+                            break;
                     }
 
                     if (alreadyInDatabase) {
@@ -309,11 +375,34 @@ public class VNDetailsActivity extends AppCompatActivity {
                                         Cache.releases.put(vn.getId(), releasesList);
                                         groupReleasesByLanguage(releasesList);
                                         VNDetailsFactory.setReleasesSubmenu(VNDetailsActivity.this);
-                                        hideGroupLoader(groupView, groupPosition);
                                         break;
                                     case VNDetailsFactory.TITLE_LANGUAGES:
                                         Cache.vns.put(vn.getId(), vn);
                                         VNDetailsFactory.setLanguagesSubmenu(VNDetailsActivity.this);
+                                        break;
+                                    case VNDetailsFactory.TITLE_PLATFORMS:
+                                        Cache.vns.put(vn.getId(), vn);
+                                        VNDetailsFactory.setPlatformsSubmenu(VNDetailsActivity.this);
+                                        break;
+                                    case VNDetailsFactory.TITLE_ANIME:
+                                        Cache.vns.put(vn.getId(), vn);
+                                        VNDetailsFactory.setAnimesSubmenu(VNDetailsActivity.this);
+                                        break;
+                                    case VNDetailsFactory.TITLE_RELATIONS:
+                                        Cache.vns.put(vn.getId(), vn);
+                                        VNDetailsFactory.setRelationsSubmenu(VNDetailsActivity.this);
+                                        break;
+                                    case VNDetailsFactory.TITLE_TAGS:
+                                        Cache.vns.put(vn.getId(), vn);
+                                        VNDetailsFactory.setTagsSubmenu(VNDetailsActivity.this);
+                                        break;
+                                    case VNDetailsFactory.TITLE_GENRES:
+                                        Cache.vns.put(vn.getId(), vn);
+                                        VNDetailsFactory.setGenresSubmenu(VNDetailsActivity.this);
+                                        break;
+                                    case VNDetailsFactory.TITLE_SCREENSHOTS:
+                                        Cache.vns.put(vn.getId(), vn);
+                                        VNDetailsFactory.setScreensSubmenu(VNDetailsActivity.this);
                                         break;
                                 }
 
@@ -584,5 +673,53 @@ public class VNDetailsActivity extends AppCompatActivity {
 
     public VNDetailsElement getLanguagesSubmenu() {
         return languagesSubmenu;
+    }
+
+    public VNDetailsElement getPlatformsSubmenu() {
+        return platformsSubmenu;
+    }
+
+    public void setPlatformsSubmenu(VNDetailsElement platformsSubmenu) {
+        this.platformsSubmenu = platformsSubmenu;
+    }
+
+    public VNDetailsElement getAnimesSubmenu() {
+        return animesSubmenu;
+    }
+
+    public void setAnimesSubmenu(VNDetailsElement animesSubmenu) {
+        this.animesSubmenu = animesSubmenu;
+    }
+
+    public VNDetailsElement getRelationsSubmenu() {
+        return relationsSubmenu;
+    }
+
+    public void setRelationsSubmenu(VNDetailsElement relationsSubmenu) {
+        this.relationsSubmenu = relationsSubmenu;
+    }
+
+    public VNDetailsElement getTagsSubmenu() {
+        return tagsSubmenu;
+    }
+
+    public void setTagsSubmenu(VNDetailsElement tagsSubmenu) {
+        this.tagsSubmenu = tagsSubmenu;
+    }
+
+    public VNDetailsElement getScreensSubmenu() {
+        return screensSubmenu;
+    }
+
+    public void setScreensSubmenu(VNDetailsElement screensSubmenu) {
+        this.screensSubmenu = screensSubmenu;
+    }
+
+    public VNDetailsElement getGenresSubmenu() {
+        return genresSubmenu;
+    }
+
+    public void setGenresSubmenu(VNDetailsElement genresSubmenu) {
+        this.genresSubmenu = genresSubmenu;
     }
 }

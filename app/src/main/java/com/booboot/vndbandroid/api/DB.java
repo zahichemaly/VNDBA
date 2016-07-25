@@ -249,6 +249,11 @@ public class DB extends SQLiteOpenHelper {
                 ")");
 
         db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_LANGUAGES + "_vn ON " + TABLE_LANGUAGES + "(vn)");
+        db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_PLATFORMS + "_vn ON " + TABLE_PLATFORMS + "(vn)");
+        db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_ANIME + "_vn ON " + TABLE_ANIME + "(vn)");
+        db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_RELATION + "_vn ON " + TABLE_RELATION + "(vn)");
+        db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_TAGS + "_vn ON " + TABLE_TAGS + "(vn)");
+        db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_SCREENS + "_vn ON " + TABLE_SCREENS + "(vn)");
         db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_VN_CHARACTER + "_vn ON " + TABLE_VN_CHARACTER + "(vn)");
         db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_TRAITS + "_character ON " + TABLE_TRAITS + "(character)");
         db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_VN_RELEASE + "_vn ON " + TABLE_VN_RELEASE + "(vn)");
@@ -879,111 +884,31 @@ public class DB extends SQLiteOpenHelper {
         SQLiteDatabase db = instance.getWritableDatabase();
 
         LinkedHashMap<Integer, Item> res = new LinkedHashMap<>();
-        LinkedHashMap<Integer, List<String>> origLangsRes = new LinkedHashMap<>();
-        LinkedHashMap<Integer, List<String>> platformsRes = new LinkedHashMap<>();
-        LinkedHashMap<Integer, List<Anime>> animesRes = new LinkedHashMap<>();
-        LinkedHashMap<Integer, List<Relation>> relationsRes = new LinkedHashMap<>();
-        LinkedHashMap<Integer, List<List<Number>>> tagsRes = new LinkedHashMap<>();
-        LinkedHashMap<Integer, List<Screen>> screensRes = new LinkedHashMap<>();
+        Cursor cursor = db.rawQuery("select * from " + TABLE_VN, new String[]{});
 
-        Cursor[] cursor = new Cursor[7];
-        cursor[0] = db.rawQuery("select * from " + TABLE_VN, new String[]{});
-        cursor[1] = db.rawQuery("select * from " + TABLE_ORIG_LANG, new String[]{});
-        cursor[2] = db.rawQuery("select * from " + TABLE_PLATFORMS, new String[]{});
-        cursor[3] = db.rawQuery("select * from " + TABLE_ANIME, new String[]{});
-        cursor[4] = db.rawQuery("select * from " + TABLE_RELATION, new String[]{});
-        cursor[5] = db.rawQuery("select * from " + TABLE_TAGS, new String[]{});
-        cursor[6] = db.rawQuery("select * from " + TABLE_SCREENS, new String[]{});
-
-        while (cursor[1].moveToNext()) {
-            if (origLangsRes.get(cursor[1].getInt(0)) == null)
-                origLangsRes.put(cursor[1].getInt(0), new ArrayList<String>());
-            origLangsRes.get(cursor[1].getInt(0)).add(cursor[1].getString(1));
-        }
-
-        while (cursor[2].moveToNext()) {
-            if (platformsRes.get(cursor[2].getInt(0)) == null)
-                platformsRes.put(cursor[2].getInt(0), new ArrayList<String>());
-            platformsRes.get(cursor[2].getInt(0)).add(cursor[2].getString(1));
-        }
-
-        while (cursor[3].moveToNext()) {
-            if (animesRes.get(cursor[3].getInt(1)) == null)
-                animesRes.put(cursor[3].getInt(1), new ArrayList<Anime>());
-            Anime anime = new Anime();
-            anime.setId(cursor[3].getInt(0));
-            anime.setAnn_id(cursor[3].getInt(2));
-            anime.setNfo_id(cursor[3].getString(3));
-            anime.setTitle_romaji(cursor[3].getString(4));
-            anime.setTitle_kanji(cursor[3].getString(5));
-            anime.setYear(cursor[3].getInt(6));
-            anime.setType(cursor[3].getString(7));
-            animesRes.get(cursor[3].getInt(1)).add(anime);
-        }
-
-        while (cursor[4].moveToNext()) {
-            if (relationsRes.get(cursor[4].getInt(1)) == null)
-                relationsRes.put(cursor[4].getInt(1), new ArrayList<Relation>());
-            Relation relation = new Relation();
-            relation.setId(cursor[4].getInt(0));
-            relation.setRelation(cursor[4].getString(2));
-            relation.setTitle(cursor[4].getString(3));
-            relation.setOriginal(cursor[4].getString(4));
-            relationsRes.get(cursor[4].getInt(1)).add(relation);
-        }
-
-        while (cursor[5].moveToNext()) {
-            if (tagsRes.get(cursor[5].getInt(1)) == null)
-                tagsRes.put(cursor[5].getInt(1), new ArrayList<List<Number>>());
-            List<Number> tag = new ArrayList<>();
-            tag.add(cursor[5].getInt(0));
-            tag.add(cursor[5].getInt(2));
-            tag.add(cursor[5].getInt(3));
-            tagsRes.get(cursor[5].getInt(1)).add(tag);
-        }
-
-        while (cursor[6].moveToNext()) {
-            if (screensRes.get(cursor[6].getInt(0)) == null)
-                screensRes.put(cursor[6].getInt(0), new ArrayList<Screen>());
-            Screen screen = new Screen();
-            screen.setImage(cursor[6].getString(1));
-            screen.setRid(cursor[6].getInt(2));
-            screen.setNsfw(cursor[6].getInt(3) == 1);
-            screen.setHeight(cursor[6].getInt(4));
-            screen.setWidth(cursor[6].getInt(5));
-            screensRes.get(cursor[6].getInt(0)).add(screen);
-        }
-
-        while (cursor[0].moveToNext()) {
-            Item vn = new Item(cursor[0].getInt(0));
-            vn.setTitle(cursor[0].getString(1));
-            vn.setOriginal(cursor[0].getString(2));
-            vn.setReleased(cursor[0].getString(3));
-            vn.setAliases(cursor[0].getString(4));
-            vn.setLength(cursor[0].getInt(5));
-            vn.setDescription(cursor[0].getString(6));
+        while (cursor.moveToNext()) {
+            Item vn = new Item(cursor.getInt(0));
+            vn.setTitle(cursor.getString(1));
+            vn.setOriginal(cursor.getString(2));
+            vn.setReleased(cursor.getString(3));
+            vn.setAliases(cursor.getString(4));
+            vn.setLength(cursor.getInt(5));
+            vn.setDescription(cursor.getString(6));
             Links links = new Links();
-            links.setWikipedia(cursor[0].getString(7));
-            links.setEncubed(cursor[0].getString(8));
-            links.setRenai(cursor[0].getString(9));
+            links.setWikipedia(cursor.getString(7));
+            links.setEncubed(cursor.getString(8));
+            links.setRenai(cursor.getString(9));
             vn.setLinks(links);
-            vn.setImage(cursor[0].getString(10));
-            vn.setImage_nsfw(cursor[0].getInt(11) == 1);
-            vn.setPopularity(cursor[0].getDouble(12));
-            vn.setRating(cursor[0].getDouble(13));
-            vn.setVotecount(cursor[0].getInt(14));
-            vn.setOrig_lang(origLangsRes.get(vn.getId()));
-            vn.setPlatforms(platformsRes.get(vn.getId()));
-            vn.setAnime(animesRes.get(vn.getId()));
-            vn.setRelations(relationsRes.get(vn.getId()));
-            vn.setTags(tagsRes.get(vn.getId()));
-            vn.setScreens(screensRes.get(vn.getId()));
+            vn.setImage(cursor.getString(10));
+            vn.setImage_nsfw(cursor.getInt(11) == 1);
+            vn.setPopularity(cursor.getDouble(12));
+            vn.setRating(cursor.getDouble(13));
+            vn.setVotecount(cursor.getInt(14));
 
             res.put(vn.getId(), vn);
         }
 
-        for (Cursor c : cursor) c.close();
-
+        cursor.close();
         return res;
     }
 
@@ -996,6 +921,104 @@ public class DB extends SQLiteOpenHelper {
 
         while (cursor.moveToNext()) {
             res.add(cursor.getString(1));
+        }
+
+        cursor.close();
+        return res;
+    }
+
+    public static List<String> loadPlatforms(Context context, int vnId) {
+        if (instance == null) instance = new DB(context);
+        SQLiteDatabase db = instance.getWritableDatabase();
+
+        List<String> res = new ArrayList<>();
+        Cursor cursor = db.rawQuery("select * from " + TABLE_PLATFORMS + " WHERE vn = " + vnId, new String[]{});
+
+        while (cursor.moveToNext()) {
+            res.add(cursor.getString(1));
+        }
+
+        cursor.close();
+        return res;
+    }
+
+    public static List<Anime> loadAnimes(Context context, int vnId) {
+        if (instance == null) instance = new DB(context);
+        SQLiteDatabase db = instance.getWritableDatabase();
+
+        List<Anime> res = new ArrayList<>();
+        Cursor cursor = db.rawQuery("select * from " + TABLE_ANIME + " WHERE vn = " + vnId, new String[]{});
+
+        while (cursor.moveToNext()) {
+            Anime anime = new Anime();
+            anime.setId(cursor.getInt(0));
+            anime.setAnn_id(cursor.getInt(2));
+            anime.setNfo_id(cursor.getString(3));
+            anime.setTitle_romaji(cursor.getString(4));
+            anime.setTitle_kanji(cursor.getString(5));
+            anime.setYear(cursor.getInt(6));
+            anime.setType(cursor.getString(7));
+            res.add(anime);
+        }
+
+        cursor.close();
+        return res;
+    }
+
+    public static List<Relation> loadRelations(Context context, int vnId) {
+        if (instance == null) instance = new DB(context);
+        SQLiteDatabase db = instance.getWritableDatabase();
+
+        List<Relation> res = new ArrayList<>();
+        Cursor cursor = db.rawQuery("select * from " + TABLE_RELATION + " WHERE vn = " + vnId, new String[]{});
+
+        while (cursor.moveToNext()) {
+            Relation relation = new Relation();
+            relation.setId(cursor.getInt(0));
+            relation.setRelation(cursor.getString(2));
+            relation.setTitle(cursor.getString(3));
+            relation.setOriginal(cursor.getString(4));
+            res.add(relation);
+        }
+
+        cursor.close();
+        return res;
+    }
+
+    public static List<List<Number>> loadTags(Context context, int vnId) {
+        if (instance == null) instance = new DB(context);
+        SQLiteDatabase db = instance.getWritableDatabase();
+
+        List<List<Number>> res = new ArrayList<>();
+        Cursor cursor = db.rawQuery("select * from " + TABLE_TAGS + " WHERE vn = " + vnId, new String[]{});
+
+        while (cursor.moveToNext()) {
+            List<Number> tag = new ArrayList<>();
+            tag.add(cursor.getInt(0));
+            tag.add(cursor.getInt(2));
+            tag.add(cursor.getInt(3));
+            res.add(tag);
+        }
+
+        cursor.close();
+        return res;
+    }
+
+    public static List<Screen> loadScreens(Context context, int vnId) {
+        if (instance == null) instance = new DB(context);
+        SQLiteDatabase db = instance.getWritableDatabase();
+
+        List<Screen> res = new ArrayList<>();
+        Cursor cursor = db.rawQuery("select * from " + TABLE_SCREENS + " WHERE vn = " + vnId, new String[]{});
+
+        while (cursor.moveToNext()) {
+            Screen screen = new Screen();
+            screen.setImage(cursor.getString(1));
+            screen.setRid(cursor.getInt(2));
+            screen.setNsfw(cursor.getInt(3) == 1);
+            screen.setHeight(cursor.getInt(4));
+            screen.setWidth(cursor.getInt(5));
+            res.add(screen);
         }
 
         cursor.close();

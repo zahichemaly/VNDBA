@@ -19,17 +19,18 @@ public class Item extends VNDBCommand {
     private String original;
     private String released;
     private List<String> languages;
-    private List<String> orig_lang = new ArrayList<>();
-    private List<String> platforms = new ArrayList<>();
+    private List<String> orig_lang;
+    private List<String> platforms;
     private String aliases;
     private int length;
     private String description;
     private Links links;
     private String image;
     private boolean image_nsfw;
-    private List<Anime> anime = new ArrayList<>();
-    private List<Relation> relations = new ArrayList<>();
+    private List<Anime> anime;
+    private List<Relation> relations;
     private List<List<Number>> tags;
+    private List<Screen> screens;
     private double popularity;
     private double rating;
     private int votecount;
@@ -414,8 +415,6 @@ public class Item extends VNDBCommand {
             this.screens = screens;
         }
     }
-
-    private List<Screen> screens;
 
     public String getLengthString() {
         switch (length) {
