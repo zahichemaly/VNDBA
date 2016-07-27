@@ -36,15 +36,17 @@ import com.booboot.vndbandroid.adapter.vndetails.VNExpandableListAdapter;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.DB;
 import com.booboot.vndbandroid.api.VNDBServer;
-import com.booboot.vndbandroid.bean.Item;
-import com.booboot.vndbandroid.bean.Links;
-import com.booboot.vndbandroid.bean.Options;
-import com.booboot.vndbandroid.bean.Priority;
-import com.booboot.vndbandroid.bean.Status;
-import com.booboot.vndbandroid.bean.Vote;
-import com.booboot.vndbandroid.bean.cache.VNlistItem;
-import com.booboot.vndbandroid.bean.cache.VotelistItem;
-import com.booboot.vndbandroid.bean.cache.WishlistItem;
+import com.booboot.vndbandroid.api.VNStatServer;
+import com.booboot.vndbandroid.bean.vndb.Item;
+import com.booboot.vndbandroid.bean.vndb.Links;
+import com.booboot.vndbandroid.bean.vndb.Options;
+import com.booboot.vndbandroid.bean.vndbandroid.Priority;
+import com.booboot.vndbandroid.bean.vndbandroid.Status;
+import com.booboot.vndbandroid.bean.vndbandroid.VNlistItem;
+import com.booboot.vndbandroid.bean.vndbandroid.Vote;
+import com.booboot.vndbandroid.bean.vndbandroid.VotelistItem;
+import com.booboot.vndbandroid.bean.vndbandroid.WishlistItem;
+import com.booboot.vndbandroid.bean.vnstat.SimilarNovel;
 import com.booboot.vndbandroid.factory.PlaceholderPictureFactory;
 import com.booboot.vndbandroid.factory.VNDetailsFactory;
 import com.booboot.vndbandroid.listener.VNDetailsListener;
@@ -68,9 +70,11 @@ public class VNDetailsActivity extends AppCompatActivity {
     private VNlistItem vnlistVn;
     private WishlistItem wishlistVn;
     private VotelistItem votelistVn;
+
     private List<Item> characters;
     private LinkedHashMap<String, List<Item>> releases;
     private List<Item> releasesList;
+    private List<SimilarNovel> similarNovels;
 
     private ImageButton image;
     private Button statusButton;
@@ -80,7 +84,6 @@ public class VNDetailsActivity extends AppCompatActivity {
     private ImageButton notesEditButton;
 
     private VNDetailsListener listener;
-
     private ExpandableListView expandableListView;
     private ExpandableListAdapter expandableListAdapter;
 
@@ -90,6 +93,7 @@ public class VNDetailsActivity extends AppCompatActivity {
     private VNDetailsElement platformsSubmenu;
     private VNDetailsElement animesSubmenu;
     private VNDetailsElement relationsSubmenu;
+    private VNDetailsElement similarNovelsSubmenu;
     private VNDetailsElement tagsSubmenu;
     private VNDetailsElement genresSubmenu;
     private VNDetailsElement screensSubmenu;
@@ -126,6 +130,9 @@ public class VNDetailsActivity extends AppCompatActivity {
         }
         if (Cache.releases.get(vn.getId()) != null) {
             groupReleasesByLanguage(Cache.releases.get(vn.getId()));
+        }
+        if (Cache.similarNovels.get(vn.getId()) != null) {
+            similarNovels = Cache.similarNovels.get(vn.getId());
         }
         if (vn.getLanguages() == null && Cache.vns.get(vn.getId()) != null && Cache.vns.get(vn.getId()).getLanguages() != null) {
             vn.setLanguages(Cache.vns.get(vn.getId()).getLanguages());
@@ -291,6 +298,9 @@ public class VNDetailsActivity extends AppCompatActivity {
             case VNDetailsFactory.TITLE_RELEASES:
                 alreadyInit = Cache.releases.get(vn.getId()) != null;
                 break;
+            case VNDetailsFactory.TITLE_SIMILAR_NOVELS:
+                alreadyInit = Cache.similarNovels.get(vn.getId()) != null;
+                break;
             case VNDetailsFactory.TITLE_LANGUAGES:
                 alreadyInit = vn.getLanguages() != null;
                 break;
@@ -334,6 +344,12 @@ public class VNDetailsActivity extends AppCompatActivity {
                             releasesList = DB.loadReleases(VNDetailsActivity.this, vn.getId());
                             alreadyInDatabase = releasesList.size() > 0;
                             break;
+                        case VNDetailsFactory.TITLE_SIMILAR_NOVELS:
+                            /*
+                            similarNovels = DB.loadSimilarNovels(VNDetailsActivity.this, vn.getId());
+                            alreadyInDatabase = similarNovels.size() > 0;
+                            */
+                            break;
                         case VNDetailsFactory.TITLE_LANGUAGES:
                             vn.setLanguages(DB.loadLanguages(VNDetailsActivity.this, vn.getId()));
                             alreadyInDatabase = true;
@@ -375,6 +391,10 @@ public class VNDetailsActivity extends AppCompatActivity {
                                         Cache.releases.put(vn.getId(), releasesList);
                                         groupReleasesByLanguage(releasesList);
                                         VNDetailsFactory.setReleasesSubmenu(VNDetailsActivity.this);
+                                        break;
+                                    case VNDetailsFactory.TITLE_SIMILAR_NOVELS:
+                                        Cache.similarNovels.put(vn.getId(), similarNovels);
+                                        VNDetailsFactory.setSimilarNovelsSubmenu(VNDetailsActivity.this);
                                         break;
                                     case VNDetailsFactory.TITLE_LANGUAGES:
                                         Cache.vns.put(vn.getId(), vn);
@@ -458,6 +478,32 @@ public class VNDetailsActivity extends AppCompatActivity {
 
                                         groupReleasesByLanguage(releasesList);
                                         VNDetailsFactory.setReleasesSubmenu(VNDetailsActivity.this);
+                                        hideGroupLoader(groupView, groupPosition);
+                                    }
+                                }, getSubmenuCallback(groupView, groupPosition));
+                                break;
+
+                            case VNDetailsFactory.TITLE_SIMILAR_NOVELS:
+                                VNStatServer.get("similar", vn.getId(), new Callback() {
+                                    @Override
+                                    protected void config() {
+                                        if (vnStatResults.getSimilar().isEmpty()) {
+                                            Cache.similarNovels.put(vn.getId(), new ArrayList<SimilarNovel>());
+                                            similarNovels = Cache.similarNovels.get(vn.getId());
+                                        } else {
+                                            similarNovels = vnStatResults.getSimilar();
+                                            Cache.similarNovels.put(vn.getId(), similarNovels);
+
+                                            // DB.saveSimilarNovels(VNDetailsActivity.this, similarNovels, vn.getId());
+                                        }
+
+                                        if (similarNovels == null) {
+                                            hideGroupLoader(groupView, groupPosition);
+                                            return;
+                                        }
+
+                                        // groupCharactersByRole();
+                                        VNDetailsFactory.setSimilarNovelsSubmenu(VNDetailsActivity.this);
                                         hideGroupLoader(groupView, groupPosition);
                                     }
                                 }, getSubmenuCallback(groupView, groupPosition));
@@ -721,5 +767,21 @@ public class VNDetailsActivity extends AppCompatActivity {
 
     public void setGenresSubmenu(VNDetailsElement genresSubmenu) {
         this.genresSubmenu = genresSubmenu;
+    }
+
+    public VNDetailsElement getSimilarNovelsSubmenu() {
+        return similarNovelsSubmenu;
+    }
+
+    public void setSimilarNovelsSubmenu(VNDetailsElement similarNovelsSubmenu) {
+        this.similarNovelsSubmenu = similarNovelsSubmenu;
+    }
+
+    public List<SimilarNovel> getSimilarNovels() {
+        return similarNovels;
+    }
+
+    public void setSimilarNovels(List<SimilarNovel> similarNovels) {
+        this.similarNovels = similarNovels;
     }
 }

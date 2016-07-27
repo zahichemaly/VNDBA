@@ -13,9 +13,9 @@ import android.view.ViewGroup;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.adapter.tabs.VNTabsAdapter;
 import com.booboot.vndbandroid.api.Cache;
-import com.booboot.vndbandroid.bean.ListType;
-import com.booboot.vndbandroid.bean.Priority;
-import com.booboot.vndbandroid.bean.Status;
+import com.booboot.vndbandroid.bean.vndbandroid.ListType;
+import com.booboot.vndbandroid.bean.vndbandroid.Priority;
+import com.booboot.vndbandroid.bean.vndbandroid.Status;
 import com.booboot.vndbandroid.util.Utils;
 
 /**

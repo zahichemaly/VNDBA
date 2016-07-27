@@ -6,8 +6,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
 
-import com.booboot.vndbandroid.bean.DbStats;
-import com.booboot.vndbandroid.bean.Results;
+import com.booboot.vndbandroid.bean.vndb.DbStats;
+import com.booboot.vndbandroid.bean.vndb.Results;
+import com.booboot.vndbandroid.bean.vnstat.VNStatItem;
+import com.booboot.vndbandroid.bean.vnstat.VNStatResults;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -18,6 +20,7 @@ public abstract class Callback {
     public String message;
     public Results results;
     public DbStats dbstats;
+    public VNStatItem vnStatResults;
     public static CountDownLatch countDownLatch;
 
     protected abstract void config();

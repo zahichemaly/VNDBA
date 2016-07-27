@@ -2,17 +2,18 @@ package com.booboot.vndbandroid.factory;
 
 import com.booboot.vndbandroid.activity.VNDetailsActivity;
 import com.booboot.vndbandroid.adapter.vndetails.VNDetailsElement;
-import com.booboot.vndbandroid.bean.Anime;
-import com.booboot.vndbandroid.bean.Category;
-import com.booboot.vndbandroid.bean.Genre;
-import com.booboot.vndbandroid.bean.Item;
-import com.booboot.vndbandroid.bean.Language;
-import com.booboot.vndbandroid.bean.Links;
-import com.booboot.vndbandroid.bean.Platform;
-import com.booboot.vndbandroid.bean.Relation;
-import com.booboot.vndbandroid.bean.Screen;
-import com.booboot.vndbandroid.bean.Tag;
-import com.booboot.vndbandroid.bean.Vote;
+import com.booboot.vndbandroid.bean.vndb.Anime;
+import com.booboot.vndbandroid.bean.vndb.Item;
+import com.booboot.vndbandroid.bean.vndb.Links;
+import com.booboot.vndbandroid.bean.vndb.Relation;
+import com.booboot.vndbandroid.bean.vndb.Screen;
+import com.booboot.vndbandroid.bean.vndb.Tag;
+import com.booboot.vndbandroid.bean.vndbandroid.Category;
+import com.booboot.vndbandroid.bean.vndbandroid.Genre;
+import com.booboot.vndbandroid.bean.vndbandroid.Language;
+import com.booboot.vndbandroid.bean.vndbandroid.Platform;
+import com.booboot.vndbandroid.bean.vndbandroid.Vote;
+import com.booboot.vndbandroid.bean.vnstat.SimilarNovel;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
 
@@ -32,6 +33,7 @@ public class VNDetailsFactory {
     public final static String TITLE_TAGS = "Tags";
     public final static String TITLE_RELEASES = "Releases";
     public final static String TITLE_RELATIONS = "Relations";
+    public final static String TITLE_SIMILAR_NOVELS = "Similar novels";
     public final static String TITLE_ANIME = "Anime";
     public final static String TITLE_PLATFORMS = "Platforms";
     public final static String TITLE_LANGUAGES = "Languages";
@@ -99,20 +101,22 @@ public class VNDetailsFactory {
         setReleasesSubmenu(activity);
         setTagsSubmenu(activity);
         setRelationsSubmenu(activity);
+        setSimilarNovelsSubmenu(activity);
         setAnimesSubmenu(activity);
         setScreensSubmenu(activity);
         setPlatformsSubmenu(activity);
         setLanguagesSubmenu(activity);
 
-        expandableListDetail.put(TITLE_INFORMATION, new VNDetailsElement(null, infoLeft, infoRight, infoRightImages, null, VNDetailsElement.TYPE_TEXT));
-        expandableListDetail.put(TITLE_DESCRIPTION, new VNDetailsElement(null, description, null, null, null, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put(TITLE_INFORMATION, new VNDetailsElement(null, infoLeft, infoRight, infoRightImages, null, null, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put(TITLE_DESCRIPTION, new VNDetailsElement(null, description, null, null, null, null, VNDetailsElement.TYPE_TEXT));
         expandableListDetail.put(TITLE_GENRES, activity.getGenresSubmenu());
         expandableListDetail.put(TITLE_CHARACTERS, activity.getCharactersSubmenu());
         expandableListDetail.put(TITLE_SCREENSHOTS, activity.getScreensSubmenu());
-        expandableListDetail.put(TITLE_STATS, new VNDetailsElement(null, statLeft, statRight, statRightImages, null, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put(TITLE_STATS, new VNDetailsElement(null, statLeft, statRight, statRightImages, null, null, VNDetailsElement.TYPE_TEXT));
         expandableListDetail.put(TITLE_TAGS, activity.getTagsSubmenu());
         expandableListDetail.put(TITLE_RELEASES, activity.getReleasesSubmenu());
         expandableListDetail.put(TITLE_RELATIONS, activity.getRelationsSubmenu());
+        expandableListDetail.put(TITLE_SIMILAR_NOVELS, activity.getSimilarNovelsSubmenu());
         expandableListDetail.put(TITLE_ANIME, activity.getAnimesSubmenu());
         expandableListDetail.put(TITLE_PLATFORMS, activity.getPlatformsSubmenu());
         expandableListDetail.put(TITLE_LANGUAGES, activity.getLanguagesSubmenu());
@@ -125,7 +129,7 @@ public class VNDetailsFactory {
         List<Integer> languages_flags = new ArrayList<>();
 
         if (activity.getVn().getLanguages() == null) {
-            activity.setLanguagesSubmenu(new VNDetailsElement(languages_flags, languages, null, null, null, VNDetailsElement.TYPE_TEXT));
+            activity.setLanguagesSubmenu(new VNDetailsElement(languages_flags, languages, null, null, null, null, VNDetailsElement.TYPE_TEXT));
         } else {
             for (String language : activity.getVn().getLanguages()) {
                 languages.add(Language.FULL_TEXT.get(language));
@@ -133,7 +137,7 @@ public class VNDetailsFactory {
             }
 
             if (activity.getLanguagesSubmenu() == null) {
-                activity.setLanguagesSubmenu(new VNDetailsElement(languages_flags, languages, null, null, null, VNDetailsElement.TYPE_TEXT));
+                activity.setLanguagesSubmenu(new VNDetailsElement(languages_flags, languages, null, null, null, null, VNDetailsElement.TYPE_TEXT));
             } else {
                 activity.getLanguagesSubmenu().setPrimaryImages(languages_flags);
                 activity.getLanguagesSubmenu().setPrimaryData(languages);
@@ -146,7 +150,7 @@ public class VNDetailsFactory {
         List<Integer> platforms_images = new ArrayList<>();
 
         if (activity.getVn().getPlatforms() == null) {
-            activity.setPlatformsSubmenu(new VNDetailsElement(platforms_images, platforms, null, null, null, VNDetailsElement.TYPE_TEXT));
+            activity.setPlatformsSubmenu(new VNDetailsElement(platforms_images, platforms, null, null, null, null, VNDetailsElement.TYPE_TEXT));
         } else {
             for (String platform : activity.getVn().getPlatforms()) {
                 platforms.add(Platform.FULL_TEXT.get(platform));
@@ -154,7 +158,7 @@ public class VNDetailsFactory {
             }
 
             if (activity.getPlatformsSubmenu() == null) {
-                activity.setPlatformsSubmenu(new VNDetailsElement(platforms_images, platforms, null, null, null, VNDetailsElement.TYPE_TEXT));
+                activity.setPlatformsSubmenu(new VNDetailsElement(platforms_images, platforms, null, null, null, null, VNDetailsElement.TYPE_TEXT));
             } else {
                 activity.getPlatformsSubmenu().setPrimaryImages(platforms_images);
                 activity.getPlatformsSubmenu().setPrimaryData(platforms);
@@ -168,7 +172,7 @@ public class VNDetailsFactory {
         List<String> anime_secondary = new ArrayList<>();
 
         if (activity.getVn().getAnime() == null) {
-            activity.setAnimesSubmenu(new VNDetailsElement(anime_ids, anime_primary, anime_secondary, null, null, VNDetailsElement.TYPE_SUBTITLE));
+            activity.setAnimesSubmenu(new VNDetailsElement(null, anime_primary, anime_secondary, null, null, anime_ids, VNDetailsElement.TYPE_SUBTITLE));
         } else {
             for (Anime anime : activity.getVn().getAnime()) {
                 anime_ids.add(anime.getId());
@@ -180,9 +184,9 @@ public class VNDetailsFactory {
             }
 
             if (activity.getAnimesSubmenu() == null) {
-                activity.setAnimesSubmenu(new VNDetailsElement(anime_ids, anime_primary, anime_secondary, null, null, VNDetailsElement.TYPE_SUBTITLE));
+                activity.setAnimesSubmenu(new VNDetailsElement(null, anime_primary, anime_secondary, null, null, anime_ids, VNDetailsElement.TYPE_SUBTITLE));
             } else {
-                activity.getAnimesSubmenu().setPrimaryImages(anime_ids);
+                activity.getAnimesSubmenu().setIds(anime_ids);
                 activity.getAnimesSubmenu().setPrimaryData(anime_primary);
                 activity.getAnimesSubmenu().setSecondaryData(anime_secondary);
             }
@@ -195,7 +199,7 @@ public class VNDetailsFactory {
         List<String> relation_types = new ArrayList<>();
 
         if (activity.getVn().getRelations() == null) {
-            activity.setRelationsSubmenu(new VNDetailsElement(relation_ids, relation_titles, relation_types, null, null, VNDetailsElement.TYPE_SUBTITLE));
+            activity.setRelationsSubmenu(new VNDetailsElement(null, relation_titles, relation_types, null, null, relation_ids, VNDetailsElement.TYPE_SUBTITLE));
         } else {
             for (Relation relation : activity.getVn().getRelations()) {
                 relation_titles.add(relation.getTitle());
@@ -204,11 +208,41 @@ public class VNDetailsFactory {
             }
 
             if (activity.getRelationsSubmenu() == null) {
-                activity.setRelationsSubmenu(new VNDetailsElement(relation_ids, relation_titles, relation_types, null, null, VNDetailsElement.TYPE_SUBTITLE));
+                activity.setRelationsSubmenu(new VNDetailsElement(null, relation_titles, relation_types, null, null, relation_ids, VNDetailsElement.TYPE_SUBTITLE));
             } else {
-                activity.getRelationsSubmenu().setPrimaryImages(relation_ids);
+                activity.getRelationsSubmenu().setIds(relation_ids);
                 activity.getRelationsSubmenu().setPrimaryData(relation_titles);
                 activity.getRelationsSubmenu().setSecondaryData(relation_types);
+            }
+        }
+    }
+
+    public static void setSimilarNovelsSubmenu(VNDetailsActivity activity) {
+        List<Integer> ids = new ArrayList<>();
+        List<String> names = new ArrayList<>();
+        List<String> subnames = new ArrayList<>();
+        List<String> images = new ArrayList<>();
+        List<Integer> rightImages = new ArrayList<>();
+
+        if (activity.getSimilarNovels() == null) {
+            activity.setSimilarNovelsSubmenu(new VNDetailsElement(null, names, subnames, rightImages, images, ids, VNDetailsElement.TYPE_SUBTITLE));
+        } else {
+            for (SimilarNovel similarNovel : activity.getSimilarNovels()) {
+                ids.add(similarNovel.getNovelId());
+                names.add(similarNovel.getTitle());
+                subnames.add("Similarity : " + similarNovel.getSimilarityPercentage() + "%");
+                images.add(similarNovel.getImageLink());
+                rightImages.add(similarNovel.getSimilarityImage());
+            }
+
+            if (activity.getSimilarNovelsSubmenu() == null) {
+                activity.setSimilarNovelsSubmenu(new VNDetailsElement(null, names, subnames, rightImages, images, ids, VNDetailsElement.TYPE_SUBTITLE));
+            } else {
+                activity.getSimilarNovelsSubmenu().setIds(ids);
+                activity.getSimilarNovelsSubmenu().setPrimaryData(names);
+                activity.getSimilarNovelsSubmenu().setSecondaryData(subnames);
+                activity.getSimilarNovelsSubmenu().setUrlImages(images);
+                activity.getSimilarNovelsSubmenu().setSecondaryImages(rightImages);
             }
         }
     }
@@ -219,7 +253,7 @@ public class VNDetailsFactory {
         List<Integer> tags_ids = new ArrayList<>();
 
         if (activity.getVn().getTags() == null) {
-            activity.setTagsSubmenu(new VNDetailsElement(tags_images, tags, null, tags_ids, null, VNDetailsElement.TYPE_TEXT));
+            activity.setTagsSubmenu(new VNDetailsElement(tags_images, tags, null, null, null, tags_ids, VNDetailsElement.TYPE_TEXT));
         } else {
             Map<String, Boolean> alreadyProcessedCategories = new HashMap<>();
             for (List<Number> catInfo : activity.getVn().getTags()) {
@@ -243,11 +277,11 @@ public class VNDetailsFactory {
             }
 
             if (activity.getTagsSubmenu() == null) {
-                activity.setTagsSubmenu(new VNDetailsElement(tags_images, tags, null, tags_ids, null, VNDetailsElement.TYPE_TEXT));
+                activity.setTagsSubmenu(new VNDetailsElement(tags_images, tags, null, null, null, tags_ids, VNDetailsElement.TYPE_TEXT));
             } else {
                 activity.getTagsSubmenu().setPrimaryImages(tags_images);
                 activity.getTagsSubmenu().setPrimaryData(tags);
-                activity.getTagsSubmenu().setSecondaryImages(tags_ids);
+                activity.getTagsSubmenu().setIds(tags_ids);
             }
         }
     }
@@ -256,7 +290,7 @@ public class VNDetailsFactory {
         List<String> genres = new ArrayList<>();
 
         if (activity.getVn().getTags() == null) {
-            activity.setGenresSubmenu(new VNDetailsElement(null, genres, null, null, null, VNDetailsElement.TYPE_TEXT));
+            activity.setGenresSubmenu(new VNDetailsElement(null, genres, null, null, null, null, VNDetailsElement.TYPE_TEXT));
         } else {
             for (List<Number> tagInfo : activity.getVn().getTags()) {
                 if (!Tag.checkSpoilerLevel(activity, tagInfo.get(2).intValue())) continue;
@@ -267,7 +301,7 @@ public class VNDetailsFactory {
             }
 
             if (activity.getGenresSubmenu() == null) {
-                activity.setGenresSubmenu(new VNDetailsElement(null, genres, null, null, null, VNDetailsElement.TYPE_TEXT));
+                activity.setGenresSubmenu(new VNDetailsElement(null, genres, null, null, null, null, VNDetailsElement.TYPE_TEXT));
             } else {
                 activity.getGenresSubmenu().setPrimaryData(genres);
             }
@@ -278,7 +312,7 @@ public class VNDetailsFactory {
         List<String> screenshots = new ArrayList<>();
 
         if (activity.getVn().getScreens() == null) {
-            activity.setScreensSubmenu(new VNDetailsElement(null, screenshots, null, null, null, VNDetailsElement.TYPE_IMAGES));
+            activity.setScreensSubmenu(new VNDetailsElement(null, screenshots, null, null, null, null, VNDetailsElement.TYPE_IMAGES));
         } else {
             for (Screen screenshot : activity.getVn().getScreens()) {
                 if (screenshot.isNsfw() && !SettingsManager.getNSFW(activity)) continue;
@@ -286,7 +320,7 @@ public class VNDetailsFactory {
             }
 
             if (activity.getScreensSubmenu() == null) {
-                activity.setScreensSubmenu(new VNDetailsElement(null, screenshots, null, null, null, VNDetailsElement.TYPE_IMAGES));
+                activity.setScreensSubmenu(new VNDetailsElement(null, screenshots, null, null, null, null, VNDetailsElement.TYPE_IMAGES));
             } else {
                 activity.getScreensSubmenu().setPrimaryData(screenshots);
             }
@@ -300,7 +334,7 @@ public class VNDetailsFactory {
         List<Integer> ids = new ArrayList<>();
 
         if (activity.getCharacters() == null) {
-            activity.setCharactersSubmenu(new VNDetailsElement(ids, names, subnames, null, images, VNDetailsElement.TYPE_SUBTITLE));
+            activity.setCharactersSubmenu(new VNDetailsElement(null, names, subnames, null, images, ids, VNDetailsElement.TYPE_SUBTITLE));
         } else {
             for (Item character : activity.getCharacters()) {
                 /* Checking the spoiler level of the whole character */
@@ -324,9 +358,9 @@ public class VNDetailsFactory {
             }
 
             if (activity.getCharactersSubmenu() == null) {
-                activity.setCharactersSubmenu(new VNDetailsElement(ids, names, subnames, null, images, VNDetailsElement.TYPE_SUBTITLE));
+                activity.setCharactersSubmenu(new VNDetailsElement(null, names, subnames, null, images, ids, VNDetailsElement.TYPE_SUBTITLE));
             } else {
-                activity.getCharactersSubmenu().setPrimaryImages(ids);
+                activity.getCharactersSubmenu().setIds(ids);
                 activity.getCharactersSubmenu().setPrimaryData(names);
                 activity.getCharactersSubmenu().setSecondaryData(subnames);
                 activity.getCharactersSubmenu().setUrlImages(images);
@@ -341,7 +375,7 @@ public class VNDetailsFactory {
         List<Integer> ids = new ArrayList<>();
 
         if (activity.getReleases() == null) {
-            activity.setReleasesSubmenu(new VNDetailsElement(images, names, subnames, ids, null, VNDetailsElement.TYPE_SUBTITLE));
+            activity.setReleasesSubmenu(new VNDetailsElement(images, names, subnames, null, null, ids, VNDetailsElement.TYPE_SUBTITLE));
         } else {
             for (String language : activity.getReleases().keySet()) {
                 images.add(Language.FLAGS.get(language));
@@ -356,12 +390,12 @@ public class VNDetailsFactory {
                 }
 
                 if (activity.getReleasesSubmenu() == null) {
-                    activity.setReleasesSubmenu(new VNDetailsElement(images, names, subnames, ids, null, VNDetailsElement.TYPE_SUBTITLE));
+                    activity.setReleasesSubmenu(new VNDetailsElement(images, names, subnames, null, null, ids, VNDetailsElement.TYPE_SUBTITLE));
                 } else {
                     activity.getReleasesSubmenu().setPrimaryImages(images);
                     activity.getReleasesSubmenu().setPrimaryData(names);
                     activity.getReleasesSubmenu().setSecondaryData(subnames);
-                    activity.getReleasesSubmenu().setSecondaryImages(ids);
+                    activity.getReleasesSubmenu().setIds(ids);
                 }
             }
         }

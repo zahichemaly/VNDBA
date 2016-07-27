@@ -1,6 +1,6 @@
 package com.booboot.vndbandroid.util;
 
-import com.booboot.vndbandroid.bean.Mail;
+import com.booboot.vndbandroid.bean.vndbandroid.Mail;
 
 import java.util.Calendar;
 import java.util.Properties;

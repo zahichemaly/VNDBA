@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.booboot.vndbandroid.BuildConfig;
 import com.booboot.vndbandroid.R;
-import com.booboot.vndbandroid.bean.Links;
+import com.booboot.vndbandroid.bean.vndb.Links;
 import com.booboot.vndbandroid.util.Utils;
 
 /**

@@ -9,7 +9,7 @@ import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
 
 import com.booboot.vndbandroid.R;
-import com.booboot.vndbandroid.bean.Theme;
+import com.booboot.vndbandroid.bean.vndbandroid.Theme;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
 

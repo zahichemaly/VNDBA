@@ -2,13 +2,14 @@ package com.booboot.vndbandroid.api;
 
 import android.content.Context;
 
-import com.booboot.vndbandroid.bean.DbStats;
-import com.booboot.vndbandroid.bean.Item;
-import com.booboot.vndbandroid.bean.Options;
-import com.booboot.vndbandroid.bean.cache.CacheItem;
-import com.booboot.vndbandroid.bean.cache.VNlistItem;
-import com.booboot.vndbandroid.bean.cache.VotelistItem;
-import com.booboot.vndbandroid.bean.cache.WishlistItem;
+import com.booboot.vndbandroid.bean.vndb.DbStats;
+import com.booboot.vndbandroid.bean.vndb.Item;
+import com.booboot.vndbandroid.bean.vndb.Options;
+import com.booboot.vndbandroid.bean.vndbandroid.CacheItem;
+import com.booboot.vndbandroid.bean.vndbandroid.VNlistItem;
+import com.booboot.vndbandroid.bean.vndbandroid.VotelistItem;
+import com.booboot.vndbandroid.bean.vndbandroid.WishlistItem;
+import com.booboot.vndbandroid.bean.vnstat.SimilarNovel;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.IPredicate;
 import com.booboot.vndbandroid.util.JSON;
@@ -39,6 +40,7 @@ public class Cache {
     public static LinkedHashMap<Integer, Item> vns = new LinkedHashMap<>();
     public static LinkedHashMap<Integer, List<Item>> characters = new LinkedHashMap<>();
     public static LinkedHashMap<Integer, List<Item>> releases = new LinkedHashMap<>();
+    public static LinkedHashMap<Integer, List<SimilarNovel>> similarNovels = new LinkedHashMap<>();
 
     public final static String VN_FLAGS = "basic,details,screens,tags,stats,relations,anime";
     public final static String CHARACTER_FLAGS = "basic,details,meas,traits,vns";

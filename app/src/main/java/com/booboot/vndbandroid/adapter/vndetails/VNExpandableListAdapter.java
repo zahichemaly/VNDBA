@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,10 +25,10 @@ import com.booboot.vndbandroid.activity.VNTypeFragment;
 import com.booboot.vndbandroid.adapter.doublelist.DoubleListListener;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.VNDBServer;
-import com.booboot.vndbandroid.bean.Item;
-import com.booboot.vndbandroid.bean.Links;
-import com.booboot.vndbandroid.bean.Options;
-import com.booboot.vndbandroid.bean.Tag;
+import com.booboot.vndbandroid.bean.vndb.Item;
+import com.booboot.vndbandroid.bean.vndb.Links;
+import com.booboot.vndbandroid.bean.vndb.Options;
+import com.booboot.vndbandroid.bean.vndb.Tag;
 import com.booboot.vndbandroid.factory.CharacterDataFactory;
 import com.booboot.vndbandroid.factory.ReleaseDataFactory;
 import com.booboot.vndbandroid.factory.TagDataFactory;
@@ -88,13 +89,15 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
         final int layout = getChildLayout(listPosition);
         final LayoutInflater layoutInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         convertView = layoutInflater.inflate(layout, null);
+        ImageView itemLeftImage, itemRightImage;
+        int rightImage;
 
         switch (layout) {
             case R.layout.list_item_text:
-                ImageView itemLeftImage = (ImageView) convertView.findViewById(R.id.itemLeftImage);
+                itemLeftImage = (ImageView) convertView.findViewById(R.id.itemLeftImage);
                 TextView itemLeftText = (TextView) convertView.findViewById(R.id.itemLeftText);
                 TextView itemRightText = (TextView) convertView.findViewById(R.id.itemRightText);
-                ImageView itemRightImage = (ImageView) convertView.findViewById(R.id.itemRightImage);
+                itemRightImage = (ImageView) convertView.findViewById(R.id.itemRightImage);
 
                 itemLeftText.setText(Html.fromHtml(primaryText));
 
@@ -112,21 +115,20 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                     itemLeftImage.setVisibility(View.GONE);
                 }
 
+                if (getElement(listPosition).getSecondaryImages() != null && (rightImage = getElement(listPosition).getSecondaryImages().get(expandedListPosition)) > 0) {
+                    itemRightImage.setImageResource(rightImage);
+                } else {
+                    itemRightImage.setVisibility(View.GONE);
+                }
+
                 String group = (String) getGroup(listPosition);
                 if (group.equals(VNDetailsFactory.TITLE_TAGS)) {
-                    int tagId = getElement(listPosition).getSecondaryImages().get(expandedListPosition);
+                    int tagId = getElement(listPosition).getIds().get(expandedListPosition);
                     if (tagId > 0) {
                         Tag tag = Tag.getTags(activity).get(tagId);
                         if (tag != null) {
                             convertView.setOnClickListener(new DoubleListListener(activity, tag.getName(), TagDataFactory.getData(tag), null));
                         }
-                    }
-                } else {
-                    int rightImage;
-                    if (getElement(listPosition).getSecondaryImages() != null && (rightImage = getElement(listPosition).getSecondaryImages().get(expandedListPosition)) > 0) {
-                        itemRightImage.setImageResource(rightImage);
-                    } else {
-                        itemRightImage.setVisibility(View.GONE);
                     }
                 }
                 break;
@@ -139,16 +141,23 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                 break;
 
             case R.layout.list_item_subtitle:
-                ImageView iconView = (ImageView) convertView.findViewById(R.id.iconView);
+                itemLeftImage = (ImageView) convertView.findViewById(R.id.iconView);
+                itemRightImage = (ImageView) convertView.findViewById(R.id.itemRightImage);
                 TextView title = (TextView) convertView.findViewById(R.id.title);
                 TextView subtitle = (TextView) convertView.findViewById(R.id.subtitle);
 
                 if (getElement(listPosition).getUrlImages() == null) {
-                    iconView.setVisibility(View.GONE);
+                    itemLeftImage.setVisibility(View.GONE);
                 } else {
                     String url = getElement(listPosition).getUrlImages().get(expandedListPosition);
-                    ImageLoader.getInstance().displayImage(url, iconView);
-                    Lightbox.set(activity, iconView, url);
+                    ImageLoader.getInstance().displayImage(url, itemLeftImage);
+                    Lightbox.set(activity, itemLeftImage, url);
+                }
+
+                if (getElement(listPosition).getSecondaryImages() != null && (rightImage = getElement(listPosition).getSecondaryImages().get(expandedListPosition)) > 0) {
+                    itemRightImage.setImageResource(rightImage);
+                } else {
+                    itemRightImage.setVisibility(View.GONE);
                 }
 
                 title.setText(Html.fromHtml(primaryText));
@@ -161,7 +170,8 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
 
                 switch ((String) getGroup(listPosition)) {
                     case VNDetailsFactory.TITLE_RELATIONS:
-                        final int vnId = getElement(listPosition).getPrimaryImages().get(expandedListPosition);
+                    case VNDetailsFactory.TITLE_SIMILAR_NOVELS:
+                        final int vnId = getElement(listPosition).getIds().get(expandedListPosition);
                         convertView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -189,7 +199,8 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                         break;
 
                     case VNDetailsFactory.TITLE_CHARACTERS:
-                        int characterId = getElement(listPosition).getPrimaryImages().get(expandedListPosition);
+                        int characterId = getElement(listPosition).getIds().get(expandedListPosition);
+                        // TODO : use Cache.characters for O(1) instead of O(n) loop?
                         for (Item character : activity.getCharacters()) {
                             if (character.getId() == characterId) {
                                 convertView.setOnClickListener(new DoubleListListener(activity, character.getName(), CharacterDataFactory.getData(activity, character), null));
@@ -203,19 +214,19 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                         if (getElement(listPosition).getPrimaryImages() != null) {
                             Integer image = getElement(listPosition).getPrimaryImages().get(expandedListPosition);
                             if (image != null) {
-                                iconView.setImageResource(image);
-                                iconView.setMaxWidth(Pixels.px(35, activity));
-                                iconView.setMaxHeight(Pixels.px(40, activity));
-                                ViewGroup.LayoutParams layoutParams = iconView.getLayoutParams();
+                                itemLeftImage.setImageResource(image);
+                                itemLeftImage.setMaxWidth(Pixels.px(35, activity));
+                                itemLeftImage.setMaxHeight(Pixels.px(40, activity));
+                                ViewGroup.LayoutParams layoutParams = itemLeftImage.getLayoutParams();
                                 layoutParams.width = Pixels.px(35, activity);
                                 layoutParams.height = Pixels.px(40, activity);
-                                iconView.setLayoutParams(layoutParams);
-                                iconView.setVisibility(View.VISIBLE);
+                                itemLeftImage.setLayoutParams(layoutParams);
+                                itemLeftImage.setVisibility(View.VISIBLE);
                             }
                         }
 
                         /* Retrieve the release matching the element */
-                        final Integer releaseId = getElement(listPosition).getSecondaryImages().get(expandedListPosition);
+                        final Integer releaseId = getElement(listPosition).getIds().get(expandedListPosition);
                         if (releaseId == null) break;
                         Item release = null;
                         for (Item tmp : Cache.releases.get(activity.getVn().getId())) {
@@ -230,7 +241,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                         break;
 
                     case VNDetailsFactory.TITLE_ANIME:
-                        final int id = getElement(listPosition).getPrimaryImages().get(expandedListPosition);
+                        final int id = getElement(listPosition).getIds().get(expandedListPosition);
                         convertView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -247,6 +258,10 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int listPosition) {
+        Log.e("D", vnDetailsElements.keySet() + "");
+
+        Log.e("D", vnDetailsElements.get(VNDetailsFactory.TITLE_SIMILAR_NOVELS) + "");
+
         return vnDetailsElements.get(getGroup(listPosition)).getPrimaryData().size();
     }
 

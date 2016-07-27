@@ -19,14 +19,15 @@ public class VNDetailsElement {
 
     private List<String> primaryData = new ArrayList<>();
     private List<String> secondaryData = new ArrayList<>();
+    private List<Integer> ids = new ArrayList<>();
 
-    public VNDetailsElement(List<Integer> primaryImages, List<String> primaryData, List<String> secondaryData, List<Integer> secondaryImages, List<String> urlImages, int type) {
+    public VNDetailsElement(List<Integer> primaryImages, List<String> primaryData, List<String> secondaryData, List<Integer> secondaryImages, List<String> urlImages, List<Integer> ids, int type) {
         this.primaryImages = primaryImages;
         this.primaryData = primaryData;
         this.secondaryData = secondaryData;
         this.secondaryImages = secondaryImages;
         this.urlImages = urlImages;
-
+        this.ids = ids;
         this.type = type;
     }
 
@@ -76,5 +77,13 @@ public class VNDetailsElement {
 
     public void setUrlImages(List<String> urlImages) {
         this.urlImages = urlImages;
+    }
+
+    public List<Integer> getIds() {
+        return ids;
+    }
+
+    public void setIds(List<Integer> ids) {
+        this.ids = ids;
     }
 }

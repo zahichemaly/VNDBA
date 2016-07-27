@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.booboot.vndbandroid.R;
-import com.booboot.vndbandroid.bean.Options;
+import com.booboot.vndbandroid.bean.vndb.Options;
 import com.booboot.vndbandroid.factory.ProgressiveResultLoader;
 import com.booboot.vndbandroid.util.Utils;
 
