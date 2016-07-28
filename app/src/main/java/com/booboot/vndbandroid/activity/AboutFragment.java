@@ -30,17 +30,20 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
 
         Button feedbackButton = (Button) rootView.findViewById(R.id.feedbackButton);
         Button githubButton = (Button) rootView.findViewById(R.id.githubButton);
+        Button vnstatButton = (Button) rootView.findViewById(R.id.vnstatButton);
         TextView myVNDBProfile = (TextView) rootView.findViewById(R.id.myVNDBProfile);
         TextView aboutDescription = (TextView) rootView.findViewById(R.id.aboutDescription);
 
         Utils.setButtonColor(getActivity(), feedbackButton);
         Utils.setButtonColor(getActivity(), githubButton);
+        Utils.setButtonColor(getActivity(), vnstatButton);
         Utils.setTextViewLink(getActivity(), myVNDBProfile, Links.MY_VNDB_PROFILE, 0, myVNDBProfile.getText().toString().length());
         int linkStart = aboutDescription.getText().toString().indexOf(Links.VNDB);
         Utils.setTextViewLink(getActivity(), aboutDescription, Links.VNDB, linkStart, linkStart + Links.VNDB.length());
 
         githubButton.setOnClickListener(this);
         feedbackButton.setOnClickListener(this);
+        vnstatButton.setOnClickListener(this);
 
         return rootView;
     }
@@ -89,6 +92,10 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
 
             case R.id.githubButton:
                 Utils.openURL(getActivity(), Links.GITHUB);
+                break;
+
+            case R.id.vnstatButton:
+                Utils.openURL(getActivity(), Links.VNSTAT);
                 break;
         }
     }

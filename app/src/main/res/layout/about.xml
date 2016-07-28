@@ -70,7 +70,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Thanks to Yorhel"
+            android:text="Thanks to Yorhel and Noslyl"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="15dp"
             android:textAlignment="center"/>
@@ -98,5 +98,12 @@
             android:layout_height="wrap_content"
             android:textColor="@color/white"
             android:text="Github page"/>
+
+        <Button
+            android:id="@+id/vnstatButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:text="VNStat official page"/>
     </LinearLayout>
 </ScrollView>
