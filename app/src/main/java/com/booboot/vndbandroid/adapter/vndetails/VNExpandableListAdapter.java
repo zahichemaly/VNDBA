@@ -258,10 +258,6 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int listPosition) {
-        Log.e("D", vnDetailsElements.keySet() + "");
-
-        Log.e("D", vnDetailsElements.get(VNDetailsFactory.TITLE_SIMILAR_NOVELS) + "");
-
         return vnDetailsElements.get(getGroup(listPosition)).getPrimaryData().size();
     }
 

@@ -27,7 +27,6 @@ public class SimilarNovel {
         return Math.floor(similarity * 1000 + 0.5) / 10;
     }
 
-
     public Integer getSimilarityImage() {
         if (similarity >= 0.6) return R.drawable.score_green;
         if (similarity >= 0.4) return R.drawable.score_light_green;
@@ -107,5 +106,13 @@ public class SimilarNovel {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public void setSimilarity(double similarity) {
+        this.similarity = similarity;
+    }
+
+    public void setNovelId(int novelId) {
+        this.novelId = novelId;
     }
 }

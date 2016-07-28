@@ -17,6 +17,7 @@ import com.booboot.vndbandroid.bean.vndb.Screen;
 import com.booboot.vndbandroid.bean.vndbandroid.VNlistItem;
 import com.booboot.vndbandroid.bean.vndbandroid.VotelistItem;
 import com.booboot.vndbandroid.bean.vndbandroid.WishlistItem;
+import com.booboot.vndbandroid.bean.vnstat.SimilarNovel;
 import com.booboot.vndbandroid.util.JSON;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -59,6 +60,7 @@ public class DB extends SQLiteOpenHelper {
     public final static String TABLE_RELEASE_MEDIA = "release_media";
     public final static String TABLE_RELEASE_PRODUCER = "release_producer";
     public final static String TABLE_PRODUCER = "producer";
+    public final static String TABLE_SIMILAR_NOVELS = "similar_novels";
 
     public DB(Context context) {
         super(context, NAME, null, VERSION);
@@ -248,6 +250,14 @@ public class DB extends SQLiteOpenHelper {
                 "type TEXT " +
                 ")");
 
+        db.execSQL("CREATE TABLE " + TABLE_SIMILAR_NOVELS + " (" +
+                "id INTEGER PRIMARY KEY, " +
+                "vn INTEGER, " +
+                "similarity REAL, " +
+                "title TEXT, " +
+                "image TEXT " +
+                ")");
+
         db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_LANGUAGES + "_vn ON " + TABLE_LANGUAGES + "(vn)");
         db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_PLATFORMS + "_vn ON " + TABLE_PLATFORMS + "(vn)");
         db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_ANIME + "_vn ON " + TABLE_ANIME + "(vn)");
@@ -261,6 +271,7 @@ public class DB extends SQLiteOpenHelper {
         db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_RELEASE_PLATFORMS + "_release ON " + TABLE_RELEASE_PLATFORMS + "(release)");
         db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_RELEASE_MEDIA + "_release ON " + TABLE_RELEASE_MEDIA + "(release)");
         db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_RELEASE_PRODUCER + "_release ON " + TABLE_RELEASE_PRODUCER + "(release)");
+        db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_SIMILAR_NOVELS + "_vn ON " + TABLE_SIMILAR_NOVELS + "(vn)");
     }
 
     @Override
@@ -834,6 +845,55 @@ public class DB extends SQLiteOpenHelper {
         for (Cursor c : cursor) c.close();
 
         return new ArrayList<>(res.values());
+    }
+
+    public static void saveSimilarNovels(Context context, List<SimilarNovel> similarNovels, int vnId) {
+        if (instance == null) instance = new DB(context);
+        SQLiteDatabase db = instance.getWritableDatabase();
+
+        StringBuilder query = new StringBuilder("INSERT INTO ").append(TABLE_SIMILAR_NOVELS).append(" VALUES ");
+        boolean somethingToInsert = false;
+        db.beginTransaction();
+
+        for (SimilarNovel similarNovel : similarNovels) {
+            query.append("(")
+                    .append(similarNovel.getNovelId()).append(",")
+                    .append(vnId).append(",")
+                    .append(similarNovel.getSimilarity()).append(",")
+                    .append(formatString(similarNovel.getTitle())).append(",")
+                    .append(formatString(similarNovel.getImage()))
+                    .append("),");
+            somethingToInsert = true;
+        }
+
+        if (somethingToInsert) {
+            query.setLength(query.length() - 1);
+            db.execSQL(query.toString());
+        }
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
+    public static List<SimilarNovel> loadSimilarNovels(Context context, int vnId) {
+        if (instance == null) instance = new DB(context);
+        SQLiteDatabase db = instance.getWritableDatabase();
+
+        List<SimilarNovel> res = new ArrayList<>();
+        Cursor cursor = db.rawQuery("SELECT * FROM  " + TABLE_SIMILAR_NOVELS + " WHERE vn = " + vnId, new String[]{});
+
+        while (cursor.moveToNext()) {
+            SimilarNovel similarNovel = new SimilarNovel();
+            similarNovel.setNovelId(cursor.getInt(0));
+            similarNovel.setSimilarity(cursor.getDouble(2));
+            similarNovel.setTitle(cursor.getString(3));
+            similarNovel.setImage(cursor.getString(4));
+
+            res.add(similarNovel);
+        }
+
+        cursor.close();
+        return res;
     }
 
     public static LinkedHashMap<Integer, VNlistItem> loadVnlist(Context context) {

@@ -345,10 +345,8 @@ public class VNDetailsActivity extends AppCompatActivity {
                             alreadyInDatabase = releasesList.size() > 0;
                             break;
                         case VNDetailsFactory.TITLE_SIMILAR_NOVELS:
-                            /*
                             similarNovels = DB.loadSimilarNovels(VNDetailsActivity.this, vn.getId());
                             alreadyInDatabase = similarNovels.size() > 0;
-                            */
                             break;
                         case VNDetailsFactory.TITLE_LANGUAGES:
                             vn.setLanguages(DB.loadLanguages(VNDetailsActivity.this, vn.getId()));
@@ -394,6 +392,7 @@ public class VNDetailsActivity extends AppCompatActivity {
                                         break;
                                     case VNDetailsFactory.TITLE_SIMILAR_NOVELS:
                                         Cache.similarNovels.put(vn.getId(), similarNovels);
+                                        groupSimilarNovelsBySimilarity();
                                         VNDetailsFactory.setSimilarNovelsSubmenu(VNDetailsActivity.this);
                                         break;
                                     case VNDetailsFactory.TITLE_LANGUAGES:
@@ -494,7 +493,7 @@ public class VNDetailsActivity extends AppCompatActivity {
                                             similarNovels = vnStatResults.getSimilar();
                                             Cache.similarNovels.put(vn.getId(), similarNovels);
 
-                                            // DB.saveSimilarNovels(VNDetailsActivity.this, similarNovels, vn.getId());
+                                            DB.saveSimilarNovels(VNDetailsActivity.this, similarNovels, vn.getId());
                                         }
 
                                         if (similarNovels == null) {
@@ -502,7 +501,6 @@ public class VNDetailsActivity extends AppCompatActivity {
                                             return;
                                         }
 
-                                        // groupCharactersByRole();
                                         VNDetailsFactory.setSimilarNovelsSubmenu(VNDetailsActivity.this);
                                         hideGroupLoader(groupView, groupPosition);
                                     }
@@ -580,6 +578,18 @@ public class VNDetailsActivity extends AppCompatActivity {
                 String leftRole = (String) lhs.getVns().get(0)[Item.ROLE_INDEX];
                 String rightRole = (String) rhs.getVns().get(0)[Item.ROLE_INDEX];
                 return Integer.valueOf(Item.ROLES_KEY.indexOf(leftRole)).compareTo(Item.ROLES_KEY.indexOf(rightRole));
+            }
+        });
+    }
+
+    /**
+     * Sorting the similar novels by similarity
+     */
+    private void groupSimilarNovelsBySimilarity() {
+        Collections.sort(similarNovels, new Comparator<SimilarNovel>() {
+            @Override
+            public int compare(SimilarNovel lhs, SimilarNovel rhs) {
+                return Double.valueOf(rhs.getSimilarity()).compareTo(lhs.getSimilarity());
             }
         });
     }
