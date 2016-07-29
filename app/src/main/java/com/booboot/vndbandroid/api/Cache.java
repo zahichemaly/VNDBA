@@ -1,6 +1,7 @@
 package com.booboot.vndbandroid.api;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.booboot.vndbandroid.bean.vndb.DbStats;
 import com.booboot.vndbandroid.bean.vndb.Item;
@@ -129,13 +130,9 @@ public class Cache {
                     return;
                 }
 
-                try {
-                    mergedIdsString = JSON.mapper.writeValueAsString(mergedIds);
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
-                }
+                mergedIdsString = TextUtils.join(",", mergedIds);
                 int numberOfPages = (int) Math.ceil(mergedIds.size() * 1.0 / 25);
-                VNDBServer.get("vn", VN_FLAGS, "(id = " + mergedIdsString + ")", Options.create(true, true, numberOfPages), 0, context, new Callback() {
+                VNDBServer.get("vn", VN_FLAGS, "(id = [" + mergedIdsString + "])", Options.create(true, true, numberOfPages), 0, context, new Callback() {
                     @Override
                     protected void config() {
                         for (Item vn : results.getItems()) {
