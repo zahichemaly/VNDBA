@@ -18,8 +18,13 @@ public class VNStatServer {
             public void run() {
                 try {
                     VNStatResults response = JSON.mapper.readValue(new URL(URL + vnId + "/" + flags), VNStatResults.class);
-                    successCallback.vnStatResults = response.getResult();
-                    successCallback.call();
+
+                    if (response.isSuccess()) {
+                        successCallback.vnStatResults = response.getResult();
+                        successCallback.call();
+                    } else {
+                        errorCallback.call();
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                     errorCallback.message = "An error occurred during the connection to the server. Please try again later.";

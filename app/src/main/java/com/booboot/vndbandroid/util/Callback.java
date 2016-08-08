@@ -45,6 +45,7 @@ public abstract class Callback {
     }
 
     public static void showToast(final Context context, final String message) {
+        if (message == null) return;
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
