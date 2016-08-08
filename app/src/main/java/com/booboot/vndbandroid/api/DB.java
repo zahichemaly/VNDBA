@@ -1111,6 +1111,7 @@ public class DB extends SQLiteOpenHelper {
         db.execSQL("DELETE FROM " + TABLE_RELEASE_MEDIA);
         db.execSQL("DELETE FROM " + TABLE_RELEASE_PRODUCER);
         db.execSQL("DELETE FROM " + TABLE_PRODUCER);
+        db.execSQL("DELETE FROM " + TABLE_SIMILAR_NOVELS);
     }
 
     private static void exec(SQLiteDatabase db, StringBuilder[] queries, boolean[] somethingToInsert) {
@@ -1128,5 +1129,53 @@ public class DB extends SQLiteOpenHelper {
 
     private static int formatBool(boolean value) {
         return value ? 1 : 0;
+    }
+
+    public static void startupClean(Context context, String listVnIds) {
+        if (instance == null) instance = new DB(context);
+        SQLiteDatabase db = instance.getWritableDatabase();
+        db.beginTransaction();
+
+        String notInListVnIds = "NOT IN (" + listVnIds + ")";
+        db.execSQL("DELETE FROM " + TABLE_VN + " WHERE id " + notInListVnIds);
+        db.execSQL("DELETE FROM " + TABLE_LANGUAGES + " WHERE vn " + notInListVnIds);
+        db.execSQL("DELETE FROM " + TABLE_ORIG_LANG + " WHERE vn " + notInListVnIds);
+        db.execSQL("DELETE FROM " + TABLE_PLATFORMS + " WHERE vn " + notInListVnIds);
+        db.execSQL("DELETE FROM " + TABLE_ANIME + " WHERE vn " + notInListVnIds);
+        db.execSQL("DELETE FROM " + TABLE_RELATION + " WHERE vn " + notInListVnIds);
+        db.execSQL("DELETE FROM " + TABLE_TAGS + " WHERE vn " + notInListVnIds);
+        db.execSQL("DELETE FROM " + TABLE_SCREENS + " WHERE vn " + notInListVnIds);
+        db.execSQL("DELETE FROM " + TABLE_VN_CHARACTER + " WHERE vn " + notInListVnIds);
+        db.execSQL("DELETE FROM " + TABLE_VN_RELEASE + " WHERE vn " + notInListVnIds);
+        db.execSQL("DELETE FROM " + TABLE_SIMILAR_NOVELS + " WHERE vn " + notInListVnIds);
+
+        List<Integer> tmp = new ArrayList<>();
+        Cursor cursor = db.rawQuery("SELECT character FROM " + TABLE_VN_CHARACTER, new String[]{});
+        while (cursor.moveToNext()) {
+            tmp.add(cursor.getInt(0));
+        }
+        cursor.close();
+        String existingCharacters = TextUtils.join(",", tmp);
+
+        db.execSQL("DELETE FROM " + TABLE_CHARACTER + " WHERE id NOT IN (" + existingCharacters + ")");
+        db.execSQL("DELETE FROM " + TABLE_TRAITS + " WHERE character NOT IN (" + existingCharacters + ")");
+
+        tmp = new ArrayList<>();
+        cursor = db.rawQuery("SELECT release FROM " + TABLE_VN_RELEASE, new String[]{});
+        while (cursor.moveToNext()) {
+            tmp.add(cursor.getInt(0));
+        }
+        cursor.close();
+        String existingReleases = TextUtils.join(",", tmp);
+
+        db.execSQL("DELETE FROM " + TABLE_RELEASE + " WHERE id NOT IN (" + existingReleases + ")");
+        db.execSQL("DELETE FROM " + TABLE_RELEASE_LANGUAGES + " WHERE release NOT IN (" + existingReleases + ")");
+        db.execSQL("DELETE FROM " + TABLE_RELEASE_PLATFORMS + " WHERE release NOT IN (" + existingReleases + ")");
+        db.execSQL("DELETE FROM " + TABLE_RELEASE_MEDIA + " WHERE release NOT IN (" + existingReleases + ")");
+        db.execSQL("DELETE FROM " + TABLE_RELEASE_PRODUCER + " WHERE release NOT IN (" + existingReleases + ")");
+        db.execSQL("DELETE FROM " + TABLE_PRODUCER + " WHERE id NOT IN (SELECT producer FROM " + TABLE_RELEASE_PRODUCER + ")");
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
     }
 }

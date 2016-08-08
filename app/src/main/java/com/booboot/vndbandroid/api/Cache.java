@@ -124,13 +124,14 @@ public class Cache {
                 Set<Integer> mergedIds = new HashSet<>(vnlistIds.keySet());
                 mergedIds.addAll(votelistIds.keySet());
                 mergedIds.addAll(wishlistIds.keySet());
+                mergedIdsString = TextUtils.join(",", mergedIds);
+                DB.startupClean(context, mergedIdsString);
 
                 if (mergedIds.isEmpty() || !shouldSendGetVn(context, vnlistIds, votelistIds, wishlistIds, mergedIds)) {
                     successCallback.call();
                     return;
                 }
 
-                mergedIdsString = TextUtils.join(",", mergedIds);
                 int numberOfPages = (int) Math.ceil(mergedIds.size() * 1.0 / 25);
                 VNDBServer.get("vn", VN_FLAGS, "(id = [" + mergedIdsString + "])", Options.create(true, true, numberOfPages), 0, context, new Callback() {
                     @Override
