@@ -251,11 +251,12 @@ public class DB extends SQLiteOpenHelper {
                 ")");
 
         db.execSQL("CREATE TABLE " + TABLE_SIMILAR_NOVELS + " (" +
-                "id INTEGER PRIMARY KEY, " +
+                "id INTEGER, " +
                 "vn INTEGER, " +
                 "similarity REAL, " +
                 "title TEXT, " +
-                "image TEXT " +
+                "image TEXT, " +
+                "PRIMARY KEY (id, vn) " +
                 ")");
 
         db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_LANGUAGES + "_vn ON " + TABLE_LANGUAGES + "(vn)");
