@@ -38,28 +38,31 @@ public class VNListFragment extends Fragment implements TabLayout.OnTabSelectedL
         switch (type) {
             case ListType.VNLIST:
                 Utils.setTitle(getActivity(), getActivity().getResources().getString(R.string.my_visual_novel_list));
-                tabLayout.addTab(tabLayout.newTab().setText("Playing (" + Cache.getStatusNumber(Status.PLAYING) + ")"));
-                tabLayout.addTab(tabLayout.newTab().setText("Finished (" + Cache.getStatusNumber(Status.FINISHED) + ")"));
-                tabLayout.addTab(tabLayout.newTab().setText("Stalled (" + Cache.getStatusNumber(Status.STALLED) + ")"));
-                tabLayout.addTab(tabLayout.newTab().setText("Dropped (" + Cache.getStatusNumber(Status.DROPPED) + ")"));
-                tabLayout.addTab(tabLayout.newTab().setText("Unknown (" + Cache.getStatusNumber(Status.UNKNOWN) + ")"));
+                int[] statusCount = Cache.getStatusCount();
+                tabLayout.addTab(tabLayout.newTab().setText("Playing (" + statusCount[Status.PLAYING] + ")"));
+                tabLayout.addTab(tabLayout.newTab().setText("Finished (" + statusCount[Status.FINISHED] + ")"));
+                tabLayout.addTab(tabLayout.newTab().setText("Stalled (" + statusCount[Status.STALLED] + ")"));
+                tabLayout.addTab(tabLayout.newTab().setText("Dropped (" + statusCount[Status.DROPPED] + ")"));
+                tabLayout.addTab(tabLayout.newTab().setText("Unknown (" + statusCount[Status.UNKNOWN] + ")"));
                 break;
 
             case ListType.VOTELIST:
                 Utils.setTitle(getActivity(), getActivity().getResources().getString(R.string.my_votes));
-                tabLayout.addTab(tabLayout.newTab().setText("10 - 9 (" + Cache.getVoteNumber(10) + ")"));
-                tabLayout.addTab(tabLayout.newTab().setText("8 - 7 (" + Cache.getVoteNumber(8) + ")"));
-                tabLayout.addTab(tabLayout.newTab().setText("6 - 5 (" + Cache.getVoteNumber(6) + ")"));
-                tabLayout.addTab(tabLayout.newTab().setText("4 - 3 (" + Cache.getVoteNumber(4) + ")"));
-                tabLayout.addTab(tabLayout.newTab().setText("2 - 1 (" + Cache.getVoteNumber(2) + ")"));
+                int[] voteCount = Cache.getVoteCount();
+                tabLayout.addTab(tabLayout.newTab().setText("10 - 9 (" + voteCount[0] + ")"));
+                tabLayout.addTab(tabLayout.newTab().setText("8 - 7 (" + voteCount[1] + ")"));
+                tabLayout.addTab(tabLayout.newTab().setText("6 - 5 (" + voteCount[2] + ")"));
+                tabLayout.addTab(tabLayout.newTab().setText("4 - 3 (" + voteCount[3] + ")"));
+                tabLayout.addTab(tabLayout.newTab().setText("2 - 1 (" + voteCount[4] + ")"));
                 break;
 
             case ListType.WISHLIST:
                 Utils.setTitle(getActivity(), getActivity().getResources().getString(R.string.my_wishlist));
-                tabLayout.addTab(tabLayout.newTab().setText("High (" + Cache.getWishNumber(Priority.HIGH) + ")"));
-                tabLayout.addTab(tabLayout.newTab().setText("Medium (" + Cache.getWishNumber(Priority.MEDIUM) + ")"));
-                tabLayout.addTab(tabLayout.newTab().setText("Low (" + Cache.getWishNumber(Priority.LOW) + ")"));
-                tabLayout.addTab(tabLayout.newTab().setText("Blacklist (" + Cache.getWishNumber(Priority.BLACKLIST) + ")"));
+                int[] wishCount = Cache.getWishCount();
+                tabLayout.addTab(tabLayout.newTab().setText("High (" + wishCount[Priority.HIGH] + ")"));
+                tabLayout.addTab(tabLayout.newTab().setText("Medium (" + wishCount[Priority.MEDIUM] + ")"));
+                tabLayout.addTab(tabLayout.newTab().setText("Low (" + wishCount[Priority.LOW] + ")"));
+                tabLayout.addTab(tabLayout.newTab().setText("Blacklist (" + wishCount[Priority.BLACKLIST] + ")"));
                 break;
         }
 
@@ -108,28 +111,31 @@ public class VNListFragment extends Fragment implements TabLayout.OnTabSelectedL
         switch (type) {
             case ListType.VNLIST:
                 if (tabLayout.getTabCount() < 5) return;
-                tabLayout.getTabAt(0).setText("Playing (" + Cache.getStatusNumber(Status.PLAYING) + ")");
-                tabLayout.getTabAt(1).setText("Finished (" + Cache.getStatusNumber(Status.FINISHED) + ")");
-                tabLayout.getTabAt(2).setText("Stalled (" + Cache.getStatusNumber(Status.STALLED) + ")");
-                tabLayout.getTabAt(3).setText("Dropped (" + Cache.getStatusNumber(Status.DROPPED) + ")");
-                tabLayout.getTabAt(4).setText("Unknown (" + Cache.getStatusNumber(Status.UNKNOWN) + ")");
+                int[] statusCount = Cache.getStatusCount();
+                tabLayout.getTabAt(0).setText("Playing (" + statusCount[Status.PLAYING] + ")");
+                tabLayout.getTabAt(1).setText("Finished (" + statusCount[Status.FINISHED] + ")");
+                tabLayout.getTabAt(2).setText("Stalled (" + statusCount[Status.STALLED] + ")");
+                tabLayout.getTabAt(3).setText("Dropped (" + statusCount[Status.DROPPED] + ")");
+                tabLayout.getTabAt(4).setText("Unknown (" + statusCount[Status.UNKNOWN] + ")");
                 break;
 
             case ListType.VOTELIST:
                 if (tabLayout.getTabCount() < 5) return;
-                tabLayout.getTabAt(0).setText("10 - 9 (" + Cache.getVoteNumber(10) + ")");
-                tabLayout.getTabAt(1).setText("8 - 7 (" + Cache.getVoteNumber(8) + ")");
-                tabLayout.getTabAt(2).setText("6 - 5 (" + Cache.getVoteNumber(6) + ")");
-                tabLayout.getTabAt(3).setText("4 - 3 (" + Cache.getVoteNumber(4) + ")");
-                tabLayout.getTabAt(4).setText("2 - 1 (" + Cache.getVoteNumber(2) + ")");
+                int[] voteCount = Cache.getVoteCount();
+                tabLayout.getTabAt(0).setText("10 - 9 (" + voteCount[0] + ")");
+                tabLayout.getTabAt(1).setText("8 - 7 (" + voteCount[1] + ")");
+                tabLayout.getTabAt(2).setText("6 - 5 (" + voteCount[2] + ")");
+                tabLayout.getTabAt(3).setText("4 - 3 (" + voteCount[3] + ")");
+                tabLayout.getTabAt(4).setText("2 - 1 (" + voteCount[4] + ")");
                 break;
 
             case ListType.WISHLIST:
                 if (tabLayout.getTabCount() < 4) return;
-                tabLayout.getTabAt(0).setText("High (" + Cache.getWishNumber(Priority.HIGH) + ")");
-                tabLayout.getTabAt(1).setText("Medium (" + Cache.getWishNumber(Priority.MEDIUM) + ")");
-                tabLayout.getTabAt(2).setText("Low (" + Cache.getWishNumber(Priority.LOW) + ")");
-                tabLayout.getTabAt(3).setText("Blacklist (" + Cache.getWishNumber(Priority.BLACKLIST) + ")");
+                int[] wishCount = Cache.getWishCount();
+                tabLayout.getTabAt(0).setText("High (" + wishCount[Priority.HIGH] + ")");
+                tabLayout.getTabAt(1).setText("Medium (" + wishCount[Priority.MEDIUM] + ")");
+                tabLayout.getTabAt(2).setText("Low (" + wishCount[Priority.LOW] + ")");
+                tabLayout.getTabAt(3).setText("Blacklist (" + wishCount[Priority.BLACKLIST] + ")");
                 break;
         }
     }

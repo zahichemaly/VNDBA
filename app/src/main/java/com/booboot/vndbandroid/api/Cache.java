@@ -12,11 +12,8 @@ import com.booboot.vndbandroid.bean.vndbandroid.VotelistItem;
 import com.booboot.vndbandroid.bean.vndbandroid.WishlistItem;
 import com.booboot.vndbandroid.bean.vnstat.SimilarNovel;
 import com.booboot.vndbandroid.util.Callback;
-import com.booboot.vndbandroid.util.IPredicate;
 import com.booboot.vndbandroid.util.JSON;
-import com.booboot.vndbandroid.util.Predicate;
 import com.booboot.vndbandroid.util.SettingsManager;
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.io.File;
 import java.io.IOException;
@@ -406,31 +403,38 @@ public class Cache {
         }
     }
 
-    public static int getStatusNumber(final int status) {
-        return Predicate.filter(vnlist.values(), new IPredicate<VNlistItem>() {
-            @Override
-            public boolean apply(VNlistItem element) {
-                return element.getStatus() == status;
-            }
-        }).size();
+    public static int[] getStatusCount() {
+        int[] res = new int[5];
+        for (VNlistItem element : vnlist.values()) {
+            res[element.getStatus()]++;
+        }
+        return res;
     }
 
-    public static int getWishNumber(final int priority) {
-        return Predicate.filter(wishlist.values(), new IPredicate<WishlistItem>() {
-            @Override
-            public boolean apply(WishlistItem element) {
-                return element.getPriority() == priority;
-            }
-        }).size();
+    public static int[] getWishCount() {
+        int[] res = new int[4];
+        for (WishlistItem element : wishlist.values()) {
+            res[element.getPriority()]++;
+        }
+        return res;
     }
 
-    public static int getVoteNumber(final int vote) {
-        return Predicate.filter(votelist.values(), new IPredicate<VotelistItem>() {
-            @Override
-            public boolean apply(VotelistItem element) {
-                return element.getVote() / 10 == vote || element.getVote() / 10 == vote - 1;
+    public static int[] getVoteCount() {
+        int[] res = new int[5];
+        for (VotelistItem element : votelist.values()) {
+            if (element.getVote() >= 90) {
+                res[0]++;
+            } else if (element.getVote() >= 70) {
+                res[1]++;
+            } else if (element.getVote() >= 50) {
+                res[2]++;
+            } else if (element.getVote() >= 30) {
+                res[3]++;
+            } else {
+                res[4]++;
             }
-        }).size();
+        }
+        return res;
     }
 
     public static void removeFromVns(int id) {
