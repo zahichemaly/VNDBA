@@ -80,7 +80,7 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
             @Override
             public void onItemClick(Card card, int position) {
                 Intent intent = new Intent(getActivity(), VNDetailsActivity.class);
-                intent.putExtra(VN_ARG, (Item) card.getTag());
+                intent.putExtra(VN_ARG, (int) card.getTag());
                 startActivity(intent);
                 getActivity().overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
             }

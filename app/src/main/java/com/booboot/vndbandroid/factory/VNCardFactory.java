@@ -69,7 +69,7 @@ public class VNCardFactory {
             cardProvider.setDrawable(vn.getImage());
 
         Card card = cardProvider.endConfig().build();
-        card.setTag(vn);
+        card.setTag(vn.getId());
 
         materialListView.getAdapter().add(card);
     }

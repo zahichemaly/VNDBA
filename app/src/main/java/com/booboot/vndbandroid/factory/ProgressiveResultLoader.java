@@ -65,7 +65,7 @@ public class ProgressiveResultLoader implements SwipeRefreshLayout.OnRefreshList
             @Override
             public void onItemClick(Card card, int position) {
                 Intent intent = new Intent(activity, VNDetailsActivity.class);
-                intent.putExtra(VNTypeFragment.VN_ARG, (Item) card.getTag());
+                intent.putExtra(VNTypeFragment.VN_ARG, (int) card.getTag());
                 activity.startActivity(intent);
                 activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
             }
@@ -119,6 +119,7 @@ public class ProgressiveResultLoader implements SwipeRefreshLayout.OnRefreshList
 
                 for (final Item vn : results.getItems()) {
                     VNCardFactory.buildCard(activity, vn, materialListView, showFullDate, showRank, showRating, showPopularity, showVoteCount);
+                    if (!Cache.vns.containsKey(vn.getId())) Cache.vns.put(vn.getId(), vn);
                 }
 
                 if (currentPage == 1)
@@ -145,7 +146,8 @@ public class ProgressiveResultLoader implements SwipeRefreshLayout.OnRefreshList
         init();
         for (Card card : cards) {
             if (card == null) continue;
-            Item vn = (Item) card.getTag();
+            int vnId = (int) card.getTag();
+            Item vn = Cache.vns.get(vnId);
             VNCardFactory.buildCard(activity, vn, materialListView, showFullDate, showRank, showRating, showPopularity, showVoteCount);
         }
     }

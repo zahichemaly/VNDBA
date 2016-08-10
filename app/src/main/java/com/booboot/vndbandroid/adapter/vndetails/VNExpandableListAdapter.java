@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -177,7 +176,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                             public void onClick(View v) {
                                 if (Cache.vns.get(vnId) != null) {
                                     Intent intent = new Intent(activity, VNDetailsActivity.class);
-                                    intent.putExtra(VNTypeFragment.VN_ARG, Cache.vns.get(vnId));
+                                    intent.putExtra(VNTypeFragment.VN_ARG, vnId);
                                     activity.startActivity(intent);
                                     activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
                                     return;
@@ -187,8 +186,9 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                                     @Override
                                     protected void config() {
                                         if (!results.getItems().isEmpty()) {
+                                            Cache.vns.put(vnId, results.getItems().get(0));
                                             Intent intent = new Intent(activity, VNDetailsActivity.class);
-                                            intent.putExtra(VNTypeFragment.VN_ARG, results.getItems().get(0));
+                                            intent.putExtra(VNTypeFragment.VN_ARG, vnId);
                                             activity.startActivity(intent);
                                             activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
                                         }

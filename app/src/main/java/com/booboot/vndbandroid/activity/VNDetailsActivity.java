@@ -104,8 +104,9 @@ public class VNDetailsActivity extends AppCompatActivity {
         setTheme(SettingsManager.getTheme(this));
         setContentView(R.layout.vn_details);
 
-        vn = (Item) getIntent().getSerializableExtra(VNTypeFragment.VN_ARG);
-
+        vn = Cache.vns.get(getIntent().getIntExtra(VNTypeFragment.VN_ARG, -1));
+        assert vn != null;
+        
         if (savedInstanceState != null) {
             spoilerLevel = savedInstanceState.getInt("SPOILER_LEVEL");
         }
