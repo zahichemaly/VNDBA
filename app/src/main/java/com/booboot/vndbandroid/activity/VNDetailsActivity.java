@@ -7,10 +7,12 @@ import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -63,9 +65,11 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class VNDetailsActivity extends AppCompatActivity {
+public class VNDetailsActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener{
     public int spoilerLevel = -1;
     private ActionBar actionBar;
+    private SwipeRefreshLayout refreshLayout;
+
     private Item vn;
     private VNlistItem vnlistVn;
     private WishlistItem wishlistVn;
@@ -220,6 +224,10 @@ public class VNDetailsActivity extends AppCompatActivity {
         actionBar = getSupportActionBar();
         actionBar.setTitle(vn.getTitle());
         actionBar.setDisplayHomeAsUpEnabled(true);
+
+        refreshLayout = (SwipeRefreshLayout) findViewById(R.id.refreshLayout);
+        refreshLayout.setOnRefreshListener(this);
+        refreshLayout.setColorSchemeColors(Utils.getThemeColor(this, R.attr.colorAccent));
 
         statusButton.setText(Status.toString(vnlistVn != null ? vnlistVn.getStatus() : -1));
         wishlistButton.setText(Priority.toString(wishlistVn != null ? wishlistVn.getPriority() : -1));
@@ -794,5 +802,11 @@ public class VNDetailsActivity extends AppCompatActivity {
 
     public void setSimilarNovels(List<SimilarNovel> similarNovels) {
         this.similarNovels = similarNovels;
+    }
+
+    @Override
+    public void onRefresh() {
+        Log.d("D", "Hey hey ?");
+        refreshLayout.setRefreshing(false);
     }
 }
