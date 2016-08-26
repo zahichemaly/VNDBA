@@ -408,7 +408,34 @@ public class DB extends SQLiteOpenHelper {
         db.endTransaction();
     }
 
+    public static void deleteVN(Context context, int vnId, boolean endTransaction) {
+        if (instance == null) instance = new DB(context);
+        SQLiteDatabase db = instance.getWritableDatabase();
+        db.beginTransaction();
+
+        db.execSQL("DELETE FROM " + TABLE_VN + " WHERE id = " + vnId);
+        db.execSQL("DELETE FROM " + TABLE_LANGUAGES + " WHERE vn = " + vnId);
+        db.execSQL("DELETE FROM " + TABLE_ORIG_LANG + " WHERE vn = " + vnId);
+        db.execSQL("DELETE FROM " + TABLE_PLATFORMS + " WHERE vn = " + vnId);
+        db.execSQL("DELETE FROM " + TABLE_ANIME + " WHERE vn = " + vnId);
+        db.execSQL("DELETE FROM " + TABLE_RELATION + " WHERE vn = " + vnId);
+        db.execSQL("DELETE FROM " + TABLE_TAGS + " WHERE vn = " + vnId);
+        db.execSQL("DELETE FROM " + TABLE_SCREENS + " WHERE vn = " + vnId);
+        db.execSQL("DELETE FROM " + TABLE_VN_CHARACTER + " WHERE vn = " + vnId);
+        db.execSQL("DELETE FROM " + TABLE_VN_RELEASE + " WHERE vn = " + vnId);
+        db.execSQL("DELETE FROM " + TABLE_SIMILAR_NOVELS + " WHERE vn = " + vnId);
+
+        if (endTransaction) {
+            db.setTransactionSuccessful();
+            db.endTransaction();
+        }
+    }
+
     public static void saveVNs(Context context) {
+        saveVNs(context, true);
+    }
+
+    public static void saveVNs(Context context, boolean beginTransaction) {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
         // db.execSQL("DELETE FROM " + TABLE_VNLIST);
@@ -424,7 +451,9 @@ public class DB extends SQLiteOpenHelper {
         queries[6] = new StringBuilder("INSERT INTO ").append(TABLE_TAGS).append(" VALUES ");
         queries[7] = new StringBuilder("INSERT INTO ").append(TABLE_SCREENS).append(" VALUES ");
 
-        db.beginTransaction();
+        if (beginTransaction)
+            db.beginTransaction();
+
         /* Retrieving all items to check if we have TO INSERT or UPDATE */
         Cursor cursor = db.rawQuery("select id from " + TABLE_VN, new String[]{});
         Map<Integer, Item> alreadyInsertedItems = new HashMap<>();

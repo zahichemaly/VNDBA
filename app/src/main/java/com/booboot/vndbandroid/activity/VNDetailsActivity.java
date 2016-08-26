@@ -12,7 +12,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -65,7 +64,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class VNDetailsActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener{
+public class VNDetailsActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
     public int spoilerLevel = -1;
     private ActionBar actionBar;
     private SwipeRefreshLayout refreshLayout;
@@ -110,7 +109,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
 
         vn = Cache.vns.get(getIntent().getIntExtra(VNTypeFragment.VN_ARG, -1));
         assert vn != null;
-        
+
         if (savedInstanceState != null) {
             spoilerLevel = savedInstanceState.getInt("SPOILER_LEVEL");
         }
@@ -684,6 +683,40 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
     }
 
     @Override
+    public void onRefresh() {
+        VNDBServer.get("vn", Cache.VN_FLAGS, "(id = " + vn.getId() + ")", Options.create(false, false, 1), 0, this, new Callback() {
+            @Override
+            protected void config() {
+                if (results.getItems().size() > 0) {
+                    vn = results.getItems().get(0);
+                    Cache.vns.put(vn.getId(), vn);
+
+                    /* Deleting all saved data related to the VN, so we can replace it */
+                    DB.deleteVN(VNDetailsActivity.this, vn.getId(), false);
+                    Cache.characters.remove(vn.getId());
+                    Cache.releases.remove(vn.getId());
+                    Cache.similarNovels.remove(vn.getId());
+                    characters = null;
+                    releases = null;
+                    similarNovels = null;
+
+                    DB.saveVNs(VNDetailsActivity.this, false);
+
+                    /* Collapsing all submenus */
+                    int count = expandableListAdapter.getGroupCount();
+                    for (int i = 0; i < count; i++)
+                        expandableListView.collapseGroup(i);
+
+                    refreshLayout.setRefreshing(false);
+                    Utils.recreate(VNDetailsActivity.this);
+                } else {
+                    Callback.showToast(VNDetailsActivity.this, "No matching VN has been found to refresh the data. Please try again later.");
+                }
+            }
+        }, Callback.errorCallback(this));
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putInt("SPOILER_LEVEL", spoilerLevel);
         super.onSaveInstanceState(savedInstanceState);
@@ -802,11 +835,5 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
 
     public void setSimilarNovels(List<SimilarNovel> similarNovels) {
         this.similarNovels = similarNovels;
-    }
-
-    @Override
-    public void onRefresh() {
-        Log.d("D", "Hey hey ?");
-        refreshLayout.setRefreshing(false);
     }
 }
