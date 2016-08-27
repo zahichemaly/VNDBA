@@ -12,6 +12,7 @@ import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.adapter.doublelist.DoubleListAdapter;
 import com.booboot.vndbandroid.adapter.doublelist.DoubleListElement;
 import com.booboot.vndbandroid.api.Cache;
+import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.Utils;
 
@@ -37,8 +38,8 @@ public class DatabaseStatisticsFragment extends Fragment implements SwipeRefresh
         return rootView;
     }
 
-    public void refresh(boolean forceRefresh) {
-        Cache.loadStats(getActivity(), new Callback() {
+    public void refresh(final boolean forceRefresh) {
+        final Callback successCallback = new Callback() {
             @Override
             protected void config() {
                 if (Cache.dbstats == null) {
@@ -60,6 +61,20 @@ public class DatabaseStatisticsFragment extends Fragment implements SwipeRefresh
 
                 listView.setAdapter(new DoubleListAdapter(DatabaseStatisticsFragment.this.getActivity(), elements));
                 refreshLayout.setRefreshing(false);
+            }
+        };
+
+        Cache.loadStats(getActivity(), successCallback, new Callback() {
+            @Override
+            protected void config() {
+                Cache.loadStatsFromCache(getActivity());
+                if (Cache.dbstats != null) {
+                    successCallback.dbstats = Cache.dbstats;
+                    successCallback.call();
+                }
+                if (Cache.dbstats == null || forceRefresh) {
+                    showToast(getActivity(), "Unable to reach the server " + VNDBServer.HOST + ". Please try again later.");
+                }
             }
         }, forceRefresh);
     }

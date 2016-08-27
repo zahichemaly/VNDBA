@@ -209,9 +209,7 @@ public class VNDBServer {
                     successCallback.dbstats = (DbStats) results;
                     successCallback.call();
                 } else {
-                    Cache.loadStatsFromCache(context);
-                    successCallback.dbstats = Cache.dbstats;
-                    successCallback.call();
+                    errorCallback.call();
                 }
             }
         }.start();

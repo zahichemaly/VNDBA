@@ -311,7 +311,7 @@ public class Cache {
         loadedFromCache = false;
     }
 
-    public static void loadStats(final Context context, final Callback successCallback, boolean forceRefresh) {
+    public static void loadStats(final Context context, final Callback successCallback, Callback errorCallback, boolean forceRefresh) {
         if (Cache.dbstats != null && !forceRefresh) {
             successCallback.call();
             return;
@@ -324,7 +324,7 @@ public class Cache {
                 saveToCache(context, DBSTATS_CACHE, dbstats);
                 successCallback.call();
             }
-        }, Callback.errorCallback(context));
+        }, errorCallback);
     }
 
     public static void sortAll(Context context) {
