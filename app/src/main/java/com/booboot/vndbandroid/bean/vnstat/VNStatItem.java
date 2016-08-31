@@ -10,6 +10,7 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class VNStatItem {
     private List<SimilarNovel> similar;
+    private List<SimilarNovel> recommendations;
 
     public List<SimilarNovel> getSimilar() {
         return similar;
@@ -17,5 +18,13 @@ public class VNStatItem {
 
     public void setSimilar(List<SimilarNovel> similar) {
         this.similar = similar;
+    }
+
+    public List<SimilarNovel> getRecommendations() {
+        return recommendations;
+    }
+
+    public void setRecommendations(List<SimilarNovel> recommendations) {
+        this.recommendations = recommendations;
     }
 }

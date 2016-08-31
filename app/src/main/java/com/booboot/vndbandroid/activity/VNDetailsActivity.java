@@ -491,7 +491,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                                 break;
 
                             case VNDetailsFactory.TITLE_SIMILAR_NOVELS:
-                                VNStatServer.get("similar", vn.getId(), new Callback() {
+                                VNStatServer.get("novel", "similar", vn.getId(), new Callback() {
                                     @Override
                                     protected void config() {
                                         if (vnStatResults.getSimilar().isEmpty()) {

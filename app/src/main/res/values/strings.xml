@@ -46,6 +46,7 @@
     <string name="include_all_tags">Include all these tags</string>
     <string name="include_one_tags">Include at least one of these tags</string>
     <string name="exclude_all_tags">Exclude all these tags</string>
+    <string name="my_recommendations">My recommendations</string>
 
     <string-array name="background_pref_titles">
         <item>Default (orange)</item>

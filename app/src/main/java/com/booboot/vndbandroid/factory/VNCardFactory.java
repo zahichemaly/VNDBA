@@ -33,7 +33,12 @@ public class VNCardFactory {
             subtitle.append(vn.getVotecount()).append(" votes");
         else
             subtitle.append(Utils.getDate(vn.getReleased(), showFullDate));
-        subtitle.append(" • ").append(vn.getLengthString());
+
+        subtitle.append(" • ");
+        if (vn.getLength() > 0)
+            subtitle.append(vn.getLengthString());
+        else
+            subtitle.append(Utils.getDate(vn.getReleased(), true));
 
         if (Cache.vnlist.get(vn.getId()) != null)
             description.append(Status.toString(Cache.vnlist.get(vn.getId()).getStatus())).append("\n");

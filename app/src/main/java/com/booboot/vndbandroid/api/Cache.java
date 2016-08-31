@@ -1,8 +1,13 @@
 package com.booboot.vndbandroid.api;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.text.TextUtils;
 
+import com.booboot.vndbandroid.R;
+import com.booboot.vndbandroid.activity.VNDetailsActivity;
+import com.booboot.vndbandroid.activity.VNTypeFragment;
 import com.booboot.vndbandroid.bean.vndb.DbStats;
 import com.booboot.vndbandroid.bean.vndb.Item;
 import com.booboot.vndbandroid.bean.vndb.Options;
@@ -254,7 +259,8 @@ public class Cache {
             if (wishlistHasChanged) {
                 DB.saveWishlist(context);
             }
-            if (vnlistHasChanged || votelistHasChanged || wishlistHasChanged) shouldRefreshView = true;
+            if (vnlistHasChanged || votelistHasChanged || wishlistHasChanged)
+                shouldRefreshView = true;
         }
 
         return false;
@@ -267,6 +273,29 @@ public class Cache {
         itemHasChanged = itemHasChanged || cachedNotes != null && newNotes == null;
         itemHasChanged = itemHasChanged || cachedNotes != null && !cachedNotes.equals(newNotes);
         return itemHasChanged;
+    }
+
+    public static void openVNDetails(final Activity activity, final int vnId) {
+        if (Cache.vns.get(vnId) != null) {
+            Intent intent = new Intent(activity, VNDetailsActivity.class);
+            intent.putExtra(VNTypeFragment.VN_ARG, vnId);
+            activity.startActivity(intent);
+            activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+            return;
+        }
+
+        VNDBServer.get("vn", Cache.VN_FLAGS, "(id = " + vnId + ")", Options.create(false, false, 1), 0, activity, new Callback() {
+            @Override
+            protected void config() {
+                if (!results.getItems().isEmpty()) {
+                    Cache.vns.put(vnId, results.getItems().get(0));
+                    Intent intent = new Intent(activity, VNDetailsActivity.class);
+                    intent.putExtra(VNTypeFragment.VN_ARG, vnId);
+                    activity.startActivity(intent);
+                    activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+                }
+            }
+        }, Callback.errorCallback(activity));
     }
 
     public static void saveToCache(Context context, String filename, Object object) {
@@ -438,6 +467,7 @@ public class Cache {
     }
 
     public static void removeFromVns(int id) {
-        if (vnlist.get(id) == null && votelist.get(id) == null && wishlist.get(id) == null && vns.get(id) != null) vns.remove(id);
+        if (vnlist.get(id) == null && votelist.get(id) == null && wishlist.get(id) == null && vns.get(id) != null)
+            vns.remove(id);
     }
 }

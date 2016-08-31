@@ -5,7 +5,6 @@ package com.booboot.vndbandroid.adapter.vndetails;
  */
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Typeface;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -20,19 +19,15 @@ import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.VNDetailsActivity;
-import com.booboot.vndbandroid.activity.VNTypeFragment;
 import com.booboot.vndbandroid.adapter.doublelist.DoubleListListener;
 import com.booboot.vndbandroid.api.Cache;
-import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.bean.vndb.Item;
 import com.booboot.vndbandroid.bean.vndb.Links;
-import com.booboot.vndbandroid.bean.vndb.Options;
 import com.booboot.vndbandroid.bean.vndb.Tag;
 import com.booboot.vndbandroid.factory.CharacterDataFactory;
 import com.booboot.vndbandroid.factory.ReleaseDataFactory;
 import com.booboot.vndbandroid.factory.TagDataFactory;
 import com.booboot.vndbandroid.factory.VNDetailsFactory;
-import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.Lightbox;
 import com.booboot.vndbandroid.util.Pixels;
 import com.booboot.vndbandroid.util.Utils;
@@ -174,26 +169,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                         convertView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                if (Cache.vns.get(vnId) != null) {
-                                    Intent intent = new Intent(activity, VNDetailsActivity.class);
-                                    intent.putExtra(VNTypeFragment.VN_ARG, vnId);
-                                    activity.startActivity(intent);
-                                    activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
-                                    return;
-                                }
-
-                                VNDBServer.get("vn", Cache.VN_FLAGS, "(id = " + vnId + ")", Options.create(false, false, 1), 0, activity, new Callback() {
-                                    @Override
-                                    protected void config() {
-                                        if (!results.getItems().isEmpty()) {
-                                            Cache.vns.put(vnId, results.getItems().get(0));
-                                            Intent intent = new Intent(activity, VNDetailsActivity.class);
-                                            intent.putExtra(VNTypeFragment.VN_ARG, vnId);
-                                            activity.startActivity(intent);
-                                            activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
-                                        }
-                                    }
-                                }, Callback.errorCallback(activity));
+                                Cache.openVNDetails(activity, vnId);
                             }
                         });
                         break;

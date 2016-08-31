@@ -29,12 +29,11 @@ public class DatabaseStatisticsFragment extends Fragment implements SwipeRefresh
         Utils.setTitle(getActivity(), getActivity().getResources().getString(R.string.database_statistics));
 
         listView = (ListView) rootView.findViewById(R.id.listView);
-        refresh(false);
-
         refreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refreshLayout);
         refreshLayout.setOnRefreshListener(this);
         refreshLayout.setColorSchemeResources(R.color.colorAccent);
 
+        refresh(false);
         return rootView;
     }
 

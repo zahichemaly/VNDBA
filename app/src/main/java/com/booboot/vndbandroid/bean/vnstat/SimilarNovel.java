@@ -18,6 +18,7 @@ public class SimilarNovel {
     private String meanRating;
     private String released;
     private String image;
+    private double predictedRating;
 
     public String getImageLink() {
         return IMAGE_LINK + image;
@@ -50,6 +51,10 @@ public class SimilarNovel {
 
     public void setSimilarity(String similarity) {
         this.similarity = Double.parseDouble(similarity);
+    }
+
+    public void setSimilarity(double similarity) {
+        this.similarity = similarity;
     }
 
     public String getTitle() {
@@ -108,11 +113,20 @@ public class SimilarNovel {
         this.image = image;
     }
 
-    public void setSimilarity(double similarity) {
-        this.similarity = similarity;
-    }
-
     public void setNovelId(int novelId) {
         this.novelId = novelId;
+    }
+
+    public double getPredictedRating() {
+        return predictedRating;
+    }
+
+    public double getPredictedRatingPercentage() {
+        double value = predictedRating * 10;
+        return (double) Math.round(value * 100d) / 100d;
+    }
+
+    public void setPredictedRating(double predictedRating) {
+        this.predictedRating = predictedRating;
     }
 }

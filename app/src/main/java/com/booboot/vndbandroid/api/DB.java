@@ -61,6 +61,7 @@ public class DB extends SQLiteOpenHelper {
     public final static String TABLE_RELEASE_PRODUCER = "release_producer";
     public final static String TABLE_PRODUCER = "producer";
     public final static String TABLE_SIMILAR_NOVELS = "similar_novels";
+    public final static String TABLE_RECOMMENDATIONS = "recommendations";
 
     public DB(Context context) {
         super(context, NAME, null, VERSION);
@@ -257,6 +258,14 @@ public class DB extends SQLiteOpenHelper {
                 "title TEXT, " +
                 "image TEXT, " +
                 "PRIMARY KEY (id, vn) " +
+                ")");
+
+        db.execSQL("CREATE TABLE " + TABLE_RECOMMENDATIONS + " (" +
+                "id INTEGER PRIMARY KEY, " +
+                "similarity REAL, " +
+                "title TEXT, " +
+                "image TEXT, " +
+                "released TEXT " +
                 ")");
 
         db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_LANGUAGES + "_vn ON " + TABLE_LANGUAGES + "(vn)");
@@ -905,6 +914,57 @@ public class DB extends SQLiteOpenHelper {
         db.endTransaction();
     }
 
+    public static void saveRecommendations(Context context, List<SimilarNovel> recommendations) {
+        if (instance == null) instance = new DB(context);
+        SQLiteDatabase db = instance.getWritableDatabase();
+
+        StringBuilder query = new StringBuilder("INSERT INTO ").append(TABLE_RECOMMENDATIONS).append(" VALUES ");
+        boolean somethingToInsert = false;
+        db.beginTransaction();
+
+        for (SimilarNovel recommendation : recommendations) {
+            query.append("(")
+                    .append(recommendation.getNovelId()).append(",")
+                    .append(recommendation.getPredictedRating()).append(",")
+                    .append(formatString(recommendation.getTitle())).append(",")
+                    .append(formatString(recommendation.getImage())).append(",")
+                    .append(formatString(recommendation.getReleased()))
+                    .append("),");
+            somethingToInsert = true;
+        }
+
+        if (somethingToInsert) {
+            query.setLength(query.length() - 1);
+            db.execSQL("DELETE FROM " + TABLE_RECOMMENDATIONS);
+            db.execSQL(query.toString());
+        }
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
+    public static List<SimilarNovel> loadRecommendations(Context context) {
+        if (instance == null) instance = new DB(context);
+        SQLiteDatabase db = instance.getWritableDatabase();
+
+        List<SimilarNovel> res = new ArrayList<>();
+        Cursor cursor = db.rawQuery("SELECT * FROM  " + TABLE_RECOMMENDATIONS, new String[]{});
+
+        while (cursor.moveToNext()) {
+            SimilarNovel similarNovel = new SimilarNovel();
+            similarNovel.setNovelId(cursor.getInt(0));
+            similarNovel.setPredictedRating(cursor.getDouble(1));
+            similarNovel.setTitle(cursor.getString(2));
+            similarNovel.setImage(cursor.getString(3));
+            similarNovel.setReleased(cursor.getString(4));
+
+            res.add(similarNovel);
+        }
+
+        cursor.close();
+        return res;
+    }
+
     public static List<SimilarNovel> loadSimilarNovels(Context context, int vnId) {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
@@ -1141,6 +1201,7 @@ public class DB extends SQLiteOpenHelper {
         db.execSQL("DELETE FROM " + TABLE_RELEASE_PRODUCER);
         db.execSQL("DELETE FROM " + TABLE_PRODUCER);
         db.execSQL("DELETE FROM " + TABLE_SIMILAR_NOVELS);
+        db.execSQL("DELETE FROM " + TABLE_RECOMMENDATIONS);
     }
 
     private static void exec(SQLiteDatabase db, StringBuilder[] queries, boolean[] somethingToInsert) {
