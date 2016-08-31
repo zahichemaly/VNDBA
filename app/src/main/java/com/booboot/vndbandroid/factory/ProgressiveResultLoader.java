@@ -52,12 +52,18 @@ public class ProgressiveResultLoader implements SwipeRefreshLayout.OnRefreshList
         progressBar = (ProgressBar) (rootView == null ? activity.findViewById(R.id.progressBar) : rootView.findViewById(R.id.progressBar));
         materialListView = (MaterialListView) (rootView == null ? activity.findViewById(R.id.materialListView) : rootView.findViewById(R.id.materialListView));
 
+        /* [Fix] Set the background color to match the default one (not the case by default) */
         if (rootView == null) {
-            /* [Fix] Set the background color to match the default one (not the case by default) */
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 materialListView.getRootView().setBackgroundColor(activity.getResources().getColor(R.color.windowBackground, activity.getTheme()));
             } else {
                 materialListView.getRootView().setBackgroundColor(activity.getResources().getColor(R.color.windowBackground));
+            }
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                materialListView.getRootView().setBackgroundColor(rootView.getResources().getColor(R.color.windowBackground, rootView.getContext().getTheme()));
+            } else {
+                materialListView.getRootView().setBackgroundColor(rootView.getResources().getColor(R.color.windowBackground));
             }
         }
 
