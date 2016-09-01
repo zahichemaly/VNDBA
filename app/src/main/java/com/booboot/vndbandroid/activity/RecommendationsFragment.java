@@ -13,13 +13,16 @@ import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.adapter.materiallistview.MaterialListView;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.DB;
+import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.VNStatServer;
 import com.booboot.vndbandroid.bean.vndb.Item;
+import com.booboot.vndbandroid.bean.vndb.Options;
 import com.booboot.vndbandroid.bean.vnstat.SimilarNovel;
 import com.booboot.vndbandroid.bean.vnstat.VNStatItem;
 import com.booboot.vndbandroid.factory.FastScrollerFactory;
 import com.booboot.vndbandroid.factory.VNCardFactory;
 import com.booboot.vndbandroid.util.Callback;
+import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
 import com.dexafree.materialList.card.Card;
 import com.dexafree.materialList.listeners.RecyclerItemClickListener;
@@ -102,7 +105,26 @@ public class RecommendationsFragment extends Fragment implements SwipeRefreshLay
             return;
         }
 
-        VNStatServer.get("user", "recommendations", 76293, successCallback, new Callback() {
+        int userId = SettingsManager.getUserId(getActivity());
+        if (userId < 0) {
+            VNDBServer.get("user", "basic", "(id = 0)", Options.create(false, false, 1), 0, getActivity(), new Callback() {
+                @Override
+                protected void config() {
+                    if (results.getItems().size() > 0) {
+                        int userId = results.getItems().get(0).getId();
+                        fetchRecommendations(userId, successCallback, forceRefresh);
+                    } else {
+                        Callback.showToast(getActivity(), "No user ID has been found to fetch your recommendations.");
+                    }
+                }
+            }, Callback.errorCallback(getActivity()));
+        } else {
+            fetchRecommendations(userId, successCallback, forceRefresh);
+        }
+    }
+
+    public void fetchRecommendations(int userId, final Callback successCallback, final boolean forceRefresh) {
+        VNStatServer.get("user", "recommendations", userId, successCallback, new Callback() {
                     @Override
                     protected void config() {
                         recommendations = DB.loadRecommendations(getActivity());

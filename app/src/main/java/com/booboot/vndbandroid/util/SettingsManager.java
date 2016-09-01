@@ -29,6 +29,17 @@ public class SettingsManager {
         editor.commit();
     }
 
+    public static int getUserId(Context context) {
+        new SettingsManager(context);
+        return settings.getInt("USERID", -1);
+    }
+
+    public static void setUserId(Context context, int userId) {
+        new SettingsManager(context);
+        editor.putInt("USERID", userId);
+        editor.commit();
+    }
+
     public static String getPassword(Context context) {
         new SettingsManager(context);
         return settings.getString("PASSWORD", null);

@@ -81,6 +81,9 @@ public class Item extends VNDBCommand {
     private List<Media> media = new ArrayList<>();
     private List<Producer> producers = new ArrayList<>();
 
+    /* User-specific properties */
+    private String username;
+
     public Item() {
     }
 
@@ -562,5 +565,13 @@ public class Item extends VNDBCommand {
         } else {
             this.producers = producers;
         }
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }
