@@ -7,6 +7,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.booboot.vndbandroid.R;
@@ -143,6 +144,17 @@ public class RecommendationsFragment extends Fragment implements SwipeRefreshLay
 
     public void displayRecommendations() {
         materialListView.getAdapter().clearAll();
+
+        if (getView() != null) {
+            if (recommendations.size() > 0) {
+                getView().findViewById(R.id.emptyRecommendationsBackground).setVisibility(View.GONE);
+            } else {
+                final ImageView emptyRecommendationsBackgroundImage = (ImageView) getView().findViewById(R.id.emptyRecommendationsBackgroundImage);
+                Utils.tintImage(getActivity(), emptyRecommendationsBackgroundImage, android.R.color.darker_gray, false);
+                getView().findViewById(R.id.emptyRecommendationsBackground).setVisibility(View.VISIBLE);
+            }
+        }
+
         for (SimilarNovel recommendation : recommendations) {
             Item vn = new Item(recommendation.getNovelId());
             vn.setPopularity(recommendation.getPredictedRatingPercentage());
