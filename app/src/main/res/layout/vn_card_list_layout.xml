@@ -24,7 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <include android:id="@+id/emptyRecommendationsBackground" layout="@layout/empty_recommendations_background" android:visibility="gone"/>
+            <include android:id="@+id/backgroundInfo" layout="@layout/background_info" android:visibility="gone"/>
 
             <com.booboot.vndbandroid.adapter.materiallistview.MaterialListView
                 android:id="@+id/materialListView"

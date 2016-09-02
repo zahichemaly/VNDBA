@@ -268,6 +268,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_logout) {
             VNDBServer.closeAll();
             Cache.clearCache(this);
+            SettingsManager.setUserId(this, -1);
+            RecommendationsFragment.recommendations = null;
             LoginActivity.instance.enableAll();
             Utils.recreate(LoginActivity.instance);
             selectedItem = 0;

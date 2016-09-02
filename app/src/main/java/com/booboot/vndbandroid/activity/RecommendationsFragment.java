@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.adapter.materiallistview.MaterialListView;
@@ -36,14 +37,15 @@ import java.util.List;
  * Created by od on 13/03/2016.
  */
 public class RecommendationsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
-    private static List<SimilarNovel> recommendations;
+    private View rootView;
+    public static List<SimilarNovel> recommendations;
     private MaterialListView materialListView;
     private ProgressBar progressBar;
     private SwipeRefreshLayout refreshLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.vn_card_list_layout, container, false);
+        rootView = inflater.inflate(R.layout.vn_card_list_layout, container, false);
         Utils.setTitle(getActivity(), getActivity().getResources().getString(R.string.my_recommendations));
 
         progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
@@ -113,6 +115,7 @@ public class RecommendationsFragment extends Fragment implements SwipeRefreshLay
                 protected void config() {
                     if (results.getItems().size() > 0) {
                         int userId = results.getItems().get(0).getId();
+                        SettingsManager.setUserId(getActivity(), userId);
                         fetchRecommendations(userId, successCallback, forceRefresh);
                     } else {
                         Callback.showToast(getActivity(), "No user ID has been found to fetch your recommendations.");
@@ -134,26 +137,36 @@ public class RecommendationsFragment extends Fragment implements SwipeRefreshLay
                             successCallback.vnStatResults.setRecommendations(recommendations);
                             successCallback.call();
                         }
+
                         if (recommendations.size() <= 0 || forceRefresh) {
-                            showToast(getActivity(), message);
+                            if (message.startsWith("User ID does not exist")) {
+                                showBackgroundInfo("We haven't found your recommendations... Don't forget to make your lists public (by unchecking \"Don't allow other people to see my visual novel list\" in your VNDB.org's preferences). Then come back here in 24 hours (recommendations computation is not immediate)!");
+                                recommendations = null;
+                            } else {
+                                showToast(getActivity(), message);
+                            }
                         }
+                        progressBar.setVisibility(View.INVISIBLE);
                     }
                 }
         );
     }
 
+    public void showBackgroundInfo(String text) {
+        if (recommendations.size() > 0) {
+            rootView.findViewById(R.id.backgroundInfo).setVisibility(View.GONE);
+        } else {
+            final ImageView backgroundInfoImage = (ImageView) rootView.findViewById(R.id.backgroundInfoImage);
+            Utils.tintImage(getActivity(), backgroundInfoImage, android.R.color.darker_gray, false);
+            final TextView backgroundInfoText = (TextView) rootView.findViewById(R.id.backgroundInfoText);
+            backgroundInfoText.setText(text);
+            rootView.findViewById(R.id.backgroundInfo).setVisibility(View.VISIBLE);
+        }
+    }
+
     public void displayRecommendations() {
         materialListView.getAdapter().clearAll();
-
-        if (getView() != null) {
-            if (recommendations.size() > 0) {
-                getView().findViewById(R.id.emptyRecommendationsBackground).setVisibility(View.GONE);
-            } else {
-                final ImageView emptyRecommendationsBackgroundImage = (ImageView) getView().findViewById(R.id.emptyRecommendationsBackgroundImage);
-                Utils.tintImage(getActivity(), emptyRecommendationsBackgroundImage, android.R.color.darker_gray, false);
-                getView().findViewById(R.id.emptyRecommendationsBackground).setVisibility(View.VISIBLE);
-            }
-        }
+        showBackgroundInfo("You don't have enough novels in your list so we can give you recommendations. Add more novels and come back here later!");
 
         for (SimilarNovel recommendation : recommendations) {
             Item vn = new Item(recommendation.getNovelId());

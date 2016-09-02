@@ -24,6 +24,8 @@ public class VNStatServer {
                         successCallback.vnStatResults = response.getResult();
                         successCallback.call();
                     } else {
+                        if (response.getMessage() != null)
+                            errorCallback.message = response.getMessage();
                         errorCallback.call();
                     }
                 } catch (IOException e) {
