@@ -11,7 +11,7 @@
         android:id="@+id/backgroundInfoImage"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:src="@drawable/vndb_logo_80_transparent" />
+        android:src="@drawable/vndb_logo_transparent" />
 
     <TextView
         android:id="@+id/backgroundInfoText"
