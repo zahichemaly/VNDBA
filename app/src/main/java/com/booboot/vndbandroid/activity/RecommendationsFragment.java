@@ -147,6 +147,7 @@ public class RecommendationsFragment extends Fragment implements SwipeRefreshLay
                             }
                         }
                         progressBar.setVisibility(View.INVISIBLE);
+                        refreshLayout.setRefreshing(false);
                     }
                 }
         );
