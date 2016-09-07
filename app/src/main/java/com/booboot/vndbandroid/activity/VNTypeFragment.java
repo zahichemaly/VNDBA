@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.adapter.materiallistview.MaterialListView;
 import com.booboot.vndbandroid.api.Cache;
-import com.booboot.vndbandroid.bean.vndb.Item;
 import com.booboot.vndbandroid.bean.vndbandroid.ListType;
 import com.booboot.vndbandroid.bean.vndbandroid.VNlistItem;
 import com.booboot.vndbandroid.bean.vndbandroid.VotelistItem;
@@ -135,7 +134,7 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
         Cache.loadData(getActivity(), new Callback() {
             @Override
             protected void config() {
-                if (Cache.shouldRefreshView) {
+                if (Cache.shouldRefreshView && MainActivity.instance != null && !MainActivity.instance.isDestroyed()) {
                     MainActivity.instance.refreshVnlistFragment();
                 }
                 refreshLayout.setRefreshing(false);

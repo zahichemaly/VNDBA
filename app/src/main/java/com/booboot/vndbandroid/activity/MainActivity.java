@@ -273,6 +273,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             LoginActivity.instance.enableAll();
             Utils.recreate(LoginActivity.instance);
             selectedItem = 0;
+            instance = null;
             finish();
             return true;
         }
