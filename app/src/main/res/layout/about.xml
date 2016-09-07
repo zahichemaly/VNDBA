@@ -68,9 +68,10 @@
             android:textAlignment="center"/>
 
         <TextView
+            android:id="@+id/thanksTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Thanks to Yorhel and Noslyl"
+            android:text="Thanks to Yorhel and [url=https://www.reddit.com/user/Noslyl]Noslyl[/url]"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="15dp"
             android:textAlignment="center"/>

@@ -3,7 +3,6 @@ package com.booboot.vndbandroid.adapter.doublelist;
 import android.content.Context;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +12,7 @@ import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.util.Pixels;
+import com.booboot.vndbandroid.util.Utils;
 
 /**
  * Created by od on 06/04/2016.
@@ -66,7 +66,7 @@ public class DoubleListAdapter extends BaseAdapter {
             itemRightText.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
         }
 
-        element.setRightText(element.getRightText().replaceAll("\\[url=(.*?)\\](.*?)\\[/url\\]", "<a href=\"" + context.getPackageName() + "://$1\">$2</a>"));
+        element.setRightText(Utils.convertLink(context, element.getRightText()));
         if (element.getRightText().contains("</a>")) {
             itemRightText.setMovementMethod(LinkMovementMethod.getInstance());
         }

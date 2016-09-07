@@ -240,4 +240,8 @@ public class Utils {
             imageView.setColorFilter(context.getResources().getColor(res), PorterDuff.Mode.SRC_ATOP);
         }
     }
+
+    public static String convertLink(Context context, String bbcodeLink) {
+        return bbcodeLink.replaceAll("\\[url=(.*?)\\](.*?)\\[/url\\]", "<a href=\"" + context.getPackageName() + "://$1\">$2</a>");
+    }
 }

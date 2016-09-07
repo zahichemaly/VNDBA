@@ -3,6 +3,8 @@ package com.booboot.vndbandroid.activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,6 +30,7 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
         TextView appVersion = (TextView) rootView.findViewById(R.id.appVersion);
         appVersion.setText(BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ")");
 
+        TextView thanksTextView = (TextView) rootView.findViewById(R.id.thanksTextView);
         Button feedbackButton = (Button) rootView.findViewById(R.id.feedbackButton);
         Button githubButton = (Button) rootView.findViewById(R.id.githubButton);
         Button vnstatButton = (Button) rootView.findViewById(R.id.vnstatButton);
@@ -40,6 +43,9 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
         Utils.setTextViewLink(getActivity(), myVNDBProfile, Links.MY_VNDB_PROFILE, 0, myVNDBProfile.getText().toString().length());
         int linkStart = aboutDescription.getText().toString().indexOf(Links.VNDB);
         Utils.setTextViewLink(getActivity(), aboutDescription, Links.VNDB, linkStart, linkStart + Links.VNDB.length());
+
+        thanksTextView.setText(Html.fromHtml(Utils.convertLink(getActivity(), thanksTextView.getText().toString())));
+        thanksTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
         githubButton.setOnClickListener(this);
         feedbackButton.setOnClickListener(this);
