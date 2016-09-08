@@ -62,7 +62,7 @@
             android:id="@+id/myVNDBProfile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="https://vndb.org/u104775"
+            android:text="https://vndb.org/u115583"
             android:layout_marginTop="5dp"
             android:autoLink="all"
             android:textAlignment="center"/>
