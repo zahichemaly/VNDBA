@@ -78,8 +78,8 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getChildView(int listPosition, final int expandedListPosition, boolean isLastChild, View convertView, final ViewGroup parent) {
-        final String primaryText = (String) getChild(listPosition, expandedListPosition);
-        final String secondaryText = (String) getRightChild(listPosition, expandedListPosition);
+        String primaryText = (String) getChild(listPosition, expandedListPosition);
+        String secondaryText = (String) getRightChild(listPosition, expandedListPosition);
         final int layout = getChildLayout(listPosition);
         final LayoutInflater layoutInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         convertView = layoutInflater.inflate(layout, null);
@@ -93,13 +93,17 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                 TextView itemRightText = (TextView) convertView.findViewById(R.id.itemRightText);
                 itemRightImage = (ImageView) convertView.findViewById(R.id.itemRightImage);
 
+                primaryText = Utils.convertLink(activity, primaryText);
                 itemLeftText.setText(Html.fromHtml(primaryText));
+                if (primaryText.contains("</a>"))
+                    itemLeftText.setMovementMethod(LinkMovementMethod.getInstance());
 
                 if (secondaryText == null) itemRightText.setVisibility(View.GONE);
                 else {
+                    secondaryText = Utils.convertLink(activity, secondaryText);
+                    itemRightText.setText(Html.fromHtml(secondaryText));
                     if (secondaryText.contains("</a>"))
                         itemRightText.setMovementMethod(LinkMovementMethod.getInstance());
-                    itemRightText.setText(Html.fromHtml(secondaryText));
                 }
 
                 int leftImage;

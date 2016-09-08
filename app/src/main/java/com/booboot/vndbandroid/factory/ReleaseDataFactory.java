@@ -58,7 +58,7 @@ public class ReleaseDataFactory {
         releaseData.add(new DoubleListElement("Medium", TextUtils.join(", ", media), false));
 
         if (release.getWebsite() != null)
-            releaseData.add(new DoubleListElement("Website", "<a href=\"" + release.getWebsite() + "\">" + release.getWebsite() + "</a>", false));
+            releaseData.add(new DoubleListElement("Website", "[url=" + release.getWebsite() + "]" + release.getWebsite() + "[/url]", false));
         releaseData.add(new DoubleListElement("Age rating", release.getMinage() > 0 ? release.getMinage() + "+" : "Everyone", false));
         if (release.getGtin() != null)
             releaseData.add(new DoubleListElement("JAN/UPC/EAN", release.getGtin(), false));

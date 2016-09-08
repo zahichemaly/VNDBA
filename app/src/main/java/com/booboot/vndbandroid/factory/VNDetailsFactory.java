@@ -71,9 +71,9 @@ public class VNDetailsFactory {
         infoLeft.add("Links");
         Links links = vn.getLinks();
         String htmlLinks = "";
-        if (links.getWikipedia() != null) htmlLinks += "<a href=\"" + Links.WIKIPEDIA + links.getWikipedia() + "\">Wikipedia</a>";
-        if (links.getEncubed() != null) htmlLinks += "<br><a href=\"" + Links.ENCUBED + links.getEncubed() + "\">Encubed</a>";
-        if (links.getRenai() != null) htmlLinks += "<br><a href=\"" + Links.RENAI + links.getRenai() + "\">Renai</a>";
+        if (links.getWikipedia() != null) htmlLinks += "[url=" + Links.WIKIPEDIA + links.getWikipedia() + "]Wikipedia[/url]";
+        if (links.getEncubed() != null) htmlLinks += "<br>[url=" + Links.ENCUBED + links.getEncubed() + "]Encubed[/url]";
+        if (links.getRenai() != null) htmlLinks += "<br>[url=" + Links.RENAI + links.getRenai() + "]Renai[/url]";
         infoRight.add(htmlLinks);
         infoRightImages.add(-1);
 
