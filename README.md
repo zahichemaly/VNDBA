@@ -50,12 +50,12 @@ We're trying to keep the required permissions to a minimum. Here are the current
 
 ### Screenshots
 <p align="center">
-  <img src="http://image.noelshack.com/fichiers/2016/36/1473432915-2016-09-09-14-45-59.png" width="45%"/>
+  <img src="https://s17.postimg.io/6oivet4m5/2016_09_09_14_45_59.png" width="45%"/>
   <img src="http://image.noelshack.com/fichiers/2016/17/1462036855-2016-04-30-17-20-17.png" width="45%"/>
-  <img src="http://image.noelshack.com/fichiers/2016/36/1473433022-2016-09-08-14-23-36.png" width="45%"/>
+  <img src="https://s17.postimg.org/tb6c0qdnz/2016_09_08_14_23_36.png" width="45%"/>
   <img src="http://image.noelshack.com/fichiers/2016/36/1473433113-2016-09-09-14-58-07.png" width="45%"/>
-  <img src="http://image.noelshack.com/fichiers/2016/36/1473433260-2016-09-09-15-00-18.png" width="45%"/>
-  <img src="http://image.noelshack.com/fichiers/2016/36/1473433261-2016-09-09-15-00-40.png" width="45%"/>
+  <img src="https://s13.postimg.io/b9i6z76xx/2016_09_09_15_00_18.png" width="45%"/>
+  <img src="https://s13.postimg.io/madc47z6t/2016_09_09_15_00_40.png" width="45%"/>
 </p>
 
 ### License
