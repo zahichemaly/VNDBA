@@ -47,6 +47,7 @@
     <string name="include_one_tags">Include at least one of these tags</string>
     <string name="exclude_all_tags">Exclude all these tags</string>
     <string name="my_recommendations">My recommendations</string>
+    <string name="recommendations_private_warning">We haven\'t found your recommendations... Don\'t forget to make your lists public (by unchecking \"Don\'t allow other people to see my visual novel list\" in your VNDB.org\'s preferences), then refresh this page (it can take up to 48 hours to get effective don\'t worry)!</string>
 
     <string-array name="background_pref_titles">
         <item>Default (orange)</item>

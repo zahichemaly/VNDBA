@@ -132,15 +132,14 @@ public class RecommendationsFragment extends Fragment implements SwipeRefreshLay
                     @Override
                     protected void config() {
                         recommendations = DB.loadRecommendations(getActivity());
-                        if (recommendations.size() > 0) {
+                        if (recommendations.size() > 0 && !forceRefresh) {
                             successCallback.vnStatResults = new VNStatItem();
                             successCallback.vnStatResults.setRecommendations(recommendations);
                             successCallback.call();
-                        }
-
-                        if (recommendations.size() <= 0 || forceRefresh) {
+                        } else {
                             if (message.startsWith("User ID does not exist")) {
-                                showBackgroundInfo("We haven't found your recommendations... Don't forget to make your lists public (by unchecking \"Don't allow other people to see my visual novel list\" in your VNDB.org's preferences). Then come back here in 24 hours (recommendations computation is not immediate)!");
+                                showBackgroundInfo(getActivity().getString(R.string.recommendations_private_warning));
+                                Callback.showToast(getActivity(), getActivity().getString(R.string.recommendations_private_warning));
                                 recommendations = null;
                             } else {
                                 showToast(getActivity(), message);

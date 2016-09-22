@@ -270,8 +270,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Cache.clearCache(this);
             SettingsManager.setUserId(this, -1);
             RecommendationsFragment.recommendations = null;
-            LoginActivity.instance.enableAll();
-            Utils.recreate(LoginActivity.instance);
+            startActivity(new Intent(this, LoginActivity.class));
             selectedItem = 0;
             instance = null;
             finish();

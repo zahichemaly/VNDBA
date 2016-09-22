@@ -19,7 +19,6 @@ import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
-    public static LoginActivity instance;
     public static boolean autologin = true;
     private Button loginButton;
     private EditText loginUsername;
@@ -32,8 +31,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setTheme(SettingsManager.getNoActionBarTheme(this));
         setContentView(R.layout.login);
-
-        instance = this;
 
         Window window = getWindow();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -56,12 +53,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         String savedUsername = SettingsManager.getUsername(this);
         String savedPassword = SettingsManager.getPassword(this);
-        if (autologin && savedUsername != null && savedPassword != null) {
+        boolean credentialsSaved = savedUsername != null && savedPassword != null;
+        if (credentialsSaved) {
             /* Filling the inputs with saved values (for appearance's sake) */
             loginUsername.setText(savedUsername);
             loginPassword.setText(savedPassword);
-            disableAll();
+        }
 
+        if (autologin && credentialsSaved) {
+            disableAll();
             new Thread() {
                 public void run() {
                     login();
