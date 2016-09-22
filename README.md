@@ -25,13 +25,17 @@ This project is an open-source Android client for the Visual Novel Database (VND
   - Tags
   - Releases
   - Relations to other VNs
+  - Similar novels
   - Related anime
   - Platforms
   - Languages
 - Add or modify a VN in your visual novel list, votelist or wishlist.
-- Search through all existing VNs with a smart search.
+- Add personal notes to a VN
+- Search through all existing VNs with a smart search. Search by tags.
 - Enable or disable NSFW content.
 - Define a default spoiler level and a spoiler level for each VN.
+- View rankings (best voted, most popular, most voted, newly released...)
+- View personal recommendations based on your lists.
 - View VNDB.org database statistics.
 - Change the appearance of your app through a selection of 21 different themes.
 
@@ -41,16 +45,17 @@ This project is an open-source Android client for the Visual Novel Database (VND
 
 ### Permissions
 We're trying to keep the required permissions to a minimum. Here are the current ones:
-  - INTERNET : because we need Internet !
+  - INTERNET
   - ACCESS_NETWORK_STATE : for offline support (enabling the application to work without connection).
 
 ### Screenshots
 <p align="center">
-  <img src="http://image.noelshack.com/fichiers/2016/17/1462036856-2016-04-30-17-19-32.png" width="45%"/>
+  <img src="https://s17.postimg.io/6oivet4m5/2016_09_09_14_45_59.png" width="45%"/>
   <img src="http://image.noelshack.com/fichiers/2016/17/1462036855-2016-04-30-17-20-17.png" width="45%"/>
-  <img src="http://image.noelshack.com/fichiers/2016/13/1459181558-2016-03-28-16-11-56.png" width="45%"/>
-  <img src="http://image.noelshack.com/fichiers/2016/15/1460827456-2016-04-16-17-10-59.png" width="45%"/>
-  <img src="http://image.noelshack.com/fichiers/2016/15/1460885309-2016-04-17-09-27-26.png" width="90%"/>
+  <img src="https://s17.postimg.org/tb6c0qdnz/2016_09_08_14_23_36.png" width="45%"/>
+  <img src="http://image.noelshack.com/fichiers/2016/36/1473433113-2016-09-09-14-58-07.png" width="45%"/>
+  <img src="https://s13.postimg.io/b9i6z76xx/2016_09_09_15_00_18.png" width="45%"/>
+  <img src="https://s13.postimg.io/madc47z6t/2016_09_09_15_00_40.png" width="45%"/>
 </p>
 
 ### License
