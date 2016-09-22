@@ -128,7 +128,8 @@ public class ProgressiveResultLoader implements SwipeRefreshLayout.OnRefreshList
                     if (!Cache.vns.containsKey(vn.getId())) Cache.vns.put(vn.getId(), vn);
                 }
 
-                if (currentPage == 1)
+                /* Scrolling to top only when we fetch the first results page and if there are results (otherwise the scroll is messed up) */
+                if (currentPage == 1 && results.getItems().size() > 0)
                     materialListView.scrollToPosition(0);
                 progressBar.setVisibility(View.INVISIBLE);
                 refreshLayout.setRefreshing(false);
