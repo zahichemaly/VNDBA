@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.booboot.vndbandroid.bean.vndb.Anime;
 import com.booboot.vndbandroid.bean.vndb.Item;
@@ -38,6 +39,7 @@ public class DB extends SQLiteOpenHelper {
     public static DB instance;
     public final static String NAME = "VNDB_ANDROID";
     public final static int VERSION = 1;
+    public final static int SQLITE_LIMIT_COMPOUND_SELECT = 500;
 
     public final static String TABLE_VNLIST = "vnlist";
     public final static String TABLE_VOTELIST = "votelist";
@@ -292,10 +294,9 @@ public class DB extends SQLiteOpenHelper {
     public static void saveVnlist(Context context) {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
-        // db.execSQL("DELETE FROM " + TABLE_VNLIST);
 
         StringBuilder query = new StringBuilder("INSERT INTO ").append(TABLE_VNLIST).append(" VALUES ");
-        boolean somethingToInsert = false;
+        int itemsToInsert = 0;
         /* Retrieving all items to check if we have TO INSERT or UPDATE */
         LinkedHashMap<Integer, VNlistItem> alreadyInsertedItems = loadVnlist(context);
         db.beginTransaction();
@@ -321,10 +322,10 @@ public class DB extends SQLiteOpenHelper {
                     .append(item.getStatus()).append(",")
                     .append(formatString(item.getNotes()))
                     .append("),");
-            somethingToInsert = true;
+            itemsToInsert = checkInsertLimit(db, query, itemsToInsert, TABLE_VNLIST);
         }
 
-        if (somethingToInsert) {
+        if (itemsToInsert > 0) {
             query.setLength(query.length() - 1);
             db.execSQL(query.toString());
         }
@@ -333,13 +334,25 @@ public class DB extends SQLiteOpenHelper {
         db.endTransaction();
     }
 
+    private static int checkInsertLimit(SQLiteDatabase db, StringBuilder query, int itemsToInsert, String tableName) {
+        itemsToInsert++;
+        if (itemsToInsert >= SQLITE_LIMIT_COMPOUND_SELECT) {
+            query.setLength(query.length() - 1);
+            db.execSQL(query.toString());
+            query.delete(0, query.length());
+            query.append("INSERT INTO ").append(tableName).append(" VALUES ");
+            Log.d("D", query.toString());
+            itemsToInsert = 0;
+        }
+        return itemsToInsert;
+    }
+
     public static void saveVotelist(Context context) {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
-        // db.execSQL("DELETE FROM " + TABLE_VNLIST);
 
         StringBuilder query = new StringBuilder("INSERT INTO ").append(TABLE_VOTELIST).append(" VALUES ");
-        boolean somethingToInsert = false;
+        int itemsToInsert = 0;
         /* Retrieving all items to check if we have TO INSERT or UPDATE */
         LinkedHashMap<Integer, VotelistItem> alreadyInsertedItems = loadVotelist(context);
         db.beginTransaction();
@@ -363,10 +376,10 @@ public class DB extends SQLiteOpenHelper {
                     .append(item.getAdded()).append(",")
                     .append(item.getVote())
                     .append("),");
-            somethingToInsert = true;
+            itemsToInsert = checkInsertLimit(db, query, itemsToInsert, TABLE_VOTELIST);
         }
 
-        if (somethingToInsert) {
+        if (itemsToInsert > 0) {
             query.setLength(query.length() - 1);
             db.execSQL(query.toString());
         }
@@ -378,10 +391,9 @@ public class DB extends SQLiteOpenHelper {
     public static void saveWishlist(Context context) {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
-        // db.execSQL("DELETE FROM " + TABLE_VNLIST);
 
         StringBuilder query = new StringBuilder("INSERT INTO ").append(TABLE_WISHLIST).append(" VALUES ");
-        boolean somethingToInsert = false;
+        int itemsToInsert = 0;
         /* Retrieving all items to check if we have TO INSERT or UPDATE */
         LinkedHashMap<Integer, WishlistItem> alreadyInsertedItems = loadWishlist(context);
         db.beginTransaction();
@@ -405,10 +417,10 @@ public class DB extends SQLiteOpenHelper {
                     .append(item.getAdded()).append(",")
                     .append(item.getPriority())
                     .append("),");
-            somethingToInsert = true;
+            itemsToInsert = checkInsertLimit(db, query, itemsToInsert, TABLE_WISHLIST);
         }
 
-        if (somethingToInsert) {
+        if (itemsToInsert > 0) {
             query.setLength(query.length() - 1);
             db.execSQL(query.toString());
         }
@@ -447,9 +459,8 @@ public class DB extends SQLiteOpenHelper {
     public static void saveVNs(Context context, boolean beginTransaction) {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
-        // db.execSQL("DELETE FROM " + TABLE_VNLIST);
 
-        boolean somethingToInsert[] = new boolean[8];
+        int itemsToInsert[] = new int[8];
         StringBuilder[] queries = new StringBuilder[8];
         queries[0] = new StringBuilder("INSERT INTO ").append(TABLE_VN).append(" VALUES ");
         queries[1] = new StringBuilder("INSERT INTO ").append(TABLE_LANGUAGES).append(" VALUES ");
@@ -495,14 +506,14 @@ public class DB extends SQLiteOpenHelper {
                     .append(item.getRating()).append(",")
                     .append(item.getVotecount())
                     .append("),");
-            somethingToInsert[0] = true;
+            itemsToInsert[0] = checkInsertLimit(db, queries[0], itemsToInsert[0], TABLE_VN);
 
             for (String language : item.getLanguages()) {
                 queries[1].append("(")
                         .append(item.getId()).append(",")
                         .append(formatString(language))
                         .append("),");
-                somethingToInsert[1] = true;
+                itemsToInsert[1] = checkInsertLimit(db, queries[1], itemsToInsert[1], TABLE_LANGUAGES);
             }
 
             for (String origLang : item.getOrig_lang()) {
@@ -510,7 +521,7 @@ public class DB extends SQLiteOpenHelper {
                         .append(item.getId()).append(",")
                         .append(formatString(origLang))
                         .append("),");
-                somethingToInsert[2] = true;
+                itemsToInsert[2] = checkInsertLimit(db, queries[2], itemsToInsert[2], TABLE_ORIG_LANG);
             }
 
             for (String platform : item.getPlatforms()) {
@@ -518,7 +529,7 @@ public class DB extends SQLiteOpenHelper {
                         .append(item.getId()).append(",")
                         .append(formatString(platform))
                         .append("),");
-                somethingToInsert[3] = true;
+                itemsToInsert[3] = checkInsertLimit(db, queries[3], itemsToInsert[3], TABLE_PLATFORMS);
             }
 
             for (Anime anime : item.getAnime()) {
@@ -532,7 +543,7 @@ public class DB extends SQLiteOpenHelper {
                         .append(anime.getYear()).append(",")
                         .append(formatString(anime.getType()))
                         .append("),");
-                somethingToInsert[4] = true;
+                itemsToInsert[4] = checkInsertLimit(db, queries[4], itemsToInsert[4], TABLE_ANIME);
             }
 
             for (Relation relation : item.getRelations()) {
@@ -543,7 +554,7 @@ public class DB extends SQLiteOpenHelper {
                         .append(formatString(relation.getTitle())).append(",")
                         .append(formatString(relation.getOriginal()))
                         .append("),");
-                somethingToInsert[5] = true;
+                itemsToInsert[5] = checkInsertLimit(db, queries[5], itemsToInsert[5], TABLE_RELATION);
             }
 
             for (List<Number> tagInfo : item.getTags()) {
@@ -553,7 +564,7 @@ public class DB extends SQLiteOpenHelper {
                         .append(tagInfo.get(1)).append(",")
                         .append(tagInfo.get(2))
                         .append("),");
-                somethingToInsert[6] = true;
+                itemsToInsert[6] = checkInsertLimit(db, queries[6], itemsToInsert[6], TABLE_TAGS);
             }
             for (Screen screen : item.getScreens()) {
                 queries[7].append("(")
@@ -564,11 +575,11 @@ public class DB extends SQLiteOpenHelper {
                         .append(screen.getHeight()).append(",")
                         .append(screen.getWidth())
                         .append("),");
-                somethingToInsert[7] = true;
+                itemsToInsert[7] = checkInsertLimit(db, queries[7], itemsToInsert[7], TABLE_SCREENS);
             }
         }
 
-        exec(db, queries, somethingToInsert);
+        exec(db, queries, itemsToInsert);
 
         db.setTransactionSuccessful();
         db.endTransaction();
@@ -577,13 +588,12 @@ public class DB extends SQLiteOpenHelper {
     public static void saveCharacters(Context context, List<Item> characters, int vnId) {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
-        // db.execSQL("DELETE FROM " + TABLE_VNLIST);
 
         StringBuilder[] queries = new StringBuilder[3];
         queries[0] = new StringBuilder("INSERT INTO ").append(TABLE_VN_CHARACTER).append(" VALUES ");
         queries[1] = new StringBuilder("INSERT INTO ").append(TABLE_CHARACTER).append(" VALUES ");
         queries[2] = new StringBuilder("INSERT INTO ").append(TABLE_TRAITS).append(" VALUES ");
-        boolean[] somethingToInsert = new boolean[3];
+        int[] itemsToInsert = new int[3];
 
         /* Retrieving all items to check if we have TO INSERT or UPDATE */
         LinkedHashMap<Integer, Boolean> alreadyInsertedItems = new LinkedHashMap<>();
@@ -624,7 +634,7 @@ public class DB extends SQLiteOpenHelper {
                         .append(character.getWeight()).append(",")
                         .append(formatString(vns))
                         .append("),");
-                somethingToInsert[1] = true;
+                itemsToInsert[1] = checkInsertLimit(db, queries[1], itemsToInsert[1], TABLE_CHARACTER);
 
                 for (int[] trait : character.getTraits()) {
                     queries[2].append("(")
@@ -632,7 +642,7 @@ public class DB extends SQLiteOpenHelper {
                             .append(trait[0]).append(",")
                             .append(trait[1])
                             .append("),");
-                    somethingToInsert[2] = true;
+                    itemsToInsert[2] = checkInsertLimit(db, queries[2], itemsToInsert[2], TABLE_TRAITS);
                 }
             }
 
@@ -640,10 +650,10 @@ public class DB extends SQLiteOpenHelper {
                     .append(vnId).append(",")
                     .append(character.getId())
                     .append("),");
-            somethingToInsert[0] = true;
+            itemsToInsert[0] = checkInsertLimit(db, queries[0], itemsToInsert[0], TABLE_VN_CHARACTER);
         }
 
-        exec(db, queries, somethingToInsert);
+        exec(db, queries, itemsToInsert);
 
         db.setTransactionSuccessful();
         db.endTransaction();
@@ -701,7 +711,6 @@ public class DB extends SQLiteOpenHelper {
     public static void saveReleases(Context context, List<Item> releases, int vnId) {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
-        // db.execSQL("DELETE FROM " + TABLE_VNLIST);
 
         StringBuilder[] queries = new StringBuilder[7];
         queries[0] = new StringBuilder("INSERT INTO ").append(TABLE_VN_RELEASE).append(" VALUES ");
@@ -711,7 +720,7 @@ public class DB extends SQLiteOpenHelper {
         queries[4] = new StringBuilder("INSERT INTO ").append(TABLE_RELEASE_MEDIA).append(" VALUES ");
         queries[5] = new StringBuilder("INSERT INTO ").append(TABLE_RELEASE_PRODUCER).append(" VALUES ");
         queries[6] = new StringBuilder("INSERT INTO ").append(TABLE_PRODUCER).append(" VALUES ");
-        boolean[] somethingToInsert = new boolean[7];
+        int[] itemsToInsert = new int[7];
 
         /* Retrieving all items to check if we have to INSERT or UPDATE */
         LinkedHashMap<Integer, Boolean> alreadyInsertedReleases = new LinkedHashMap<>();
@@ -754,7 +763,7 @@ public class DB extends SQLiteOpenHelper {
                         .append(formatString(release.getGtin())).append(",")
                         .append(formatString(release.getCatalog()))
                         .append("),");
-                somethingToInsert[1] = true;
+                itemsToInsert[1] = checkInsertLimit(db, queries[1], itemsToInsert[1], TABLE_RELEASE);
                 alreadyInsertedReleases.put(release.getId(), true);
 
                 for (String language : release.getLanguages()) {
@@ -762,7 +771,7 @@ public class DB extends SQLiteOpenHelper {
                             .append(release.getId()).append(",")
                             .append(formatString(language))
                             .append("),");
-                    somethingToInsert[2] = true;
+                    itemsToInsert[2] = checkInsertLimit(db, queries[2], itemsToInsert[2], TABLE_RELEASE_LANGUAGES);
                 }
 
                 for (String platform : release.getPlatforms()) {
@@ -770,7 +779,7 @@ public class DB extends SQLiteOpenHelper {
                             .append(release.getId()).append(",")
                             .append(formatString(platform))
                             .append("),");
-                    somethingToInsert[3] = true;
+                    itemsToInsert[3] = checkInsertLimit(db, queries[3], itemsToInsert[3], TABLE_RELEASE_PLATFORMS);
                 }
 
                 for (Media media : release.getMedia()) {
@@ -779,7 +788,7 @@ public class DB extends SQLiteOpenHelper {
                             .append(formatString(media.getMedium())).append(",")
                             .append(media.getQty())
                             .append("),");
-                    somethingToInsert[4] = true;
+                    itemsToInsert[4] = checkInsertLimit(db, queries[4], itemsToInsert[4], TABLE_RELEASE_MEDIA);
                 }
 
                 for (Producer producer : release.getProducers()) {
@@ -789,7 +798,7 @@ public class DB extends SQLiteOpenHelper {
                             .append(formatBool(producer.isDeveloper())).append(",")
                             .append(formatBool(producer.isPublisher()))
                             .append("),");
-                    somethingToInsert[5] = true;
+                    itemsToInsert[5] = checkInsertLimit(db, queries[5], itemsToInsert[5], TABLE_RELEASE_PRODUCER);
 
                     if (alreadyInsertedProducers.get(producer.getId()) == null) {
                         queries[6].append("(")
@@ -798,7 +807,7 @@ public class DB extends SQLiteOpenHelper {
                                 .append(formatString(producer.getOriginal())).append(",")
                                 .append(formatString(producer.getType()))
                                 .append("),");
-                        somethingToInsert[6] = true;
+                        itemsToInsert[6] = checkInsertLimit(db, queries[6], itemsToInsert[6], TABLE_PRODUCER);
                         alreadyInsertedProducers.put(producer.getId(), true);
                     }
                 }
@@ -808,10 +817,10 @@ public class DB extends SQLiteOpenHelper {
                     .append(vnId).append(",")
                     .append(release.getId())
                     .append("),");
-            somethingToInsert[0] = true;
+            itemsToInsert[0] = checkInsertLimit(db, queries[0], itemsToInsert[0], TABLE_VN_RELEASE);
         }
 
-        exec(db, queries, somethingToInsert);
+        exec(db, queries, itemsToInsert);
 
         db.setTransactionSuccessful();
         db.endTransaction();
@@ -1204,9 +1213,9 @@ public class DB extends SQLiteOpenHelper {
         db.execSQL("DELETE FROM " + TABLE_RECOMMENDATIONS);
     }
 
-    private static void exec(SQLiteDatabase db, StringBuilder[] queries, boolean[] somethingToInsert) {
+    private static void exec(SQLiteDatabase db, StringBuilder[] queries, int[] itemsToInsert) {
         for (int i = 0; i < queries.length; i++) {
-            if (somethingToInsert[i]) {
+            if (itemsToInsert[i] > 0) {
                 queries[i].setLength(queries[i].length() - 1);
                 db.execSQL(queries[i].toString());
             }
