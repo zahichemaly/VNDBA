@@ -138,8 +138,7 @@ public class RecommendationsFragment extends Fragment implements SwipeRefreshLay
                             successCallback.call();
                         } else {
                             if (message.startsWith("User ID does not exist")) {
-                                showBackgroundInfo(getActivity().getString(R.string.recommendations_private_warning));
-                                Callback.showToast(getActivity(), getActivity().getString(R.string.recommendations_private_warning));
+                                showBackgroundInfo(getActivity().getString(R.string.recommendations_private_warning), true);
                                 recommendations = null;
                             } else {
                                 showToast(getActivity(), message);
@@ -152,9 +151,10 @@ public class RecommendationsFragment extends Fragment implements SwipeRefreshLay
         );
     }
 
-    public void showBackgroundInfo(String text) {
+    private void showBackgroundInfo(String text, boolean showToast) {
         if (recommendations.size() > 0) {
             rootView.findViewById(R.id.backgroundInfo).setVisibility(View.GONE);
+            if (showToast) Callback.showToast(getActivity(), text);
         } else {
             final ImageView backgroundInfoImage = (ImageView) rootView.findViewById(R.id.backgroundInfoImage);
             Utils.tintImage(getActivity(), backgroundInfoImage, android.R.color.darker_gray, false);
@@ -166,7 +166,7 @@ public class RecommendationsFragment extends Fragment implements SwipeRefreshLay
 
     public void displayRecommendations() {
         materialListView.getAdapter().clearAll();
-        showBackgroundInfo("You don't have enough novels in your list so we can give you recommendations. Add more novels and come back here later!");
+        showBackgroundInfo("You don't have enough novels in your list so we can give you recommendations. Add more novels and come back here later!", false);
 
         for (SimilarNovel recommendation : recommendations) {
             Item vn = new Item(recommendation.getNovelId());
