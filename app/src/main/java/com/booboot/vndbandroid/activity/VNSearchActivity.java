@@ -27,6 +27,7 @@ import com.booboot.vndbandroid.bean.vndb.Tag;
 import com.booboot.vndbandroid.factory.ProgressiveResultLoader;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.JSON;
+import com.booboot.vndbandroid.util.Pixels;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
 import com.booboot.vndbandroid.view.TagAutoCompleteView;
@@ -207,6 +208,7 @@ public class VNSearchActivity extends AppCompatActivity {
         });
         searchView.requestFocus();
         searchView.setQueryHint(getResources().getString(R.string.search_hint));
+        searchView.setMaxWidth(Math.round(Pixels.screenWidth(this) * 0.70f));
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override

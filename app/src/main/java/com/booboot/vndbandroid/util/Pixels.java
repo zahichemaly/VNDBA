@@ -35,4 +35,10 @@ public class Pixels {
         float dp = px / ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
         return Math.round(dp);
     }
+
+    public static int screenWidth(Context context) {
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        return metrics.widthPixels;
+    }
 }
