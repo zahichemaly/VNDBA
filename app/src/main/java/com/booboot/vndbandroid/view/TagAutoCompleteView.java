@@ -2,6 +2,10 @@ package com.booboot.vndbandroid.view;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +15,7 @@ import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.bean.vndb.Tag;
+import com.booboot.vndbandroid.util.Utils;
 import com.tokenautocomplete.TokenCompleteTextView;
 
 /**
@@ -33,6 +38,16 @@ public class TagAutoCompleteView extends TokenCompleteTextView<Tag> {
     protected View getViewForObject(Tag tag) {
         LayoutInflater l = (LayoutInflater) getContext().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
         LinearLayout view = (LinearLayout) l.inflate(R.layout.tag_token, (ViewGroup) TagAutoCompleteView.this.getParent(), false);
+
+        Drawable background = view.getBackground();
+        if (background instanceof ShapeDrawable) {
+            ((ShapeDrawable)background).getPaint().setColor(Utils.getThemeColor(getContext(), R.attr.colorAccent));
+        } else if (background instanceof GradientDrawable) {
+            ((GradientDrawable)background).setColor(Utils.getThemeColor(getContext(), R.attr.colorAccent));
+        } else if (background instanceof ColorDrawable) {
+            ((ColorDrawable)background).setColor(Utils.getThemeColor(getContext(), R.attr.colorAccent));
+        }
+
         ((TextView) view.findViewById(R.id.tagTokenName)).setText(tag.getName());
 
         return view;
