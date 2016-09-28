@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.booboot.vndbandroid.bean.vndb.Anime;
 import com.booboot.vndbandroid.bean.vndb.Item;
@@ -341,7 +340,6 @@ public class DB extends SQLiteOpenHelper {
             db.execSQL(query.toString());
             query.delete(0, query.length());
             query.append("INSERT INTO ").append(tableName).append(" VALUES ");
-            Log.d("D", query.toString());
             itemsToInsert = 0;
         }
         return itemsToInsert;

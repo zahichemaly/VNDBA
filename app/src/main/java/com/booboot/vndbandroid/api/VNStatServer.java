@@ -12,7 +12,7 @@ import java.net.URL;
  */
 public class VNStatServer {
     public final static String HOST = "vnstat.net";
-    public final static String URL = "https://beta.vnstat.net/api/";
+    public final static String URL = "https://vnstat.net/api/";
 
     public static void get(final String type, final String flags, final int id, final Callback successCallback, final Callback errorCallback) {
         new Thread() {
