@@ -377,28 +377,28 @@ public class Cache {
 
                 switch (SettingsManager.getSort(context)) {
                     case 1:
-                        firstValue = vns.get(a.getKey());
-                        secondValue = vns.get(b.getKey());
+                        firstValue = vns.get(first.getKey());
+                        secondValue = vns.get(second.getKey());
                         return firstValue.getTitle().compareTo(secondValue.getTitle());
                     case 2:
-                        firstValue = vns.get(a.getKey());
-                        secondValue = vns.get(b.getKey());
+                        firstValue = vns.get(first.getKey());
+                        secondValue = vns.get(second.getKey());
                         String releasedA = firstValue.getReleased();
                         String releasedB = secondValue.getReleased();
                         if (releasedA == null) return -1;
                         if (releasedB == null) return 1;
                         return releasedA.compareTo(releasedB);
                     case 3:
-                        firstValue = vns.get(a.getKey());
-                        secondValue = vns.get(b.getKey());
+                        firstValue = vns.get(first.getKey());
+                        secondValue = vns.get(second.getKey());
                         return Integer.valueOf(firstValue.getLength()).compareTo(secondValue.getLength());
                     case 4:
-                        firstValue = vns.get(a.getKey());
-                        secondValue = vns.get(b.getKey());
+                        firstValue = vns.get(first.getKey());
+                        secondValue = vns.get(second.getKey());
                         return Double.valueOf(firstValue.getPopularity()).compareTo(secondValue.getPopularity());
                     case 5:
-                        firstValue = vns.get(a.getKey());
-                        secondValue = vns.get(b.getKey());
+                        firstValue = vns.get(first.getKey());
+                        secondValue = vns.get(second.getKey());
                         return Double.valueOf(firstValue.getRating()).compareTo(secondValue.getRating());
                     case 6:
                         VNlistItem vnlistA = Cache.vnlist.get(first.getKey());
