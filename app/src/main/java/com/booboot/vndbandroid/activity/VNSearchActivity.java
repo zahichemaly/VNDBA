@@ -24,6 +24,7 @@ import com.booboot.vndbandroid.adapter.search.SearchOptionsAdapter;
 import com.booboot.vndbandroid.adapter.search.TagFilteredArrayAdapter;
 import com.booboot.vndbandroid.bean.vndb.Options;
 import com.booboot.vndbandroid.bean.vndb.Tag;
+import com.booboot.vndbandroid.bean.vndbandroid.Theme;
 import com.booboot.vndbandroid.factory.ProgressiveResultLoader;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.JSON;
@@ -67,7 +68,7 @@ public class VNSearchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTheme(SettingsManager.getTheme(this));
+        setTheme(Theme.THEMES.get(SettingsManager.getTheme(this)).getStyle());
         setContentView(R.layout.vn_search);
 
         ActionBar actionBar = getSupportActionBar();

@@ -51,36 +51,14 @@ public class SettingsManager {
         editor.commit();
     }
 
-    public static int getTheme(Context context) {
+    public static String getTheme(Context context) {
         new SettingsManager(context);
-        return settings.getInt("THEME", R.style.AppTheme);
+        return settings.getString("THEME_INDEX", "0");
     }
 
-    public static void setTheme(Context context, int theme) {
+    public static void setTheme(Context context, String theme) {
         new SettingsManager(context);
-        editor.putInt("THEME", theme);
-        editor.commit();
-    }
-
-    public static int getNoActionBarTheme(Context context) {
-        new SettingsManager(context);
-        return settings.getInt("NO_ACTION_BAR_THEME", R.style.AppTheme_NoActionBar);
-    }
-
-    public static void setNoActionBarTheme(Context context, int theme) {
-        new SettingsManager(context);
-        editor.putInt("NO_ACTION_BAR_THEME", theme);
-        editor.commit();
-    }
-
-    public static int getWallpaper(Context context) {
-        new SettingsManager(context);
-        return settings.getInt("WALLPAPER", R.drawable.bg_0);
-    }
-
-    public static void setWallpaper(Context context, int wallpaper) {
-        new SettingsManager(context);
-        editor.putInt("WALLPAPER", wallpaper);
+        editor.putString("THEME_INDEX", theme);
         editor.commit();
     }
 

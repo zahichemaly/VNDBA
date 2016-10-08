@@ -43,6 +43,7 @@ import com.booboot.vndbandroid.bean.vndb.Links;
 import com.booboot.vndbandroid.bean.vndb.Options;
 import com.booboot.vndbandroid.bean.vndbandroid.Priority;
 import com.booboot.vndbandroid.bean.vndbandroid.Status;
+import com.booboot.vndbandroid.bean.vndbandroid.Theme;
 import com.booboot.vndbandroid.bean.vndbandroid.VNlistItem;
 import com.booboot.vndbandroid.bean.vndbandroid.Vote;
 import com.booboot.vndbandroid.bean.vndbandroid.VotelistItem;
@@ -104,7 +105,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTheme(SettingsManager.getTheme(this));
+        setTheme(Theme.THEMES.get(SettingsManager.getTheme(this)).getStyle());
         setContentView(R.layout.vn_details);
 
         vn = Cache.vns.get(getIntent().getIntExtra(VNTypeFragment.VN_ARG, -1));

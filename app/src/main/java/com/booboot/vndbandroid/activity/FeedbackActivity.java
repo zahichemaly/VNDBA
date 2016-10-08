@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.widget.EditText;
 
 import com.booboot.vndbandroid.R;
+import com.booboot.vndbandroid.bean.vndbandroid.Theme;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
@@ -20,7 +21,7 @@ public class FeedbackActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTheme(SettingsManager.getTheme(this));
+        setTheme(Theme.THEMES.get(SettingsManager.getTheme(this)).getStyle());
         setContentView(R.layout.feedback);
 
         ActionBar actionBar = getSupportActionBar();

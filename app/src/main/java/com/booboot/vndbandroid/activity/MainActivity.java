@@ -41,6 +41,7 @@ import com.booboot.vndbandroid.activity.ranking.RankingTopFragment;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.bean.vndbandroid.ListType;
+import com.booboot.vndbandroid.bean.vndbandroid.Theme;
 import com.booboot.vndbandroid.factory.PlaceholderPictureFactory;
 import com.booboot.vndbandroid.util.Pixels;
 import com.booboot.vndbandroid.util.SettingsManager;
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTheme(SettingsManager.getNoActionBarTheme(this));
+        setTheme(Theme.THEMES.get(SettingsManager.getTheme(this)).getNoActionBarStyle());
         setContentView(R.layout.activity_main);
         instance = this;
 
@@ -107,9 +108,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }.start();
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                headerBackground.setBackground(getResources().getDrawable(SettingsManager.getWallpaper(this), getTheme()));
+                headerBackground.setBackground(getResources().getDrawable(Theme.THEMES.get(SettingsManager.getTheme(this)).getWallpaper(), getTheme()));
             } else {
-                headerBackground.setBackground(getResources().getDrawable(SettingsManager.getWallpaper(this)));
+                headerBackground.setBackground(getResources().getDrawable(Theme.THEMES.get(SettingsManager.getTheme(this)).getWallpaper()));
             }
         }
 

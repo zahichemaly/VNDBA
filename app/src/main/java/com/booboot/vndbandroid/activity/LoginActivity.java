@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.bean.vndb.Links;
+import com.booboot.vndbandroid.bean.vndbandroid.Theme;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
@@ -29,7 +30,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTheme(SettingsManager.getNoActionBarTheme(this));
+        setTheme(Theme.THEMES.get(SettingsManager.getTheme(this)).getNoActionBarStyle());
         setContentView(R.layout.login);
 
         Window window = getWindow();
