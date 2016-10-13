@@ -222,7 +222,7 @@ public class Utils {
         new Thread() {
             @Override
             public void run() {
-                MailService mailer = new MailService("vndb.android@gmail.com", Mail.getInfo(context).getTo(), title, body, null);
+                MailService mailer = new MailService(Mail.getInfo(context).getUsername(), Mail.getInfo(context).getTo(), title, body, null);
                 try {
                     mailer.sendAuthenticated();
                 } catch (Exception e) {

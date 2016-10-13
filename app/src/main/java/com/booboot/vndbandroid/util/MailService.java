@@ -21,7 +21,7 @@ public class MailService {
     private String ccList;
     private String bccList;
     private String subject;
-    final private static String SMTP_SERVER = "smtp.gmail.com";
+    final private static String SMTP_SERVER = "smtp-mail.outlook.com";
     private String from;
     private String txtBody;
     private String htmlBody;
