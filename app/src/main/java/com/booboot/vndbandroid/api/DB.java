@@ -723,6 +723,7 @@ public class DB extends SQLiteOpenHelper {
         /* Retrieving all items to check if we have to INSERT or UPDATE */
         LinkedHashMap<Integer, Boolean> alreadyInsertedReleases = new LinkedHashMap<>();
         LinkedHashMap<Integer, Boolean> alreadyInsertedProducers = new LinkedHashMap<>();
+        LinkedHashMap<Integer, Boolean> alreadyLinkedReleases = new LinkedHashMap<>();
         Set<Integer> releasesIds = new HashSet<>();
         Set<Integer> producersIds = new HashSet<>();
         for (Item release : releases) {
@@ -740,6 +741,11 @@ public class DB extends SQLiteOpenHelper {
         cursor = db.rawQuery("SELECT id FROM " + TABLE_PRODUCER + " WHERE id IN (" + TextUtils.join(",", producersIds) + ")", new String[]{});
         while (cursor.moveToNext()) {
             alreadyInsertedProducers.put(cursor.getInt(0), true);
+        }
+        cursor.close();
+        cursor = db.rawQuery("SELECT release FROM " + TABLE_VN_RELEASE + " WHERE vn = " + vnId, new String[]{});
+        while (cursor.moveToNext()) {
+            alreadyLinkedReleases.put(cursor.getInt(0), true);
         }
         cursor.close();
         db.beginTransaction();
@@ -811,11 +817,14 @@ public class DB extends SQLiteOpenHelper {
                 }
             }
 
-            queries[0].append("(")
-                    .append(vnId).append(",")
-                    .append(release.getId())
-                    .append("),");
-            itemsToInsert[0] = checkInsertLimit(db, queries[0], itemsToInsert[0], TABLE_VN_RELEASE);
+            if (alreadyLinkedReleases.get(release.getId()) == null) {
+                queries[0].append("(")
+                        .append(vnId).append(",")
+                        .append(release.getId())
+                        .append("),");
+                itemsToInsert[0] = checkInsertLimit(db, queries[0], itemsToInsert[0], TABLE_VN_RELEASE);
+                alreadyLinkedReleases.put(release.getId(), true);
+            }
         }
 
         exec(db, queries, itemsToInsert);

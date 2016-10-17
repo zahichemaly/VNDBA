@@ -448,6 +448,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
                 vnlistItem.setNotes(fields.getNotes());
                 notesTextView.setText(fields.getNotes());
                 Cache.vnlist.put(vn.getId(), vnlistItem);
+                if (Cache.vns.get(vn.getId()) == null) Cache.vns.put(vn.getId(), vn);
                 if (MainActivity.instance != null)
                     MainActivity.instance.refreshVnlistFragment();
             }
