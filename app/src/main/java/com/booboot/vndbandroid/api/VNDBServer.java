@@ -104,6 +104,8 @@ public class VNDBServer {
                 String password = SettingsManager.getPassword(context);
                 VNDBCommand response = sendCommand("login ", Login.create(PROTOCOL, CLIENT, CLIENTVER, username, password), socketIndex);
                 if (!(response instanceof Ok)) {
+                    // Closing the socket to avoid subsequent login errors
+                    close(socketIndex);
                     errorCallback.call();
                 }
             }
