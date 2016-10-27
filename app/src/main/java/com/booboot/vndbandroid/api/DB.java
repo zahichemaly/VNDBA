@@ -595,6 +595,7 @@ public class DB extends SQLiteOpenHelper {
 
         /* Retrieving all items to check if we have TO INSERT or UPDATE */
         LinkedHashMap<Integer, Boolean> alreadyInsertedItems = new LinkedHashMap<>();
+        LinkedHashMap<Integer, Boolean> alreadyLinkedCharacters = new LinkedHashMap<>();
         Set<Integer> characterIds = new HashSet<>();
         for (Item character : characters) {
             characterIds.add(character.getId());
@@ -605,6 +606,12 @@ public class DB extends SQLiteOpenHelper {
             alreadyInsertedItems.put(cursor.getInt(0), true);
         }
         cursor.close();
+        cursor = db.rawQuery("SELECT character FROM " + TABLE_VN_CHARACTER + " WHERE vn = " + vnId, new String[]{});
+        while (cursor.moveToNext()) {
+            alreadyLinkedCharacters.put(cursor.getInt(0), true);
+        }
+        cursor.close();
+
         db.beginTransaction();
 
         for (Item character : characters) {
@@ -644,11 +651,14 @@ public class DB extends SQLiteOpenHelper {
                 }
             }
 
-            queries[0].append("(")
-                    .append(vnId).append(",")
-                    .append(character.getId())
-                    .append("),");
-            itemsToInsert[0] = checkInsertLimit(db, queries[0], itemsToInsert[0], TABLE_VN_CHARACTER);
+            if (alreadyLinkedCharacters.get(character.getId()) == null) {
+                queries[0].append("(")
+                        .append(vnId).append(",")
+                        .append(character.getId())
+                        .append("),");
+                itemsToInsert[0] = checkInsertLimit(db, queries[0], itemsToInsert[0], TABLE_VN_CHARACTER);
+                alreadyLinkedCharacters.put(character.getId(), true);
+            }
         }
 
         exec(db, queries, itemsToInsert);
@@ -908,17 +918,28 @@ public class DB extends SQLiteOpenHelper {
 
         StringBuilder query = new StringBuilder("INSERT INTO ").append(TABLE_SIMILAR_NOVELS).append(" VALUES ");
         boolean somethingToInsert = false;
+
+        LinkedHashMap<Integer, Boolean> alreadyLinkedNovels = new LinkedHashMap<>();
+        Cursor cursor = db.rawQuery("SELECT id FROM " + TABLE_SIMILAR_NOVELS + " WHERE vn = " + vnId, new String[]{});
+        while (cursor.moveToNext()) {
+            alreadyLinkedNovels.put(cursor.getInt(0), true);
+        }
+        cursor.close();
+
         db.beginTransaction();
 
         for (SimilarNovel similarNovel : similarNovels) {
-            query.append("(")
-                    .append(similarNovel.getNovelId()).append(",")
-                    .append(vnId).append(",")
-                    .append(similarNovel.getSimilarity()).append(",")
-                    .append(formatString(similarNovel.getTitle())).append(",")
-                    .append(formatString(similarNovel.getImage()))
-                    .append("),");
-            somethingToInsert = true;
+            if (alreadyLinkedNovels.get(similarNovel.getNovelId()) == null) {
+                query.append("(")
+                        .append(similarNovel.getNovelId()).append(",")
+                        .append(vnId).append(",")
+                        .append(similarNovel.getSimilarity()).append(",")
+                        .append(formatString(similarNovel.getTitle())).append(",")
+                        .append(formatString(similarNovel.getImage()))
+                        .append("),");
+                somethingToInsert = true;
+                alreadyLinkedNovels.put(similarNovel.getNovelId(), true);
+            }
         }
 
         if (somethingToInsert) {
@@ -936,17 +957,28 @@ public class DB extends SQLiteOpenHelper {
 
         StringBuilder query = new StringBuilder("INSERT INTO ").append(TABLE_RECOMMENDATIONS).append(" VALUES ");
         boolean somethingToInsert = false;
+
+        LinkedHashMap<Integer, Boolean> alreadyInsertedRecommendations = new LinkedHashMap<>();
+        Cursor cursor = db.rawQuery("SELECT id FROM " + TABLE_RECOMMENDATIONS, new String[]{});
+        while (cursor.moveToNext()) {
+            alreadyInsertedRecommendations.put(cursor.getInt(0), true);
+        }
+        cursor.close();
+
         db.beginTransaction();
 
         for (SimilarNovel recommendation : recommendations) {
-            query.append("(")
-                    .append(recommendation.getNovelId()).append(",")
-                    .append(recommendation.getPredictedRating()).append(",")
-                    .append(formatString(recommendation.getTitle())).append(",")
-                    .append(formatString(recommendation.getImage())).append(",")
-                    .append(formatString(recommendation.getReleased()))
-                    .append("),");
-            somethingToInsert = true;
+            if (alreadyInsertedRecommendations.get(recommendation.getNovelId()) == null) {
+                query.append("(")
+                        .append(recommendation.getNovelId()).append(",")
+                        .append(recommendation.getPredictedRating()).append(",")
+                        .append(formatString(recommendation.getTitle())).append(",")
+                        .append(formatString(recommendation.getImage())).append(",")
+                        .append(formatString(recommendation.getReleased()))
+                        .append("),");
+                somethingToInsert = true;
+                alreadyInsertedRecommendations.put(recommendation.getNovelId(), true);
+            }
         }
 
         if (somethingToInsert) {
