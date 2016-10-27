@@ -51,8 +51,9 @@ public class VNCardFactory {
             description.append(Vote.toString(vote));
         } else description.append("Not voted yet");
 
-        materialListView.setColumnCountLandscape(Utils.isTablet(activity) ? 3 : 2);
-        materialListView.setColumnCountPortrait(Utils.isTablet(activity) ? 2 : 1);
+
+        materialListView.setColumnCountLandscape(Utils.isDeviceWide(activity, Utils.LANDSCAPE) ? 3 : Utils.isInMultiWindowMode(activity) ? 1 : 2);
+        materialListView.setColumnCountPortrait(Utils.isDeviceWide(activity, Utils.PORTRAIT) ? 2 : 1);
 
         CardProvider cardProvider = new Card.Builder(activity)
                 .withProvider(new CardProvider())

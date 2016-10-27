@@ -5,11 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.res.ColorStateList;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
@@ -36,9 +33,7 @@ import com.booboot.vndbandroid.activity.EmptyActivity;
 import com.booboot.vndbandroid.bean.vndbandroid.Mail;
 
 import java.text.DateFormat;
-import java.text.NumberFormat;
 import java.text.ParseException;
-import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -49,16 +44,8 @@ import java.util.zip.ZipFile;
  * Created by od on 03/04/2016.
  */
 public class Utils {
-    public static boolean isNumeric(String str) {
-        NumberFormat formatter = NumberFormat.getInstance();
-        ParsePosition pos = new ParsePosition(0);
-        formatter.parse(str, pos);
-        return str.length() == pos.getIndex();
-    }
-
-    public static String booleanToString(boolean bool) {
-        return bool ? "Yes" : "No";
-    }
+    public final static int PORTRAIT = 1;
+    public final static int LANDSCAPE = 2;
 
     public static String capitalize(String s) {
         if (s == null) return null;
@@ -111,19 +98,16 @@ public class Utils {
         activity.recreate();
     }
 
-    public static boolean isTablet(Activity activity) {
+    public static boolean isDeviceWide(Activity activity, int orientation) {
         Display display = activity.getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        display.getMetrics(outMetrics);
 
-        Resources resources = activity.getResources();
-        DisplayMetrics metrics = resources.getDisplayMetrics();
+        float density = activity.getResources().getDisplayMetrics().density;
+        float widthAllocatedForCards = (outMetrics.widthPixels - activity.getResources().getDimension(R.dimen.activity_horizontal_margin) * 2) / density;
 
-        if (activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            return size.x / ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT) > 1150;
-        } else {
-            return size.x / ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT) > 760;
-        }
+        int threshold = orientation == PORTRAIT ? 750 : 1100;
+        return widthAllocatedForCards > threshold;
     }
 
     public static void setTitle(Activity activity, String title) {
@@ -243,5 +227,9 @@ public class Utils {
 
     public static String convertLink(Context context, String bbcodeLink) {
         return bbcodeLink.replaceAll("\\[url=(.*?)\\](.*?)\\[/url\\]", "<a href=\"" + context.getPackageName() + "://$1\">$2</a>");
+    }
+
+    public static boolean isInMultiWindowMode(Activity activity) {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && activity.isInMultiWindowMode();
     }
 }

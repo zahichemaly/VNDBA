@@ -52,9 +52,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    public static MainActivity instance;
     private SearchView searchView;
     private List<VNTypeFragment> activeFragments = new ArrayList<>();
-    public static MainActivity instance;
     private Fragment directSubfragment;
     public static int selectedItem;
     private NavigationView navigationView;
