@@ -46,6 +46,7 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
         type = getArguments().getInt(VNListFragment.LIST_TYPE_ARG);
 
         materialListView = (MaterialListView) rootView.findViewById(R.id.materialListView);
+        VNCardFactory.setCardsPerRow(getActivity(), materialListView);
 
         switch (type) {
             case ListType.VNLIST:

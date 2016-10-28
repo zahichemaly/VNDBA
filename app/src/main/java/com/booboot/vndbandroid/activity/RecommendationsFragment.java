@@ -50,6 +50,7 @@ public class RecommendationsFragment extends Fragment implements SwipeRefreshLay
 
         progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
         materialListView = (MaterialListView) rootView.findViewById(R.id.materialListView);
+        VNCardFactory.setCardsPerRow(getActivity(), materialListView);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             materialListView.getRootView().setBackgroundColor(rootView.getResources().getColor(R.color.windowBackground, rootView.getContext().getTheme()));

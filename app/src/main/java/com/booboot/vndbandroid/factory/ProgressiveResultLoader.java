@@ -1,7 +1,6 @@
 package com.booboot.vndbandroid.factory;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Build;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,8 +11,6 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.booboot.vndbandroid.R;
-import com.booboot.vndbandroid.activity.VNDetailsActivity;
-import com.booboot.vndbandroid.activity.VNTypeFragment;
 import com.booboot.vndbandroid.adapter.materiallistview.MaterialListView;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.VNDBServer;
@@ -51,6 +48,7 @@ public class ProgressiveResultLoader implements SwipeRefreshLayout.OnRefreshList
     public void init() {
         progressBar = (ProgressBar) (rootView == null ? activity.findViewById(R.id.progressBar) : rootView.findViewById(R.id.progressBar));
         materialListView = (MaterialListView) (rootView == null ? activity.findViewById(R.id.materialListView) : rootView.findViewById(R.id.materialListView));
+        VNCardFactory.setCardsPerRow(activity, materialListView);
 
         /* [Fix] Set the background color to match the default one (not the case by default) */
         if (rootView == null) {

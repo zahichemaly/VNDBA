@@ -52,9 +52,6 @@ public class VNCardFactory {
         } else description.append("Not voted yet");
 
 
-        materialListView.setColumnCountLandscape(Utils.isDeviceWide(activity, Utils.LANDSCAPE) ? 3 : Utils.isInMultiWindowMode(activity) ? 1 : 2);
-        materialListView.setColumnCountPortrait(Utils.isDeviceWide(activity, Utils.PORTRAIT) ? 2 : 1);
-
         CardProvider cardProvider = new Card.Builder(activity)
                 .withProvider(new CardProvider())
                 .setLayout(R.layout.vn_card_layout)
@@ -78,5 +75,10 @@ public class VNCardFactory {
         card.setTag(vn.getId());
 
         materialListView.getAdapter().add(card);
+    }
+
+    public static void setCardsPerRow(Activity activity, MaterialListView materialListView) {
+        materialListView.setColumnCountLandscape(Utils.isDeviceWide(activity, Utils.LANDSCAPE) ? 3 : Utils.isInMultiWindowMode(activity) ? 1 : 2);
+        materialListView.setColumnCountPortrait(Utils.isDeviceWide(activity, Utils.PORTRAIT) ? 2 : 1);
     }
 }

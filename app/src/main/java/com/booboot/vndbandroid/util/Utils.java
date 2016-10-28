@@ -103,8 +103,9 @@ public class Utils {
         DisplayMetrics outMetrics = new DisplayMetrics();
         display.getMetrics(outMetrics);
 
+        int baseSize = activity.getResources().getConfiguration().orientation == orientation ? outMetrics.widthPixels : outMetrics.heightPixels;
         float density = activity.getResources().getDisplayMetrics().density;
-        float widthAllocatedForCards = (outMetrics.widthPixels - activity.getResources().getDimension(R.dimen.activity_horizontal_margin) * 2) / density;
+        float widthAllocatedForCards = (baseSize - activity.getResources().getDimension(R.dimen.activity_horizontal_margin) * 2) / density;
 
         int threshold = orientation == PORTRAIT ? 750 : 1100;
         return widthAllocatedForCards > threshold;
