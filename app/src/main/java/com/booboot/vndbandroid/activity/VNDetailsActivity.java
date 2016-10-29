@@ -91,6 +91,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
     private ExpandableListView expandableListView;
     private ExpandableListAdapter expandableListAdapter;
 
+    private VNDetailsElement informationSubmenu;
     private VNDetailsElement charactersSubmenu;
     private VNDetailsElement releasesSubmenu;
     private VNDetailsElement languagesSubmenu;
@@ -304,8 +305,15 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
             case VNDetailsFactory.TITLE_CHARACTERS:
                 alreadyInit = Cache.characters.get(vn.getId()) != null;
                 break;
+            case VNDetailsFactory.TITLE_INFORMATION:
+                alreadyInit = Cache.releases.get(vn.getId()) != null;
+                hasChildren = expandableListAdapter.getChildrenCount(groupPosition) > 0;
+                if (alreadyInit && !hasChildren) VNDetailsFactory.setInformationSubmenu(this);
+                break;
             case VNDetailsFactory.TITLE_RELEASES:
                 alreadyInit = Cache.releases.get(vn.getId()) != null;
+                hasChildren = expandableListAdapter.getChildrenCount(groupPosition) > 0;
+                if (alreadyInit && !hasChildren) VNDetailsFactory.setReleasesSubmenu(this);
                 break;
             case VNDetailsFactory.TITLE_SIMILAR_NOVELS:
                 alreadyInit = Cache.similarNovels.get(vn.getId()) != null;
@@ -349,6 +357,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                             characters = DB.loadCharacters(VNDetailsActivity.this, vn.getId());
                             alreadyInDatabase = characters.size() > 0;
                             break;
+                        case VNDetailsFactory.TITLE_INFORMATION:
                         case VNDetailsFactory.TITLE_RELEASES:
                             releasesList = DB.loadReleases(VNDetailsActivity.this, vn.getId());
                             alreadyInDatabase = releasesList.size() > 0;
@@ -394,6 +403,10 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                                         groupCharactersByRole();
                                         VNDetailsFactory.setCharactersSubmenu(VNDetailsActivity.this);
                                         break;
+                                    case VNDetailsFactory.TITLE_INFORMATION:
+                                        Cache.releases.put(vn.getId(), releasesList);
+                                        groupReleasesByLanguage(releasesList);
+                                        VNDetailsFactory.setInformationSubmenu(VNDetailsActivity.this);
                                     case VNDetailsFactory.TITLE_RELEASES:
                                         Cache.releases.put(vn.getId(), releasesList);
                                         groupReleasesByLanguage(releasesList);
@@ -465,6 +478,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                                 }, getSubmenuCallback(groupView, groupPosition));
                                 break;
 
+                            case VNDetailsFactory.TITLE_INFORMATION:
                             case VNDetailsFactory.TITLE_RELEASES:
                                 VNDBServer.get("release", Cache.RELEASE_FLAGS, "(vn = " + vn.getId() + ")", Options.create(1, 25, "released", false, true, true, 0), 1, VNDetailsActivity.this, new Callback() {
                                     @Override
@@ -485,7 +499,11 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                                         }
 
                                         groupReleasesByLanguage(releasesList);
-                                        VNDetailsFactory.setReleasesSubmenu(VNDetailsActivity.this);
+                                        if (groupName.equals(VNDetailsFactory.TITLE_RELEASES)) {
+                                            VNDetailsFactory.setReleasesSubmenu(VNDetailsActivity.this);
+                                        } else {
+                                            VNDetailsFactory.setInformationSubmenu(VNDetailsActivity.this);
+                                        }
                                         hideGroupLoader(groupView, groupPosition);
                                     }
                                 }, getSubmenuCallback(groupView, groupPosition));
@@ -736,6 +754,14 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         DB.saveWishlist(this);
         DB.saveVNs(this);
         super.onDestroy();
+    }
+
+    public VNDetailsElement getInformationSubmenu() {
+        return informationSubmenu;
+    }
+
+    public void setInformationSubmenu(VNDetailsElement informationSubmenu) {
+        this.informationSubmenu = informationSubmenu;
     }
 
     public void setCharactersSubmenu(VNDetailsElement characterElement) {

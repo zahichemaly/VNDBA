@@ -904,7 +904,41 @@ public class DB extends SQLiteOpenHelper {
             if (release == null) continue;
             if (release.getProducers() == null)
                 release.setProducers(new ArrayList<Producer>());
-            release.getProducers().add(new Producer(cursor[4].getInt(1), cursor[4].getInt(2) == 1, cursor[4].getInt(3) == 1, cursor[4].getString(4), cursor[4].getString(5), cursor[4].getString(6)));
+            /* Since we've made a join between 2 tables, it's quite hard to determine the column indexes for what we want, and SQLite may change
+            it depending on the devices. So to be sure and avoid bugs, we manually check the column names */
+            int id_column_index = 4, developer_column_index = 2, publisher_column_index = 3, name_column_index = 5, original_column_index = 6, type_column_index = 7;
+            for (int i = 0; i < cursor[4].getColumnCount(); i++) {
+                switch (cursor[4].getColumnName(i)) {
+                    case "id":
+                    case "release":
+                        id_column_index = i;
+                        break;
+                    case "developer":
+                        developer_column_index = i;
+                        break;
+                    case "publisher":
+                        publisher_column_index = i;
+                        break;
+                    case "name":
+                        name_column_index = i;
+                        break;
+                    case "original":
+                        original_column_index = i;
+                        break;
+                    case "type":
+                        type_column_index = i;
+                        break;
+                }
+            }
+
+            Producer producer = new Producer();
+            producer.setId(cursor[4].getInt(id_column_index));
+            producer.setDeveloper(cursor[4].getInt(developer_column_index) == 1);
+            producer.setPublisher(cursor[4].getInt(publisher_column_index) == 1);
+            producer.setName(cursor[4].getString(name_column_index));
+            producer.setOriginal(cursor[4].getString(original_column_index));
+            producer.setType(cursor[4].getString(type_column_index));
+            release.getProducers().add(producer);
         }
 
         for (Cursor c : cursor) c.close();

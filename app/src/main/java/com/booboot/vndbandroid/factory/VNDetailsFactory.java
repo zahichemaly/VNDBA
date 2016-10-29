@@ -1,10 +1,13 @@
 package com.booboot.vndbandroid.factory;
 
+import android.text.TextUtils;
+
 import com.booboot.vndbandroid.activity.VNDetailsActivity;
 import com.booboot.vndbandroid.adapter.vndetails.VNDetailsElement;
 import com.booboot.vndbandroid.bean.vndb.Anime;
 import com.booboot.vndbandroid.bean.vndb.Item;
 import com.booboot.vndbandroid.bean.vndb.Links;
+import com.booboot.vndbandroid.bean.vndb.Producer;
 import com.booboot.vndbandroid.bean.vndb.Relation;
 import com.booboot.vndbandroid.bean.vndb.Screen;
 import com.booboot.vndbandroid.bean.vndb.Tag;
@@ -19,9 +22,11 @@ import com.booboot.vndbandroid.util.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class VNDetailsFactory {
     public final static String TITLE_INFORMATION = "Information";
@@ -42,41 +47,6 @@ public class VNDetailsFactory {
         LinkedHashMap<String, VNDetailsElement> expandableListDetail = new LinkedHashMap<>();
         Item vn = activity.getVn();
 
-        List<String> infoLeft = new ArrayList<>();
-        List<String> infoRight = new ArrayList<>();
-        List<Integer> infoRightImages = new ArrayList<>();
-        infoLeft.add("Title");
-        infoRight.add(vn.getTitle());
-        infoRightImages.add(-1);
-        if (vn.getOriginal() != null) {
-            infoLeft.add("Original title");
-            infoRight.add(vn.getOriginal());
-            infoRightImages.add(-1);
-        }
-
-        infoLeft.add("Released date");
-        infoRight.add(Utils.getDate(vn.getReleased(), true));
-        infoRightImages.add(-1);
-
-        if (vn.getAliases() != null) {
-            infoLeft.add("Aliases");
-            infoRight.add(vn.getAliases().replace("\n", "<br>"));
-            infoRightImages.add(-1);
-        }
-
-        infoLeft.add("Length");
-        infoRight.add(vn.getLengthString());
-        infoRightImages.add(vn.getLengthImage());
-
-        infoLeft.add("Links");
-        Links links = vn.getLinks();
-        String htmlLinks = "";
-        if (links.getWikipedia() != null) htmlLinks += "[url=" + Links.WIKIPEDIA + links.getWikipedia() + "]Wikipedia[/url]";
-        if (links.getEncubed() != null) htmlLinks += "<br>[url=" + Links.ENCUBED + links.getEncubed() + "]Encubed[/url]";
-        if (links.getRenai() != null) htmlLinks += "<br>[url=" + Links.RENAI + links.getRenai() + "]Renai[/url]";
-        infoRight.add(htmlLinks);
-        infoRightImages.add(-1);
-
         List<String> description = new ArrayList<>();
         if (vn.getDescription() != null) {
             String descriptionWithoutSpoilers = vn.getDescription();
@@ -96,6 +66,7 @@ public class VNDetailsFactory {
         statRight.add(vn.getRating() + " (" + Vote.getName(vn.getRating()) + ")<br>" + vn.getVotecount() + " votes total");
         statRightImages.add(vn.getRatingImage());
 
+        setInformationSubmenu(activity);
         setGenresSubmenu(activity);
         setCharactersSubmenu(activity);
         setReleasesSubmenu(activity);
@@ -107,7 +78,7 @@ public class VNDetailsFactory {
         setPlatformsSubmenu(activity);
         setLanguagesSubmenu(activity);
 
-        expandableListDetail.put(TITLE_INFORMATION, new VNDetailsElement(null, infoLeft, infoRight, infoRightImages, null, null, VNDetailsElement.TYPE_TEXT));
+        expandableListDetail.put(TITLE_INFORMATION, activity.getInformationSubmenu());
         expandableListDetail.put(TITLE_DESCRIPTION, new VNDetailsElement(null, description, null, null, null, null, VNDetailsElement.TYPE_TEXT));
         expandableListDetail.put(TITLE_GENRES, activity.getGenresSubmenu());
         expandableListDetail.put(TITLE_CHARACTERS, activity.getCharactersSubmenu());
@@ -122,6 +93,70 @@ public class VNDetailsFactory {
         expandableListDetail.put(TITLE_LANGUAGES, activity.getLanguagesSubmenu());
 
         return expandableListDetail;
+    }
+
+    public static void setInformationSubmenu(VNDetailsActivity activity) {
+        List<String> infoLeft = new ArrayList<>();
+        List<String> infoRight = new ArrayList<>();
+        List<Integer> infoRightImages = new ArrayList<>();
+
+        if (activity.getReleases() == null) {
+            activity.setInformationSubmenu(new VNDetailsElement(null, infoLeft, infoRight, infoRightImages, null, null, VNDetailsElement.TYPE_TEXT));
+        } else {
+            infoLeft.add("Title");
+            infoRight.add(activity.getVn().getTitle());
+            infoRightImages.add(-1);
+            if (activity.getVn().getOriginal() != null) {
+                infoLeft.add("Original title");
+                infoRight.add(activity.getVn().getOriginal());
+                infoRightImages.add(-1);
+            }
+
+            infoLeft.add("Released date");
+            infoRight.add(Utils.getDate(activity.getVn().getReleased(), true));
+            infoRightImages.add(-1);
+
+            if (activity.getVn().getAliases() != null) {
+                infoLeft.add("Aliases");
+                infoRight.add(activity.getVn().getAliases().replace("\n", "<br>"));
+                infoRightImages.add(-1);
+            }
+
+            infoLeft.add("Developers");
+            Set<String> developers = new HashSet<>();
+            for (List<Item> releases : activity.getReleases().values()) {
+                for (Item release : releases) {
+                    for (Producer producer : release.getProducers()) {
+                        if (producer.isDeveloper()) {
+                            developers.add(producer.getName());
+                        }
+                    }
+                }
+            }
+            infoRight.add(developers.isEmpty() ? "-" : TextUtils.join(", ", developers));
+            infoRightImages.add(-1);
+
+            infoLeft.add("Length");
+            infoRight.add(activity.getVn().getLengthString());
+            infoRightImages.add(activity.getVn().getLengthImage());
+
+            infoLeft.add("Links");
+            Links links = activity.getVn().getLinks();
+            String htmlLinks = "";
+            if (links.getWikipedia() != null) htmlLinks += "[url=" + Links.WIKIPEDIA + links.getWikipedia() + "]Wikipedia[/url]";
+            if (links.getEncubed() != null) htmlLinks += "<br>[url=" + Links.ENCUBED + links.getEncubed() + "]Encubed[/url]";
+            if (links.getRenai() != null) htmlLinks += "<br>[url=" + Links.RENAI + links.getRenai() + "]Renai[/url]";
+            infoRight.add(htmlLinks);
+            infoRightImages.add(-1);
+
+            if (activity.getPlatformsSubmenu() == null) {
+                activity.setInformationSubmenu(new VNDetailsElement(null, infoLeft, infoRight, infoRightImages, null, null, VNDetailsElement.TYPE_TEXT));
+            } else {
+                activity.getInformationSubmenu().setPrimaryData(infoLeft);
+                activity.getInformationSubmenu().setSecondaryData(infoRight);
+                activity.getInformationSubmenu().setSecondaryImages(infoRightImages);
+            }
+        }
     }
 
     public static void setLanguagesSubmenu(VNDetailsActivity activity) {
