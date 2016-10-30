@@ -149,7 +149,7 @@ public class VNDetailsFactory {
             infoRight.add(htmlLinks);
             infoRightImages.add(-1);
 
-            if (activity.getPlatformsSubmenu() == null) {
+            if (activity.getInformationSubmenu() == null) {
                 activity.setInformationSubmenu(new VNDetailsElement(null, infoLeft, infoRight, infoRightImages, null, null, VNDetailsElement.TYPE_TEXT));
             } else {
                 activity.getInformationSubmenu().setPrimaryData(infoLeft);
