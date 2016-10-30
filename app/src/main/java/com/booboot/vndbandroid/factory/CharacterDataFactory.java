@@ -80,7 +80,7 @@ public class CharacterDataFactory {
             }
 
             if (characterTraits.get(rootTrait.getId()) == null)
-                characterTraits.put(rootTrait.getId(), new ArrayList<Trait>());
+                characterTraits.put(rootTrait.getId(), new ArrayList<>());
             characterTraits.get(rootTrait.getId()).add(trait);
         }
 

@@ -2,6 +2,7 @@ package com.booboot.vndbandroid.factory;
 
 import android.text.TextUtils;
 
+import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.VNDetailsActivity;
 import com.booboot.vndbandroid.adapter.vndetails.VNDetailsElement;
 import com.booboot.vndbandroid.bean.vndb.Anime;
@@ -213,7 +214,7 @@ public class VNDetailsFactory {
                 anime_ids.add(anime.getId());
                 anime_primary.add(anime.getTitle_romaji());
                 String title_kanji = anime.getTitle_kanji() != null ? anime.getTitle_kanji() + "\n" : "";
-                String type = anime.getType() != null ? anime.getType() + " • " : "";
+                String type = anime.getType() != null ? anime.getType() + activity.getString(R.string.bullet) : "";
                 String year = anime.getYear() > 0 ? anime.getYear() + "" : "";
                 anime_secondary.add(title_kanji + type + year);
             }
@@ -420,7 +421,7 @@ public class VNDetailsFactory {
                 for (Item release : activity.getReleases().get(language)) {
                     images.add(null);
                     names.add(release.getTitle());
-                    subnames.add(Utils.getDate(release.getReleased(), true) + " • " + Utils.capitalize(release.getType()));
+                    subnames.add(Utils.getDate(release.getReleased(), true) + activity.getString(R.string.bullet) + Utils.capitalize(release.getType()));
                     ids.add(release.getId());
                 }
 

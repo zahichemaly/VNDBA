@@ -23,7 +23,7 @@ public class VNCardFactory {
     public static void buildCard(Activity activity, Item vn, MaterialListView materialListView, boolean showFullDate, boolean showRank, boolean showRating, boolean showPopularity, boolean showVoteCount) {
         StringBuilder title = new StringBuilder(), subtitle = new StringBuilder(), description = new StringBuilder();
         if (showRank)
-            title.append("#").append(materialListView.getAdapter().getItemCount() + 1).append(" − ");
+            title.append("#").append(materialListView.getAdapter().getItemCount() + 1).append(activity.getString(R.string.dash));
         title.append(vn.getTitle());
         if (showRating)
             subtitle.append(vn.getRating()).append(" (").append(Vote.getName(vn.getRating())).append(")");
@@ -34,7 +34,7 @@ public class VNCardFactory {
         else
             subtitle.append(Utils.getDate(vn.getReleased(), showFullDate));
 
-        subtitle.append(" • ");
+        subtitle.append(activity.getString(R.string.bullet));
         if (vn.getLength() > 0)
             subtitle.append(vn.getLengthString());
         else
