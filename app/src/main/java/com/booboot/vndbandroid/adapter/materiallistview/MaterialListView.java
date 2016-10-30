@@ -71,10 +71,13 @@ public class MaterialListView extends RecyclerView {
         setOnTouchListener(mDismissListener);
         setOnScrollListener(mDismissListener.makeScrollListener());
 
-        setAdapter(new MaterialListAdapter(position -> {
-            ViewHolder holder = findViewHolderForPosition(position);
-            if (holder != null) {
-                mDismissListener.dismissCard(holder.itemView, position);
+        setAdapter(new MaterialListAdapter(new OnSwipeAnimation() {
+            @Override
+            public void animate(final int position) {
+                RecyclerView.ViewHolder holder = findViewHolderForPosition(position);
+                if (holder != null) {
+                    mDismissListener.dismissCard(holder.itemView, position);
+                }
             }
         }, new OnAdapterItemsChanged() {
             @Override

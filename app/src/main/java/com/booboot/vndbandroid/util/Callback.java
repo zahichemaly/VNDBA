@@ -26,7 +26,12 @@ public abstract class Callback {
     protected abstract void config();
 
     public void call() {
-        new Handler(Looper.getMainLooper()).post(this::config);
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                config();
+            }
+        });
     }
 
     public static Callback errorCallback(final Context context) {
@@ -41,19 +46,22 @@ public abstract class Callback {
 
     public static void showToast(final Context context, final String message) {
         if (message == null) return;
-        new Handler(Looper.getMainLooper()).post(() -> {
-            final Toast toast = Toast.makeText(context, message, Toast.LENGTH_LONG);
-            toast.show();
-            if (message.length() > 90) {
-                new CountDownTimer(8000, 1000) {
-                    public void onTick(long millisUntilFinished) {
-                        toast.show();
-                    }
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                final Toast toast = Toast.makeText(context, message, Toast.LENGTH_LONG);
+                toast.show();
+                if (message.length() > 90) {
+                    new CountDownTimer(8000, 1000) {
+                        public void onTick(long millisUntilFinished) {
+                            toast.show();
+                        }
 
-                    public void onFinish() {
-                        toast.cancel();
-                    }
-                }.start();
+                        public void onFinish() {
+                            toast.cancel();
+                        }
+                    }.start();
+                }
             }
         });
     }

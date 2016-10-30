@@ -2,23 +2,14 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '24.0.3'
+    buildToolsVersion "23.0.3"
 
     defaultConfig {
         applicationId "com.booboot.vndbandroid"
         minSdkVersion 17
         targetSdkVersion 25
-        versionCode 24
-        versionName "2.0.5"
-
-        jackOptions {
-            enabled true
-        }
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        versionCode 25
+        versionName "2.0.6"
     }
 
     buildTypes {

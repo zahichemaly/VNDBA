@@ -31,14 +31,18 @@ public class Lightbox implements ImageLoadingListener {
     public static void set(final Context context, ImageView image, final String url) {
         if (url == null) return;
 
-        image.setOnClickListener(v -> {
-            final Dialog dialog = new Dialog(context);
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialog.setContentView(R.layout.act_lightbox);
-            dialog.setCancelable(true);
+        image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final Dialog dialog = new Dialog(context);
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setContentView(R.layout.act_lightbox);
+                dialog.setCancelable(true);
 
-            final ImageView lightbox = (ImageView) dialog.findViewById(R.id.lightboxView);
-            ImageLoader.getInstance().loadImage(url, new Lightbox(context, lightbox, dialog));
+                final ImageView lightbox = (ImageView) dialog.findViewById(R.id.lightboxView);
+                ImageLoader.getInstance().loadImage(url, new Lightbox(context, lightbox, dialog));
+
+            }
         });
     }
 
@@ -65,9 +69,12 @@ public class Lightbox implements ImageLoadingListener {
         lightbox.setImageBitmap(loadedImage);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         dialog.setCanceledOnTouchOutside(true);
-        lightbox.setOnClickListener(v1 -> {
-            ImageLoader.getInstance().cancelDisplayTask(lightbox);
-            dialog.dismiss();
+        lightbox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ImageLoader.getInstance().cancelDisplayTask(lightbox);
+                dialog.dismiss();
+            }
         });
         dialog.show();
     }

@@ -285,7 +285,7 @@ public class VNDBServer {
                     errorCallback.call();
                 } else {
                     Results results = new Results();
-                    results.setItems(new ArrayList<>());
+                    results.setItems(new ArrayList<Item>());
                     successCallback.results = results;
                     successCallback.call();
                 }

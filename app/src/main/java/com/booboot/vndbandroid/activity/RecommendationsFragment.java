@@ -84,7 +84,12 @@ public class RecommendationsFragment extends Fragment implements SwipeRefreshLay
             @Override
             protected void config() {
                 recommendations = vnStatResults.getRecommendations();
-                Collections.sort(recommendations, (a, b) -> Double.valueOf(b.getPredictedRating()).compareTo(a.getPredictedRating())
+                Collections.sort(recommendations, new Comparator<SimilarNovel>() {
+                            @Override
+                            public int compare(SimilarNovel a, SimilarNovel b) {
+                                return Double.valueOf(b.getPredictedRating()).compareTo(a.getPredictedRating());
+                            }
+                        }
                 );
 
                 DB.saveRecommendations(getActivity(), recommendations);

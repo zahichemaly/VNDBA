@@ -50,10 +50,18 @@ public class DoubleListListener implements View.OnClickListener {
         dialogBuilder.setTitle(title);
         dialogBuilder.setCancelable(true);
         final AlertDialog dialog = dialogBuilder.show();
-        view.findViewById(R.id.closeButton).setOnClickListener(v1 -> dialog.dismiss());
-        dialog.setOnDismissListener(dialog1 -> {
-            if (onDismissCallback != null) {
-                onDismissCallback.call();
+        view.findViewById(R.id.closeButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                if (onDismissCallback != null) {
+                    onDismissCallback.call();
+                }
             }
         });
     }

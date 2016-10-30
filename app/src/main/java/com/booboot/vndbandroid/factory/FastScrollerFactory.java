@@ -19,13 +19,16 @@ public class FastScrollerFactory {
         fastScroller.attachRecyclerView(materialListView);
         fastScroller.setTouchTargetWidth(Pixels.px(32, activity));
 
-        fastScroller.setOnHandleTouchListener((v, event) -> {
-            if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-                refreshLayout.setEnabled(false);
-            } else if (event.getActionMasked() == MotionEvent.ACTION_UP) {
-                refreshLayout.setEnabled(true);
+        fastScroller.setOnHandleTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                    refreshLayout.setEnabled(false);
+                } else if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+                    refreshLayout.setEnabled(true);
+                }
+                return false;
             }
-            return false;
         });
     }
 }

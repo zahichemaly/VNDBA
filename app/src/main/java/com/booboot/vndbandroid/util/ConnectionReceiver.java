@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 
 import com.booboot.vndbandroid.api.VNDBServer;
 
@@ -20,6 +21,7 @@ public class ConnectionReceiver extends BroadcastReceiver {
         if (netInfo == null) {
         */
 
+        Log.e("D", "Connection changed fils de pute");
         /* Resetting the sockets everytime the connection changes, to avoid dead sockets */
         VNDBServer.closeAll();
     }

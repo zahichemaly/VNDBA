@@ -170,7 +170,12 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                     case VNDetailsFactory.TITLE_RELATIONS:
                     case VNDetailsFactory.TITLE_SIMILAR_NOVELS:
                         final int vnId = getElement(listPosition).getIds().get(expandedListPosition);
-                        convertView.setOnClickListener(v -> Cache.openVNDetails(activity, vnId));
+                        convertView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Cache.openVNDetails(activity, vnId);
+                            }
+                        });
                         break;
 
                     case VNDetailsFactory.TITLE_CHARACTERS:
@@ -217,7 +222,12 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
 
                     case VNDetailsFactory.TITLE_ANIME:
                         final int id = getElement(listPosition).getIds().get(expandedListPosition);
-                        convertView.setOnClickListener(v -> Utils.openURL(activity, Links.ANIDB + id));
+                        convertView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Utils.openURL(activity, Links.ANIDB + id);
+                            }
+                        });
                         break;
                 }
                 break;

@@ -66,8 +66,8 @@ public class ReleaseDataFactory {
             releaseData.add(new DoubleListElement("Catalog n°", release.getCatalog(), false));
 
         LinkedHashMap<String, List<String>> producers = new LinkedHashMap<>();
-        producers.put("Developer", new ArrayList<>());
-        producers.put("Publisher", new ArrayList<>());
+        producers.put("Developer", new ArrayList<String>());
+        producers.put("Publisher", new ArrayList<String>());
         for (Producer producer : release.getProducers()) {
             if (producer.isDeveloper())
                 producers.get("Developer").add(producer.getName());

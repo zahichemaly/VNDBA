@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -362,64 +363,66 @@ public class Cache {
 
     public static <V extends CacheItem> void sort(final Context context, LinkedHashMap<Integer, V> list) {
         List<Map.Entry<Integer, V>> entries = new ArrayList<>(list.entrySet());
-        Collections.sort(entries, (a, b) -> {
-            Map.Entry<Integer, V> first = a, second = b;
-            if (SettingsManager.getReverseSort(context)) {
-                // Reverse sort : swapping a and b
-                first = b;
-                second = a;
-            }
-            Item firstValue;
-            Item secondValue;
+        Collections.sort(entries, new Comparator<Map.Entry<Integer, V>>() {
+            public int compare(Map.Entry<Integer, V> a, Map.Entry<Integer, V> b) {
+                Map.Entry<Integer, V> first = a, second = b;
+                if (SettingsManager.getReverseSort(context)) {
+                    // Reverse sort : swapping a and b
+                    first = b;
+                    second = a;
+                }
+                Item firstValue;
+                Item secondValue;
 
-            switch (SettingsManager.getSort(context)) {
-                case 1:
-                    firstValue = vns.get(first.getKey());
-                    secondValue = vns.get(second.getKey());
-                    return firstValue.getTitle().compareTo(secondValue.getTitle());
-                case 2:
-                    firstValue = vns.get(first.getKey());
-                    secondValue = vns.get(second.getKey());
-                    String releasedA = firstValue.getReleased();
-                    String releasedB = secondValue.getReleased();
-                    if (releasedA == null) return -1;
-                    if (releasedB == null) return 1;
-                    return releasedA.compareTo(releasedB);
-                case 3:
-                    firstValue = vns.get(first.getKey());
-                    secondValue = vns.get(second.getKey());
-                    return Integer.valueOf(firstValue.getLength()).compareTo(secondValue.getLength());
-                case 4:
-                    firstValue = vns.get(first.getKey());
-                    secondValue = vns.get(second.getKey());
-                    return Double.valueOf(firstValue.getPopularity()).compareTo(secondValue.getPopularity());
-                case 5:
-                    firstValue = vns.get(first.getKey());
-                    secondValue = vns.get(second.getKey());
-                    return Double.valueOf(firstValue.getRating()).compareTo(secondValue.getRating());
-                case 6:
-                    VNlistItem vnlistA = Cache.vnlist.get(first.getKey());
-                    VNlistItem vnlistB = Cache.vnlist.get(second.getKey());
-                    if (vnlistA == null && vnlistB == null) return 0;
-                    if (vnlistA == null) return -1;
-                    if (vnlistB == null) return 1;
-                    return Integer.valueOf(vnlistA.getStatus()).compareTo(vnlistB.getStatus());
-                case 7:
-                    VotelistItem votelistA = Cache.votelist.get(first.getKey());
-                    VotelistItem votelistB = Cache.votelist.get(second.getKey());
-                    if (votelistA == null && votelistB == null) return 0;
-                    if (votelistA == null) return -1;
-                    if (votelistB == null) return 1;
-                    return Integer.valueOf(votelistA.getVote()).compareTo(votelistB.getVote());
-                case 8:
-                    WishlistItem wishlistA = Cache.wishlist.get(first.getKey());
-                    WishlistItem wishlistB = Cache.wishlist.get(second.getKey());
-                    if (wishlistA == null && wishlistB == null) return 0;
-                    if (wishlistA == null) return -1;
-                    if (wishlistB == null) return 1;
-                    return Integer.valueOf(wishlistA.getPriority()).compareTo(wishlistB.getPriority());
-                default:
-                    return first.getKey().compareTo(second.getKey());
+                switch (SettingsManager.getSort(context)) {
+                    case 1:
+                        firstValue = vns.get(first.getKey());
+                        secondValue = vns.get(second.getKey());
+                        return firstValue.getTitle().compareTo(secondValue.getTitle());
+                    case 2:
+                        firstValue = vns.get(first.getKey());
+                        secondValue = vns.get(second.getKey());
+                        String releasedA = firstValue.getReleased();
+                        String releasedB = secondValue.getReleased();
+                        if (releasedA == null) return -1;
+                        if (releasedB == null) return 1;
+                        return releasedA.compareTo(releasedB);
+                    case 3:
+                        firstValue = vns.get(first.getKey());
+                        secondValue = vns.get(second.getKey());
+                        return Integer.valueOf(firstValue.getLength()).compareTo(secondValue.getLength());
+                    case 4:
+                        firstValue = vns.get(first.getKey());
+                        secondValue = vns.get(second.getKey());
+                        return Double.valueOf(firstValue.getPopularity()).compareTo(secondValue.getPopularity());
+                    case 5:
+                        firstValue = vns.get(first.getKey());
+                        secondValue = vns.get(second.getKey());
+                        return Double.valueOf(firstValue.getRating()).compareTo(secondValue.getRating());
+                    case 6:
+                        VNlistItem vnlistA = Cache.vnlist.get(first.getKey());
+                        VNlistItem vnlistB = Cache.vnlist.get(second.getKey());
+                        if (vnlistA == null && vnlistB == null) return 0;
+                        if (vnlistA == null) return -1;
+                        if (vnlistB == null) return 1;
+                        return Integer.valueOf(vnlistA.getStatus()).compareTo(vnlistB.getStatus());
+                    case 7:
+                        VotelistItem votelistA = Cache.votelist.get(first.getKey());
+                        VotelistItem votelistB = Cache.votelist.get(second.getKey());
+                        if (votelistA == null && votelistB == null) return 0;
+                        if (votelistA == null) return -1;
+                        if (votelistB == null) return 1;
+                        return Integer.valueOf(votelistA.getVote()).compareTo(votelistB.getVote());
+                    case 8:
+                        WishlistItem wishlistA = Cache.wishlist.get(first.getKey());
+                        WishlistItem wishlistB = Cache.wishlist.get(second.getKey());
+                        if (wishlistA == null && wishlistB == null) return 0;
+                        if (wishlistA == null) return -1;
+                        if (wishlistB == null) return 1;
+                        return Integer.valueOf(wishlistA.getPriority()).compareTo(wishlistB.getPriority());
+                    default:
+                        return first.getKey().compareTo(second.getKey());
+                }
             }
         });
         list.clear();

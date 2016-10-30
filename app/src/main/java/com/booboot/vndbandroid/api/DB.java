@@ -707,7 +707,7 @@ public class DB extends SQLiteOpenHelper {
             Item character = res.get(cursor[1].getInt(0));
             if (character == null) continue;
             if (character.getTraits() == null)
-                character.setTraits(new ArrayList<>());
+                character.setTraits(new ArrayList<int[]>());
             character.getTraits().add(new int[]{cursor[1].getInt(1), cursor[1].getInt(2)});
         }
 
@@ -876,7 +876,7 @@ public class DB extends SQLiteOpenHelper {
             Item release = res.get(cursor[1].getInt(0));
             if (release == null) continue;
             if (release.getLanguages() == null)
-                release.setLanguages(new ArrayList<>());
+                release.setLanguages(new ArrayList<String>());
             release.getLanguages().add(cursor[1].getString(1));
         }
 
@@ -885,7 +885,7 @@ public class DB extends SQLiteOpenHelper {
             Item release = res.get(cursor[2].getInt(0));
             if (release == null) continue;
             if (release.getPlatforms() == null)
-                release.setPlatforms(new ArrayList<>());
+                release.setPlatforms(new ArrayList<String>());
             release.getPlatforms().add(cursor[2].getString(1));
         }
 
@@ -894,7 +894,7 @@ public class DB extends SQLiteOpenHelper {
             Item release = res.get(cursor[3].getInt(0));
             if (release == null) continue;
             if (release.getMedia() == null)
-                release.setMedia(new ArrayList<>());
+                release.setMedia(new ArrayList<Media>());
             release.getMedia().add(new Media(cursor[3].getString(1), cursor[3].getInt(2)));
         }
 
@@ -903,7 +903,7 @@ public class DB extends SQLiteOpenHelper {
             Item release = res.get(cursor[4].getInt(0));
             if (release == null) continue;
             if (release.getProducers() == null)
-                release.setProducers(new ArrayList<>());
+                release.setProducers(new ArrayList<Producer>());
             /* Since we've made a join between 2 tables, it's quite hard to determine the column indexes for what we want, and SQLite may change
             it depending on the devices. So to be sure and avoid bugs, we manually check the column names */
             int id_column_index = 4, developer_column_index = 2, publisher_column_index = 3, name_column_index = 5, original_column_index = 6, type_column_index = 7;

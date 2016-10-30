@@ -22,8 +22,8 @@ import com.booboot.vndbandroid.bean.vndb.Fields;
 import com.booboot.vndbandroid.bean.vndb.Item;
 import com.booboot.vndbandroid.bean.vndbandroid.Priority;
 import com.booboot.vndbandroid.bean.vndbandroid.Status;
-import com.booboot.vndbandroid.bean.vndbandroid.Vote;
 import com.booboot.vndbandroid.bean.vndbandroid.VNlistItem;
+import com.booboot.vndbandroid.bean.vndbandroid.Vote;
 import com.booboot.vndbandroid.bean.vndbandroid.VotelistItem;
 import com.booboot.vndbandroid.bean.vndbandroid.WishlistItem;
 import com.booboot.vndbandroid.util.Callback;
@@ -395,24 +395,38 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
         final EditText otherVoteInput = (EditText) dialogView.findViewById(R.id.otherVoteInput);
 
         builder.setPositiveButton("OK", null);
-        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
-        final AlertDialog dialog = builder.create();
-        dialog.setOnShowListener(dialogInterface -> {
-            Button okButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-            okButton.setOnClickListener(v -> {
-                String vote = otherVoteInput.getText().toString().trim();
-                if (Vote.isValid(vote)) {
-                    fields.setVote(Math.round(Float.valueOf(vote) * 10));
-                    sendSetRequest(type, fields, item);
-                    dialog.cancel();
-                } else {
-                    otherVoteInput.setError("Invalid vote.");
-                }
-            });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
         });
-        otherVoteInput.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
-                dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        final AlertDialog dialog = builder.create();
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                Button okButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                okButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String vote = otherVoteInput.getText().toString().trim();
+                        if (Vote.isValid(vote)) {
+                            fields.setVote(Math.round(Float.valueOf(vote) * 10));
+                            sendSetRequest(type, fields, item);
+                            dialog.cancel();
+                        } else {
+                            otherVoteInput.setError("Invalid vote.");
+                        }
+                    }
+                });
+            }
+        });
+        otherVoteInput.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+                }
             }
         });
         dialog.show();

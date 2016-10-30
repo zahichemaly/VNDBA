@@ -356,7 +356,12 @@ public class Item extends VNDBCommand {
         if (relations == null) {
             this.relations = new ArrayList<>();
         } else {
-            Collections.sort(relations, (lhs, rhs) -> Integer.valueOf(Relation.TYPES_KEY.indexOf(lhs.getRelation())).compareTo(Relation.TYPES_KEY.indexOf(rhs.getRelation())));
+            Collections.sort(relations, new Comparator<Relation>() {
+                @Override
+                public int compare(Relation lhs, Relation rhs) {
+                    return Integer.valueOf(Relation.TYPES_KEY.indexOf(lhs.getRelation())).compareTo(Relation.TYPES_KEY.indexOf(rhs.getRelation()));
+                }
+            });
             this.relations = relations;
         }
     }
@@ -369,7 +374,12 @@ public class Item extends VNDBCommand {
         if (tags == null) {
             this.tags = new ArrayList<>();
         } else {
-            Collections.sort(tags, (lhs, rhs) -> Double.valueOf(rhs.get(1).doubleValue()).compareTo(lhs.get(1).doubleValue()));
+            Collections.sort(tags, new Comparator<List<Number>>() {
+                @Override
+                public int compare(List<Number> lhs, List<Number> rhs) {
+                    return Double.valueOf(rhs.get(1).doubleValue()).compareTo(lhs.get(1).doubleValue());
+                }
+            });
             this.tags = tags;
         }
     }

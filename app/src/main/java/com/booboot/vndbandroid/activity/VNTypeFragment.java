@@ -92,11 +92,14 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
         refreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refreshLayout);
         refreshLayout.setOnRefreshListener(this);
         refreshLayout.setColorSchemeColors(Utils.getThemeColor(activity, R.attr.colorAccent));
-        refreshLayout.post(() -> {
-            if (refreshOnInit) {
-                refreshOnInit = false;
-                refreshLayout.setRefreshing(true);
-                onRefresh();
+        refreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                if (refreshOnInit) {
+                    refreshOnInit = false;
+                    refreshLayout.setRefreshing(true);
+                    onRefresh();
+                }
             }
         });
 
