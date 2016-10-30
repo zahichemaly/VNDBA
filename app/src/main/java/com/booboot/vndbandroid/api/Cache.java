@@ -134,6 +134,7 @@ public class Cache {
                     return;
                 }
 
+                mergedIdsString = TextUtils.join(",", mergedIds);
                 int numberOfPages = (int) Math.ceil(mergedIds.size() * 1.0 / 25);
                 VNDBServer.get("vn", VN_FLAGS, "(id = [" + mergedIdsString + "])", Options.create(true, true, numberOfPages), 0, context, new Callback() {
                     @Override
