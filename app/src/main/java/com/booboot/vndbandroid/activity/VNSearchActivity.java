@@ -116,44 +116,38 @@ public class VNSearchActivity extends AppCompatActivity {
 
         LinearLayout includeTagsLayout = (LinearLayout) findViewById(R.id.includeTagsLayout);
         assert includeTagsLayout != null;
-        includeTagsLayout.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View arg0, MotionEvent arg1) {
-                switch (arg1.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        includeTagsIcon.setAlpha(0.9f);
-                        includeTagsDropdown.setAlpha(0.9f);
-                        break;
+        includeTagsLayout.setOnTouchListener((arg0, arg1) -> {
+            switch (arg1.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    includeTagsIcon.setAlpha(0.9f);
+                    includeTagsDropdown.setAlpha(0.9f);
+                    break;
 
-                    case MotionEvent.ACTION_UP:
-                        includeTagsIcon.setAlpha(0.4f);
-                        includeTagsDropdown.setAlpha(0.4f);
-                        PopupMenu popup = new PopupMenu(VNSearchActivity.this, includeTagsDropdown);
-                        MenuInflater inflater = popup.getMenuInflater();
-                        inflater.inflate(R.menu.include_tags, popup.getMenu());
-                        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                            @Override
-                            public boolean onMenuItemClick(MenuItem item) {
-                                if (item.getItemId() == R.id.item_include_all) {
-                                    includeTagsInput.setHint(R.string.include_all_tags);
-                                    includeTagsFloatingLabel.setHint(getResources().getString(R.string.include_all_tags));
-                                } else if (item.getItemId() == R.id.item_include_one) {
-                                    includeTagsInput.setHint(R.string.include_one_tags);
-                                    includeTagsFloatingLabel.setHint(getResources().getString(R.string.include_one_tags));
-                                }
-                                return false;
-                            }
-                        });
-                        popup.show();
-                        break;
+                case MotionEvent.ACTION_UP:
+                    includeTagsIcon.setAlpha(0.4f);
+                    includeTagsDropdown.setAlpha(0.4f);
+                    PopupMenu popup = new PopupMenu(VNSearchActivity.this, includeTagsDropdown);
+                    MenuInflater inflater = popup.getMenuInflater();
+                    inflater.inflate(R.menu.include_tags, popup.getMenu());
+                    popup.setOnMenuItemClickListener(item -> {
+                        if (item.getItemId() == R.id.item_include_all) {
+                            includeTagsInput.setHint(R.string.include_all_tags);
+                            includeTagsFloatingLabel.setHint(getResources().getString(R.string.include_all_tags));
+                        } else if (item.getItemId() == R.id.item_include_one) {
+                            includeTagsInput.setHint(R.string.include_one_tags);
+                            includeTagsFloatingLabel.setHint(getResources().getString(R.string.include_one_tags));
+                        }
+                        return false;
+                    });
+                    popup.show();
+                    break;
 
-                    case MotionEvent.ACTION_CANCEL:
-                        includeTagsIcon.setAlpha(0.4f);
-                        includeTagsDropdown.setAlpha(0.4f);
-                        break;
-                }
-                return true;
+                case MotionEvent.ACTION_CANCEL:
+                    includeTagsIcon.setAlpha(0.4f);
+                    includeTagsDropdown.setAlpha(0.4f);
+                    break;
             }
+            return true;
         });
     }
 
@@ -201,12 +195,7 @@ public class VNSearchActivity extends AppCompatActivity {
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         // Little trick to put the icon inside the input field and prevent the search view from collapsing when clicking on "x"
         searchView.setIconified(false);
-        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-            @Override
-            public boolean onClose() {
-                return true;
-            }
-        });
+        searchView.setOnCloseListener(() -> true);
         searchView.requestFocus();
         searchView.setQueryHint(getResources().getString(R.string.search_hint));
         searchView.setMaxWidth(Math.round(Pixels.screenWidth(this) * 0.70f));

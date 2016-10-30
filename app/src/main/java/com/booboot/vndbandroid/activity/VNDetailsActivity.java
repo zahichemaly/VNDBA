@@ -4,6 +4,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.PorterDuff;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -57,6 +58,10 @@ import com.booboot.vndbandroid.util.Lightbox;
 import com.booboot.vndbandroid.util.Pixels;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.appindexing.Thing;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
@@ -102,6 +107,11 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
     private VNDetailsElement tagsSubmenu;
     private VNDetailsElement genresSubmenu;
     private VNDetailsElement screensSubmenu;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,6 +134,9 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         }
 
         init();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     private void init() {
@@ -171,55 +184,49 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
 
         notesEditButton = (ImageButton) findViewById(R.id.notesEditButton);
         notesEditButton.setColorFilter(Utils.getThemeColor(this, R.attr.colorPrimary), PorterDuff.Mode.SRC_ATOP);
-        notesEditButton.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View arg0, MotionEvent arg1) {
-                switch (arg1.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        notesEditButton.setBackgroundColor(getResources().getColor(R.color.buttonPressed));
-                        notesEditButton.setAlpha(0.4f);
-                        break;
+        notesEditButton.setOnTouchListener((arg0, arg1) -> {
+            switch (arg1.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    notesEditButton.setBackgroundColor(getResources().getColor(R.color.buttonPressed));
+                    notesEditButton.setAlpha(0.4f);
+                    break;
 
-                    case MotionEvent.ACTION_UP:
-                        notesEditButton.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-                        notesEditButton.setAlpha(1.0f);
-                        AlertDialog.Builder builder = new AlertDialog.Builder(VNDetailsActivity.this);
-                        builder.setTitle("Notes");
-                        final LinearLayout params = new LinearLayout(VNDetailsActivity.this);
-                        params.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-                        params.setPadding(Pixels.px(15, VNDetailsActivity.this), 0, Pixels.px(15, VNDetailsActivity.this), 0);
-                        final EditText input = new EditText(VNDetailsActivity.this);
-                        input.setSingleLine();
-                        input.setText(notesTextView.getText());
-                        input.setSelection(input.getText().length());
-                        input.setMaxHeight(Pixels.px(200, VNDetailsActivity.this));
-                        params.addView(input, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-                        builder.setView(params);
-                        listener.setNotesInput(input);
-                        listener.setPopupButton(statusButton);
-                        builder.setPositiveButton("Save", listener);
-                        builder.setNegativeButton("Cancel", listener);
-                        builder.setNeutralButton("Clear", listener);
+                case MotionEvent.ACTION_UP:
+                    notesEditButton.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+                    notesEditButton.setAlpha(1.0f);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(VNDetailsActivity.this);
+                    builder.setTitle("Notes");
+                    final LinearLayout params = new LinearLayout(VNDetailsActivity.this);
+                    params.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                    params.setPadding(Pixels.px(15, VNDetailsActivity.this), 0, Pixels.px(15, VNDetailsActivity.this), 0);
+                    final EditText input = new EditText(VNDetailsActivity.this);
+                    input.setSingleLine();
+                    input.setText(notesTextView.getText());
+                    input.setSelection(input.getText().length());
+                    input.setMaxHeight(Pixels.px(200, VNDetailsActivity.this));
+                    params.addView(input, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                    builder.setView(params);
+                    listener.setNotesInput(input);
+                    listener.setPopupButton(statusButton);
+                    builder.setPositiveButton("Save", listener);
+                    builder.setNegativeButton("Cancel", listener);
+                    builder.setNeutralButton("Clear", listener);
 
-                        final AlertDialog dialog = builder.create();
-                        input.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                            @Override
-                            public void onFocusChange(View v, boolean hasFocus) {
-                                if (hasFocus) {
-                                    dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-                                }
-                            }
-                        });
-                        dialog.show();
-                        break;
+                    final AlertDialog dialog = builder.create();
+                    input.setOnFocusChangeListener((v, hasFocus) -> {
+                        if (hasFocus) {
+                            dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+                        }
+                    });
+                    dialog.show();
+                    break;
 
-                    case MotionEvent.ACTION_CANCEL:
-                        notesEditButton.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-                        notesEditButton.setAlpha(1.0f);
-                        break;
-                }
-                return true;
+                case MotionEvent.ACTION_CANCEL:
+                    notesEditButton.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+                    notesEditButton.setAlpha(1.0f);
+                    break;
             }
+            return true;
         });
 
         actionBar = getSupportActionBar();
@@ -255,38 +262,33 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         expandableListView.addHeaderView(getLayoutInflater().inflate(R.layout.vn_details_header, null));
         expandableListView.setAdapter(expandableListAdapter);
 
-        expandableListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                if (view.getId() == R.id.list_item_text_layout) {
-                    TextView itemLeftText = (TextView) view.findViewById(R.id.itemLeftText);
-                    TextView itemRightText = (TextView) view.findViewById(R.id.itemRightText);
+        expandableListView.setOnItemLongClickListener((parent, view, position, id) -> {
+            if (view.getId() == R.id.list_item_text_layout) {
+                TextView itemLeftText = (TextView) view.findViewById(R.id.itemLeftText);
+                TextView itemRightText = (TextView) view.findViewById(R.id.itemRightText);
 
-                    String copiedText = itemLeftText.getText().toString();
-                    if (!itemRightText.getText().toString().isEmpty())
-                        copiedText += " : " + itemRightText.getText().toString();
+                String copiedText = itemLeftText.getText().toString();
+                if (!itemRightText.getText().toString().isEmpty())
+                    copiedText += " : " + itemRightText.getText().toString();
 
-                    ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                    ClipData clip = ClipData.newPlainText("CLIPBOARD", copiedText);
-                    clipboard.setPrimaryClip(clip);
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("CLIPBOARD", copiedText);
+                clipboard.setPrimaryClip(clip);
 
-                    Toast.makeText(VNDetailsActivity.this, "Element copied to clipboard.", Toast.LENGTH_SHORT).show();
-                }
-                return false;
+                Toast.makeText(VNDetailsActivity.this, "Element copied to clipboard.", Toast.LENGTH_SHORT).show();
             }
+            return false;
         });
 
-        expandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
-            public boolean onGroupClick(ExpandableListView parent, View groupView, int groupPosition, long id) {
-                String groupName = (String) parent.getExpandableListAdapter().getGroup(groupPosition);
-                boolean handledAsynchronously = initSubmenu(groupView, groupPosition, groupName);
-                boolean hasChildren = parent.getExpandableListAdapter().getChildrenCount(groupPosition) > 0;
+        expandableListView.setOnGroupClickListener((parent, groupView, groupPosition, id) -> {
+            String groupName = (String) parent.getExpandableListAdapter().getGroup(groupPosition);
+            boolean handledAsynchronously = initSubmenu(groupView, groupPosition, groupName);
+            boolean hasChildren = parent.getExpandableListAdapter().getChildrenCount(groupPosition) > 0;
 
-                if (!handledAsynchronously && !hasChildren) {
-                    Toast.makeText(VNDetailsActivity.this, "Nothing to show here...", Toast.LENGTH_SHORT).show();
-                }
-                return handledAsynchronously || !hasChildren;
+            if (!handledAsynchronously && !hasChildren) {
+                Toast.makeText(VNDetailsActivity.this, "Nothing to show here...", Toast.LENGTH_SHORT).show();
             }
+            return handledAsynchronously || !hasChildren;
         });
     }
 
@@ -394,61 +396,58 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                     }
 
                     if (alreadyInDatabase) {
-                        new Handler(Looper.getMainLooper()).post(new Runnable() {
-                            @Override
-                            public void run() {
-                                switch (groupName) {
-                                    case VNDetailsFactory.TITLE_CHARACTERS:
-                                        Cache.characters.put(vn.getId(), characters);
-                                        groupCharactersByRole();
-                                        VNDetailsFactory.setCharactersSubmenu(VNDetailsActivity.this);
-                                        break;
-                                    case VNDetailsFactory.TITLE_INFORMATION:
-                                        Cache.releases.put(vn.getId(), releasesList);
-                                        groupReleasesByLanguage(releasesList);
-                                        VNDetailsFactory.setInformationSubmenu(VNDetailsActivity.this);
-                                    case VNDetailsFactory.TITLE_RELEASES:
-                                        Cache.releases.put(vn.getId(), releasesList);
-                                        groupReleasesByLanguage(releasesList);
-                                        VNDetailsFactory.setReleasesSubmenu(VNDetailsActivity.this);
-                                        break;
-                                    case VNDetailsFactory.TITLE_SIMILAR_NOVELS:
-                                        Cache.similarNovels.put(vn.getId(), similarNovels);
-                                        groupSimilarNovelsBySimilarity();
-                                        VNDetailsFactory.setSimilarNovelsSubmenu(VNDetailsActivity.this);
-                                        break;
-                                    case VNDetailsFactory.TITLE_LANGUAGES:
-                                        Cache.vns.put(vn.getId(), vn);
-                                        VNDetailsFactory.setLanguagesSubmenu(VNDetailsActivity.this);
-                                        break;
-                                    case VNDetailsFactory.TITLE_PLATFORMS:
-                                        Cache.vns.put(vn.getId(), vn);
-                                        VNDetailsFactory.setPlatformsSubmenu(VNDetailsActivity.this);
-                                        break;
-                                    case VNDetailsFactory.TITLE_ANIME:
-                                        Cache.vns.put(vn.getId(), vn);
-                                        VNDetailsFactory.setAnimesSubmenu(VNDetailsActivity.this);
-                                        break;
-                                    case VNDetailsFactory.TITLE_RELATIONS:
-                                        Cache.vns.put(vn.getId(), vn);
-                                        VNDetailsFactory.setRelationsSubmenu(VNDetailsActivity.this);
-                                        break;
-                                    case VNDetailsFactory.TITLE_TAGS:
-                                        Cache.vns.put(vn.getId(), vn);
-                                        VNDetailsFactory.setTagsSubmenu(VNDetailsActivity.this);
-                                        break;
-                                    case VNDetailsFactory.TITLE_GENRES:
-                                        Cache.vns.put(vn.getId(), vn);
-                                        VNDetailsFactory.setGenresSubmenu(VNDetailsActivity.this);
-                                        break;
-                                    case VNDetailsFactory.TITLE_SCREENSHOTS:
-                                        Cache.vns.put(vn.getId(), vn);
-                                        VNDetailsFactory.setScreensSubmenu(VNDetailsActivity.this);
-                                        break;
-                                }
-
-                                hideGroupLoader(groupView, groupPosition);
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            switch (groupName) {
+                                case VNDetailsFactory.TITLE_CHARACTERS:
+                                    Cache.characters.put(vn.getId(), characters);
+                                    groupCharactersByRole();
+                                    VNDetailsFactory.setCharactersSubmenu(VNDetailsActivity.this);
+                                    break;
+                                case VNDetailsFactory.TITLE_INFORMATION:
+                                    Cache.releases.put(vn.getId(), releasesList);
+                                    groupReleasesByLanguage(releasesList);
+                                    VNDetailsFactory.setInformationSubmenu(VNDetailsActivity.this);
+                                case VNDetailsFactory.TITLE_RELEASES:
+                                    Cache.releases.put(vn.getId(), releasesList);
+                                    groupReleasesByLanguage(releasesList);
+                                    VNDetailsFactory.setReleasesSubmenu(VNDetailsActivity.this);
+                                    break;
+                                case VNDetailsFactory.TITLE_SIMILAR_NOVELS:
+                                    Cache.similarNovels.put(vn.getId(), similarNovels);
+                                    groupSimilarNovelsBySimilarity();
+                                    VNDetailsFactory.setSimilarNovelsSubmenu(VNDetailsActivity.this);
+                                    break;
+                                case VNDetailsFactory.TITLE_LANGUAGES:
+                                    Cache.vns.put(vn.getId(), vn);
+                                    VNDetailsFactory.setLanguagesSubmenu(VNDetailsActivity.this);
+                                    break;
+                                case VNDetailsFactory.TITLE_PLATFORMS:
+                                    Cache.vns.put(vn.getId(), vn);
+                                    VNDetailsFactory.setPlatformsSubmenu(VNDetailsActivity.this);
+                                    break;
+                                case VNDetailsFactory.TITLE_ANIME:
+                                    Cache.vns.put(vn.getId(), vn);
+                                    VNDetailsFactory.setAnimesSubmenu(VNDetailsActivity.this);
+                                    break;
+                                case VNDetailsFactory.TITLE_RELATIONS:
+                                    Cache.vns.put(vn.getId(), vn);
+                                    VNDetailsFactory.setRelationsSubmenu(VNDetailsActivity.this);
+                                    break;
+                                case VNDetailsFactory.TITLE_TAGS:
+                                    Cache.vns.put(vn.getId(), vn);
+                                    VNDetailsFactory.setTagsSubmenu(VNDetailsActivity.this);
+                                    break;
+                                case VNDetailsFactory.TITLE_GENRES:
+                                    Cache.vns.put(vn.getId(), vn);
+                                    VNDetailsFactory.setGenresSubmenu(VNDetailsActivity.this);
+                                    break;
+                                case VNDetailsFactory.TITLE_SCREENSHOTS:
+                                    Cache.vns.put(vn.getId(), vn);
+                                    VNDetailsFactory.setScreensSubmenu(VNDetailsActivity.this);
+                                    break;
                             }
+
+                            hideGroupLoader(groupView, groupPosition);
                         });
                     } else {
                         /* Database tables not init yet: going to send the API query */
@@ -458,7 +457,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                                     @Override
                                     protected void config() {
                                         if (results.getItems().isEmpty()) {
-                                            Cache.characters.put(vn.getId(), new ArrayList<Item>());
+                                            Cache.characters.put(vn.getId(), new ArrayList<>());
                                             characters = Cache.characters.get(vn.getId());
                                         } else {
                                             characters = results.getItems();
@@ -485,7 +484,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                                     protected void config() {
                                         List<Item> releasesList;
                                         if (results.getItems().isEmpty()) {
-                                            Cache.releases.put(vn.getId(), new ArrayList<Item>());
+                                            Cache.releases.put(vn.getId(), new ArrayList<>());
                                             releasesList = Cache.releases.get(vn.getId());
                                         } else {
                                             releasesList = results.getItems();
@@ -514,7 +513,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                                     @Override
                                     protected void config() {
                                         if (vnStatResults.getSimilar().isEmpty()) {
-                                            Cache.similarNovels.put(vn.getId(), new ArrayList<SimilarNovel>());
+                                            Cache.similarNovels.put(vn.getId(), new ArrayList<>());
                                             similarNovels = Cache.similarNovels.get(vn.getId());
                                         } else {
                                             similarNovels = vnStatResults.getSimilar();
@@ -587,7 +586,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         for (Item release : releasesList) {
             for (String language : release.getLanguages()) {
                 if (releases.get(language) == null)
-                    releases.put(language, new ArrayList<Item>());
+                    releases.put(language, new ArrayList<>());
                 releases.get(language).add(release);
             }
         }
@@ -597,15 +596,12 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
      * Sorting the characters with their role (Protagonist then main characters etc.)
      */
     private void groupCharactersByRole() {
-        Collections.sort(characters, new Comparator<Item>() {
-            @Override
-            public int compare(Item lhs, Item rhs) {
-                if (lhs.getVns() == null || lhs.getVns().size() < 1 || lhs.getVns().get(0).length < 1 || rhs.getVns() == null || rhs.getVns().size() < 1 || rhs.getVns().get(0).length < 1)
-                    return 0;
-                String leftRole = (String) lhs.getVns().get(0)[Item.ROLE_INDEX];
-                String rightRole = (String) rhs.getVns().get(0)[Item.ROLE_INDEX];
-                return Integer.valueOf(Item.ROLES_KEY.indexOf(leftRole)).compareTo(Item.ROLES_KEY.indexOf(rightRole));
-            }
+        Collections.sort(characters, (lhs, rhs) -> {
+            if (lhs.getVns() == null || lhs.getVns().size() < 1 || lhs.getVns().get(0).length < 1 || rhs.getVns() == null || rhs.getVns().size() < 1 || rhs.getVns().get(0).length < 1)
+                return 0;
+            String leftRole = (String) lhs.getVns().get(0)[Item.ROLE_INDEX];
+            String rightRole = (String) rhs.getVns().get(0)[Item.ROLE_INDEX];
+            return Integer.valueOf(Item.ROLES_KEY.indexOf(leftRole)).compareTo(Item.ROLES_KEY.indexOf(rightRole));
         });
     }
 
@@ -613,12 +609,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
      * Sorting the similar novels by similarity
      */
     private void groupSimilarNovelsBySimilarity() {
-        Collections.sort(similarNovels, new Comparator<SimilarNovel>() {
-            @Override
-            public int compare(SimilarNovel lhs, SimilarNovel rhs) {
-                return Double.valueOf(rhs.getSimilarity()).compareTo(lhs.getSimilarity());
-            }
-        });
+        Collections.sort(similarNovels, (lhs, rhs) -> Double.valueOf(rhs.getSimilarity()).compareTo(lhs.getSimilarity()));
     }
 
     public void showStatusPopup(View v) {
@@ -753,6 +744,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         DB.saveVotelist(this);
         DB.saveWishlist(this);
         DB.saveVNs(this);
+        Lightbox.dismiss();
         super.onDestroy();
     }
 
@@ -862,5 +854,41 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
 
     public void setSimilarNovels(List<SimilarNovel> similarNovels) {
         this.similarNovels = similarNovels;
+    }
+
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    public Action getIndexApiAction() {
+        Thing object = new Thing.Builder()
+                .setName("VNDetails Page") // TODO: Define a title for the content shown.
+                // TODO: Make sure this auto-generated URL is correct.
+                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
+                .build();
+        return new Action.Builder(Action.TYPE_VIEW)
+                .setObject(object)
+                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
+                .build();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        AppIndex.AppIndexApi.start(client, getIndexApiAction());
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        AppIndex.AppIndexApi.end(client, getIndexApiAction());
+        client.disconnect();
     }
 }

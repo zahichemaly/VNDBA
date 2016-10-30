@@ -143,14 +143,12 @@ public class VNDBServer {
                     try {
                         threadManager.awaitTermination(30, TimeUnit.MINUTES);
                         threadManager = null;
-                        for (int i = 0; i < plPageResults.length; i++) {
+                        for (VNDBCommand plPageResult : plPageResults) {
                             if (results == null) {
-                                results = plPageResults[i];
-                            } else if (results instanceof Results && plPageResults[i] instanceof Results) {
-                                ((Results) results).getItems().addAll(((Results) plPageResults[i]).getItems());
+                                results = plPageResult;
+                            } else if (results instanceof Results && plPageResult instanceof Results) {
+                                ((Results) results).getItems().addAll(((Results) plPageResult).getItems());
                             }
-
-                            if (plPageResults == null) continue;
                         }
 
                         if (results instanceof Results && plPageResults != null) {
@@ -287,7 +285,7 @@ public class VNDBServer {
                     errorCallback.call();
                 } else {
                     Results results = new Results();
-                    results.setItems(new ArrayList<Item>());
+                    results.setItems(new ArrayList<>());
                     successCallback.results = results;
                     successCallback.call();
                 }

@@ -98,12 +98,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             new Thread() {
                 public void run() {
                     final Bitmap background = ImageLoader.getInstance().loadImageSync(PlaceholderPictureFactory.getPlaceholderPicture());
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            headerBackground.setBackground(new BitmapDrawable(getResources(), background));
-                        }
-                    });
+                    new Handler(Looper.getMainLooper()).post(() -> headerBackground.setBackground(new BitmapDrawable(getResources(), background)));
                 }
             }.start();
         } else {
@@ -116,12 +111,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         FloatingActionButton floatingSearchButton = (FloatingActionButton) findViewById(R.id.floatingSearchButton);
         if (floatingSearchButton != null) {
-            floatingSearchButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    startActivity(new Intent(MainActivity.this, VNSearchActivity.class));
-                }
-            });
+            floatingSearchButton.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, VNSearchActivity.class)));
         }
 
         if (selectedItem > 0) {
@@ -171,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public boolean onQueryTextChange(String search) {
                 for (VNTypeFragment activeFragment : activeFragments) {
-                    activeFragment.getMaterialListView().getAdapter().getFilter().filter(search.toString());
+                    activeFragment.getMaterialListView().getAdapter().getFilter().filter(search);
                 }
                 return true;
             }
@@ -199,15 +189,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         linearLayout.addView(reverseCheckbox);
 
         builder.setTitle("Sort VN list by :")
-                .setSingleChoiceItems(Cache.SORT_OPTIONS, SettingsManager.getSort(this), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, final int which) {
-                        SettingsManager.setReverseSort(MainActivity.this, reverseCheckbox.isChecked());
-                        SettingsManager.setSort(MainActivity.this, which);
-                        Cache.sortAll(MainActivity.this);
-                        goToFragment(MainActivity.selectedItem);
-                        dialog.dismiss();
-                    }
+                .setSingleChoiceItems(Cache.SORT_OPTIONS, SettingsManager.getSort(this), (dialog, which) -> {
+                    SettingsManager.setReverseSort(MainActivity.this, reverseCheckbox.isChecked());
+                    SettingsManager.setSort(MainActivity.this, which);
+                    Cache.sortAll(MainActivity.this);
+                    goToFragment(MainActivity.selectedItem);
+                    dialog.dismiss();
                 });
 
         AlertDialog alertDialog = builder.create();
