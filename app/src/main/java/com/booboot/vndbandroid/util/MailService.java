@@ -21,7 +21,7 @@ public class MailService {
     private String ccList;
     private String bccList;
     private String subject;
-    final private static String SMTP_SERVER = "smtp-mail.outlook.com";
+    final private static String SMTP_SERVER = "smtp.laposte.net";
     private String from;
     private String txtBody;
     private String htmlBody;
@@ -60,7 +60,7 @@ public class MailService {
 
         props.put("mail.smtp.starttls.enable", "true");  // needed for gmail
         props.put("mail.smtp.auth", "true"); // needed for gmail
-        props.put("mail.smtp.port", "587");  // gmail smtp port
+        props.put("mail.smtp.port", "25");  // gmail smtp port
 
         /*Authenticator auth = new Authenticator() {
             @Override
