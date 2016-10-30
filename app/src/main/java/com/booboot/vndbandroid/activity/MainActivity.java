@@ -6,10 +6,12 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -43,6 +45,7 @@ import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.bean.vndbandroid.ListType;
 import com.booboot.vndbandroid.bean.vndbandroid.Theme;
 import com.booboot.vndbandroid.factory.PlaceholderPictureFactory;
+import com.booboot.vndbandroid.util.ConnectionReceiver;
 import com.booboot.vndbandroid.util.Pixels;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
@@ -135,6 +138,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         updateMenuCounters();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            registerReceiver(new ConnectionReceiver(), new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        }
     }
 
     @Override
