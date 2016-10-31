@@ -287,7 +287,6 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
 
                     case R.id.item_no_status:
                         Cache.vnlist.remove(vn.getId());
-                        Cache.removeFromVns(vn.getId());
                         popupButton.setText(Status.DEFAULT);
                         notesTextView.setText("");
                         break;
@@ -342,7 +341,6 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
 
                     case R.id.item_no_wishlist:
                         Cache.wishlist.remove(vn.getId());
-                        Cache.removeFromVns(vn.getId());
                         popupButton.setText(Priority.DEFAULT);
                         break;
 
@@ -371,7 +369,6 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
 
                     case R.id.item_no_vote:
                         Cache.votelist.remove(vn.getId());
-                        Cache.removeFromVns(vn.getId());
                         popupButton.setText(Vote.DEFAULT);
                         break;
 

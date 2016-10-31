@@ -464,9 +464,4 @@ public class Cache {
         }
         return res;
     }
-
-    public static void removeFromVns(int id) {
-        if (vnlist.get(id) == null && votelist.get(id) == null && wishlist.get(id) == null && vns.get(id) != null)
-            vns.remove(id);
-    }
 }

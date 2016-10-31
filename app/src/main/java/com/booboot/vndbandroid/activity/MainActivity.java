@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Fragment directSubfragment;
     public static int selectedItem;
     private NavigationView navigationView;
+    private ConnectionReceiver connectionReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,7 +141,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         updateMenuCounters();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            registerReceiver(new ConnectionReceiver(), new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+            connectionReceiver = new ConnectionReceiver();
+            registerReceiver(connectionReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         }
     }
 
@@ -325,5 +327,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             TextView view = (TextView) navigationView.getMenu().findItem(itemId).getActionView();
             view.setText(count > 0 ? String.valueOf(count) : null);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (connectionReceiver != null) {
+            unregisterReceiver(connectionReceiver);
+        }
+
+        super.onDestroy();
     }
 }
