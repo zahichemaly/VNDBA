@@ -378,6 +378,10 @@ public class Cache {
                     case 1:
                         firstValue = vns.get(first.getKey());
                         secondValue = vns.get(second.getKey());
+                        if (firstValue == null) throw new RuntimeException("First value is null for sort... :(");
+                        else if (secondValue == null) throw new RuntimeException("Second value is null for sort... :(");
+                        else if (firstValue.getTitle() == null) throw new RuntimeException("First value's title is null for sort !");
+                        else if (secondValue.getTitle() == null) throw new RuntimeException("Second value's title is null for sort !");
                         return firstValue.getTitle().compareTo(secondValue.getTitle());
                     case 2:
                         firstValue = vns.get(first.getKey());

@@ -1,5 +1,6 @@
 package com.booboot.vndbandroid.util;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -76,7 +77,9 @@ public class Lightbox implements ImageLoadingListener {
                 dialog.dismiss();
             }
         });
-        dialog.show();
+        if (!((Activity) context).isFinishing()) {
+            dialog.show();
+        }
     }
 
     @Override
