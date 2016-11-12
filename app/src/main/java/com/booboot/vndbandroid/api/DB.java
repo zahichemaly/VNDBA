@@ -35,36 +35,36 @@ import java.util.Set;
  * Created by od on 05/07/2016.
  */
 public class DB extends SQLiteOpenHelper {
-    public static DB instance;
-    public final static String NAME = "VNDB_ANDROID";
-    public final static int VERSION = 1;
-    public final static int SQLITE_LIMIT_COMPOUND_SELECT = 500;
+    private static DB instance;
+    private final static String NAME = "VNDB_ANDROID";
+    private final static int VERSION = 1;
+    private final static int SQLITE_LIMIT_COMPOUND_SELECT = 500;
 
-    public final static String TABLE_VNLIST = "vnlist";
-    public final static String TABLE_VOTELIST = "votelist";
-    public final static String TABLE_WISHLIST = "wishlist";
-    public final static String TABLE_VN = "vn";
-    public final static String TABLE_LANGUAGES = "languages";
-    public final static String TABLE_ORIG_LANG = "orig_lang";
-    public final static String TABLE_PLATFORMS = "platforms";
-    public final static String TABLE_ANIME = "anime";
-    public final static String TABLE_RELATION = "relation";
-    public final static String TABLE_TAGS = "tags";
-    public final static String TABLE_SCREENS = "screens";
-    public final static String TABLE_VN_CHARACTER = "vn_character";
-    public final static String TABLE_CHARACTER = "character";
-    public final static String TABLE_TRAITS = "traits";
-    public final static String TABLE_VN_RELEASE = "vn_release";
-    public final static String TABLE_RELEASE = "release";
-    public final static String TABLE_RELEASE_LANGUAGES = "release_languages";
-    public final static String TABLE_RELEASE_PLATFORMS = "release_platforms";
-    public final static String TABLE_RELEASE_MEDIA = "release_media";
-    public final static String TABLE_RELEASE_PRODUCER = "release_producer";
-    public final static String TABLE_PRODUCER = "producer";
-    public final static String TABLE_SIMILAR_NOVELS = "similar_novels";
-    public final static String TABLE_RECOMMENDATIONS = "recommendations";
+    private final static String TABLE_VNLIST = "vnlist";
+    private final static String TABLE_VOTELIST = "votelist";
+    private final static String TABLE_WISHLIST = "wishlist";
+    private final static String TABLE_VN = "vn";
+    private final static String TABLE_LANGUAGES = "languages";
+    private final static String TABLE_ORIG_LANG = "orig_lang";
+    private final static String TABLE_PLATFORMS = "platforms";
+    private final static String TABLE_ANIME = "anime";
+    private final static String TABLE_RELATION = "relation";
+    private final static String TABLE_TAGS = "tags";
+    private final static String TABLE_SCREENS = "screens";
+    private final static String TABLE_VN_CHARACTER = "vn_character";
+    private final static String TABLE_CHARACTER = "character";
+    private final static String TABLE_TRAITS = "traits";
+    private final static String TABLE_VN_RELEASE = "vn_release";
+    private final static String TABLE_RELEASE = "release";
+    private final static String TABLE_RELEASE_LANGUAGES = "release_languages";
+    private final static String TABLE_RELEASE_PLATFORMS = "release_platforms";
+    private final static String TABLE_RELEASE_MEDIA = "release_media";
+    private final static String TABLE_RELEASE_PRODUCER = "release_producer";
+    private final static String TABLE_PRODUCER = "producer";
+    private final static String TABLE_SIMILAR_NOVELS = "similar_novels";
+    private final static String TABLE_RECOMMENDATIONS = "recommendations";
 
-    public DB(Context context) {
+    private DB(Context context) {
         super(context, NAME, null, VERSION);
     }
 
@@ -1303,10 +1303,14 @@ public class DB extends SQLiteOpenHelper {
         return value ? 1 : 0;
     }
 
-    public static void startupClean(Context context, String listVnIds) {
+    public static void startupClean(Context context, String listVnIds, Set<Integer> vnlistIds, Set<Integer> votelistIds, Set<Integer> wishlistIds) {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
         db.beginTransaction();
+
+        db.execSQL("DELETE FROM " + TABLE_VNLIST + " WHERE vn NOT IN (" + TextUtils.join(",", vnlistIds) + ")");
+        db.execSQL("DELETE FROM " + TABLE_VOTELIST + " WHERE vn NOT IN (" + TextUtils.join(",", votelistIds) + ")");
+        db.execSQL("DELETE FROM " + TABLE_WISHLIST + " WHERE vn NOT IN (" + TextUtils.join(",", wishlistIds) + ")");
 
         String notInListVnIds = "NOT IN (" + listVnIds + ")";
         db.execSQL("DELETE FROM " + TABLE_VN + " WHERE id " + notInListVnIds);

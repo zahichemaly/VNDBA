@@ -125,7 +125,7 @@ public class Cache {
                 mergedIds.addAll(votelistIds.keySet());
                 mergedIds.addAll(wishlistIds.keySet());
                 mergedIdsString = TextUtils.join(",", mergedIds);
-                DB.startupClean(context, mergedIdsString);
+                DB.startupClean(context, mergedIdsString, vnlistIds.keySet(), votelistIds.keySet(), wishlistIds.keySet());
 
                 if (mergedIds.isEmpty() || !shouldSendGetVn(context, vnlistIds, votelistIds, wishlistIds, mergedIds)) {
                     successCallback.call();
@@ -186,7 +186,7 @@ public class Cache {
      * @return true if the up-to-date lists (directly fetched from the API) are different from the cache content.
      */
     private static boolean shouldSendGetVn(Context context, Map<Integer, Item> vnlistIds, Map<Integer, Item> votelistIds, Map<Integer, Item> wishlistIds, Set<Integer> mergedIds) {
-        /* 1 - Checking for VNs that have been removed overtime */
+        /* 1 - Checking for VNs that have been removed or modified overtime */
         boolean vnlistHasChanged = false;
         for (int id : new HashSet<>(vnlist.keySet())) {
             Item vnlistItem = vnlistIds.get(id);
@@ -230,7 +230,7 @@ public class Cache {
             Item votelistItem = votelistIds.get(id);
             Item wishlistItem = wishlistIds.get(id);
 
-            /* 2 - Checking for VNs that have been added or modified overtime */
+            /* 2 - Checking for VNs that have been added overtime */
             if (vnlistItem != null && vnlist.get(id) == null) {
                 filteredMergedIds.add(id);
             }
@@ -378,14 +378,14 @@ public class Cache {
                     case 1:
                         firstValue = vns.get(first.getKey());
                         secondValue = vns.get(second.getKey());
-                        if (firstValue == null) throw new RuntimeException("First value is null for sort... :(");
-                        else if (secondValue == null) throw new RuntimeException("Second value is null for sort... :(");
-                        else if (firstValue.getTitle() == null) throw new RuntimeException("First value's title is null for sort !");
-                        else if (secondValue.getTitle() == null) throw new RuntimeException("Second value's title is null for sort !");
+                        if (firstValue == null) return -1;
+                        if (secondValue == null) return 1;
                         return firstValue.getTitle().compareTo(secondValue.getTitle());
                     case 2:
                         firstValue = vns.get(first.getKey());
                         secondValue = vns.get(second.getKey());
+                        if (firstValue == null) return -1;
+                        if (secondValue == null) return 1;
                         String releasedA = firstValue.getReleased();
                         String releasedB = secondValue.getReleased();
                         if (releasedA == null) return -1;
@@ -394,14 +394,20 @@ public class Cache {
                     case 3:
                         firstValue = vns.get(first.getKey());
                         secondValue = vns.get(second.getKey());
+                        if (firstValue == null) return -1;
+                        if (secondValue == null) return 1;
                         return Integer.valueOf(firstValue.getLength()).compareTo(secondValue.getLength());
                     case 4:
                         firstValue = vns.get(first.getKey());
                         secondValue = vns.get(second.getKey());
+                        if (firstValue == null) return -1;
+                        if (secondValue == null) return 1;
                         return Double.valueOf(firstValue.getPopularity()).compareTo(secondValue.getPopularity());
                     case 5:
                         firstValue = vns.get(first.getKey());
                         secondValue = vns.get(second.getKey());
+                        if (firstValue == null) return -1;
+                        if (secondValue == null) return 1;
                         return Double.valueOf(firstValue.getRating()).compareTo(secondValue.getRating());
                     case 6:
                         VNlistItem vnlistA = Cache.vnlist.get(first.getKey());
