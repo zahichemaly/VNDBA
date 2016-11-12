@@ -276,15 +276,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_about) {
             directSubfragment = new AboutFragment();
         } else if (id == R.id.nav_logout) {
-            VNDBServer.closeAll();
-            Cache.clearCache(this);
-            SettingsManager.setUserId(this, -1);
-            RecommendationsFragment.recommendations = null;
-            startActivity(new Intent(this, LoginActivity.class));
-            selectedItem = 0;
-            instance = null;
-            finish();
-            return true;
+            return logout();
         }
 
         directSubfragment.setArguments(args);
@@ -292,6 +284,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer != null)
             drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    private boolean logout() {
+        VNDBServer.closeAll();
+        Cache.clearCache(this);
+        SettingsManager.setUserId(this, -1);
+
+        RankingMostVotedFragment.progressiveResultLoader = null;
+        RankingNewlyAddedFragment.progressiveResultLoader = null;
+        RankingNewlyReleasedFragment.progressiveResultLoader = null;
+        RankingPopularFragment.progressiveResultLoader = null;
+        RankingTopFragment.progressiveResultLoader = null;
+        RecommendationsFragment.recommendations = null;
+
+        startActivity(new Intent(this, LoginActivity.class));
+        selectedItem = 0;
+        instance = null;
+        finish();
         return true;
     }
 

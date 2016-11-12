@@ -12,7 +12,7 @@ import com.booboot.vndbandroid.factory.ProgressiveResultLoader;
 import com.booboot.vndbandroid.util.Utils;
 
 public class RankingPopularFragment extends Fragment {
-    private static ProgressiveResultLoader progressiveResultLoader;
+    public static ProgressiveResultLoader progressiveResultLoader;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

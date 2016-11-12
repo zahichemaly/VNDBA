@@ -16,7 +16,7 @@ import java.util.Date;
 import java.util.Locale;
 
 public class RankingNewlyReleasedFragment extends Fragment {
-    private static ProgressiveResultLoader progressiveResultLoader;
+    public static ProgressiveResultLoader progressiveResultLoader;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
