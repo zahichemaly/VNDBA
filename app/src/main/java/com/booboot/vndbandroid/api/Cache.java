@@ -378,34 +378,40 @@ public class Cache {
                     case 1:
                         firstValue = vns.get(first.getKey());
                         secondValue = vns.get(second.getKey());
+                        if (firstValue == null && secondValue == null) return 0;
                         if (firstValue == null) return -1;
                         if (secondValue == null) return 1;
                         return firstValue.getTitle().compareTo(secondValue.getTitle());
                     case 2:
                         firstValue = vns.get(first.getKey());
                         secondValue = vns.get(second.getKey());
+                        if (firstValue == null && secondValue == null) return 0;
                         if (firstValue == null) return -1;
                         if (secondValue == null) return 1;
                         String releasedA = firstValue.getReleased();
                         String releasedB = secondValue.getReleased();
+                        if (releasedA == null && releasedB == null) return 0;
                         if (releasedA == null) return -1;
                         if (releasedB == null) return 1;
                         return releasedA.compareTo(releasedB);
                     case 3:
                         firstValue = vns.get(first.getKey());
                         secondValue = vns.get(second.getKey());
+                        if (firstValue == null && secondValue == null) return 0;
                         if (firstValue == null) return -1;
                         if (secondValue == null) return 1;
                         return Integer.valueOf(firstValue.getLength()).compareTo(secondValue.getLength());
                     case 4:
                         firstValue = vns.get(first.getKey());
                         secondValue = vns.get(second.getKey());
+                        if (firstValue == null && secondValue == null) return 0;
                         if (firstValue == null) return -1;
                         if (secondValue == null) return 1;
                         return Double.valueOf(firstValue.getPopularity()).compareTo(secondValue.getPopularity());
                     case 5:
                         firstValue = vns.get(first.getKey());
                         secondValue = vns.get(second.getKey());
+                        if (firstValue == null && secondValue == null) return 0;
                         if (firstValue == null) return -1;
                         if (secondValue == null) return 1;
                         return Double.valueOf(firstValue.getRating()).compareTo(secondValue.getRating());
