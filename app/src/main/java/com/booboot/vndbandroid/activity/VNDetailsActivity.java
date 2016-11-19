@@ -3,6 +3,7 @@ package com.booboot.vndbandroid.activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
@@ -53,6 +54,7 @@ import com.booboot.vndbandroid.bean.vnstat.SimilarNovel;
 import com.booboot.vndbandroid.factory.PlaceholderPictureFactory;
 import com.booboot.vndbandroid.factory.VNDetailsFactory;
 import com.booboot.vndbandroid.listener.VNDetailsListener;
+import com.booboot.vndbandroid.util.BitmapTransformation;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.Lightbox;
 import com.booboot.vndbandroid.util.Pixels;
@@ -62,7 +64,6 @@ import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -91,6 +92,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
     private Button votesButton;
     private TextView notesTextView;
     private ImageButton notesEditButton;
+    private ImageView blurBackground;
 
     private VNDetailsListener listener;
     private ExpandableListView expandableListView;
@@ -178,7 +180,10 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         statusButton = (Button) findViewById(R.id.statusButton);
         wishlistButton = (Button) findViewById(R.id.wishlistButton);
         votesButton = (Button) findViewById(R.id.votesButton);
+        blurBackground = (ImageView) findViewById(R.id.blurBackground);
         notesTextView = (TextView) findViewById(R.id.notesTextView);
+        notesTextView.setHintTextColor(getResources().getColor(R.color.light_gray));
+        notesTextView.setTextColor(getResources().getColor(R.color.white));
         notesTextView.setText(vnlistVn != null ? vnlistVn.getNotes() : "");
         listener = new VNDetailsListener(this, vn, notesTextView);
 
@@ -255,7 +260,14 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         if (vn.isImage_nsfw() && !SettingsManager.getNSFW(this)) {
             image.setImageResource(R.drawable.ic_nsfw);
         } else {
-            ImageLoader.getInstance().displayImage(PlaceholderPictureFactory.USE_PLACEHOLDER ? PlaceholderPictureFactory.getPlaceholderPicture() : vn.getImage(), image);
+            Utils.loadImage(PlaceholderPictureFactory.USE_PLACEHOLDER ? PlaceholderPictureFactory.getPlaceholderPicture() : vn.getImage(), new Callback() {
+                @Override
+                protected void config() {
+                    Bitmap blurredImage = BitmapTransformation.darkBlur(VNDetailsActivity.this, loadedImage);
+                    image.setImageBitmap(loadedImage);
+                    blurBackground.setImageBitmap(blurredImage);
+                }
+            });
             Lightbox.set(VNDetailsActivity.this, image, vn.getImage());
         }
     }

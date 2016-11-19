@@ -1,6 +1,7 @@
 package com.booboot.vndbandroid.util;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
@@ -22,6 +23,7 @@ public abstract class Callback {
     public DbStats dbstats;
     public VNStatItem vnStatResults;
     public static CountDownLatch countDownLatch;
+    public Bitmap loadedImage;
 
     protected abstract void config();
 
