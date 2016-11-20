@@ -261,39 +261,16 @@ public class Utils {
         });
     }
 
-    public static int getTextColorFromBackground(Context context, int type, int location, boolean nsfw) {
-        int color;
+    public static int getTextColorFromBackground(Context context, int darkColor, int lightColor, int location, boolean nsfw) {
         int backgroundPos = SettingsManager.getBackgroundPos(context);
-        if (type == PreferencesFragment.TEXT_TITLE) {
-            if (location == PreferencesFragment.VIEW_INSIDE_HEADER) {
-                if ((backgroundPos == PreferencesFragment.BACKGROUND_POS_ALL || backgroundPos == PreferencesFragment.BACKGROUND_POS_HEADER) && !nsfw) {
-                    color = R.color.white;
-                } else {
-                    color = R.color.primaryText;
-                }
-            } else {
-                if (backgroundPos == PreferencesFragment.BACKGROUND_POS_ALL && !nsfw) {
-                    color = R.color.white;
-                } else {
-                    color = R.color.primaryText;
-                }
-            }
-        } else {
-            if (location == PreferencesFragment.VIEW_INSIDE_HEADER) {
-                if ((backgroundPos == PreferencesFragment.BACKGROUND_POS_ALL || backgroundPos == PreferencesFragment.BACKGROUND_POS_HEADER) && !nsfw) {
-                    color = R.color.light_gray;
-                } else {
-                    color = R.color.secondaryText;
-                }
-            } else {
-                if (backgroundPos == PreferencesFragment.BACKGROUND_POS_ALL && !nsfw) {
-                    color = R.color.light_gray;
-                } else {
-                    color = R.color.secondaryText;
-                }
-            }
-        }
+        boolean isInsideHeader = location == PreferencesFragment.VIEW_INSIDE_HEADER,
+                isBackgroundAll = backgroundPos == PreferencesFragment.BACKGROUND_POS_ALL,
+                isBackgroundHeader = backgroundPos == PreferencesFragment.BACKGROUND_POS_HEADER;
 
-        return context.getResources().getColor(color);
+        if (!nsfw && ((isInsideHeader && isBackgroundHeader) || isBackgroundAll)) {
+            return context.getResources().getColor(lightColor);
+        } else {
+            return context.getResources().getColor(darkColor);
+        }
     }
 }

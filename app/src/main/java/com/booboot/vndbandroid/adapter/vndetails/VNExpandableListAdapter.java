@@ -94,7 +94,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                 TextView itemRightText = (TextView) convertView.findViewById(R.id.itemRightText);
                 itemRightImage = (ImageView) convertView.findViewById(R.id.itemRightImage);
 
-                itemLeftText.setTextColor(Utils.getTextColorFromBackground(activity, PreferencesFragment.TEXT_TITLE, PreferencesFragment.VIEW_OUTSIDE_HEADER, activity.isNsfw()));
+                itemLeftText.setTextColor(Utils.getTextColorFromBackground(activity, R.color.primaryText, R.color.white, PreferencesFragment.VIEW_OUTSIDE_HEADER, activity.isNsfw()));
                 primaryText = Utils.convertLink(activity, primaryText);
                 itemLeftText.setText(Html.fromHtml(primaryText));
                 if (primaryText.contains("</a>"))
@@ -102,7 +102,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
 
                 if (secondaryText == null) itemRightText.setVisibility(View.GONE);
                 else {
-                    itemRightText.setTextColor(Utils.getTextColorFromBackground(activity, PreferencesFragment.TEXT_TITLE, PreferencesFragment.VIEW_OUTSIDE_HEADER, activity.isNsfw()));
+                    itemRightText.setTextColor(Utils.getTextColorFromBackground(activity, R.color.primaryText, R.color.white, PreferencesFragment.VIEW_OUTSIDE_HEADER, activity.isNsfw()));
                     secondaryText = Utils.convertLink(activity, secondaryText);
                     itemRightText.setText(Html.fromHtml(secondaryText));
                     if (secondaryText.contains("</a>"))
@@ -161,13 +161,13 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                     itemRightImage.setVisibility(View.GONE);
                 }
 
-                title.setTextColor(Utils.getTextColorFromBackground(activity, PreferencesFragment.TEXT_TITLE, PreferencesFragment.VIEW_OUTSIDE_HEADER, activity.isNsfw()));
+                title.setTextColor(Utils.getTextColorFromBackground(activity, R.color.primaryText, R.color.white, PreferencesFragment.VIEW_OUTSIDE_HEADER, activity.isNsfw()));
                 title.setText(Html.fromHtml(primaryText));
 
                 if (secondaryText == null) {
                     subtitle.setVisibility(View.GONE);
                 } else {
-                    subtitle.setTextColor(Utils.getTextColorFromBackground(activity, PreferencesFragment.TEXT_SUBTITLE, PreferencesFragment.VIEW_OUTSIDE_HEADER, activity.isNsfw()));
+                    subtitle.setTextColor(Utils.getTextColorFromBackground(activity, R.color.secondaryText, R.color.light_gray, PreferencesFragment.VIEW_OUTSIDE_HEADER, activity.isNsfw()));
                     subtitle.setText(secondaryText);
                 }
 
@@ -271,7 +271,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
         TextView listTitleTextView = (TextView) convertView.findViewById(R.id.listTitle);
         listTitleTextView.setTypeface(null, Typeface.BOLD);
         listTitleTextView.setText(listTitle);
-        listTitleTextView.setTextColor(Utils.getTextColorFromBackground(activity, PreferencesFragment.TEXT_TITLE, PreferencesFragment.VIEW_OUTSIDE_HEADER, activity.isNsfw()));
+        listTitleTextView.setTextColor(Utils.getTextColorFromBackground(activity, R.color.primaryText, R.color.white, PreferencesFragment.VIEW_OUTSIDE_HEADER, activity.isNsfw()));
         return convertView;
     }
 

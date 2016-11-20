@@ -176,8 +176,8 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
 
         initExpandableListView();
 
-        notesTextView.setHintTextColor(Utils.getTextColorFromBackground(this, PreferencesFragment.TEXT_SUBTITLE, PreferencesFragment.VIEW_INSIDE_HEADER, isNsfw()));
-        notesTextView.setTextColor(Utils.getTextColorFromBackground(this, PreferencesFragment.TEXT_TITLE, PreferencesFragment.VIEW_INSIDE_HEADER, isNsfw()));
+        notesTextView.setHintTextColor(Utils.getTextColorFromBackground(this, R.color.secondaryText, R.color.light_gray, PreferencesFragment.VIEW_INSIDE_HEADER, isNsfw()));
+        notesTextView.setTextColor(Utils.getTextColorFromBackground(this, R.color.primaryText, R.color.white, PreferencesFragment.VIEW_INSIDE_HEADER, isNsfw()));
         notesTextView.setText(vnlistVn != null ? vnlistVn.getNotes() : "");
         listener = new VNDetailsListener(this, vn, notesTextView);
 
