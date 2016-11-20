@@ -64,6 +64,7 @@ import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -92,7 +93,6 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
     private Button votesButton;
     private TextView notesTextView;
     private ImageButton notesEditButton;
-    private ImageView blurBackground;
 
     private VNDetailsListener listener;
     private ExpandableListView expandableListView;
@@ -176,14 +176,8 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
 
         initExpandableListView();
 
-        image = (ImageButton) findViewById(R.id.image);
-        statusButton = (Button) findViewById(R.id.statusButton);
-        wishlistButton = (Button) findViewById(R.id.wishlistButton);
-        votesButton = (Button) findViewById(R.id.votesButton);
-        blurBackground = (ImageView) findViewById(R.id.blurBackground);
-        notesTextView = (TextView) findViewById(R.id.notesTextView);
-        notesTextView.setHintTextColor(getResources().getColor(R.color.light_gray));
-        notesTextView.setTextColor(getResources().getColor(R.color.white));
+        notesTextView.setHintTextColor(Utils.getTextColorFromBackground(this, PreferencesFragment.TEXT_SUBTITLE, PreferencesFragment.VIEW_INSIDE_HEADER, isNsfw()));
+        notesTextView.setTextColor(Utils.getTextColorFromBackground(this, PreferencesFragment.TEXT_TITLE, PreferencesFragment.VIEW_INSIDE_HEADER, isNsfw()));
         notesTextView.setText(vnlistVn != null ? vnlistVn.getNotes() : "");
         listener = new VNDetailsListener(this, vn, notesTextView);
 
@@ -256,20 +250,6 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         Utils.setButtonColor(this, statusButton);
         Utils.setButtonColor(this, wishlistButton);
         Utils.setButtonColor(this, votesButton);
-
-        if (vn.isImage_nsfw() && !SettingsManager.getNSFW(this)) {
-            image.setImageResource(R.drawable.ic_nsfw);
-        } else {
-            Utils.loadImage(PlaceholderPictureFactory.USE_PLACEHOLDER ? PlaceholderPictureFactory.getPlaceholderPicture() : vn.getImage(), new Callback() {
-                @Override
-                protected void config() {
-                    Bitmap blurredImage = BitmapTransformation.darkBlur(VNDetailsActivity.this, loadedImage);
-                    image.setImageBitmap(loadedImage);
-                    blurBackground.setImageBitmap(blurredImage);
-                }
-            });
-            Lightbox.set(VNDetailsActivity.this, image, vn.getImage());
-        }
     }
 
     private void initExpandableListView() {
@@ -277,7 +257,47 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         LinkedHashMap<String, VNDetailsElement> expandableListDetail = VNDetailsFactory.getData(this);
         List<String> expandableListTitle = new ArrayList<>(expandableListDetail.keySet());
         expandableListAdapter = new VNExpandableListAdapter(this, expandableListTitle, expandableListDetail);
-        expandableListView.addHeaderView(getLayoutInflater().inflate(R.layout.vn_details_header, null));
+
+        final View header = getLayoutInflater().inflate(R.layout.vn_details_header, null);
+        image = (ImageButton) header.findViewById(R.id.image);
+        statusButton = (Button) header.findViewById(R.id.statusButton);
+        wishlistButton = (Button) header.findViewById(R.id.wishlistButton);
+        votesButton = (Button) header.findViewById(R.id.votesButton);
+        notesTextView = (TextView) header.findViewById(R.id.notesTextView);
+
+        /* Setting the header and the background image according to the preferences */
+        if (isNsfw()) {
+            image.setImageResource(R.drawable.ic_nsfw);
+        } else {
+            int backgroundPos = SettingsManager.getBackgroundPos(this);
+            String imageUrl = PlaceholderPictureFactory.USE_PLACEHOLDER ? PlaceholderPictureFactory.getPlaceholderPicture() : vn.getImage();
+            if (backgroundPos == PreferencesFragment.BACKGROUND_POS_ALL) {
+                Utils.loadImage(imageUrl, new Callback() {
+                    @Override
+                    protected void config() {
+                        Bitmap blurredImage = BitmapTransformation.darkBlur(VNDetailsActivity.this, loadedImage);
+                        image.setImageBitmap(loadedImage);
+                        ((ImageView) VNDetailsActivity.this.findViewById(R.id.blurBackground)).setImageBitmap(blurredImage);
+                    }
+                });
+            } else if (backgroundPos == PreferencesFragment.BACKGROUND_POS_HEADER) {
+                Utils.loadImage(imageUrl, new Callback() {
+                    @Override
+                    protected void config() {
+                        Bitmap blurredImage = BitmapTransformation.darkBlur(VNDetailsActivity.this, loadedImage);
+                        image.setImageBitmap(loadedImage);
+                        ImageView blurHeaderBackground = ((ImageView) header.findViewById(R.id.blurHeaderBackground));
+                        blurHeaderBackground.getLayoutParams().height = header.findViewById(R.id.headerTopLayout).getHeight();
+                        blurHeaderBackground.setImageBitmap(blurredImage);
+                    }
+                });
+            } else {
+                ImageLoader.getInstance().displayImage(imageUrl, image);
+            }
+            Lightbox.set(VNDetailsActivity.this, image, vn.getImage());
+        }
+
+        expandableListView.addHeaderView(header);
         expandableListView.setAdapter(expandableListAdapter);
 
         expandableListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -724,6 +744,10 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         boolean hideVote = votelistVn == null && wishlistVn != null;
         wishlistButton.setVisibility(hideWish ? View.GONE : View.VISIBLE);
         votesButton.setVisibility(hideVote ? View.GONE : View.VISIBLE);
+    }
+
+    public boolean isNsfw() {
+        return vn.isImage_nsfw() && !SettingsManager.getNSFW(this);
     }
 
     @Override

@@ -50,6 +50,7 @@
     <string name="recommendations_private_warning">We haven\'t found your recommendations... Don\'t forget to make your lists public (by unchecking \"Don\'t allow other people to see my visual novel list\" in your VNDB.org\'s preferences), then refresh this page (it can take up to 48 hours to get effective so don\'t worry)!</string>
     <string name="bullet">" • "</string>
     <string name="dash">" ‒ "</string>
+    <string name="pref_key_background_pos">background_pos</string>
 
     <string-array name="background_pref_titles">
         <item>Default (orange)</item>
@@ -104,6 +105,17 @@
         <item>Spoil me!</item>
     </string-array>
     <string-array name="spoiler_pref_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <string-array name="background_pos_pref_titles">
+        <item>On the whole page</item>
+        <item>In the header only</item>
+        <item>Remove it</item>
+    </string-array>
+    <string-array name="background_pos_pref_values">
         <item>0</item>
         <item>1</item>
         <item>2</item>

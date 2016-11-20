@@ -31,6 +31,7 @@ import android.widget.TextView;
 import com.booboot.vndbandroid.BuildConfig;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.EmptyActivity;
+import com.booboot.vndbandroid.activity.PreferencesFragment;
 import com.booboot.vndbandroid.bean.vndbandroid.Mail;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -258,5 +259,41 @@ public class Utils {
             public void onLoadingCancelled(String imageUri, View view) {
             }
         });
+    }
+
+    public static int getTextColorFromBackground(Context context, int type, int location, boolean nsfw) {
+        int color;
+        int backgroundPos = SettingsManager.getBackgroundPos(context);
+        if (type == PreferencesFragment.TEXT_TITLE) {
+            if (location == PreferencesFragment.VIEW_INSIDE_HEADER) {
+                if ((backgroundPos == PreferencesFragment.BACKGROUND_POS_ALL || backgroundPos == PreferencesFragment.BACKGROUND_POS_HEADER) && !nsfw) {
+                    color = R.color.white;
+                } else {
+                    color = R.color.primaryText;
+                }
+            } else {
+                if (backgroundPos == PreferencesFragment.BACKGROUND_POS_ALL && !nsfw) {
+                    color = R.color.white;
+                } else {
+                    color = R.color.primaryText;
+                }
+            }
+        } else {
+            if (location == PreferencesFragment.VIEW_INSIDE_HEADER) {
+                if ((backgroundPos == PreferencesFragment.BACKGROUND_POS_ALL || backgroundPos == PreferencesFragment.BACKGROUND_POS_HEADER) && !nsfw) {
+                    color = R.color.light_gray;
+                } else {
+                    color = R.color.secondaryText;
+                }
+            } else {
+                if (backgroundPos == PreferencesFragment.BACKGROUND_POS_ALL && !nsfw) {
+                    color = R.color.light_gray;
+                } else {
+                    color = R.color.secondaryText;
+                }
+            }
+        }
+
+        return context.getResources().getColor(color);
     }
 }

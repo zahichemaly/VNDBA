@@ -127,4 +127,15 @@ public class SettingsManager {
         editor.putBoolean("IN_APP_BROWSER", ok);
         editor.commit();
     }
+
+    public static int getBackgroundPos(Context context) {
+        new SettingsManager(context);
+        return settings.getInt("BACKGROUND_POS", 0);
+    }
+
+    public static void setBackgroundPos(Context context, int pos) {
+        new SettingsManager(context);
+        editor.putInt("BACKGROUND_POS", pos);
+        editor.commit();
+    }
 }
