@@ -49,7 +49,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <com.booboot.vndbandroid.view.TagAutoCompleteView
+            <com.booboot.vndbandroid.adapter.search.TagAutoCompleteView
                 android:id="@+id/includeTagsInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -81,7 +81,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <com.booboot.vndbandroid.view.TagAutoCompleteView
+            <com.booboot.vndbandroid.adapter.search.TagAutoCompleteView
                 android:id="@+id/excludeTagsInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

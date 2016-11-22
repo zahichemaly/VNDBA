@@ -1,4 +1,4 @@
-package com.booboot.vndbandroid.listener;
+package com.booboot.vndbandroid.adapter.vndetails;
 
 import android.app.AlertDialog;
 import android.content.Context;

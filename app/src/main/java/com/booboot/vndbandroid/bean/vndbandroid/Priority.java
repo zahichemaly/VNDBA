@@ -24,4 +24,18 @@ public class Priority {
                 return DEFAULT;
         }
     }
+
+    public static String toShortString(int priority) {
+        switch (priority) {
+            case 0:
+                return "H";
+            case 1:
+                return "M";
+            case 2:
+                return "L";
+            case 3:
+                return "B";
+            default:
+                return "-";
+        }    }
 }

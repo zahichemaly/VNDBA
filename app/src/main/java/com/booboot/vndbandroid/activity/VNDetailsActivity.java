@@ -53,7 +53,7 @@ import com.booboot.vndbandroid.bean.vndbandroid.WishlistItem;
 import com.booboot.vndbandroid.bean.vnstat.SimilarNovel;
 import com.booboot.vndbandroid.factory.PlaceholderPictureFactory;
 import com.booboot.vndbandroid.factory.VNDetailsFactory;
-import com.booboot.vndbandroid.listener.VNDetailsListener;
+import com.booboot.vndbandroid.adapter.vndetails.VNDetailsListener;
 import com.booboot.vndbandroid.util.BitmapTransformation;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.Lightbox;

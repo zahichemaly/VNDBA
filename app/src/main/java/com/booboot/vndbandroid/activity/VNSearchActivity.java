@@ -31,7 +31,7 @@ import com.booboot.vndbandroid.util.JSON;
 import com.booboot.vndbandroid.util.Pixels;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
-import com.booboot.vndbandroid.view.TagAutoCompleteView;
+import com.booboot.vndbandroid.adapter.search.TagAutoCompleteView;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tokenautocomplete.TokenCompleteTextView;
 import com.wrapp.floatlabelededittext.FloatLabeledEditText;

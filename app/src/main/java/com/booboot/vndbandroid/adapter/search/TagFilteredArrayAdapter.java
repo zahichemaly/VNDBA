@@ -12,7 +12,6 @@ import com.booboot.vndbandroid.adapter.doublelist.DoubleListListener;
 import com.booboot.vndbandroid.bean.vndb.Tag;
 import com.booboot.vndbandroid.factory.TagDataFactory;
 import com.booboot.vndbandroid.util.Callback;
-import com.booboot.vndbandroid.view.TagAutoCompleteView;
 import com.tokenautocomplete.FilteredArrayAdapter;
 
 /**

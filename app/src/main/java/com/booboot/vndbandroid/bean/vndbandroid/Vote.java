@@ -18,7 +18,11 @@ public class Vote {
 
     public static String toString(int vote) {
         if (vote < 1) return DEFAULT;
-        return VOTE_FORMAT.format(outOf10(vote)) + " (" + getName(outOf10(vote)) + ")";
+        return toShortString(vote) + " (" + getName(outOf10(vote)) + ")";
+    }
+
+    public static String toShortString(int vote) {
+        return VOTE_FORMAT.format(outOf10(vote));
     }
 
     public static boolean isValid(String vote) {

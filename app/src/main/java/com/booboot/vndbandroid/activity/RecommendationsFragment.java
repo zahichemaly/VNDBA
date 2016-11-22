@@ -3,7 +3,9 @@ package com.booboot.vndbandroid.activity;
 import android.app.Fragment;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +14,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
-import com.booboot.vndbandroid.adapter.materiallistview.MaterialListView;
+import com.booboot.vndbandroid.adapter.vncards.RecyclerItemClickListener;
+import com.booboot.vndbandroid.adapter.vncards.VNCardsListView;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.DB;
 import com.booboot.vndbandroid.api.VNDBServer;
@@ -26,8 +29,6 @@ import com.booboot.vndbandroid.factory.VNCardFactory;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
-import com.dexafree.materialList.card.Card;
-import com.dexafree.materialList.listeners.RecyclerItemClickListener;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -39,18 +40,18 @@ import java.util.List;
 public class RecommendationsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     private View rootView;
     public static List<SimilarNovel> recommendations;
-    private MaterialListView materialListView;
+    private VNCardsListView materialListView;
     private ProgressBar progressBar;
     private SwipeRefreshLayout refreshLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.vn_card_list_layout, container, false);
+        rootView = inflater.inflate(R.layout.vn_card_list, container, false);
         Utils.setTitle(getActivity(), getActivity().getResources().getString(R.string.my_recommendations));
 
         progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
-        materialListView = (MaterialListView) rootView.findViewById(R.id.materialListView);
-        VNCardFactory.setCardsPerRow(getActivity(), materialListView);
+        materialListView = (VNCardsListView) rootView.findViewById(R.id.materialListView);
+        VNCardFactory.setupList(getActivity(), materialListView);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             materialListView.getRootView().setBackgroundColor(rootView.getResources().getColor(R.color.windowBackground, rootView.getContext().getTheme()));
@@ -58,16 +59,12 @@ public class RecommendationsFragment extends Fragment implements SwipeRefreshLay
             materialListView.getRootView().setBackgroundColor(rootView.getResources().getColor(R.color.windowBackground));
         }
 
-        materialListView.addOnItemTouchListener(new RecyclerItemClickListener.OnItemClickListener() {
+        materialListView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), new RecyclerItemClickListener.OnItemClickListener() {
             @Override
-            public void onItemClick(Card card, int position) {
-                Cache.openVNDetails(getActivity(), (int) card.getTag());
+            public void onItemClick(@NonNull CardView cardView, int position) {
+                Cache.openVNDetails(getActivity(), (int) cardView.getTag());
             }
-
-            @Override
-            public void onItemLongClick(Card card, int position) {
-            }
-        });
+        }));
 
         refreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refreshLayout);
         refreshLayout.setOnRefreshListener(this);

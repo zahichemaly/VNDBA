@@ -27,4 +27,21 @@ public class Status {
                 return DEFAULT;
         }
     }
+
+    public static String toShortString(int status) {
+        switch (status) {
+            case 0:
+                return "?";
+            case 1:
+                return "P";
+            case 2:
+                return "F";
+            case 3:
+                return "S";
+            case 4:
+                return "D";
+            default:
+                return "-";
+        }
+    }
 }

@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public boolean onQueryTextChange(String search) {
                 for (VNTypeFragment activeFragment : activeFragments) {
-                    activeFragment.getMaterialListView().getAdapter().getFilter().filter(search);
+                    activeFragment.filter(search);
                 }
                 return true;
             }

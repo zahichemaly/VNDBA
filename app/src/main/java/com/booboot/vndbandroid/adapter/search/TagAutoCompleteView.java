@@ -1,4 +1,4 @@
-package com.booboot.vndbandroid.view;
+package com.booboot.vndbandroid.adapter.search;
 
 import android.app.Activity;
 import android.content.Context;
