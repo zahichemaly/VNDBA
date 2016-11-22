@@ -9,7 +9,6 @@ import android.widget.Toast;
 import com.booboot.vndbandroid.bean.vndb.DbStats;
 import com.booboot.vndbandroid.bean.vndb.Results;
 import com.booboot.vndbandroid.bean.vnstat.VNStatItem;
-import com.booboot.vndbandroid.bean.vnstat.VNStatResults;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -45,7 +44,7 @@ public abstract class Callback {
     }
 
     public static void showToast(final Context context, final String message) {
-        if (message == null) return;
+        if (message == null || context == null) return;
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
