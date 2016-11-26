@@ -18,7 +18,6 @@ import com.booboot.vndbandroid.bean.vndbandroid.Language;
 import com.booboot.vndbandroid.bean.vndbandroid.Platform;
 import com.booboot.vndbandroid.bean.vndbandroid.Vote;
 import com.booboot.vndbandroid.bean.vnstat.SimilarNovel;
-import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
 
 import java.util.ArrayList;
@@ -351,7 +350,7 @@ public class VNDetailsFactory {
             activity.setScreensSubmenu(new VNDetailsElement(null, screenshots, null, null, null, null, VNDetailsElement.TYPE_IMAGES));
         } else {
             for (Screen screenshot : activity.getVn().getScreens()) {
-                if (screenshot.isNsfw() && !SettingsManager.getNSFW(activity)) continue;
+                if (screenshot.isNsfw() && activity.nsfwLevel <= 0) continue;
                 screenshots.add(screenshot.getImage());
             }
 

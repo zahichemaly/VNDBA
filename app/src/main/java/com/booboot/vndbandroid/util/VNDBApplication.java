@@ -22,6 +22,7 @@ public class VNDBApplication extends Application {
 
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext()).build();
         ImageLoader.getInstance().init(config);
+        ImageLoader.getInstance().clearDiskCache();
 
         CustomActivityOnCrash.setDefaultErrorActivityDrawable(R.drawable.vndb_logo_80);
         CustomActivityOnCrash.setErrorActivityClass(ErrorActivity.class);

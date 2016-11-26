@@ -128,14 +128,14 @@ public class SettingsManager {
         editor.commit();
     }
 
-    public static int getBackgroundPos(Context context) {
+    public static boolean getCoverBackground(Context context) {
         new SettingsManager(context);
-        return settings.getInt("BACKGROUND_POS", 0);
+        return settings.getBoolean("COVER_BACKGROUND", true);
     }
 
-    public static void setBackgroundPos(Context context, int pos) {
+    public static void setCoverBackground(Context context, boolean ok) {
         new SettingsManager(context);
-        editor.putInt("BACKGROUND_POS", pos);
+        editor.putBoolean("COVER_BACKGROUND", ok);
         editor.commit();
     }
 }

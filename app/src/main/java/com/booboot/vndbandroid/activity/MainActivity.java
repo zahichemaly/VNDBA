@@ -8,14 +8,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.IdRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -49,8 +46,9 @@ import com.booboot.vndbandroid.util.ConnectionReceiver;
 import com.booboot.vndbandroid.util.Pixels;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
-import com.nostra13.universalimageloader.core.ImageLoader;
+import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -99,17 +97,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         final LinearLayout headerBackground = (LinearLayout) header.findViewById(R.id.headerBackground);
 
         if (PlaceholderPictureFactory.USE_PLACEHOLDER) {
-            new Thread() {
-                public void run() {
-                    final Bitmap background = ImageLoader.getInstance().loadImageSync(PlaceholderPictureFactory.getPlaceholderPicture());
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            headerBackground.setBackground(new BitmapDrawable(getResources(), background));
-                        }
-                    });
-                }
-            }.start();
+            try {
+                headerBackground.setBackground(new BitmapDrawable(getResources(), Picasso.with(this).load(PlaceholderPictureFactory.getPlaceholderPicture()).get()));
+            } catch (IOException e) {
+            }
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 headerBackground.setBackground(getResources().getDrawable(Theme.THEMES.get(SettingsManager.getTheme(this)).getWallpaper(), getTheme()));

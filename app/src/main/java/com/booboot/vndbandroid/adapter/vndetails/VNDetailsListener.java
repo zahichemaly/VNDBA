@@ -3,6 +3,7 @@ package com.booboot.vndbandroid.adapter.vndetails;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.PopupMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,7 +37,7 @@ import java.util.Date;
 /**
  * Created by od on 12/04/2016.
  */
-public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, DialogInterface.OnClickListener {
+public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, DialogInterface.OnClickListener, View.OnClickListener {
     private VNDetailsActivity activity;
     private VNlistItem vnlistVn;
     private WishlistItem wishlistVn;
@@ -186,27 +188,46 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
                 fields = null;
                 break;
 
-            case R.id.item_spoil_0:
-                activity.spoilerLevel = 0;
-                Utils.recreate(activity);
-                return true;
-
-            case R.id.item_spoil_1:
-                activity.spoilerLevel = 1;
-                Utils.recreate(activity);
-                return true;
-
-            case R.id.item_spoil_2:
-                activity.spoilerLevel = 2;
-                Utils.recreate(activity);
-                return true;
-
             default:
                 return false;
         }
 
         sendSetRequest(type, fields, item);
         return true;
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.item_spoil_0:
+                ((RadioButton) view.findViewById(R.id.radio_spoil_0)).setChecked(true);
+            case R.id.radio_spoil_0:
+                activity.spoilerLevel = 0;
+                break;
+
+            case R.id.item_spoil_1:
+                ((RadioButton) view.findViewById(R.id.radio_spoil_1)).setChecked(true);
+            case R.id.radio_spoil_1:
+                activity.spoilerLevel = 1;
+                break;
+
+            case R.id.item_spoil_2:
+                ((RadioButton) view.findViewById(R.id.radio_spoil_2)).setChecked(true);
+            case R.id.radio_spoil_2:
+                activity.spoilerLevel = 2;
+                break;
+
+            case R.id.item_nsfw:
+                AppCompatCheckBox checkNsfw = (AppCompatCheckBox) view.findViewById(R.id.check_nsfw);
+                checkNsfw.setChecked(!checkNsfw.isChecked());
+                activity.nsfwLevel = checkNsfw.isChecked() ? 1 : 0;
+                break;
+            case R.id.check_nsfw:
+                activity.nsfwLevel = ((AppCompatCheckBox) view.findViewById(R.id.check_nsfw)).isChecked() ? 1 : 0;
+                break;
+        }
+
+        Utils.recreate(activity);
     }
 
     private void sendSetRequest(String type, final Fields fields, final MenuItem item) {

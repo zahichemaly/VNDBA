@@ -15,13 +15,6 @@ import com.booboot.vndbandroid.util.Utils;
 
 public class PreferencesFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener {
     private static Preference.OnPreferenceChangeListener bindPreferenceSummaryToValueListener;
-    public final static int BACKGROUND_POS_ALL = 0;
-    public final static int BACKGROUND_POS_HEADER = 1;
-    public final static int BACKGROUND_POS_NONE = 2;
-    public final static int VIEW_INSIDE_HEADER = 3;
-    public final static int VIEW_OUTSIDE_HEADER = 4;
-    public final static int TEXT_TITLE = 5;
-    public final static int TEXT_SUBTITLE = 4;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -38,7 +31,7 @@ public class PreferencesFragment extends PreferenceFragment implements Preferenc
         bindPreferenceSummaryToValue(findPreference(getActivity().getString(R.string.pref_key_spoiler)));
         bindPreferenceSummaryToValue(findPreference(getActivity().getString(R.string.pref_key_nsfw)));
         bindPreferenceSummaryToValue(findPreference(getActivity().getString(R.string.pref_key_browser)));
-        bindPreferenceSummaryToValue(findPreference(getActivity().getString(R.string.pref_key_background_pos)));
+        bindPreferenceSummaryToValue(findPreference(getActivity().getString(R.string.pref_key_cover_background)));
     }
 
     /**
@@ -86,8 +79,6 @@ public class PreferencesFragment extends PreferenceFragment implements Preferenc
                 }
             } else if (listPreference.getKey().equals(getActivity().getString(R.string.pref_key_spoiler))) {
                 SettingsManager.setSpoilerLevel(getActivity(), Integer.valueOf(stringValue));
-            } else if (listPreference.getKey().equals(getActivity().getString(R.string.pref_key_background_pos))) {
-                SettingsManager.setBackgroundPos(getActivity(), Integer.valueOf(stringValue));
             }
         } else {
             if (preference.getKey().equals(getActivity().getString(R.string.pref_key_spoiler_completed))) {
@@ -96,6 +87,8 @@ public class PreferencesFragment extends PreferenceFragment implements Preferenc
                 SettingsManager.setNSFW(getActivity(), Boolean.parseBoolean(stringValue));
             } else if (preference.getKey().equals(getActivity().getString(R.string.pref_key_browser))) {
                 SettingsManager.setInAppBrowser(getActivity(), Boolean.parseBoolean(stringValue));
+            } else if (preference.getKey().equals(getActivity().getString(R.string.pref_key_cover_background))) {
+                SettingsManager.setCoverBackground(getActivity(), Boolean.parseBoolean(stringValue));
             }
         }
         return true;

@@ -5,6 +5,7 @@
     <color name="colorAccent">#BF360C</color>
     <color name="windowBackground">#E5E5E5</color>
     <color name="white">#FFFFFF</color>
+    <color name="transparentWhite">#f5ffffff</color>
     <color name="black">#000000</color>
     <color name="light_gray">#CCCCCC</color>
     <color name="dark_blue">#000055</color>

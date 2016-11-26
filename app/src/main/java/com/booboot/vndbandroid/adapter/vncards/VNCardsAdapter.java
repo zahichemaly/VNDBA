@@ -10,7 +10,7 @@ import android.widget.Filterable;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.util.Utils;
-import com.nostra13.universalimageloader.core.ImageLoader;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +43,7 @@ public class VNCardsAdapter extends RecyclerView.Adapter<CardHolder> implements 
         if (card.getImageId() > 0)
             holder.getImage().setImageResource(card.getImageId());
         else
-            ImageLoader.getInstance().displayImage(card.getImageUrl(), holder.getImage());
+            Picasso.with(context).load(card.getImageUrl()).into(holder.getImage());
 
         holder.getTitle().setText(card.getTitle());
         holder.getSubtitle().setText(card.getSubtitle());

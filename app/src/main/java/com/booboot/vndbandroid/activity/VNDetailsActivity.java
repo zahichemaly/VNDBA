@@ -5,6 +5,9 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
+import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,7 +16,9 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.PopupMenu;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -30,11 +35,14 @@ import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.adapter.vndetails.VNDetailsElement;
+import com.booboot.vndbandroid.adapter.vndetails.VNDetailsListener;
 import com.booboot.vndbandroid.adapter.vndetails.VNExpandableListAdapter;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.DB;
@@ -53,7 +61,6 @@ import com.booboot.vndbandroid.bean.vndbandroid.WishlistItem;
 import com.booboot.vndbandroid.bean.vnstat.SimilarNovel;
 import com.booboot.vndbandroid.factory.PlaceholderPictureFactory;
 import com.booboot.vndbandroid.factory.VNDetailsFactory;
-import com.booboot.vndbandroid.adapter.vndetails.VNDetailsListener;
 import com.booboot.vndbandroid.util.BitmapTransformation;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.Lightbox;
@@ -64,7 +71,8 @@ import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.nostra13.universalimageloader.core.ImageLoader;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -73,9 +81,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class VNDetailsActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
+    /* Attributes that need to be retrieved when this activity is recreated */
     public int spoilerLevel = -1;
+    public int nsfwLevel = -1;
+
     private ActionBar actionBar;
     private SwipeRefreshLayout refreshLayout;
+    private PopupWindow spoilerPopup;
 
     private Item vn;
     private VNlistItem vnlistVn;
@@ -126,6 +138,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
 
         if (savedInstanceState != null) {
             spoilerLevel = savedInstanceState.getInt("SPOILER_LEVEL");
+            nsfwLevel = savedInstanceState.getInt("NSFW_LEVEL");
         }
 
         if (spoilerLevel < 0) {
@@ -133,6 +146,9 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                 spoilerLevel = 2;
             else
                 spoilerLevel = SettingsManager.getSpoilerLevel(this);
+        }
+        if (nsfwLevel < 0) {
+            nsfwLevel = SettingsManager.getNSFW(this) ? 1 : 0;
         }
 
         init();
@@ -176,8 +192,8 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
 
         initExpandableListView();
 
-        notesTextView.setHintTextColor(Utils.getTextColorFromBackground(this, R.color.secondaryText, R.color.light_gray, PreferencesFragment.VIEW_INSIDE_HEADER, isNsfw()));
-        notesTextView.setTextColor(Utils.getTextColorFromBackground(this, R.color.primaryText, R.color.white, PreferencesFragment.VIEW_INSIDE_HEADER, isNsfw()));
+        notesTextView.setHintTextColor(Utils.getTextColorFromBackground(this, R.color.secondaryText, R.color.light_gray, isNsfw()));
+        notesTextView.setTextColor(Utils.getTextColorFromBackground(this, R.color.primaryText, R.color.white, isNsfw()));
         notesTextView.setText(vnlistVn != null ? vnlistVn.getNotes() : "");
         listener = new VNDetailsListener(this, vn, notesTextView);
 
@@ -266,36 +282,35 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         notesTextView = (TextView) header.findViewById(R.id.notesTextView);
 
         /* Setting the header and the background image according to the preferences */
+        final ImageView blurBackground = ((ImageView) VNDetailsActivity.this.findViewById(R.id.blurBackground));
+        final boolean coverBackground = SettingsManager.getCoverBackground(this);
+        String imageUrl = PlaceholderPictureFactory.USE_PLACEHOLDER ? PlaceholderPictureFactory.getPlaceholderPicture() : vn.getImage();
         if (isNsfw()) {
             image.setImageResource(R.drawable.ic_nsfw);
+            blurBackground.setImageResource(0);
+        } else if (coverBackground) {
+            blurBackground.setImageResource(R.drawable.blur_background_placeholder);
+
+            Picasso.with(this).load(imageUrl).into(new Target() {
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    Bitmap blurredImage = BitmapTransformation.darkBlur(VNDetailsActivity.this, bitmap);
+                    image.setImageBitmap(bitmap);
+                    blurBackground.setImageBitmap(blurredImage);
+                }
+
+                @Override
+                public void onBitmapFailed(Drawable errorDrawable) {
+                }
+
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {
+                }
+            });
         } else {
-            int backgroundPos = SettingsManager.getBackgroundPos(this);
-            String imageUrl = PlaceholderPictureFactory.USE_PLACEHOLDER ? PlaceholderPictureFactory.getPlaceholderPicture() : vn.getImage();
-            if (backgroundPos == PreferencesFragment.BACKGROUND_POS_ALL) {
-                Utils.loadImage(imageUrl, new Callback() {
-                    @Override
-                    protected void config() {
-                        Bitmap blurredImage = BitmapTransformation.darkBlur(VNDetailsActivity.this, loadedImage);
-                        image.setImageBitmap(loadedImage);
-                        ((ImageView) VNDetailsActivity.this.findViewById(R.id.blurBackground)).setImageBitmap(blurredImage);
-                    }
-                });
-            } else if (backgroundPos == PreferencesFragment.BACKGROUND_POS_HEADER) {
-                Utils.loadImage(imageUrl, new Callback() {
-                    @Override
-                    protected void config() {
-                        Bitmap blurredImage = BitmapTransformation.darkBlur(VNDetailsActivity.this, loadedImage);
-                        image.setImageBitmap(loadedImage);
-                        ImageView blurHeaderBackground = ((ImageView) header.findViewById(R.id.blurHeaderBackground));
-                        blurHeaderBackground.getLayoutParams().height = header.findViewById(R.id.headerTopLayout).getHeight();
-                        blurHeaderBackground.setImageBitmap(blurredImage);
-                    }
-                });
-            } else {
-                ImageLoader.getInstance().displayImage(imageUrl, image);
-            }
-            Lightbox.set(VNDetailsActivity.this, image, vn.getImage());
+            Picasso.with(this).load(imageUrl).into(image);
         }
+        Lightbox.set(VNDetailsActivity.this, image, vn.getImage());
 
         expandableListView.addHeaderView(header);
         expandableListView.setAdapter(expandableListAdapter);
@@ -712,23 +727,46 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                 break;
 
             case R.id.action_spoiler:
-                PopupMenu popup = new PopupMenu(this, findViewById(R.id.action_spoiler));
-                MenuInflater inflater = popup.getMenuInflater();
-                inflater.inflate(R.menu.spoiler, popup.getMenu());
-                switch (spoilerLevel) {
-                    case 1:
-                        popup.getMenu().findItem(R.id.item_spoil_1).setChecked(true);
-                        break;
-                    case 2:
-                        popup.getMenu().findItem(R.id.item_spoil_2).setChecked(true);
-                        break;
-                    default:
-                        popup.getMenu().findItem(R.id.item_spoil_0).setChecked(true);
-                        break;
-                }
-                popup.setOnMenuItemClickListener(listener);
+                spoilerPopup = new PopupWindow(this);
+                spoilerPopup.setWidth(Pixels.px(250, this));
+                LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                View content = layoutInflater.inflate(R.layout.spoiler_menu, null);
+
+                content.findViewById(R.id.item_spoil_0).setOnClickListener(listener);
+                content.findViewById(R.id.item_spoil_1).setOnClickListener(listener);
+                content.findViewById(R.id.item_spoil_2).setOnClickListener(listener);
+                RadioButton radioSpoil0 = (RadioButton) content.findViewById(R.id.radio_spoil_0);
+                RadioButton radioSpoil1 = (RadioButton) content.findViewById(R.id.radio_spoil_1);
+                RadioButton radioSpoil2 = (RadioButton) content.findViewById(R.id.radio_spoil_2);
+                radioSpoil0.setOnClickListener(listener);
+                radioSpoil1.setOnClickListener(listener);
+                radioSpoil2.setOnClickListener(listener);
+                radioSpoil0.setChecked(spoilerLevel == 0);
+                radioSpoil1.setChecked(spoilerLevel == 1);
+                radioSpoil2.setChecked(spoilerLevel == 2);
+                content.findViewById(R.id.item_nsfw).setOnClickListener(listener);
+                AppCompatCheckBox checkNsfw = (AppCompatCheckBox) content.findViewById(R.id.check_nsfw);
+                checkNsfw.setOnClickListener(listener);
+                checkNsfw.setChecked(nsfwLevel == 1);
                 listener.setPopupButton(null);
-                popup.show();
+
+                spoilerPopup.setContentView(content);
+                spoilerPopup.setBackgroundDrawable(new BitmapDrawable());
+                spoilerPopup.setOutsideTouchable(true);
+                spoilerPopup.setTouchable(true);
+                spoilerPopup.setTouchInterceptor(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        Rect rect = new Rect();
+                        v.getHitRect(rect);
+                        if (!rect.contains((int) event.getX(), (int) event.getY())) {
+                            spoilerPopup.dismiss();
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+                spoilerPopup.showAsDropDown(findViewById(R.id.action_spoiler));
                 break;
         }
 
@@ -747,7 +785,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
     }
 
     public boolean isNsfw() {
-        return vn.isImage_nsfw() && !SettingsManager.getNSFW(this);
+        return vn.isImage_nsfw() && nsfwLevel <= 0;
     }
 
     @Override
@@ -787,6 +825,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putInt("SPOILER_LEVEL", spoilerLevel);
+        savedInstanceState.putInt("NSFW_LEVEL", nsfwLevel);
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -803,6 +842,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         DB.saveWishlist(this);
         DB.saveVNs(this);
         Lightbox.dismiss();
+        if (spoilerPopup != null && spoilerPopup.isShowing()) spoilerPopup.dismiss();
         super.onDestroy();
     }
 
