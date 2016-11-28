@@ -51,6 +51,7 @@
     <string name="bullet">" • "</string>
     <string name="dash">" ‒ "</string>
     <string name="pref_key_cover_background">cover_background</string>
+    <string name="action_options">Options</string>
 
     <string-array name="background_pref_titles">
         <item>Default (orange)</item>

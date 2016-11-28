@@ -107,7 +107,7 @@
             android:textAppearance="?attr/textAppearanceListItem"
             android:textColor="@color/primaryText"/>
 
-        <android.support.v7.widget.AppCompatCheckBox
+        <CheckBox
             android:id="@+id/check_nsfw"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>

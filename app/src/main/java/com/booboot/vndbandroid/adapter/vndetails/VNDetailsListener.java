@@ -3,13 +3,13 @@ package com.booboot.vndbandroid.adapter.vndetails;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.PopupMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -39,22 +39,10 @@ import java.util.Date;
  */
 public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, DialogInterface.OnClickListener, View.OnClickListener {
     private VNDetailsActivity activity;
-    private VNlistItem vnlistVn;
-    private WishlistItem wishlistVn;
-    private VotelistItem votelistVn;
     private Item vn;
     private Button popupButton;
     private TextView notesTextView;
     private EditText notesInput;
-/*
-    public VNDetailsListener(VNDetailsActivity activity, VNlistItem vnlistVn, WishlistItem wishlistVn, VotelistItem votelistVn, TextView notesTextView) {
-        this.activity = activity;
-        this.vnlistVn = vnlistVn;
-        this.wishlistVn = wishlistVn;
-        this.votelistVn = votelistVn;
-        this.notesTextView = notesTextView;
-    }
-*/
 
     public VNDetailsListener(VNDetailsActivity activity, Item vn, TextView notesTextView) {
         this.activity = activity;
@@ -194,40 +182,6 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
 
         sendSetRequest(type, fields, item);
         return true;
-    }
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.item_spoil_0:
-                ((RadioButton) view.findViewById(R.id.radio_spoil_0)).setChecked(true);
-            case R.id.radio_spoil_0:
-                activity.spoilerLevel = 0;
-                break;
-
-            case R.id.item_spoil_1:
-                ((RadioButton) view.findViewById(R.id.radio_spoil_1)).setChecked(true);
-            case R.id.radio_spoil_1:
-                activity.spoilerLevel = 1;
-                break;
-
-            case R.id.item_spoil_2:
-                ((RadioButton) view.findViewById(R.id.radio_spoil_2)).setChecked(true);
-            case R.id.radio_spoil_2:
-                activity.spoilerLevel = 2;
-                break;
-
-            case R.id.item_nsfw:
-                AppCompatCheckBox checkNsfw = (AppCompatCheckBox) view.findViewById(R.id.check_nsfw);
-                checkNsfw.setChecked(!checkNsfw.isChecked());
-                activity.nsfwLevel = checkNsfw.isChecked() ? 1 : 0;
-                break;
-            case R.id.check_nsfw:
-                activity.nsfwLevel = ((AppCompatCheckBox) view.findViewById(R.id.check_nsfw)).isChecked() ? 1 : 0;
-                break;
-        }
-
-        Utils.recreate(activity);
     }
 
     private void sendSetRequest(String type, final Fields fields, final MenuItem item) {
@@ -402,6 +356,40 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
                     MainActivity.instance.refreshVnlistFragment();
             }
         }, Callback.errorCallback(activity));
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.item_spoil_0:
+                ((RadioButton) view.findViewById(R.id.radio_spoil_0)).setChecked(true);
+            case R.id.radio_spoil_0:
+                activity.spoilerLevel = 0;
+                break;
+
+            case R.id.item_spoil_1:
+                ((RadioButton) view.findViewById(R.id.radio_spoil_1)).setChecked(true);
+            case R.id.radio_spoil_1:
+                activity.spoilerLevel = 1;
+                break;
+
+            case R.id.item_spoil_2:
+                ((RadioButton) view.findViewById(R.id.radio_spoil_2)).setChecked(true);
+            case R.id.radio_spoil_2:
+                activity.spoilerLevel = 2;
+                break;
+
+            case R.id.item_nsfw:
+                CheckBox checkNsfw = (CheckBox) view.findViewById(R.id.check_nsfw);
+                checkNsfw.setChecked(!checkNsfw.isChecked());
+                activity.nsfwLevel = checkNsfw.isChecked() ? 1 : 0;
+                break;
+            case R.id.check_nsfw:
+                activity.nsfwLevel = ((CheckBox) view.findViewById(R.id.check_nsfw)).isChecked() ? 1 : 0;
+                break;
+        }
+
+        Utils.recreate(activity);
     }
 
     private void buildOtherVoteDialog(final String type, final Fields fields, final MenuItem item) {

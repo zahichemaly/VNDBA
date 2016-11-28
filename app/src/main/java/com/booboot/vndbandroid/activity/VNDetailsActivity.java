@@ -5,8 +5,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
-import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,9 +14,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.PopupMenu;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -29,6 +25,7 @@ import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
@@ -60,6 +57,7 @@ import com.booboot.vndbandroid.bean.vndbandroid.VotelistItem;
 import com.booboot.vndbandroid.bean.vndbandroid.WishlistItem;
 import com.booboot.vndbandroid.bean.vnstat.SimilarNovel;
 import com.booboot.vndbandroid.factory.PlaceholderPictureFactory;
+import com.booboot.vndbandroid.factory.PopupMenuFactory;
 import com.booboot.vndbandroid.factory.VNDetailsFactory;
 import com.booboot.vndbandroid.util.BitmapTransformation;
 import com.booboot.vndbandroid.util.Callback;
@@ -727,46 +725,28 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                 break;
 
             case R.id.action_spoiler:
-                spoilerPopup = new PopupWindow(this);
-                spoilerPopup.setWidth(Pixels.px(250, this));
-                LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                View content = layoutInflater.inflate(R.layout.spoiler_menu, null);
-
-                content.findViewById(R.id.item_spoil_0).setOnClickListener(listener);
-                content.findViewById(R.id.item_spoil_1).setOnClickListener(listener);
-                content.findViewById(R.id.item_spoil_2).setOnClickListener(listener);
-                RadioButton radioSpoil0 = (RadioButton) content.findViewById(R.id.radio_spoil_0);
-                RadioButton radioSpoil1 = (RadioButton) content.findViewById(R.id.radio_spoil_1);
-                RadioButton radioSpoil2 = (RadioButton) content.findViewById(R.id.radio_spoil_2);
-                radioSpoil0.setOnClickListener(listener);
-                radioSpoil1.setOnClickListener(listener);
-                radioSpoil2.setOnClickListener(listener);
-                radioSpoil0.setChecked(spoilerLevel == 0);
-                radioSpoil1.setChecked(spoilerLevel == 1);
-                radioSpoil2.setChecked(spoilerLevel == 2);
-                content.findViewById(R.id.item_nsfw).setOnClickListener(listener);
-                AppCompatCheckBox checkNsfw = (AppCompatCheckBox) content.findViewById(R.id.check_nsfw);
-                checkNsfw.setOnClickListener(listener);
-                checkNsfw.setChecked(nsfwLevel == 1);
-                listener.setPopupButton(null);
-
-                spoilerPopup.setContentView(content);
-                spoilerPopup.setBackgroundDrawable(new BitmapDrawable());
-                spoilerPopup.setOutsideTouchable(true);
-                spoilerPopup.setTouchable(true);
-                spoilerPopup.setTouchInterceptor(new View.OnTouchListener() {
+                spoilerPopup = PopupMenuFactory.get(this, R.layout.spoiler_menu, findViewById(R.id.action_spoiler), spoilerPopup, new PopupMenuFactory.Callback() {
                     @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        Rect rect = new Rect();
-                        v.getHitRect(rect);
-                        if (!rect.contains((int) event.getX(), (int) event.getY())) {
-                            spoilerPopup.dismiss();
-                            return true;
-                        }
-                        return false;
+                    public void create(View content) {
+                        content.findViewById(R.id.item_spoil_0).setOnClickListener(listener);
+                        content.findViewById(R.id.item_spoil_1).setOnClickListener(listener);
+                        content.findViewById(R.id.item_spoil_2).setOnClickListener(listener);
+                        RadioButton radioSpoil0 = (RadioButton) content.findViewById(R.id.radio_spoil_0);
+                        RadioButton radioSpoil1 = (RadioButton) content.findViewById(R.id.radio_spoil_1);
+                        RadioButton radioSpoil2 = (RadioButton) content.findViewById(R.id.radio_spoil_2);
+                        radioSpoil0.setOnClickListener(listener);
+                        radioSpoil1.setOnClickListener(listener);
+                        radioSpoil2.setOnClickListener(listener);
+                        radioSpoil0.setChecked(spoilerLevel == 0);
+                        radioSpoil1.setChecked(spoilerLevel == 1);
+                        radioSpoil2.setChecked(spoilerLevel == 2);
+                        content.findViewById(R.id.item_nsfw).setOnClickListener(listener);
+                        CheckBox checkNsfw = (CheckBox) content.findViewById(R.id.check_nsfw);
+                        checkNsfw.setOnClickListener(listener);
+                        checkNsfw.setChecked(nsfwLevel == 1);
+                        listener.setPopupButton(null);
                     }
                 });
-                spoilerPopup.showAsDropDown(findViewById(R.id.action_spoiler));
                 break;
         }
 

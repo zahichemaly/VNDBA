@@ -3,13 +3,17 @@ package com.booboot.vndbandroid.activity;
 import android.app.Fragment;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -25,6 +29,7 @@ import com.booboot.vndbandroid.bean.vndb.Options;
 import com.booboot.vndbandroid.bean.vnstat.SimilarNovel;
 import com.booboot.vndbandroid.bean.vnstat.VNStatItem;
 import com.booboot.vndbandroid.factory.FastScrollerFactory;
+import com.booboot.vndbandroid.factory.PopupMenuFactory;
 import com.booboot.vndbandroid.factory.VNCardFactory;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.SettingsManager;
@@ -37,9 +42,10 @@ import java.util.List;
 /**
  * Created by od on 13/03/2016.
  */
-public class RecommendationsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class RecommendationsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
     private View rootView;
     public static List<SimilarNovel> recommendations;
+    private PopupWindow optionsPopup;
     private VNCardsListView materialListView;
     private ProgressBar progressBar;
     private SwipeRefreshLayout refreshLayout;
@@ -61,7 +67,7 @@ public class RecommendationsFragment extends Fragment implements SwipeRefreshLay
 
         materialListView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), new RecyclerItemClickListener.OnItemClickListener() {
             @Override
-            public void onItemClick(@NonNull CardView cardView, int position) {
+            public void onItemClick(CardView cardView, int position) {
                 Cache.openVNDetails(getActivity(), (int) cardView.getTag());
             }
         }));
@@ -73,6 +79,43 @@ public class RecommendationsFragment extends Fragment implements SwipeRefreshLay
 
         refresh(false);
         return rootView;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+        menuInflater.inflate(R.menu.recommendations, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_recommendations_options:
+                optionsPopup = PopupMenuFactory.get(getActivity(), R.layout.recommendations_menu, getActivity().findViewById(R.id.action_recommendations_options), optionsPopup, new PopupMenuFactory.Callback() {
+                    @Override
+                    public void create(View content) {
+                        content.findViewById(R.id.item_hide_already_in_wishlist).setOnClickListener(RecommendationsFragment.this);
+                    }
+                });
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.item_hide_already_in_wishlist:
+                CheckBox hideAlreadyInWishlist = (CheckBox) view.findViewById(R.id.check_hide_already_in_wishlist);
+                hideAlreadyInWishlist.setChecked(!hideAlreadyInWishlist.isChecked());
+                break;
+        }
     }
 
     public void refresh(final boolean forceRefresh) {

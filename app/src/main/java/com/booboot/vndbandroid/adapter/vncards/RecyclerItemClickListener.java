@@ -1,7 +1,6 @@
 package com.booboot.vndbandroid.adapter.vncards;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.GestureDetector;
@@ -12,7 +11,7 @@ public class RecyclerItemClickListener implements RecyclerView.OnItemTouchListen
     private RecyclerView mRecyclerView;
 
     public interface OnItemClickListener {
-        void onItemClick(@NonNull final CardView cardView, int position);
+        void onItemClick(final CardView cardView, int position);
     }
 
     private OnItemClickListener mListener;
