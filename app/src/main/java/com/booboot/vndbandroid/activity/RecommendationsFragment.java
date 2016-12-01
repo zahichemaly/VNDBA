@@ -151,7 +151,7 @@ public class RecommendationsFragment extends Fragment implements SwipeRefreshLay
 
         int userId = SettingsManager.getUserId(getActivity());
         if (userId < 0) {
-            VNDBServer.get("user", "basic", "(id = 0)", Options.create(false, false, 1), 0, getActivity(), new Callback() {
+            VNDBServer.get("user", "basic", "(id = 0)", Options.create(false, 1), 0, getActivity(), new Callback() {
                 @Override
                 protected void config() {
                     if (results.getItems().size() > 0) {
@@ -162,7 +162,14 @@ public class RecommendationsFragment extends Fragment implements SwipeRefreshLay
                         Callback.showToast(getActivity(), "No user ID has been found to fetch your recommendations.");
                     }
                 }
-            }, Callback.errorCallback(getActivity()));
+            }, new Callback() {
+                @Override
+                protected void config() {
+                    showToast(getActivity(), message);
+                    progressBar.setVisibility(View.INVISIBLE);
+                    refreshLayout.setRefreshing(false);
+                }
+            });
         } else {
             fetchRecommendations(userId, successCallback, forceRefresh);
         }

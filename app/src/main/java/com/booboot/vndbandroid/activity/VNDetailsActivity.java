@@ -512,7 +512,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                         /* Database tables not init yet: going to send the API query */
                         switch (groupName) {
                             case VNDetailsFactory.TITLE_CHARACTERS:
-                                VNDBServer.get("character", Cache.CHARACTER_FLAGS, "(vn = " + vn.getId() + ")", Options.create(true, true, 0), 0, VNDetailsActivity.this, new Callback() {
+                                VNDBServer.get("character", Cache.CHARACTER_FLAGS, "(vn = " + vn.getId() + ")", Options.create(true, 0), 0, VNDetailsActivity.this, new Callback() {
                                     @Override
                                     protected void config() {
                                         if (results.getItems().isEmpty()) {
@@ -538,7 +538,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
 
                             case VNDetailsFactory.TITLE_INFORMATION:
                             case VNDetailsFactory.TITLE_RELEASES:
-                                VNDBServer.get("release", Cache.RELEASE_FLAGS, "(vn = " + vn.getId() + ")", Options.create(1, 25, "released", false, true, true, 0), 1, VNDetailsActivity.this, new Callback() {
+                                VNDBServer.get("release", Cache.RELEASE_FLAGS, "(vn = " + vn.getId() + ")", Options.create(1, 25, "released", false, true, 0), 1, VNDetailsActivity.this, new Callback() {
                                     @Override
                                     protected void config() {
                                         List<Item> releasesList;
@@ -770,7 +770,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
 
     @Override
     public void onRefresh() {
-        VNDBServer.get("vn", Cache.VN_FLAGS, "(id = " + vn.getId() + ")", Options.create(false, false, 1), 0, this, new Callback() {
+        VNDBServer.get("vn", Cache.VN_FLAGS, "(id = " + vn.getId() + ")", Options.create(false, 1), 0, this, new Callback() {
             @Override
             protected void config() {
                 if (results.getItems().size() > 0) {

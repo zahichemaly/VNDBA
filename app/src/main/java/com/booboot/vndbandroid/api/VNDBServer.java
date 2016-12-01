@@ -8,7 +8,6 @@ import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.bean.vndb.DbStats;
 import com.booboot.vndbandroid.bean.vndb.Error;
 import com.booboot.vndbandroid.bean.vndb.Fields;
-import com.booboot.vndbandroid.bean.vndb.Item;
 import com.booboot.vndbandroid.bean.vndb.Login;
 import com.booboot.vndbandroid.bean.vndb.Ok;
 import com.booboot.vndbandroid.bean.vndb.Options;
@@ -27,7 +26,6 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -53,17 +51,15 @@ public class VNDBServer {
 
     private static Context context;
     private static Callback successCallback, errorCallback;
-    private static boolean useCacheIfError;
 
     /* Pipelining variables */
     private static ExecutorService threadManager;
     private static VNDBCommand[] plPageResults;
 
-    private static void init(Context c, Callback sc, Callback ec, boolean ucie) {
+    private static void init(Context c, Callback sc, Callback ec) {
         context = c;
         successCallback = sc;
         errorCallback = ec;
-        useCacheIfError = ucie;
     }
 
     public static boolean connect(int socketIndex) {
@@ -115,7 +111,7 @@ public class VNDBServer {
     public static void get(final String type, final String flags, final String filters, final Options options, final int socketIndex, final Context context, final Callback successCallback, final Callback errorCallback) {
         new Thread() {
             public void run() {
-                init(context, successCallback, errorCallback, options.isUseCacheIfError());
+                init(context, successCallback, errorCallback);
                 final StringBuilder command = new StringBuilder();
                 command.append("get ");
                 command.append(type);
@@ -144,6 +140,9 @@ public class VNDBServer {
                         threadManager.awaitTermination(30, TimeUnit.MINUTES);
                         threadManager = null;
                         for (VNDBCommand plPageResult : plPageResults) {
+                            /* Error case: plPageResult is null, which means there was an exception in one thread and the results are incomplete.
+                            To avoid data corruption and/or bad behavior, we stop immediately: the error callback has already been called internally */
+                            if (plPageResult == null) return;
                             if (results == null) {
                                 results = plPageResult;
                             } else if (results instanceof Results && plPageResult instanceof Results) {
@@ -165,7 +164,7 @@ public class VNDBServer {
                         if (results == null) {
                             results = pageResults;
                         } else if (results instanceof Results && pageResults instanceof Results) {
-                                /* If there there's more than 1 page, we add the current page items to the overall results, to avoid overwriting the results of the previous pages */
+                            /* If there there's more than 1 page, we add the current page items to the overall results, to avoid overwriting the results of the previous pages */
                             ((Results) results).getItems().addAll(((Results) pageResults).getItems());
                         }
 
@@ -185,7 +184,7 @@ public class VNDBServer {
     public static void set(final String type, final int id, final Fields fields, final Context context, final Callback successCallback, final Callback errorCallback) {
         new Thread() {
             public void run() {
-                init(context, successCallback, errorCallback, false);
+                init(context, successCallback, errorCallback);
                 StringBuilder command = new StringBuilder();
                 command.append("set ");
                 command.append(type);
@@ -203,7 +202,7 @@ public class VNDBServer {
     public static void dbstats(final Callback successCallback, final Callback errorCallback) {
         new Thread() {
             public void run() {
-                init(context, successCallback, errorCallback, false);
+                init(context, successCallback, errorCallback);
                 VNDBCommand results = sendCommand("dbstats", null, 0);
                 if (results instanceof DbStats) {
                     successCallback.dbstats = (DbStats) results;
@@ -279,16 +278,8 @@ public class VNDBServer {
             } catch (SocketException se) {
                 se.printStackTrace();
                 VNDBServer.close(socketIndex);
-
-                if (!useCacheIfError || !Cache.loadFromCache(context)) {
-                    errorCallback.message = ConnectionReceiver.CONNECTION_ERROR_MESSAGE;
-                    errorCallback.call();
-                } else {
-                    Results results = new Results();
-                    results.setItems(new ArrayList<Item>());
-                    successCallback.results = results;
-                    successCallback.call();
-                }
+                errorCallback.message = ConnectionReceiver.CONNECTION_ERROR_MESSAGE;
+                errorCallback.call();
                 return null;
             } catch (IOException ioe) {
                 ioe.printStackTrace();
@@ -320,7 +311,7 @@ public class VNDBServer {
             return null;
         }
         if (BuildConfig.DEBUG) {
-           //    log(response.toString());
+            //    log(response.toString());
         }
 
         int delimiterIndex = response.indexOf("{");

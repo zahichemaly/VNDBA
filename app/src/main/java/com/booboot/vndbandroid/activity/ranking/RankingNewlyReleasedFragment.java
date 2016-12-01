@@ -27,7 +27,7 @@ public class RankingNewlyReleasedFragment extends Fragment {
             progressiveResultLoader = new ProgressiveResultLoader();
             progressiveResultLoader.setActivity(getActivity());
             progressiveResultLoader.setRootView(rootView);
-            progressiveResultLoader.setOptions(Options.create(1, 25, "released", true, false, false, 1));
+            progressiveResultLoader.setOptions(Options.create(1, 25, "released", true, false, 1));
             progressiveResultLoader.setShowFullDate(true);
             progressiveResultLoader.setShowRank(true);
             String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());

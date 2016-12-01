@@ -2,7 +2,6 @@ package com.booboot.vndbandroid.activity;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
@@ -77,7 +76,7 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
         materialListView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), new RecyclerItemClickListener.OnItemClickListener() {
             @Override
-            public void onItemClick(@NonNull CardView cardView, int position) {
+            public void onItemClick(CardView cardView, int position) {
                 Cache.openVNDetails(getActivity(), (int) cardView.getTag());
             }
         }));

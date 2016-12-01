@@ -13,7 +13,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.IdRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -324,7 +323,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setMenuCounter(R.id.nav_votelist, Cache.votelist.size());
     }
 
-    private void setMenuCounter(@IdRes int itemId, int count) {
+    private void setMenuCounter(int itemId, int count) {
         if (navigationView != null) {
             TextView view = (TextView) navigationView.getMenu().findItem(itemId).getActionView();
             view.setText(count > 0 ? String.valueOf(count) : null);
