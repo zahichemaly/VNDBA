@@ -6,7 +6,7 @@
     android:orientation="vertical">
 
     <LinearLayout
-        android:id="@+id/item_hide_already_in_wishlist"
+        android:id="@+id/item_hide_in_wishlist"
         android:layout_width="match_parent"
         android:layout_height="?attr/listPreferredItemHeightSmall"
         android:gravity="center_vertical"
@@ -25,7 +25,7 @@
             android:textColor="@color/primaryText"/>
 
         <CheckBox
-            android:id="@+id/check_hide_already_in_wishlist"
+            android:id="@+id/check_hide_in_wishlist"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
     </LinearLayout>

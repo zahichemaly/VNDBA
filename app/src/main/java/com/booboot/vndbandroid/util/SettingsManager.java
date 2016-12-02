@@ -138,4 +138,15 @@ public class SettingsManager {
         editor.putBoolean("COVER_BACKGROUND", ok);
         editor.commit();
     }
+
+    public static boolean getHideRecommendationsInWishlist(Context context) {
+        new SettingsManager(context);
+        return settings.getBoolean("HIDE_RECOMMENDATIONS_IN_WISHLIST", false);
+    }
+
+    public static void setHideRecommendationsInWishlist(Context context, boolean ok) {
+        new SettingsManager(context);
+        editor.putBoolean("HIDE_RECOMMENDATIONS_IN_WISHLIST", ok);
+        editor.commit();
+    }
 }

@@ -23,7 +23,7 @@ import com.booboot.vndbandroid.util.Utils;
  */
 public class VNCardFactory {
     public static void buildCard(Activity activity, Item vn, RecyclerView materialListView, boolean showFullDate, boolean showRank, boolean showRating, boolean showPopularity, boolean showVoteCount) {
-        StringBuilder title = new StringBuilder(), subtitle = new StringBuilder(), description = new StringBuilder();
+        StringBuilder title = new StringBuilder(), subtitle = new StringBuilder();
         if (showRank)
             title.append("#").append(materialListView.getAdapter().getItemCount() + 1).append(activity.getString(R.string.dash));
         title.append(vn.getTitle());

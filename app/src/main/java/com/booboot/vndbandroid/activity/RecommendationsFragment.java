@@ -49,6 +49,7 @@ public class RecommendationsFragment extends Fragment implements SwipeRefreshLay
     private VNCardsListView materialListView;
     private ProgressBar progressBar;
     private SwipeRefreshLayout refreshLayout;
+    private CheckBox checkHideInWishlist;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -99,7 +100,11 @@ public class RecommendationsFragment extends Fragment implements SwipeRefreshLay
                 optionsPopup = PopupMenuFactory.get(getActivity(), R.layout.recommendations_menu, getActivity().findViewById(R.id.action_recommendations_options), optionsPopup, new PopupMenuFactory.Callback() {
                     @Override
                     public void create(View content) {
-                        content.findViewById(R.id.item_hide_already_in_wishlist).setOnClickListener(RecommendationsFragment.this);
+                        checkHideInWishlist = (CheckBox) content.findViewById(R.id.check_hide_in_wishlist);
+                        content.findViewById(R.id.item_hide_in_wishlist).setOnClickListener(RecommendationsFragment.this);
+                        checkHideInWishlist.setOnClickListener(RecommendationsFragment.this);
+                        checkHideInWishlist.setChecked(SettingsManager.getHideRecommendationsInWishlist(getActivity()));
+
                     }
                 });
                 break;
@@ -111,9 +116,11 @@ public class RecommendationsFragment extends Fragment implements SwipeRefreshLay
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.item_hide_already_in_wishlist:
-                CheckBox hideAlreadyInWishlist = (CheckBox) view.findViewById(R.id.check_hide_already_in_wishlist);
-                hideAlreadyInWishlist.setChecked(!hideAlreadyInWishlist.isChecked());
+            case R.id.item_hide_in_wishlist:
+                checkHideInWishlist.setChecked(!checkHideInWishlist.isChecked());
+            case R.id.check_hide_in_wishlist:
+                SettingsManager.setHideRecommendationsInWishlist(getActivity(), checkHideInWishlist.isChecked());
+                refresh(false);
                 break;
         }
     }
@@ -217,6 +224,9 @@ public class RecommendationsFragment extends Fragment implements SwipeRefreshLay
         showBackgroundInfo("You don't have enough novels in your list so we can give you recommendations. Add more novels and come back here later!", false);
 
         for (SimilarNovel recommendation : recommendations) {
+            if (Cache.wishlist != null && Cache.wishlist.containsKey(recommendation.getNovelId()) && SettingsManager.getHideRecommendationsInWishlist(getActivity()))
+                continue; // Recommendation already in wishlist: don't show it
+
             Item vn = new Item(recommendation.getNovelId());
             vn.setPopularity(recommendation.getPredictedRatingPercentage());
             vn.setTitle(recommendation.getTitle());
