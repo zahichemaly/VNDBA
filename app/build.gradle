@@ -8,8 +8,8 @@ android {
         applicationId "com.booboot.vndbandroid"
         minSdkVersion 17
         targetSdkVersion 25
-        versionCode 28
-        versionName "2.0.9"
+        versionCode 29
+        versionName "2.1.0"
     }
 
     buildTypes {
