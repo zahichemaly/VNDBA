@@ -164,7 +164,7 @@ public class VNDBServer {
                         if (results == null) {
                             results = pageResults;
                         } else if (results instanceof Results && pageResults instanceof Results) {
-                            /* If there there's more than 1 page, we add the current page items to the overall results, to avoid overwriting the results of the previous pages */
+                            /* If there's more than 1 page, we add the current page items to the overall results, to avoid overwriting the results of the previous pages */
                             ((Results) results).getItems().addAll(((Results) pageResults).getItems());
                         }
 
@@ -342,21 +342,17 @@ public class VNDBServer {
     }
 
     public static void close(final int socketIndex) {
-        new Thread() {
-            public void run() {
-                try {
-                    SSLSocket socket = SocketPool.getSocket(socketIndex);
-                    if (socket != null && !socket.isClosed()) {
-                        socket.getInputStream().close();
-                        socket.getOutputStream().close();
-                        socket.close();
-                    }
-                    SocketPool.setSocket(socketIndex, null);
-                } catch (IOException ioe) {
-                    ioe.printStackTrace();
-                }
+        try {
+            SSLSocket socket = SocketPool.getSocket(socketIndex);
+            if (socket != null && !socket.isClosed()) {
+                socket.getInputStream().close();
+                socket.getOutputStream().close();
+                socket.close();
             }
-        }.start();
+            SocketPool.setSocket(socketIndex, null);
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
     }
 
     public static void closeAll() {
