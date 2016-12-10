@@ -3,6 +3,7 @@ package com.booboot.vndbandroid.activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -724,6 +725,15 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
 
             case R.id.action_view_on_vndb:
                 Utils.openURL(this, Links.VNDB_PAGE + vn.getId());
+                break;
+
+            case R.id.action_go_back_to_list:
+                finish();
+                if (Cache.loadedFromCache) {
+                    overridePendingTransition(R.anim.slide_back_in, R.anim.slide_back_out);
+                } else {
+                    startActivity(new Intent(this, LoginActivity.class));
+                }
                 break;
 
             case R.id.action_spoiler:

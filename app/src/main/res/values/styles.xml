@@ -240,6 +240,10 @@
 
     <style name="SplashScreen" parent="AppTheme">
         <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <!-- Mandatory to add the same attributes without the "android:" namespace, otherwise it works for LoginActivity but not VNDBURLActivity for some fucking reason -->
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowBackground">@drawable/splash_logo</item>
     </style>

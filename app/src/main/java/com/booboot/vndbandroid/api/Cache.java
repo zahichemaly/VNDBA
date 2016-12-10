@@ -275,11 +275,16 @@ public class Cache {
     }
 
     public static void openVNDetails(final Activity activity, final int vnId) {
+        openVNDetails(activity, vnId, null, null);
+    }
+
+    public static void openVNDetails(final Activity activity, final int vnId, final Callback successCallback, Callback errorCallback) {
         if (Cache.vns.get(vnId) != null) {
             Intent intent = new Intent(activity, VNDetailsActivity.class);
             intent.putExtra(VNTypeFragment.VN_ARG, vnId);
             activity.startActivity(intent);
             activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+            if (successCallback != null) successCallback.call();
             return;
         }
 
@@ -292,9 +297,10 @@ public class Cache {
                     intent.putExtra(VNTypeFragment.VN_ARG, vnId);
                     activity.startActivity(intent);
                     activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+                    if (successCallback != null) successCallback.call();
                 }
             }
-        }, Callback.errorCallback(activity));
+        }, errorCallback != null ? errorCallback : Callback.errorCallback(activity));
     }
 
     public static void saveToCache(Context context, String filename, Object object) {
