@@ -97,7 +97,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
     private List<Item> releasesList;
     private List<SimilarNovel> similarNovels;
 
-    private ImageButton image;
+    private ImageView image;
     private Button statusButton;
     private Button wishlistButton;
     private Button votesButton;
@@ -273,7 +273,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         expandableListAdapter = new VNExpandableListAdapter(this, expandableListTitle, expandableListDetail);
 
         final View header = getLayoutInflater().inflate(R.layout.vn_details_header, null);
-        image = (ImageButton) header.findViewById(R.id.image);
+        image = (ImageView) header.findViewById(R.id.image);
         statusButton = (Button) header.findViewById(R.id.statusButton);
         wishlistButton = (Button) header.findViewById(R.id.wishlistButton);
         votesButton = (Button) header.findViewById(R.id.votesButton);
@@ -289,7 +289,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         } else if (coverBackground) {
             blurBackground.setImageResource(R.drawable.blur_background_placeholder);
 
-            Picasso.with(this).load(imageUrl).into(new Target() {
+            Target picassoTarget = new Target() {
                 @Override
                 public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                     Bitmap blurredImage = BitmapTransformation.darkBlur(VNDetailsActivity.this, bitmap);
@@ -304,7 +304,9 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                 @Override
                 public void onPrepareLoad(Drawable placeHolderDrawable) {
                 }
-            });
+            };
+            image.setTag(picassoTarget);
+            Picasso.with(this).load(imageUrl).into(picassoTarget);
         } else {
             Picasso.with(this).load(imageUrl).into(image);
         }
