@@ -2,8 +2,10 @@ package com.booboot.vndbandroid.activity;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -724,7 +726,10 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                 break;
 
             case R.id.action_view_on_vndb:
+                /* #78 : Disabling the deep linking feature temporarily : the user obviously wants to go to the web version if they click on this button! */
+                getPackageManager().setComponentEnabledSetting(new ComponentName(this, VNDBURLActivity.class), PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
                 Utils.openURL(this, Links.VNDB_PAGE + vn.getId());
+                getPackageManager().setComponentEnabledSetting(new ComponentName(this, VNDBURLActivity.class), PackageManager.COMPONENT_ENABLED_STATE_DEFAULT, PackageManager.DONT_KILL_APP);
                 break;
 
             case R.id.action_go_back_to_list:

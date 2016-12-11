@@ -70,6 +70,7 @@ public class Utils {
     }
 
     public static void openURL(Activity context, String url) {
+        if (context == null) return;
         if (SettingsManager.getInAppBrowser(context)) {
             CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
             builder.setToolbarColor(getThemeColor(context, R.attr.colorPrimary));

@@ -5,9 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.booboot.vndbandroid.api.Cache;
-import com.booboot.vndbandroid.bean.vndbandroid.Theme;
 import com.booboot.vndbandroid.util.Callback;
-import com.booboot.vndbandroid.util.SettingsManager;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
