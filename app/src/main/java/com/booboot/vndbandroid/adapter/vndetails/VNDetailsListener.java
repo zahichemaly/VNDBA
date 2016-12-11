@@ -53,7 +53,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
     @Override
     public boolean onMenuItemClick(final MenuItem item) {
         if (!ConnectionReceiver.isConnected()) {
-            Toast.makeText(activity, ConnectionReceiver.CONNECTION_ERROR_MESSAGE, Toast.LENGTH_LONG).show();
+            Callback.showToast(activity, ConnectionReceiver.CONNECTION_ERROR_MESSAGE);
             return true;
         }
 

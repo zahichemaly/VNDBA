@@ -333,7 +333,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                     ClipData clip = ClipData.newPlainText("CLIPBOARD", copiedText);
                     clipboard.setPrimaryClip(clip);
 
-                    Toast.makeText(VNDetailsActivity.this, "Element copied to clipboard.", Toast.LENGTH_SHORT).show();
+                    Callback.showToast(VNDetailsActivity.this, "Element copied to clipboard.");
                 }
                 return false;
             }
@@ -346,7 +346,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                 boolean hasChildren = parent.getExpandableListAdapter().getChildrenCount(groupPosition) > 0;
 
                 if (!handledAsynchronously && !hasChildren) {
-                    Toast.makeText(VNDetailsActivity.this, "Nothing to show here...", Toast.LENGTH_SHORT).show();
+                    Callback.showToast(VNDetailsActivity.this, "Nothing to show here...");
                 }
                 return handledAsynchronously || !hasChildren;
             }
@@ -625,7 +625,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
 
         boolean hasChildren = expandableListAdapter.getChildrenCount(groupPosition) > 0;
         if (!hasChildren) {
-            Toast.makeText(VNDetailsActivity.this, "Nothing to show here...", Toast.LENGTH_SHORT).show();
+            Callback.showToast(VNDetailsActivity.this, "Nothing to show here...");
         }
     }
 

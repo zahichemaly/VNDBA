@@ -46,11 +46,11 @@ public abstract class Callback {
     }
 
     public static void showToast(final Context context, final String message) {
-        if (message == null) return;
+        if (message == null || context == null) return;
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                final Toast toast = Toast.makeText(context, message, Toast.LENGTH_LONG);
+                final Toast toast = Toast.makeText(context, message, message.length() > 40 ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT);
                 toast.show();
                 if (message.length() > 90) {
                     new CountDownTimer(8000, 1000) {

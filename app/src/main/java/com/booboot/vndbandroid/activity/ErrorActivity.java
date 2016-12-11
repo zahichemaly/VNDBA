@@ -33,6 +33,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.booboot.vndbandroid.bean.vndbandroid.Theme;
+import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
 
@@ -98,7 +99,7 @@ public final class ErrorActivity extends AppCompatActivity {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             copyErrorToClipboard();
-                                            Toast.makeText(ErrorActivity.this, R.string.customactivityoncrash_error_activity_error_details_copied, Toast.LENGTH_SHORT).show();
+                                            Callback.showToast(ErrorActivity.this, getString(R.string.customactivityoncrash_error_activity_error_details_copied));
                                         }
                                     })
                             .show();

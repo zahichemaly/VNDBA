@@ -35,14 +35,12 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
     private SwipeRefreshLayout refreshLayout;
     private MainActivity activity;
 
-    private int type;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.vn_card_list, container, false);
 
         int tabValue = getArguments().getInt(TAB_VALUE_ARG);
-        type = getArguments().getInt(VNListFragment.LIST_TYPE_ARG);
+        int type = getArguments().getInt(VNListFragment.LIST_TYPE_ARG);
 
         materialListView = (VNCardsListView) rootView.findViewById(R.id.materialListView);
         VNCardFactory.setupList(getActivity(), materialListView);
@@ -59,7 +57,7 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
             case ListType.VOTELIST:
                 for (final VotelistItem vn : new ArrayList<>(Cache.votelist.values())) {
                     if (Cache.vns.get(vn.getVn()) == null) Cache.votelist.remove(vn.getVn());
-                    if (type == ListType.VOTELIST && vn.getVote() / 10 != tabValue && vn.getVote() / 10 != tabValue - 1 || Cache.vns.get(vn.getVn()) == null)
+                    if (vn.getVote() / 10 != tabValue && vn.getVote() / 10 != tabValue - 1 || Cache.vns.get(vn.getVn()) == null)
                         continue;
                     VNCardFactory.buildCard(getActivity(), Cache.vns.get(vn.getVn()), materialListView, false, false, false, false, false);
                 }
@@ -68,7 +66,7 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
             case ListType.WISHLIST:
                 for (final WishlistItem vn : new ArrayList<>(Cache.wishlist.values())) {
                     if (Cache.vns.get(vn.getVn()) == null) Cache.wishlist.remove(vn.getVn());
-                    if (type == ListType.WISHLIST && vn.getPriority() != tabValue || Cache.vns.get(vn.getVn()) == null) continue;
+                    if (vn.getPriority() != tabValue || Cache.vns.get(vn.getVn()) == null) continue;
                     VNCardFactory.buildCard(getActivity(), Cache.vns.get(vn.getVn()), materialListView, false, false, false, false, false);
                 }
                 break;

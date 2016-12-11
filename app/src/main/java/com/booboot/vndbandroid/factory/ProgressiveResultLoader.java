@@ -132,7 +132,7 @@ public class ProgressiveResultLoader implements SwipeRefreshLayout.OnRefreshList
             public void config() {
                 progressBar.setVisibility(View.INVISIBLE);
                 refreshLayout.setRefreshing(false);
-                Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
+                Callback.showToast(activity, message);
             }
         });
     }

@@ -72,7 +72,7 @@ public class Lightbox implements Target {
     @Override
     public void onBitmapFailed(Drawable errorDrawable) {
         dialog.dismiss();
-        Toast.makeText(context, "Could not load image.", Toast.LENGTH_SHORT).show();
+        Callback.showToast(context, "Could not load image.");
     }
 
     @Override
