@@ -487,6 +487,13 @@ public class DB extends SQLiteOpenHelper {
             }
 
             Item item = Cache.vns.get(vn);
+
+            if (item.getLanguages() == null || item.getOrig_lang() == null || item.getPlatforms() == null || item.getAnime() == null || item.getRelations() == null || item.getScreens() == null || item.getTags() == null) {
+                /* A list attribute of the VN is null: that shouldn't be possible because the API NEVER returns null for these attributes (at least []).
+                If that ever happens, we don't insert this VN into the database because it would corrupt it with incomplete data. */
+                continue;
+            }
+
             queries[0].append("(")
                     .append(item.getId()).append(",")
                     .append(formatString(item.getTitle())).append(",")
@@ -564,6 +571,7 @@ public class DB extends SQLiteOpenHelper {
                         .append("),");
                 itemsToInsert[6] = checkInsertLimit(db, queries[6], itemsToInsert[6], TABLE_TAGS);
             }
+
             for (Screen screen : item.getScreens()) {
                 queries[7].append("(")
                         .append(item.getId()).append(",")
