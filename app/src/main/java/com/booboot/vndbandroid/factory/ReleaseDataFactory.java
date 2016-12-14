@@ -4,10 +4,10 @@ import android.text.TextUtils;
 
 import com.booboot.vndbandroid.adapter.doublelist.DoubleListElement;
 import com.booboot.vndbandroid.bean.vndb.Item;
-import com.booboot.vndbandroid.bean.vndbandroid.Language;
 import com.booboot.vndbandroid.bean.vndb.Media;
-import com.booboot.vndbandroid.bean.vndbandroid.Platform;
 import com.booboot.vndbandroid.bean.vndb.Producer;
+import com.booboot.vndbandroid.bean.vndbandroid.Language;
+import com.booboot.vndbandroid.bean.vndbandroid.Platform;
 import com.booboot.vndbandroid.util.Utils;
 
 import java.util.ArrayList;
@@ -40,20 +40,26 @@ public class ReleaseDataFactory {
         releaseData.add(new DoubleListElement("Publication", TextUtils.join(", ", publication), false));
 
         List<String> full_languages = new ArrayList<>();
-        for (String language : release.getLanguages()) {
-            full_languages.add(Language.FULL_TEXT.get(language));
+        if (release.getLanguages() != null) {
+            for (String language : release.getLanguages()) {
+                full_languages.add(Language.FULL_TEXT.get(language));
+            }
         }
         releaseData.add(new DoubleListElement("Languages", TextUtils.join(", ", full_languages), false));
 
         List<String> full_platforms = new ArrayList<>();
-        for (String platform : release.getPlatforms()) {
-            full_platforms.add(Platform.FULL_TEXT.get(platform));
+        if (release.getPlatforms() != null) {
+            for (String platform : release.getPlatforms()) {
+                full_platforms.add(Platform.FULL_TEXT.get(platform));
+            }
         }
         releaseData.add(new DoubleListElement("Platforms", TextUtils.join(", ", full_platforms), false));
 
         List<String> media = new ArrayList<>();
-        for (Media medium : release.getMedia()) {
-            media.add(Media.FULL_TEXT.get(medium.getMedium()) + (medium.getQty() > 0 ? " (" + medium.getQty() + ")" : ""));
+        if (release.getMedia() != null) {
+            for (Media medium : release.getMedia()) {
+                media.add(Media.FULL_TEXT.get(medium.getMedium()) + (medium.getQty() > 0 ? " (" + medium.getQty() + ")" : ""));
+            }
         }
         releaseData.add(new DoubleListElement("Medium", TextUtils.join(", ", media), false));
 
@@ -68,11 +74,13 @@ public class ReleaseDataFactory {
         LinkedHashMap<String, List<String>> producers = new LinkedHashMap<>();
         producers.put("Developer", new ArrayList<String>());
         producers.put("Publisher", new ArrayList<String>());
-        for (Producer producer : release.getProducers()) {
-            if (producer.isDeveloper())
-                producers.get("Developer").add(producer.getName());
-            if (producer.isPublisher())
-                producers.get("Publisher").add(producer.getName());
+        if (release.getProducers() != null) {
+            for (Producer producer : release.getProducers()) {
+                if (producer.isDeveloper())
+                    producers.get("Developer").add(producer.getName());
+                if (producer.isPublisher())
+                    producers.get("Publisher").add(producer.getName());
+            }
         }
         for (String producer : producers.keySet()) {
             if (producers.get(producer).isEmpty()) continue;
