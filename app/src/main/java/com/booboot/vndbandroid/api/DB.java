@@ -291,6 +291,10 @@ public class DB extends SQLiteOpenHelper {
     }
 
     public static void saveVnlist(Context context) {
+        saveVnlist(context, true, true);
+    }
+
+    public static void saveVnlist(Context context, boolean beginTransaction, boolean endTransaction) {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
 
@@ -298,7 +302,8 @@ public class DB extends SQLiteOpenHelper {
         int itemsToInsert = 0;
         /* Retrieving all items to check if we have TO INSERT or UPDATE */
         LinkedHashMap<Integer, VNlistItem> alreadyInsertedItems = loadVnlist(context);
-        db.beginTransaction();
+        if (beginTransaction)
+            db.beginTransaction();
 
         for (int vn : Cache.vnlist.keySet()) {
             VNlistItem item = Cache.vnlist.get(vn);
@@ -329,8 +334,10 @@ public class DB extends SQLiteOpenHelper {
             db.execSQL(query.toString());
         }
 
-        db.setTransactionSuccessful();
-        db.endTransaction();
+        if (endTransaction) {
+            db.setTransactionSuccessful();
+            db.endTransaction();
+        }
     }
 
     private static int checkInsertLimit(SQLiteDatabase db, StringBuilder query, int itemsToInsert, String tableName) {
@@ -346,6 +353,10 @@ public class DB extends SQLiteOpenHelper {
     }
 
     public static void saveVotelist(Context context) {
+        saveVotelist(context, true, true);
+    }
+
+    public static void saveVotelist(Context context, boolean beginTransaction, boolean endTransaction) {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
 
@@ -353,7 +364,8 @@ public class DB extends SQLiteOpenHelper {
         int itemsToInsert = 0;
         /* Retrieving all items to check if we have TO INSERT or UPDATE */
         LinkedHashMap<Integer, VotelistItem> alreadyInsertedItems = loadVotelist(context);
-        db.beginTransaction();
+        if (beginTransaction)
+            db.beginTransaction();
 
         for (int vn : Cache.votelist.keySet()) {
             VotelistItem item = Cache.votelist.get(vn);
@@ -382,11 +394,17 @@ public class DB extends SQLiteOpenHelper {
             db.execSQL(query.toString());
         }
 
-        db.setTransactionSuccessful();
-        db.endTransaction();
+        if (endTransaction) {
+            db.setTransactionSuccessful();
+            db.endTransaction();
+        }
     }
 
     public static void saveWishlist(Context context) {
+        saveWishlist(context, true, true);
+    }
+
+    public static void saveWishlist(Context context, boolean beginTransaction, boolean endTransaction) {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
 
@@ -394,7 +412,8 @@ public class DB extends SQLiteOpenHelper {
         int itemsToInsert = 0;
         /* Retrieving all items to check if we have TO INSERT or UPDATE */
         LinkedHashMap<Integer, WishlistItem> alreadyInsertedItems = loadWishlist(context);
-        db.beginTransaction();
+        if (beginTransaction)
+            db.beginTransaction();
 
         for (int vn : Cache.wishlist.keySet()) {
             WishlistItem item = Cache.wishlist.get(vn);
@@ -423,14 +442,16 @@ public class DB extends SQLiteOpenHelper {
             db.execSQL(query.toString());
         }
 
-        db.setTransactionSuccessful();
-        db.endTransaction();
+        if (endTransaction) {
+            db.setTransactionSuccessful();
+            db.endTransaction();
+        }
     }
 
-    public static void deleteVN(Context context, int vnId, boolean endTransaction) {
+    public static void deleteVN(Context context, int vnId, boolean beginTransaction, boolean endTransaction) {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
-        db.beginTransaction();
+        if (beginTransaction) db.beginTransaction();
 
         db.execSQL("DELETE FROM " + TABLE_VN + " WHERE id = " + vnId);
         db.execSQL("DELETE FROM " + TABLE_LANGUAGES + " WHERE vn = " + vnId);
@@ -451,10 +472,10 @@ public class DB extends SQLiteOpenHelper {
     }
 
     public static void saveVNs(Context context) {
-        saveVNs(context, true);
+        saveVNs(context, true, true);
     }
 
-    public static void saveVNs(Context context, boolean beginTransaction) {
+    public static void saveVNs(Context context, boolean beginTransaction, boolean endTransaction) {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
 
@@ -587,8 +608,10 @@ public class DB extends SQLiteOpenHelper {
 
         exec(db, queries, itemsToInsert);
 
-        db.setTransactionSuccessful();
-        db.endTransaction();
+        if (endTransaction) {
+            db.setTransactionSuccessful();
+            db.endTransaction();
+        }
     }
 
     public static void saveCharacters(Context context, List<Item> characters, int vnId) {

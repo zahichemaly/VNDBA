@@ -169,10 +169,10 @@ public class Cache {
                         }
 
                         sortAll(context);
-                        DB.saveVnlist(context);
-                        DB.saveVotelist(context);
-                        DB.saveWishlist(context);
-                        DB.saveVNs(context);
+                        DB.saveVnlist(context, true, false);
+                        DB.saveVotelist(context, false, false);
+                        DB.saveWishlist(context, false, false);
+                        DB.saveVNs(context, false, true);
 
                         shouldRefreshView = true;
                         successCallback.call();

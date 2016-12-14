@@ -38,7 +38,6 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RadioButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.adapter.vndetails.VNDetailsElement;
@@ -795,7 +794,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                     Cache.vns.put(vn.getId(), vn);
 
                     /* Deleting all saved data related to the VN, so we can replace it */
-                    DB.deleteVN(VNDetailsActivity.this, vn.getId(), false);
+                    DB.deleteVN(VNDetailsActivity.this, vn.getId(), true, false);
                     Cache.characters.remove(vn.getId());
                     Cache.releases.remove(vn.getId());
                     Cache.similarNovels.remove(vn.getId());
@@ -803,7 +802,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                     releases = null;
                     similarNovels = null;
 
-                    DB.saveVNs(VNDetailsActivity.this, false);
+                    DB.saveVNs(VNDetailsActivity.this, false, true);
 
                     /* Collapsing all submenus */
                     int count = expandableListAdapter.getGroupCount();
@@ -834,10 +833,10 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
 
     @Override
     protected void onDestroy() {
-        DB.saveVnlist(this);
-        DB.saveVotelist(this);
-        DB.saveWishlist(this);
-        DB.saveVNs(this);
+        DB.saveVnlist(this, true, false);
+        DB.saveVotelist(this, false, false);
+        DB.saveWishlist(this, false, false);
+        DB.saveVNs(this, false, true);
         Lightbox.dismiss();
         if (spoilerPopup != null && spoilerPopup.isShowing()) spoilerPopup.dismiss();
         super.onDestroy();

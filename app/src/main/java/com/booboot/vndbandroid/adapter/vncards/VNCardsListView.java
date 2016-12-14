@@ -1,7 +1,6 @@
 package com.booboot.vndbandroid.adapter.vncards;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
@@ -13,11 +12,11 @@ public class VNCardsListView extends RecyclerView {
         super(context);
     }
 
-    public VNCardsListView(Context context, @Nullable AttributeSet attrs) {
+    public VNCardsListView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public VNCardsListView(Context context, @Nullable AttributeSet attrs, int defStyle) {
+    public VNCardsListView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 

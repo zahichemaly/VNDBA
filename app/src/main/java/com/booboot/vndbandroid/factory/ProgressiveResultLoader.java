@@ -2,7 +2,6 @@ package com.booboot.vndbandroid.factory;
 
 import android.app.Activity;
 import android.os.Build;
-import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,7 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.adapter.vncards.Card;
@@ -69,7 +67,7 @@ public class ProgressiveResultLoader implements SwipeRefreshLayout.OnRefreshList
 
         materialListView.addOnItemTouchListener(new RecyclerItemClickListener(activity, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
-            public void onItemClick(@NonNull CardView cardView, int position) {
+            public void onItemClick(CardView cardView, int position) {
                 Cache.openVNDetails(activity, (int) cardView.getTag());
             }
         }));
