@@ -3,12 +3,13 @@ package com.booboot.vndbandroid.factory;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
-import android.util.Log;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.PopupWindow;
 
+import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.util.Pixels;
 
 /**
@@ -26,13 +27,16 @@ public class PopupMenuFactory {
 
         final PopupWindow popupWindow = new PopupWindow(context);
         popupWindow.setWidth(Pixels.px(250, context));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            popupWindow.setElevation(Pixels.px(10, context));
+        }
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View content = layoutInflater.inflate(layout, null);
 
         callback.create(content);
 
         popupWindow.setContentView(content);
-        popupWindow.setBackgroundDrawable(new BitmapDrawable());
+        popupWindow.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.transparent_rounded_white_background));
         popupWindow.setOutsideTouchable(true);
         popupWindow.setTouchable(true);
         popupWindow.setTouchInterceptor(new View.OnTouchListener() {
