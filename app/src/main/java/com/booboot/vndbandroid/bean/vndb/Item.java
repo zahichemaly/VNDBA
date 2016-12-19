@@ -19,6 +19,7 @@ public class Item extends VNDBCommand {
     private String title;
     private String original;
     private String released;
+    /* WARNING: don't initialize these lists because there are important null checks on them */
     private List<String> languages;
     private List<String> orig_lang;
     private List<String> platforms;

@@ -49,7 +49,7 @@ public class Cache {
     public final static String CHARACTER_FLAGS = "basic,details,meas,traits,vns";
     public final static String RELEASE_FLAGS = "basic,details,producers";
 
-    public final static String DBSTATS_CACHE = "dbstats.data";
+    private final static String DBSTATS_CACHE = "dbstats.data";
     public static boolean loadedFromCache = false;
 
     public final static String[] SORT_OPTIONS = new String[]{

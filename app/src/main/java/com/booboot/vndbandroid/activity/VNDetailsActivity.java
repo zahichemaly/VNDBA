@@ -171,24 +171,6 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         if (Cache.similarNovels.get(vn.getId()) != null) {
             similarNovels = Cache.similarNovels.get(vn.getId());
         }
-        if (vn.getLanguages() == null && Cache.vns.get(vn.getId()) != null && Cache.vns.get(vn.getId()).getLanguages() != null) {
-            vn.setLanguages(Cache.vns.get(vn.getId()).getLanguages());
-        }
-        if (vn.getPlatforms() == null && Cache.vns.get(vn.getId()) != null && Cache.vns.get(vn.getId()).getPlatforms() != null) {
-            vn.setPlatforms(Cache.vns.get(vn.getId()).getPlatforms());
-        }
-        if (vn.getAnime() == null && Cache.vns.get(vn.getId()) != null && Cache.vns.get(vn.getId()).getAnime() != null) {
-            vn.setAnime(Cache.vns.get(vn.getId()).getAnime());
-        }
-        if (vn.getRelations() == null && Cache.vns.get(vn.getId()) != null && Cache.vns.get(vn.getId()).getRelations() != null) {
-            vn.setRelations(Cache.vns.get(vn.getId()).getRelations());
-        }
-        if (vn.getTags() == null && Cache.vns.get(vn.getId()) != null && Cache.vns.get(vn.getId()).getTags() != null) {
-            vn.setTags(Cache.vns.get(vn.getId()).getTags());
-        }
-        if (vn.getScreens() == null && Cache.vns.get(vn.getId()) != null && Cache.vns.get(vn.getId()).getScreens() != null) {
-            vn.setScreens(Cache.vns.get(vn.getId()).getScreens());
-        }
 
         initExpandableListView();
 
@@ -647,6 +629,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
     private void groupReleasesByLanguage(List<Item> releasesList) {
         releases = new LinkedHashMap<>();
         for (Item release : releasesList) {
+            if (release.getLanguages() == null) continue;
             for (String language : release.getLanguages()) {
                 if (releases.get(language) == null)
                     releases.put(language, new ArrayList<Item>());

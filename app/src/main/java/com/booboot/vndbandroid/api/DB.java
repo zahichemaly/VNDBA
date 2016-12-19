@@ -811,29 +811,35 @@ public class DB extends SQLiteOpenHelper {
                 itemsToInsert[1] = checkInsertLimit(db, queries[1], itemsToInsert[1], TABLE_RELEASE);
                 alreadyInsertedReleases.put(release.getId(), true);
 
-                for (String language : release.getLanguages()) {
-                    queries[2].append("(")
-                            .append(release.getId()).append(",")
-                            .append(formatString(language))
-                            .append("),");
-                    itemsToInsert[2] = checkInsertLimit(db, queries[2], itemsToInsert[2], TABLE_RELEASE_LANGUAGES);
+                if (release.getLanguages() != null) {
+                    for (String language : release.getLanguages()) {
+                        queries[2].append("(")
+                                .append(release.getId()).append(",")
+                                .append(formatString(language))
+                                .append("),");
+                        itemsToInsert[2] = checkInsertLimit(db, queries[2], itemsToInsert[2], TABLE_RELEASE_LANGUAGES);
+                    }
                 }
 
-                for (String platform : release.getPlatforms()) {
-                    queries[3].append("(")
-                            .append(release.getId()).append(",")
-                            .append(formatString(platform))
-                            .append("),");
-                    itemsToInsert[3] = checkInsertLimit(db, queries[3], itemsToInsert[3], TABLE_RELEASE_PLATFORMS);
+                if (release.getPlatforms() != null) {
+                    for (String platform : release.getPlatforms()) {
+                        queries[3].append("(")
+                                .append(release.getId()).append(",")
+                                .append(formatString(platform))
+                                .append("),");
+                        itemsToInsert[3] = checkInsertLimit(db, queries[3], itemsToInsert[3], TABLE_RELEASE_PLATFORMS);
+                    }
                 }
 
-                for (Media media : release.getMedia()) {
-                    queries[4].append("(")
-                            .append(release.getId()).append(",")
-                            .append(formatString(media.getMedium())).append(",")
-                            .append(media.getQty())
-                            .append("),");
-                    itemsToInsert[4] = checkInsertLimit(db, queries[4], itemsToInsert[4], TABLE_RELEASE_MEDIA);
+                if (release.getMedia() != null) {
+                    for (Media media : release.getMedia()) {
+                        queries[4].append("(")
+                                .append(release.getId()).append(",")
+                                .append(formatString(media.getMedium())).append(",")
+                                .append(media.getQty())
+                                .append("),");
+                        itemsToInsert[4] = checkInsertLimit(db, queries[4], itemsToInsert[4], TABLE_RELEASE_MEDIA);
+                    }
                 }
 
                 for (Producer producer : release.getProducers()) {
@@ -878,7 +884,7 @@ public class DB extends SQLiteOpenHelper {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
 
-        LinkedHashMap<Integer, Item> res = new LinkedHashMap<>(); // vn -> release
+        LinkedHashMap<Integer, Item> res = new LinkedHashMap<>(); // release_id -> release
 
         Cursor[] cursor = new Cursor[5];
 
@@ -897,6 +903,10 @@ public class DB extends SQLiteOpenHelper {
             release.setMinage(cursor[0].getInt(10));
             release.setGtin(cursor[0].getString(11));
             release.setCatalog(cursor[0].getString(12));
+            release.setLanguages(new ArrayList<String>());
+            release.setPlatforms(new ArrayList<String>());
+            release.setMedia(new ArrayList<Media>());
+            release.setProducers(new ArrayList<Producer>());
 
             res.put(cursor[0].getInt(0), release);
         }
@@ -906,8 +916,6 @@ public class DB extends SQLiteOpenHelper {
         while (cursor[1].moveToNext()) {
             Item release = res.get(cursor[1].getInt(0));
             if (release == null) continue;
-            if (release.getLanguages() == null)
-                release.setLanguages(new ArrayList<String>());
             release.getLanguages().add(cursor[1].getString(1));
         }
 
@@ -915,8 +923,6 @@ public class DB extends SQLiteOpenHelper {
         while (cursor[2].moveToNext()) {
             Item release = res.get(cursor[2].getInt(0));
             if (release == null) continue;
-            if (release.getPlatforms() == null)
-                release.setPlatforms(new ArrayList<String>());
             release.getPlatforms().add(cursor[2].getString(1));
         }
 
@@ -924,8 +930,6 @@ public class DB extends SQLiteOpenHelper {
         while (cursor[3].moveToNext()) {
             Item release = res.get(cursor[3].getInt(0));
             if (release == null) continue;
-            if (release.getMedia() == null)
-                release.setMedia(new ArrayList<Media>());
             release.getMedia().add(new Media(cursor[3].getString(1), cursor[3].getInt(2)));
         }
 
@@ -933,8 +937,7 @@ public class DB extends SQLiteOpenHelper {
         while (cursor[4].moveToNext()) {
             Item release = res.get(cursor[4].getInt(0));
             if (release == null) continue;
-            if (release.getProducers() == null)
-                release.setProducers(new ArrayList<Producer>());
+
             /* Since we've made a join between 2 tables, it's quite hard to determine the column indexes for what we want, and SQLite may change
             it depending on the devices. So to be sure and avoid bugs, we manually check the column names */
             int id_column_index = 4, developer_column_index = 2, publisher_column_index = 3, name_column_index = 5, original_column_index = 6, type_column_index = 7;
