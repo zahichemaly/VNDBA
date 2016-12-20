@@ -21,6 +21,7 @@ import android.widget.SearchView;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.adapter.search.SearchOptionsAdapter;
+import com.booboot.vndbandroid.adapter.search.TagAutoCompleteView;
 import com.booboot.vndbandroid.adapter.search.TagFilteredArrayAdapter;
 import com.booboot.vndbandroid.bean.vndb.Options;
 import com.booboot.vndbandroid.bean.vndb.Tag;
@@ -31,7 +32,6 @@ import com.booboot.vndbandroid.util.JSON;
 import com.booboot.vndbandroid.util.Pixels;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
-import com.booboot.vndbandroid.adapter.search.TagAutoCompleteView;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tokenautocomplete.TokenCompleteTextView;
 import com.wrapp.floatlabelededittext.FloatLabeledEditText;
@@ -274,6 +274,12 @@ public class VNSearchActivity extends AppCompatActivity {
         progressiveResultLoader.setFilters("(" + TextUtils.join(" and ", filters) + ")");
         progressiveResultLoader.loadResults(true);
         return true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        VNDetailsActivity.goBackToVnlist = false;
     }
 
     @Override

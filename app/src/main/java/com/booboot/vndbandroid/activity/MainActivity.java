@@ -331,6 +331,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        VNDetailsActivity.goBackToVnlist = false;
+    }
+
+    @Override
     protected void onDestroy() {
         if (connectionReceiver != null) {
             unregisterReceiver(connectionReceiver);

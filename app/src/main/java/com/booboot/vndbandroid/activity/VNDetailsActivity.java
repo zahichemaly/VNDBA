@@ -85,6 +85,8 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
     public int spoilerLevel = -1;
     public int nsfwLevel = -1;
 
+    /* If true, the activity must finish() on resume, so the user can go back to their VN list */
+    public static boolean goBackToVnlist;
     private ActionBar actionBar;
     private SwipeRefreshLayout refreshLayout;
     private PopupWindow spoilerPopup;
@@ -717,6 +719,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
             case R.id.action_go_back_to_list:
                 finish();
                 if (Cache.loadedFromCache) {
+                    goBackToVnlist = true;
                     overridePendingTransition(R.anim.slide_back_in, R.anim.slide_back_out);
                 } else {
                     startActivity(new Intent(this, LoginActivity.class));
@@ -957,6 +960,15 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client.connect();
         AppIndex.AppIndexApi.start(client, getIndexApiAction());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (goBackToVnlist) {
+            finish();
+            overridePendingTransition(R.anim.slide_back_in, R.anim.slide_back_out);
+        }
     }
 
     @Override
