@@ -49,7 +49,7 @@
     <string name="my_recommendations">My recommendations</string>
     <string name="recommendations_private_warning">We haven\'t found your recommendations... Don\'t forget to make your lists public (by unchecking \"Don\'t allow other people to see my visual novel list\" in your VNDB.org\'s preferences), then refresh this page (it can take up to 48 hours to get effective so don\'t worry)!</string>
     <string name="bullet">" • "</string>
-    <string name="dash">" ‒ "</string>
+    <string name="dash">" - "</string>
     <string name="pref_key_cover_background">cover_background</string>
     <string name="action_options">Options</string>
 
