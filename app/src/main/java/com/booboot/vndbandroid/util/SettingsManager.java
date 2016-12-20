@@ -20,7 +20,7 @@ public class SettingsManager {
 
     public static String getUsername(Context context) {
         new SettingsManager(context);
-        return settings.getString("USERNAME", null);
+        return settings.getString("USERNAME", "");
     }
 
     public static void setUsername(Context context, String username) {
