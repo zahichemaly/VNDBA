@@ -2,11 +2,11 @@ package com.booboot.vndbandroid.factory;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ListPopupWindow;
 import android.widget.PopupWindow;
 
 import com.booboot.vndbandroid.R;
@@ -27,6 +27,8 @@ public class PopupMenuFactory {
 
         final PopupWindow popupWindow = new PopupWindow(context);
         popupWindow.setWidth(Pixels.px(250, context));
+        popupWindow.setHeight(ListPopupWindow.WRAP_CONTENT);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             popupWindow.setElevation(Pixels.px(10, context));
         }
@@ -50,6 +52,7 @@ public class PopupMenuFactory {
                 return false;
             }
         });
+
         popupWindow.showAsDropDown(anchor);
 
         return popupWindow;
