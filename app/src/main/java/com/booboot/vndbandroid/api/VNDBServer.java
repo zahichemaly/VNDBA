@@ -93,6 +93,7 @@ public class VNDBServer {
     }
 
     public static void login(final Context context, final int socketIndex, final Callback errorCallback) {
+        if (context == null) return;
         synchronized (SocketPool.getLock(socketIndex)) {
             if (SocketPool.getSocket(socketIndex) == null) {
                 if (!connect(socketIndex)) return;
@@ -270,7 +271,6 @@ public class VNDBServer {
                         }
                     }
                 } while (isThrottled);
-
             } catch (UnsupportedEncodingException uee) {
                 errorCallback.message = "Tried to send a query to the API with a wrong encoding. Aborting operation.";
                 errorCallback.call();
