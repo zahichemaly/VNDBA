@@ -52,9 +52,9 @@ public class VNCardsAdapter extends RecyclerView.Adapter<CardHolder> implements 
         holder.getVotesButton().setText(card.getVote());
         holder.getCardView().setTag(card.getVnId());
 
-        Utils.setButtonColor(context, holder.getStatusButton());
-        Utils.setButtonColor(context, holder.getWishlistButton());
-        Utils.setButtonColor(context, holder.getVotesButton());
+        Utils.setElevation(context, holder.getStatusButton(), 8);
+        Utils.setElevation(context, holder.getWishlistButton(), 8);
+        Utils.setElevation(context, holder.getVotesButton(), 8);
     }
 
     @Override

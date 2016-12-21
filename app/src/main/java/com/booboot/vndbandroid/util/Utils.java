@@ -23,7 +23,6 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -131,12 +130,21 @@ public class Utils {
         return min + (int) (Math.random() * ((max - min) + 1));
     }
 
-    public static void setButtonColor(Context context, Button button) {
+    public static void setButtonColor(Context context, TextView button) {
         ColorStateList buttonBackgroundColor = ColorStateList.valueOf(getThemeColor(context, R.attr.colorPrimaryDark));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             button.setBackgroundTintList(buttonBackgroundColor);
         } else {
             ViewCompat.setBackgroundTintList(button, buttonBackgroundColor);
+        }
+    }
+
+    public static void setElevation(Context context, View view, int dp) {
+        float px = Pixels.px(dp, context);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            view.setElevation(px);
+        } else {
+            ViewCompat.setElevation(view, px);
         }
     }
 

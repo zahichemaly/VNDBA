@@ -209,6 +209,7 @@ public class RecommendationsFragment extends Fragment implements SwipeRefreshLay
     private void showBackgroundInfo(String text, boolean showToast) {
         if (recommendations.size() > 0) {
             rootView.findViewById(R.id.backgroundInfo).setVisibility(View.GONE);
+            /* If the lists were public, but the user made them private in the meantime, we can show recommendations BUT have to tell the user "these recommendations cannot be updated" */
             if (showToast) Callback.showToast(getActivity(), text);
         } else {
             final ImageView backgroundInfoImage = (ImageView) rootView.findViewById(R.id.backgroundInfoImage);

@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
+import com.booboot.vndbandroid.util.Utils;
 
 /**
  * Created by od on 22/11/2016.
@@ -16,7 +17,9 @@ public class CardHolder extends RecyclerView.ViewHolder {
     private CardView cardView;
     private ImageView image;
     private TextView title, subtitle;
-    private Button statusButton, wishlistButton, votesButton;
+    private TextView statusButton;
+    private TextView wishlistButton;
+    private TextView votesButton;
 
     public CardHolder(View itemView) {
         super(itemView);
@@ -24,9 +27,9 @@ public class CardHolder extends RecyclerView.ViewHolder {
         image = (ImageView) itemView.findViewById(R.id.image);
         title = (TextView) itemView.findViewById(R.id.title);
         subtitle = (TextView) itemView.findViewById(R.id.subtitle);
-        statusButton = (Button) itemView.findViewById(R.id.statusButton);
-        wishlistButton = (Button) itemView.findViewById(R.id.wishlistButton);
-        votesButton = (Button) itemView.findViewById(R.id.votesButton);
+        statusButton = (TextView) itemView.findViewById(R.id.statusButton);
+        wishlistButton = (TextView) itemView.findViewById(R.id.wishlistButton);
+        votesButton = (TextView) itemView.findViewById(R.id.votesButton);
     }
 
     public ImageView getImage() {
@@ -53,27 +56,27 @@ public class CardHolder extends RecyclerView.ViewHolder {
         this.subtitle = subtitle;
     }
 
-    public Button getStatusButton() {
+    public TextView getStatusButton() {
         return statusButton;
     }
 
-    public void setStatusButton(Button statusButton) {
+    public void setStatusButton(TextView statusButton) {
         this.statusButton = statusButton;
     }
 
-    public Button getWishlistButton() {
+    public TextView getWishlistButton() {
         return wishlistButton;
     }
 
-    public void setWishlistButton(Button wishlistButton) {
+    public void setWishlistButton(TextView wishlistButton) {
         this.wishlistButton = wishlistButton;
     }
 
-    public Button getVotesButton() {
+    public TextView getVotesButton() {
         return votesButton;
     }
 
-    public void setVotesButton(Button votesButton) {
+    public void setVotesButton(TextView votesButton) {
         this.votesButton = votesButton;
     }
 
