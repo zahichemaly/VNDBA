@@ -149,4 +149,15 @@ public class SettingsManager {
         editor.putBoolean("HIDE_RECOMMENDATIONS_IN_WISHLIST", ok);
         editor.commit();
     }
+
+    public static boolean isEmptyAccount(Context context) {
+        new SettingsManager(context);
+        return settings.getBoolean("EMPTY_ACCOUNT", false);
+    }
+
+    public static void setEmptyAccount(Context context, boolean ok) {
+        new SettingsManager(context);
+        editor.putBoolean("EMPTY_ACCOUNT", ok);
+        editor.commit();
+    }
 }

@@ -127,7 +127,8 @@ public class Cache {
                 mergedIdsString = TextUtils.join(",", mergedIds);
                 DB.startupClean(context, mergedIdsString, vnlistIds.keySet(), votelistIds.keySet(), wishlistIds.keySet());
 
-                if (mergedIds.isEmpty() || !shouldSendGetVn(context, vnlistIds, votelistIds, wishlistIds, mergedIds)) {
+                SettingsManager.setEmptyAccount(context, mergedIds.isEmpty());
+                if (!shouldSendGetVn(context, vnlistIds, votelistIds, wishlistIds, mergedIds) || mergedIds.isEmpty()) {
                     successCallback.call();
                     return;
                 }
@@ -322,7 +323,7 @@ public class Cache {
 
         sortAll(context);
         loadedFromCache = vnlist.size() > 0 || votelist.size() > 0 || wishlist.size() > 0;
-        return true;
+        return loadedFromCache;
     }
 
     public static void loadStatsFromCache(Context context) {

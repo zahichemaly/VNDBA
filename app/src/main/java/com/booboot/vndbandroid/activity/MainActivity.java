@@ -53,6 +53,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static MainActivity instance;
+    public static boolean mainActivityExists = false;
     private SearchView searchView;
     private List<VNTypeFragment> activeFragments = new ArrayList<>();
     private Fragment directSubfragment;
@@ -134,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             connectionReceiver = new ConnectionReceiver();
             registerReceiver(connectionReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         }
+        mainActivityExists = true;
     }
 
     @Override
@@ -341,7 +343,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (connectionReceiver != null) {
             unregisterReceiver(connectionReceiver);
         }
-
+        mainActivityExists = false;
         super.onDestroy();
     }
 }

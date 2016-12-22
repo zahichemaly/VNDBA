@@ -718,7 +718,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
 
             case R.id.action_go_back_to_list:
                 finish();
-                if (Cache.loadedFromCache) {
+                if (MainActivity.mainActivityExists) {
                     goBackToVnlist = true;
                     overridePendingTransition(R.anim.slide_back_in, R.anim.slide_back_out);
                 } else {
