@@ -20,7 +20,7 @@
     <SwitchPreference
         android:defaultValue="true"
         android:key="@string/pref_key_spoiler_completed"
-        android:summary="Enable all spoilers for a VN if its status is &quot;Finished&quot;."
+        android:summary="Enable all spoilers for a VN if its status is &quot;Finished&quot;"
         android:title="Spoil me if finished"/>
 
     <SwitchPreference
@@ -32,12 +32,12 @@
     <SwitchPreference
         android:defaultValue="true"
         android:key="@string/pref_key_browser"
-        android:summary="Open external links directly inside the application."
+        android:summary="Clicking on links to external websites (like Wikipedia) opens these links inside the app (requires Chrome)"
         android:title="In-app browser"/>
 
     <SwitchPreference
         android:defaultValue="true"
         android:key="@string/pref_key_cover_background"
-        android:summary="Show the VN cover in the background (in the VN details page)."
+        android:summary="Show the VN cover in the background (in the VN details page)"
         android:title="Show the VN's background"/>
 </PreferenceScreen>
