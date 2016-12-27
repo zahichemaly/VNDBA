@@ -249,7 +249,7 @@ public class VNSearchActivity extends AppCompatActivity {
             if (query.length() > 0)
                 filters.add("search ~ \"" + query.trim() + "\"");
             if (!includeTags.isEmpty()) {
-                if (includeTagsInput.getHint().toString().equals(getResources().getString(R.string.include_one_tags))) {
+                if (includeTagsFloatingLabel.getHint().toString().equals(getResources().getString(R.string.include_one_tags))) {
                     filters.add("tags = " + JSON.mapper.writeValueAsString(includeTags));
                 } else {
                     filters.add("tags = " + TextUtils.join(" and tags = ", includeTags));
