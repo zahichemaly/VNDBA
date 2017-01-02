@@ -40,7 +40,6 @@ public abstract class Callback {
             @Override
             public void config() {
                 showToast(context, message);
-                if (countDownLatch != null) countDownLatch.countDown();
             }
         };
     }
