@@ -126,7 +126,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 Cache.pipeliningError = true;
                 Callback.showToast(LoginActivity.this, message);
                 enableAll();
-                if (countDownLatch != null) countDownLatch.countDown();
+                if (Cache.countDownLatch != null) Cache.countDownLatch.countDown();
             }
         };
     }

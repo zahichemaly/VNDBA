@@ -22,7 +22,6 @@ public abstract class Callback {
     public Results results;
     public DbStats dbstats;
     public VNStatItem vnStatResults;
-    public static CountDownLatch countDownLatch;
 
     protected abstract void config();
 

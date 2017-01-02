@@ -135,7 +135,7 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
                 Cache.pipeliningError = true;
                 Callback.showToast(getActivity(), message);
                 refreshLayout.setRefreshing(false);
-                if (countDownLatch != null) countDownLatch.countDown();
+                if (Cache.countDownLatch != null) Cache.countDownLatch.countDown();
             }
         });
     }

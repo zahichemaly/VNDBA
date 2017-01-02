@@ -69,6 +69,7 @@ public class Cache {
     public static boolean shouldRefreshView;
 
     public static boolean pipeliningError;
+    public static CountDownLatch countDownLatch;
 
     public static void loadData(final Context context, final Callback successCallback, final Callback errorCallback) {
         new Thread() {
@@ -78,7 +79,7 @@ public class Cache {
 
                 /* Initializing multi-threading variables */
                 pipeliningError = false;
-                Callback.countDownLatch = new CountDownLatch(3);
+                countDownLatch = new CountDownLatch(3);
 
                 VNDBServer.get("vnlist", "basic", "(uid = 0)", Options.create(1, 100, null, false, true, 0), 0, context, new Callback() {
                     @Override
@@ -111,14 +112,14 @@ public class Cache {
                 }, errorCallback);
 
                 try {
-                    Callback.countDownLatch.await();
+                    countDownLatch.await();
                 } catch (InterruptedException E) {
                     errorCallback.message = "An unexpected error occurred while loading your lists. Please try again later.";
                     errorCallback.call();
                     return;
                 }
 
-                Callback.countDownLatch = null;
+                countDownLatch = null;
                 if (pipeliningError) return;
 
                 Set<Integer> mergedIds = new HashSet<>(vnlistIds.keySet());
