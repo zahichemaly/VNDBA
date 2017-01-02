@@ -224,6 +224,7 @@ public class VNDBServer {
                     query.append(JSON.mapper.writeValueAsString(params));
                 query.append(EOM);
             } catch (JsonProcessingException jpe) {
+                VNDBServer.close(socketIndex);
                 errorCallback.message = "Unable to process the query to the API as JSON. Aborting operation.";
                 errorCallback.call();
                 return null;
@@ -248,7 +249,7 @@ public class VNDBServer {
                     out.write(query.toString().getBytes("UTF-8"));
 
                     isThrottled = false;
-                    response = getResponse(in);
+                    response = getResponse(socketIndex, in);
                     if (response instanceof Error) {
                         Error error = (Error) response;
                         isThrottled = error.getId().equals("throttled");
@@ -272,6 +273,7 @@ public class VNDBServer {
                     }
                 } while (isThrottled);
             } catch (UnsupportedEncodingException uee) {
+                VNDBServer.close(socketIndex);
                 errorCallback.message = "Tried to send a query to the API with a wrong encoding. Aborting operation.";
                 errorCallback.call();
                 return null;
@@ -283,6 +285,7 @@ public class VNDBServer {
                 return null;
             } catch (IOException ioe) {
                 ioe.printStackTrace();
+                VNDBServer.close(socketIndex);
                 errorCallback.message = "An error occurred while sending a query to the API. Please try again later.";
                 errorCallback.call();
                 return null;
@@ -295,7 +298,7 @@ public class VNDBServer {
         }
     }
 
-    private static VNDBCommand getResponse(InputStreamReader in) {
+    private static VNDBCommand getResponse(int socketIndex, InputStreamReader in) {
         StringBuilder response = new StringBuilder();
         try {
             int read = in.read();
@@ -304,8 +307,9 @@ public class VNDBServer {
                 read = in.read();
                 // Log.e("D", response.toString());
             }
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            VNDBServer.close(socketIndex);
             errorCallback.message = "An error occurred while receiving the response from the API. Please try again later.";
             errorCallback.call();
             return null;
@@ -319,13 +323,11 @@ public class VNDBServer {
             if (response.toString().trim().equals("ok"))
                 return new Ok();
             else {
-                if (threadManager == null || !threadManager.isShutdown()) {
-                    /* Calling the error callback only if we're not pipelining (might be wrong to call the error callback while there are other threads running) */
-                    errorCallback.message = "An error occurred while reading the response from the API. Aborting operation.";
-                    errorCallback.call();
-                }
-                /* Undocumented error : the server returned an empty response (""), which (most of the time) means we have been throttled */
-                return new Error("throttled", 6, 10 * 60);
+                /* Undocumented error : the server returned an empty response (""), which means absolutely nothing but "leave the ship because something undebuggable happened!" */
+                VNDBServer.close(socketIndex);
+                errorCallback.message = "VNDB.org returned an unexpected error. Please try again later.";
+                errorCallback.call();
+                return null;
             }
         }
 
@@ -335,6 +337,7 @@ public class VNDBServer {
             return (VNDBCommand) JSON.mapper.readValue(params, VNDBCommand.getClass(command));
         } catch (IOException ioe) {
             ioe.printStackTrace();
+            VNDBServer.close(socketIndex);
             errorCallback.message = "An error occurred while decoding the response from the API. Aborting operation.";
             errorCallback.call();
             return null;
