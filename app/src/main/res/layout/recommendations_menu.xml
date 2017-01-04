@@ -2,32 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/transparent_rounded_white_background"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingLeft="?attr/listPreferredItemPaddingLeft"
+    android:paddingRight="?attr/listPreferredItemPaddingRight">
 
-    <LinearLayout
-        android:id="@+id/item_hide_in_wishlist"
+    <CheckBox
+        android:id="@+id/check_hide_in_wishlist"
         android:layout_width="match_parent"
         android:layout_height="?attr/listPreferredItemHeightSmall"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingLeft="?attr/listPreferredItemPaddingLeft"
-        android:paddingRight="?attr/listPreferredItemPaddingRight">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="?android:attr/selectableItemBackground"
-            android:gravity="center_vertical"
-            android:text="Hide already in wishlist"
-            android:textAppearance="?attr/textAppearanceListItem"
-            android:textColor="@color/primaryText"/>
-
-        <CheckBox
-            android:id="@+id/check_hide_in_wishlist"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-    </LinearLayout>
-
+        android:gravity="left|center_vertical"
+        android:layoutDirection="rtl"
+        android:text="Hide already in wishlist"
+        android:textDirection="ltr"/>
 </LinearLayout>
