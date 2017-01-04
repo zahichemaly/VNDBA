@@ -11,9 +11,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.MainActivity;
@@ -362,30 +360,19 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.item_spoil_0:
-                ((RadioButton) view.findViewById(R.id.radio_spoil_0)).setChecked(true);
-            case R.id.radio_spoil_0:
                 activity.spoilerLevel = 0;
                 break;
 
             case R.id.item_spoil_1:
-                ((RadioButton) view.findViewById(R.id.radio_spoil_1)).setChecked(true);
-            case R.id.radio_spoil_1:
                 activity.spoilerLevel = 1;
                 break;
 
             case R.id.item_spoil_2:
-                ((RadioButton) view.findViewById(R.id.radio_spoil_2)).setChecked(true);
-            case R.id.radio_spoil_2:
                 activity.spoilerLevel = 2;
                 break;
 
-            case R.id.item_nsfw:
-                CheckBox checkNsfw = (CheckBox) view.findViewById(R.id.check_nsfw);
-                checkNsfw.setChecked(!checkNsfw.isChecked());
-                activity.nsfwLevel = checkNsfw.isChecked() ? 1 : 0;
-                break;
             case R.id.check_nsfw:
-                activity.nsfwLevel = ((CheckBox) view.findViewById(R.id.check_nsfw)).isChecked() ? 1 : 0;
+                activity.nsfwLevel = ((CheckBox) view).isChecked() ? 1 : 0;
                 break;
         }
 

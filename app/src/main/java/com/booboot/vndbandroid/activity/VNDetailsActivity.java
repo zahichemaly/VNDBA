@@ -728,21 +728,17 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                 spoilerPopup = PopupMenuFactory.get(this, R.layout.spoiler_menu, findViewById(R.id.action_spoiler), spoilerPopup, new PopupMenuFactory.Callback() {
                     @Override
                     public void create(View content) {
-                        content.findViewById(R.id.item_spoil_0).setOnClickListener(listener);
-                        content.findViewById(R.id.item_spoil_1).setOnClickListener(listener);
-                        content.findViewById(R.id.item_spoil_2).setOnClickListener(listener);
-                        RadioButton radioSpoil0 = (RadioButton) content.findViewById(R.id.radio_spoil_0);
-                        RadioButton radioSpoil1 = (RadioButton) content.findViewById(R.id.radio_spoil_1);
-                        RadioButton radioSpoil2 = (RadioButton) content.findViewById(R.id.radio_spoil_2);
-                        radioSpoil0.setOnClickListener(listener);
-                        radioSpoil1.setOnClickListener(listener);
-                        radioSpoil2.setOnClickListener(listener);
-                        radioSpoil0.setChecked(spoilerLevel == 0);
-                        radioSpoil1.setChecked(spoilerLevel == 1);
-                        radioSpoil2.setChecked(spoilerLevel == 2);
-                        content.findViewById(R.id.item_nsfw).setOnClickListener(listener);
+                        RadioButton itemSpoil0 = (RadioButton) content.findViewById(R.id.item_spoil_0);
+                        RadioButton itemSpoil1 = (RadioButton) content.findViewById(R.id.item_spoil_1);
+                        RadioButton itemSpoil2 = (RadioButton) content.findViewById(R.id.item_spoil_2);
                         CheckBox checkNsfw = (CheckBox) content.findViewById(R.id.check_nsfw);
+                        itemSpoil0.setOnClickListener(listener);
+                        itemSpoil1.setOnClickListener(listener);
+                        itemSpoil2.setOnClickListener(listener);
                         checkNsfw.setOnClickListener(listener);
+                        itemSpoil0.setChecked(spoilerLevel == 0);
+                        itemSpoil1.setChecked(spoilerLevel == 1);
+                        itemSpoil2.setChecked(spoilerLevel == 2);
                         checkNsfw.setChecked(nsfwLevel == 1);
                         listener.setPopupButton(null);
                     }
