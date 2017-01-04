@@ -21,7 +21,8 @@ public class PopupMenuFactory {
     }
 
     public static PopupWindow get(Activity context, int layout, final View anchor, PopupWindow oldPopup, Callback callback) {
-        if (oldPopup != null && !oldPopup.isTouchable()) {
+        if (oldPopup != null && oldPopup.isTouchable()) {
+            oldPopup.setTouchable(false);
             return null;
         }
 
@@ -46,7 +47,8 @@ public class PopupMenuFactory {
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
                     popupWindow.dismiss();
-                    popupWindow.setTouchable(false);
+                    boolean insideAnchor = inside(event.getRawX(), event.getRawY(), anchor);
+                    if (!insideAnchor) popupWindow.setTouchable(false);
                     return true;
                 }
                 return false;
@@ -56,5 +58,14 @@ public class PopupMenuFactory {
         popupWindow.showAsDropDown(anchor);
 
         return popupWindow;
+    }
+
+    private static boolean inside(float x, float y, View v) {
+        int[] mCoordBuffer = new int[2];
+        v.getLocationOnScreen(mCoordBuffer);
+        return mCoordBuffer[0] + v.getWidth() > x &&    // right edge
+                mCoordBuffer[1] + v.getHeight() > y &&   // bottom edge
+                mCoordBuffer[0] < x &&                   // left edge
+                mCoordBuffer[1] < y;                     // top edge
     }
 }
