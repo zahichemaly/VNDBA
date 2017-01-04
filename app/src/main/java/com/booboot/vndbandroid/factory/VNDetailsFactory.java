@@ -51,7 +51,7 @@ public class VNDetailsFactory {
         if (vn.getDescription() != null) {
             String descriptionWithoutSpoilers = vn.getDescription();
             if (!Tag.checkSpoilerLevel(activity, 2)) {
-                descriptionWithoutSpoilers = descriptionWithoutSpoilers.replaceAll("\\[spoiler\\].*\\[/spoiler\\]", "");
+                descriptionWithoutSpoilers = descriptionWithoutSpoilers.replaceAll("\\[spoiler\\][\\s\\S]*\\[/spoiler\\]", "");
             }
             description.add(descriptionWithoutSpoilers);
         }
