@@ -14,36 +14,15 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activity.MainActivity" android:label="@string/app_name" android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+        <activity android:name=".activity.MainActivity" android:label="@string/app_name" android:theme="@style/AppTheme.NoActionBar"/>
 
-            </intent-filter>
-        </activity>
+        <activity android:name=".activity.VNDetailsActivity"/>
 
-        <activity android:name=".activity.VNDetailsActivity" android:label="@string/app_name">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-            </intent-filter>
-        </activity>
+        <activity android:name=".activity.VNSearchActivity"/>
 
-        <activity android:name=".activity.VNSearchActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH"/>
-            </intent-filter>
-        </activity>
+        <activity android:name=".activity.FeedbackActivity"/>
 
-        <activity android:name=".activity.FeedbackActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-            </intent-filter>
-        </activity>
-
-        <activity android:name=".activity.EmptyActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-            </intent-filter>
-        </activity>
+        <activity android:name=".activity.EmptyActivity"/>
 
         <activity android:name=".activity.URLActivity">
             <intent-filter>
