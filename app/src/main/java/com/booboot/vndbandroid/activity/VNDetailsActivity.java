@@ -136,12 +136,14 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         setContentView(R.layout.vn_details);
 
         vn = Cache.vns.get(getIntent().getIntExtra(VNTypeFragment.VN_ARG, -1));
-        assert vn != null;
 
         if (savedInstanceState != null) {
             spoilerLevel = savedInstanceState.getInt("SPOILER_LEVEL");
             nsfwLevel = savedInstanceState.getInt("NSFW_LEVEL");
+            if (vn == null)
+                vn = Cache.vns.get(savedInstanceState.getInt(VNTypeFragment.VN_ARG));
         }
+        assert vn != null;
 
         if (spoilerLevel < 0) {
             if (SettingsManager.getSpoilerCompleted(this) && vn.getStatus() == Status.FINISHED)
@@ -802,6 +804,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putInt("SPOILER_LEVEL", spoilerLevel);
         savedInstanceState.putInt("NSFW_LEVEL", nsfwLevel);
+        savedInstanceState.putInt(VNTypeFragment.VN_ARG, vn != null ? vn.getId() : -1);
         super.onSaveInstanceState(savedInstanceState);
     }
 
