@@ -246,4 +246,10 @@ public class Utils {
     public static int getTextColorFromBackground(Context context, int darkColor, int lightColor, boolean nsfw) {
         return context.getResources().getColor(!nsfw && SettingsManager.getCoverBackground(context) ? lightColor : darkColor);
     }
+
+    public static int screenWidth(Activity activity) {
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+        return displaymetrics.widthPixels;
+    }
 }

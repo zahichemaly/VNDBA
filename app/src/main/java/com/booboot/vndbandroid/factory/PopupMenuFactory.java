@@ -11,6 +11,7 @@ import android.widget.PopupWindow;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.util.Pixels;
+import com.booboot.vndbandroid.util.Utils;
 
 /**
  * Created by od on 28/11/2016.
@@ -27,7 +28,8 @@ public class PopupMenuFactory {
         }
 
         final PopupWindow popupWindow = new PopupWindow(context);
-        popupWindow.setWidth(Pixels.px(250, context));
+        int width = Pixels.px(250, context);
+        popupWindow.setWidth(width);
         popupWindow.setHeight(ListPopupWindow.WRAP_CONTENT);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -55,7 +57,11 @@ public class PopupMenuFactory {
             }
         });
 
-        popupWindow.showAsDropDown(anchor);
+        int[] mCoordBuffer = new int[2];
+        anchor.getLocationOnScreen(mCoordBuffer);
+        int xoff = width - (Utils.screenWidth(context) - mCoordBuffer[0]);
+        xoff = -xoff;
+        popupWindow.showAsDropDown(anchor, xoff < 0 ? xoff : 0, 0);
 
         return popupWindow;
     }
