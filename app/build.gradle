@@ -10,6 +10,9 @@ android {
         targetSdkVersion 25
         versionCode 29
         versionName "2.1.0"
+
+        renderscriptTargetApi 19
+        renderscriptSupportModeEnabled true
     }
 
     buildTypes {

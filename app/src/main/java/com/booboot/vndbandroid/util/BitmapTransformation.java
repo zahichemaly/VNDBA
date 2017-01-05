@@ -8,10 +8,10 @@ import android.graphics.ColorFilter;
 import android.graphics.LightingColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.renderscript.Allocation;
-import android.renderscript.Element;
-import android.renderscript.RenderScript;
-import android.renderscript.ScriptIntrinsicBlur;
+import android.support.v8.renderscript.Allocation;
+import android.support.v8.renderscript.Element;
+import android.support.v8.renderscript.RenderScript;
+import android.support.v8.renderscript.ScriptIntrinsicBlur;
 
 public class BitmapTransformation {
     public static Bitmap darkBlur(Context context, Bitmap bitmap) {
@@ -25,12 +25,7 @@ public class BitmapTransformation {
         Bitmap blurredBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
 
         // Allocate memory for Renderscript to work with
-        Allocation input;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            input = Allocation.createFromBitmap(rs, blurredBitmap, Allocation.MipmapControl.MIPMAP_FULL, Allocation.USAGE_SHARED);
-        } else {
-            input = Allocation.createFromBitmap(rs, blurredBitmap, Allocation.MipmapControl.MIPMAP_FULL, Allocation.USAGE_GRAPHICS_TEXTURE);
-        }
+        Allocation input = Allocation.createFromBitmap(rs, blurredBitmap, Allocation.MipmapControl.MIPMAP_FULL, Allocation.USAGE_SHARED);
         Allocation output = Allocation.createTyped(rs, input.getType());
 
         // Load up an instance of the specific script that we want to use.
