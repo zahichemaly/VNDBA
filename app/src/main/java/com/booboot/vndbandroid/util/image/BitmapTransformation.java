@@ -1,4 +1,4 @@
-package com.booboot.vndbandroid.util;
+package com.booboot.vndbandroid.util.image;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -40,8 +40,6 @@ public class BitmapTransformation {
 
         // Copy the output to the blurred bitmap
         output.copyTo(blurredBitmap);
-
-        //  bitmap.recycle();
 
         return blurredBitmap;
     }

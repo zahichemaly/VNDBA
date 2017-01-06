@@ -58,15 +58,15 @@ import com.booboot.vndbandroid.bean.vndbandroid.Vote;
 import com.booboot.vndbandroid.bean.vndbandroid.VotelistItem;
 import com.booboot.vndbandroid.bean.vndbandroid.WishlistItem;
 import com.booboot.vndbandroid.bean.vnstat.SimilarNovel;
-import com.booboot.vndbandroid.factory.PlaceholderPictureFactory;
 import com.booboot.vndbandroid.factory.PopupMenuFactory;
 import com.booboot.vndbandroid.factory.VNDetailsFactory;
-import com.booboot.vndbandroid.util.BitmapTransformation;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.Lightbox;
-import com.booboot.vndbandroid.util.Pixels;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
+import com.booboot.vndbandroid.util.image.BitmapTransformation;
+import com.booboot.vndbandroid.util.image.BlurIfDemoTransform;
+import com.booboot.vndbandroid.util.image.Pixels;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
@@ -268,7 +268,6 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         /* Setting the header and the background image according to the preferences */
         final ImageView blurBackground = ((ImageView) VNDetailsActivity.this.findViewById(R.id.blurBackground));
         final boolean coverBackground = SettingsManager.getCoverBackground(this);
-        String imageUrl = PlaceholderPictureFactory.USE_PLACEHOLDER ? PlaceholderPictureFactory.getPlaceholderPicture() : vn.getImage();
         if (isNsfw()) {
             image.setImageResource(R.drawable.ic_nsfw);
             blurBackground.setImageResource(0);
@@ -292,9 +291,9 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                 }
             };
             image.setTag(picassoTarget);
-            Picasso.with(this).load(imageUrl).into(picassoTarget);
+            Picasso.with(this).load(vn.getImage()).transform(new BlurIfDemoTransform(this)).into(picassoTarget);
         } else {
-            Picasso.with(this).load(imageUrl).into(image);
+            Picasso.with(this).load(vn.getImage()).transform(new BlurIfDemoTransform(this)).into(image);
         }
         Lightbox.set(VNDetailsActivity.this, image, vn.getImage());
 

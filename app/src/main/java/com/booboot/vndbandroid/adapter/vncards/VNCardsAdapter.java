@@ -10,6 +10,7 @@ import android.widget.Filterable;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.util.Utils;
+import com.booboot.vndbandroid.util.image.BlurIfDemoTransform;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ public class VNCardsAdapter extends RecyclerView.Adapter<CardHolder> implements 
         if (card.getImageId() > 0)
             holder.getImage().setImageResource(card.getImageId());
         else
-            Picasso.with(context).load(card.getImageUrl()).into(holder.getImage());
+            Picasso.with(context).load(card.getImageUrl()).transform(new BlurIfDemoTransform(context)).into(holder.getImage());
 
         holder.getTitle().setText(card.getTitle());
         holder.getSubtitle().setText(card.getSubtitle());
@@ -83,7 +84,7 @@ public class VNCardsAdapter extends RecyclerView.Adapter<CardHolder> implements 
         return mFilter;
     }
 
-    public class ItemFilter extends Filter {
+    private class ItemFilter extends Filter {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             String filterString = constraint.toString().trim().toLowerCase();

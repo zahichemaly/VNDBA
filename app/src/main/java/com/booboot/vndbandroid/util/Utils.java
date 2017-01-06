@@ -30,6 +30,7 @@ import com.booboot.vndbandroid.BuildConfig;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.EmptyActivity;
 import com.booboot.vndbandroid.bean.vndbandroid.Mail;
+import com.booboot.vndbandroid.util.image.Pixels;
 
 import java.text.DateFormat;
 import java.text.ParseException;

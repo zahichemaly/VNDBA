@@ -9,9 +9,10 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.booboot.vndbandroid.R;
+import com.booboot.vndbandroid.util.image.BlurIfDemoTransform;
+import com.booboot.vndbandroid.util.image.Pixels;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -41,7 +42,7 @@ public class Lightbox implements Target {
                 dialog.setCancelable(true);
 
                 final ImageView lightbox = (ImageView) dialog.findViewById(R.id.lightboxView);
-                Picasso.with(context).load(url).into(new Lightbox(context, lightbox, dialog));
+                Picasso.with(context).load(url).transform(new BlurIfDemoTransform(context)).into(new Lightbox(context, lightbox, dialog));
             }
         });
     }

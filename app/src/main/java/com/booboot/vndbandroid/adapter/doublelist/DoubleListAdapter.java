@@ -11,7 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
-import com.booboot.vndbandroid.util.Pixels;
+import com.booboot.vndbandroid.util.image.Pixels;
 import com.booboot.vndbandroid.util.Utils;
 
 /**

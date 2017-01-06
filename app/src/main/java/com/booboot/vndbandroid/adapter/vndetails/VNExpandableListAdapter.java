@@ -29,7 +29,8 @@ import com.booboot.vndbandroid.factory.ReleaseDataFactory;
 import com.booboot.vndbandroid.factory.TagDataFactory;
 import com.booboot.vndbandroid.factory.VNDetailsFactory;
 import com.booboot.vndbandroid.util.Lightbox;
-import com.booboot.vndbandroid.util.Pixels;
+import com.booboot.vndbandroid.util.image.BlurIfDemoTransform;
+import com.booboot.vndbandroid.util.image.Pixels;
 import com.booboot.vndbandroid.util.Utils;
 import com.squareup.picasso.Picasso;
 
@@ -135,7 +136,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
 
             case R.layout.list_item_images:
                 final ImageButton expandedListImage = (ImageButton) convertView.findViewById(R.id.expandedListImage);
-                Picasso.with(activity).load(primaryText).into(expandedListImage);
+                Picasso.with(activity).load(primaryText).transform(new BlurIfDemoTransform(activity)).into(expandedListImage);
                 convertView.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, Pixels.px(100, activity)));
                 Lightbox.set(activity, expandedListImage, primaryText);
                 break;
@@ -150,7 +151,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                     itemLeftImage.setVisibility(View.GONE);
                 } else {
                     String url = getElement(listPosition).getUrlImages().get(expandedListPosition);
-                    Picasso.with(activity).load(url).into(itemLeftImage);
+                    Picasso.with(activity).load(url).transform(new BlurIfDemoTransform(activity)).into(itemLeftImage);
                     Lightbox.set(activity, itemLeftImage, url);
                 }
 

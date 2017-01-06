@@ -10,7 +10,7 @@ import android.widget.ListPopupWindow;
 import android.widget.PopupWindow;
 
 import com.booboot.vndbandroid.R;
-import com.booboot.vndbandroid.util.Pixels;
+import com.booboot.vndbandroid.util.image.Pixels;
 import com.booboot.vndbandroid.util.Utils;
 
 /**

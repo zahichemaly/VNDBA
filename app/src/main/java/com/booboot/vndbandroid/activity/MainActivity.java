@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -40,14 +39,13 @@ import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.bean.vndbandroid.ListType;
 import com.booboot.vndbandroid.bean.vndbandroid.Theme;
-import com.booboot.vndbandroid.factory.PlaceholderPictureFactory;
 import com.booboot.vndbandroid.util.ConnectionReceiver;
-import com.booboot.vndbandroid.util.Pixels;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
+import com.booboot.vndbandroid.util.image.BlurIfDemoTransform;
+import com.booboot.vndbandroid.util.image.Pixels;
 import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,20 +92,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         navigationView.getMenu().findItem(R.id.accountTitle).setTitle(SettingsManager.getUsername(this));
         View header = navigationView.getHeaderView(0);
-        final LinearLayout headerBackground = (LinearLayout) header.findViewById(R.id.headerBackground);
 
-        if (PlaceholderPictureFactory.USE_PLACEHOLDER) {
-            try {
-                headerBackground.setBackground(new BitmapDrawable(getResources(), Picasso.with(this).load(PlaceholderPictureFactory.getPlaceholderPicture()).get()));
-            } catch (IOException e) {
-            }
-        } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                headerBackground.setBackground(getResources().getDrawable(Theme.THEMES.get(SettingsManager.getTheme(this)).getWallpaper(), getTheme()));
-            } else {
-                headerBackground.setBackground(getResources().getDrawable(Theme.THEMES.get(SettingsManager.getTheme(this)).getWallpaper()));
-            }
-        }
+        ImageView headerBackground = (ImageView) header.findViewById(R.id.headerBackground);
+        Picasso.with(this).load(Theme.THEMES.get(SettingsManager.getTheme(this)).getWallpaper()).transform(new BlurIfDemoTransform(this)).into(headerBackground);
 
         FloatingActionButton floatingSearchButton = (FloatingActionButton) findViewById(R.id.floatingSearchButton);
         if (floatingSearchButton != null) {

@@ -2,7 +2,6 @@ package com.booboot.vndbandroid.factory;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 
 import com.booboot.vndbandroid.R;
@@ -14,7 +13,7 @@ import com.booboot.vndbandroid.bean.vndbandroid.Priority;
 import com.booboot.vndbandroid.bean.vndbandroid.Status;
 import com.booboot.vndbandroid.bean.vndbandroid.Vote;
 import com.booboot.vndbandroid.util.GridAutofitLayoutManager;
-import com.booboot.vndbandroid.util.Pixels;
+import com.booboot.vndbandroid.util.image.Pixels;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
 
@@ -48,8 +47,6 @@ public class VNCardFactory {
 
         if (vn.isImage_nsfw() && !SettingsManager.getNSFW(activity))
             card.setImageId(R.drawable.ic_nsfw);
-        else if (PlaceholderPictureFactory.USE_PLACEHOLDER)
-            card.setImageUrl(PlaceholderPictureFactory.getPlaceholderPicture());
         else
             card.setImageUrl(vn.getImage());
 

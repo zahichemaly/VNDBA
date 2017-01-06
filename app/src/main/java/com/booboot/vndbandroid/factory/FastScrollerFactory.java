@@ -7,7 +7,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.booboot.vndbandroid.R;
-import com.booboot.vndbandroid.util.Pixels;
+import com.booboot.vndbandroid.util.image.Pixels;
 import com.pluscubed.recyclerfastscroll.RecyclerFastScroller;
 
 /**

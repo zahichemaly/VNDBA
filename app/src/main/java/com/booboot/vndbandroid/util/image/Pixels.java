@@ -1,4 +1,4 @@
-package com.booboot.vndbandroid.util;
+package com.booboot.vndbandroid.util.image;
 
 import android.content.Context;
 import android.content.res.Resources;
