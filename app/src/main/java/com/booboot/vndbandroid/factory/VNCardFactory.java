@@ -1,27 +1,28 @@
 package com.booboot.vndbandroid.factory;
 
 import android.app.Activity;
-import android.graphics.Color;
-import android.view.Gravity;
+import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 
 import com.booboot.vndbandroid.R;
-import com.booboot.vndbandroid.adapter.materiallistview.MaterialListView;
+import com.booboot.vndbandroid.adapter.vncards.Card;
+import com.booboot.vndbandroid.adapter.vncards.VNCardsAdapter;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.bean.vndb.Item;
 import com.booboot.vndbandroid.bean.vndbandroid.Priority;
 import com.booboot.vndbandroid.bean.vndbandroid.Status;
 import com.booboot.vndbandroid.bean.vndbandroid.Vote;
+import com.booboot.vndbandroid.util.GridAutofitLayoutManager;
+import com.booboot.vndbandroid.util.image.Pixels;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
-import com.dexafree.materialList.card.Card;
-import com.dexafree.materialList.card.CardProvider;
 
 /**
  * Created by od on 17/04/2016.
  */
 public class VNCardFactory {
-    public static void buildCard(Activity activity, Item vn, MaterialListView materialListView, boolean showFullDate, boolean showRank, boolean showRating, boolean showPopularity, boolean showVoteCount) {
-        StringBuilder title = new StringBuilder(), subtitle = new StringBuilder(), description = new StringBuilder();
+    public static void buildCard(Activity activity, Item vn, RecyclerView materialListView, boolean showFullDate, boolean showRank, boolean showRating, boolean showPopularity, boolean showVoteCount) {
+        StringBuilder title = new StringBuilder(), subtitle = new StringBuilder();
         if (showRank)
             title.append("#").append(materialListView.getAdapter().getItemCount() + 1).append(activity.getString(R.string.dash));
         title.append(vn.getTitle());
@@ -40,45 +41,32 @@ public class VNCardFactory {
         else
             subtitle.append(Utils.getDate(vn.getReleased(), true));
 
-        if (Cache.vnlist.get(vn.getId()) != null)
-            description.append(Status.toString(Cache.vnlist.get(vn.getId()).getStatus())).append("\n");
-        else description.append("Not on your VN list\n");
-        if (Cache.wishlist.get(vn.getId()) != null)
-            description.append(Priority.toString(Cache.wishlist.get(vn.getId()).getPriority())).append("\n");
-        else description.append("Not on your wishlist\n");
-        if (Cache.votelist.get(vn.getId()) != null) {
-            int vote = Cache.votelist.get(vn.getId()).getVote();
-            description.append(Vote.toString(vote));
-        } else description.append("Not voted yet");
-
-
-        CardProvider cardProvider = new Card.Builder(activity)
-                .withProvider(new CardProvider())
-                .setLayout(R.layout.vn_card_layout)
-                .setTitle(title.toString())
-                .setSubtitle(subtitle.toString())
-                .setSubtitleColor(Color.GRAY)
-                .setTitleGravity(Gravity.CENTER)
-                .setSubtitleGravity(Gravity.CENTER)
-                .setDescription(description.toString())
-                .setDescriptionGravity(Gravity.CENTER)
-                .setDescriptionColor(Utils.getThemeColor(activity, R.attr.colorPrimaryDark));
+        Card card = new Card(vn.getId());
+        card.setTitle(title.toString());
+        card.setSubtitle(subtitle.toString());
 
         if (vn.isImage_nsfw() && !SettingsManager.getNSFW(activity))
-            cardProvider.setDrawable(R.drawable.ic_nsfw);
-        else if (PlaceholderPictureFactory.USE_PLACEHOLDER)
-            cardProvider.setDrawable(PlaceholderPictureFactory.getPlaceholderPicture());
+            card.setImageId(R.drawable.ic_nsfw);
         else
-            cardProvider.setDrawable(vn.getImage());
+            card.setImageUrl(vn.getImage());
 
-        Card card = cardProvider.endConfig().build();
-        card.setTag(vn.getId());
+        if (Cache.vnlist.get(vn.getId()) != null)
+            card.setStatus(Status.toShortString(Cache.vnlist.get(vn.getId()).getStatus()));
+        else card.setStatus(activity.getString(R.string.dash));
 
-        materialListView.getAdapter().add(card);
+        if (Cache.wishlist.get(vn.getId()) != null)
+            card.setWish(Priority.toShortString(Cache.wishlist.get(vn.getId()).getPriority()));
+        else card.setWish(activity.getString(R.string.dash));
+
+        if (Cache.votelist.get(vn.getId()) != null)
+            card.setVote(Vote.toShortString(Cache.votelist.get(vn.getId()).getVote()) + "");
+        else card.setVote(activity.getString(R.string.dash));
+
+        ((VNCardsAdapter) materialListView.getAdapter()).addCard(card);
     }
 
-    public static void setCardsPerRow(Activity activity, MaterialListView materialListView) {
-        materialListView.setColumnCountLandscape(Utils.isDeviceWide(activity, Utils.LANDSCAPE) ? 3 : Utils.isInMultiWindowMode(activity) ? 1 : 2);
-        materialListView.setColumnCountPortrait(Utils.isDeviceWide(activity, Utils.PORTRAIT) ? 2 : 1);
+    public static void setupList(Context context, RecyclerView materialListView) {
+        materialListView.setLayoutManager(new GridAutofitLayoutManager(context, Pixels.px(300, context)));
+        materialListView.setAdapter(new VNCardsAdapter(context));
     }
 }

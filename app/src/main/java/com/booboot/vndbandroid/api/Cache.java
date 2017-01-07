@@ -49,7 +49,7 @@ public class Cache {
     public final static String CHARACTER_FLAGS = "basic,details,meas,traits,vns";
     public final static String RELEASE_FLAGS = "basic,details,producers";
 
-    public final static String DBSTATS_CACHE = "dbstats.data";
+    private final static String DBSTATS_CACHE = "dbstats.data";
     public static boolean loadedFromCache = false;
 
     public final static String[] SORT_OPTIONS = new String[]{
@@ -69,6 +69,7 @@ public class Cache {
     public static boolean shouldRefreshView;
 
     public static boolean pipeliningError;
+    public static CountDownLatch countDownLatch;
 
     public static void loadData(final Context context, final Callback successCallback, final Callback errorCallback) {
         new Thread() {
@@ -78,9 +79,9 @@ public class Cache {
 
                 /* Initializing multi-threading variables */
                 pipeliningError = false;
-                Callback.countDownLatch = new CountDownLatch(3);
+                countDownLatch = new CountDownLatch(3);
 
-                VNDBServer.get("vnlist", "basic", "(uid = 0)", Options.create(1, 100, null, false, true, true, 0), 0, context, new Callback() {
+                VNDBServer.get("vnlist", "basic", "(uid = 0)", Options.create(1, 100, null, false, true, 0), 0, context, new Callback() {
                     @Override
                     public void config() {
                         for (Item vnlistItem : results.getItems()) {
@@ -90,7 +91,7 @@ public class Cache {
                     }
                 }, errorCallback);
 
-                VNDBServer.get("votelist", "basic", "(uid = 0)", Options.create(1, 100, null, false, true, true, 0), 1, context, new Callback() {
+                VNDBServer.get("votelist", "basic", "(uid = 0)", Options.create(1, 100, null, false, true, 0), 1, context, new Callback() {
                     @Override
                     protected void config() {
                         for (Item votelistItem : results.getItems()) {
@@ -100,7 +101,7 @@ public class Cache {
                     }
                 }, errorCallback);
 
-                VNDBServer.get("wishlist", "basic", "(uid = 0)", Options.create(1, 100, null, false, true, true, 0), 2, context, new Callback() {
+                VNDBServer.get("wishlist", "basic", "(uid = 0)", Options.create(1, 100, null, false, true, 0), 2, context, new Callback() {
                     @Override
                     protected void config() {
                         for (Item wishlistItem : results.getItems()) {
@@ -111,14 +112,14 @@ public class Cache {
                 }, errorCallback);
 
                 try {
-                    Callback.countDownLatch.await();
+                    countDownLatch.await();
                 } catch (InterruptedException E) {
                     errorCallback.message = "An unexpected error occurred while loading your lists. Please try again later.";
                     errorCallback.call();
                     return;
                 }
 
-                Callback.countDownLatch = null;
+                countDownLatch = null;
                 if (pipeliningError) return;
 
                 Set<Integer> mergedIds = new HashSet<>(vnlistIds.keySet());
@@ -127,14 +128,15 @@ public class Cache {
                 mergedIdsString = TextUtils.join(",", mergedIds);
                 DB.startupClean(context, mergedIdsString, vnlistIds.keySet(), votelistIds.keySet(), wishlistIds.keySet());
 
-                if (mergedIds.isEmpty() || !shouldSendGetVn(context, vnlistIds, votelistIds, wishlistIds, mergedIds)) {
+                SettingsManager.setEmptyAccount(context, mergedIds.isEmpty());
+                if (!shouldSendGetVn(context, vnlistIds, votelistIds, wishlistIds, mergedIds) || mergedIds.isEmpty()) {
                     successCallback.call();
                     return;
                 }
 
                 mergedIdsString = TextUtils.join(",", mergedIds);
                 int numberOfPages = (int) Math.ceil(mergedIds.size() * 1.0 / 25);
-                VNDBServer.get("vn", VN_FLAGS, "(id = [" + mergedIdsString + "])", Options.create(true, true, numberOfPages), 0, context, new Callback() {
+                VNDBServer.get("vn", VN_FLAGS, "(id = [" + mergedIdsString + "])", Options.create(true, numberOfPages), 0, context, new Callback() {
                     @Override
                     protected void config() {
                         for (Item vn : results.getItems()) {
@@ -169,10 +171,10 @@ public class Cache {
                         }
 
                         sortAll(context);
-                        DB.saveVnlist(context);
-                        DB.saveVotelist(context);
-                        DB.saveWishlist(context);
-                        DB.saveVNs(context);
+                        DB.saveVnlist(context, true, false);
+                        DB.saveVotelist(context, false, false);
+                        DB.saveWishlist(context, false, false);
+                        DB.saveVNs(context, false, true);
 
                         shouldRefreshView = true;
                         successCallback.call();
@@ -275,15 +277,20 @@ public class Cache {
     }
 
     public static void openVNDetails(final Activity activity, final int vnId) {
+        openVNDetails(activity, vnId, null, null);
+    }
+
+    public static void openVNDetails(final Activity activity, final int vnId, final Callback successCallback, Callback errorCallback) {
         if (Cache.vns.get(vnId) != null) {
             Intent intent = new Intent(activity, VNDetailsActivity.class);
             intent.putExtra(VNTypeFragment.VN_ARG, vnId);
             activity.startActivity(intent);
             activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+            if (successCallback != null) successCallback.call();
             return;
         }
 
-        VNDBServer.get("vn", Cache.VN_FLAGS, "(id = " + vnId + ")", Options.create(false, false, 1), 0, activity, new Callback() {
+        VNDBServer.get("vn", Cache.VN_FLAGS, "(id = " + vnId + ")", Options.create(false, 1), 0, activity, new Callback() {
             @Override
             protected void config() {
                 if (!results.getItems().isEmpty()) {
@@ -292,9 +299,10 @@ public class Cache {
                     intent.putExtra(VNTypeFragment.VN_ARG, vnId);
                     activity.startActivity(intent);
                     activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+                    if (successCallback != null) successCallback.call();
                 }
             }
-        }, Callback.errorCallback(activity));
+        }, errorCallback != null ? errorCallback : Callback.errorCallback(activity));
     }
 
     public static void saveToCache(Context context, String filename, Object object) {
@@ -316,7 +324,7 @@ public class Cache {
 
         sortAll(context);
         loadedFromCache = vnlist.size() > 0 || votelist.size() > 0 || wishlist.size() > 0;
-        return true;
+        return loadedFromCache;
     }
 
     public static void loadStatsFromCache(Context context) {

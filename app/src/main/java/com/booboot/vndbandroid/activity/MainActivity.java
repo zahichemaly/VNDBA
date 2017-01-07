@@ -8,15 +8,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.support.annotation.IdRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -44,18 +39,19 @@ import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.bean.vndbandroid.ListType;
 import com.booboot.vndbandroid.bean.vndbandroid.Theme;
-import com.booboot.vndbandroid.factory.PlaceholderPictureFactory;
 import com.booboot.vndbandroid.util.ConnectionReceiver;
-import com.booboot.vndbandroid.util.Pixels;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
-import com.nostra13.universalimageloader.core.ImageLoader;
+import com.booboot.vndbandroid.util.image.BlurIfDemoTransform;
+import com.booboot.vndbandroid.util.image.Pixels;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static MainActivity instance;
+    public static boolean mainActivityExists = false;
     private SearchView searchView;
     private List<VNTypeFragment> activeFragments = new ArrayList<>();
     private Fragment directSubfragment;
@@ -96,27 +92,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         navigationView.getMenu().findItem(R.id.accountTitle).setTitle(SettingsManager.getUsername(this));
         View header = navigationView.getHeaderView(0);
-        final LinearLayout headerBackground = (LinearLayout) header.findViewById(R.id.headerBackground);
 
-        if (PlaceholderPictureFactory.USE_PLACEHOLDER) {
-            new Thread() {
-                public void run() {
-                    final Bitmap background = ImageLoader.getInstance().loadImageSync(PlaceholderPictureFactory.getPlaceholderPicture());
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            headerBackground.setBackground(new BitmapDrawable(getResources(), background));
-                        }
-                    });
-                }
-            }.start();
-        } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                headerBackground.setBackground(getResources().getDrawable(Theme.THEMES.get(SettingsManager.getTheme(this)).getWallpaper(), getTheme()));
-            } else {
-                headerBackground.setBackground(getResources().getDrawable(Theme.THEMES.get(SettingsManager.getTheme(this)).getWallpaper()));
-            }
-        }
+        ImageView headerBackground = (ImageView) header.findViewById(R.id.headerBackground);
+        Picasso.with(this).load(Theme.THEMES.get(SettingsManager.getTheme(this)).getWallpaper()).transform(new BlurIfDemoTransform(this)).into(headerBackground);
 
         FloatingActionButton floatingSearchButton = (FloatingActionButton) findViewById(R.id.floatingSearchButton);
         if (floatingSearchButton != null) {
@@ -144,6 +122,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             connectionReceiver = new ConnectionReceiver();
             registerReceiver(connectionReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         }
+        mainActivityExists = true;
     }
 
     @Override
@@ -180,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public boolean onQueryTextChange(String search) {
                 for (VNTypeFragment activeFragment : activeFragments) {
-                    activeFragment.getMaterialListView().getAdapter().getFilter().filter(search);
+                    activeFragment.filter(search);
                 }
                 return true;
             }
@@ -333,7 +312,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setMenuCounter(R.id.nav_votelist, Cache.votelist.size());
     }
 
-    private void setMenuCounter(@IdRes int itemId, int count) {
+    private void setMenuCounter(int itemId, int count) {
         if (navigationView != null) {
             TextView view = (TextView) navigationView.getMenu().findItem(itemId).getActionView();
             view.setText(count > 0 ? String.valueOf(count) : null);
@@ -341,11 +320,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        VNDetailsActivity.goBackToVnlist = false;
+    }
+
+    @Override
     protected void onDestroy() {
         if (connectionReceiver != null) {
             unregisterReceiver(connectionReceiver);
         }
-
+        mainActivityExists = false;
         super.onDestroy();
     }
 }

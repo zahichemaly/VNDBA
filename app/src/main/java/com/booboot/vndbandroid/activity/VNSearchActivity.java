@@ -4,6 +4,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
@@ -21,6 +22,7 @@ import android.widget.SearchView;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.adapter.search.SearchOptionsAdapter;
+import com.booboot.vndbandroid.adapter.search.TagAutoCompleteView;
 import com.booboot.vndbandroid.adapter.search.TagFilteredArrayAdapter;
 import com.booboot.vndbandroid.bean.vndb.Options;
 import com.booboot.vndbandroid.bean.vndb.Tag;
@@ -28,13 +30,11 @@ import com.booboot.vndbandroid.bean.vndbandroid.Theme;
 import com.booboot.vndbandroid.factory.ProgressiveResultLoader;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.JSON;
-import com.booboot.vndbandroid.util.Pixels;
+import com.booboot.vndbandroid.util.image.Pixels;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
-import com.booboot.vndbandroid.view.TagAutoCompleteView;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tokenautocomplete.TokenCompleteTextView;
-import com.wrapp.floatlabelededittext.FloatLabeledEditText;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -63,7 +63,7 @@ public class VNSearchActivity extends AppCompatActivity {
     private TagAutoCompleteView excludeTagsInput;
     private Set<Integer> includeTags = new HashSet<>();
     private Set<Integer> excludeTags = new HashSet<>();
-    private FloatLabeledEditText includeTagsFloatingLabel;
+    private TextInputLayout includeTagsFloatingLabel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +102,7 @@ public class VNSearchActivity extends AppCompatActivity {
     private void initSearchOptions() {
         includeTagsInput = (TagAutoCompleteView) findViewById(R.id.includeTagsInput);
         excludeTagsInput = (TagAutoCompleteView) findViewById(R.id.excludeTagsInput);
-        includeTagsFloatingLabel = (FloatLabeledEditText) findViewById(R.id.includeTagsFloatingLabel);
+        includeTagsFloatingLabel = (TextInputLayout) findViewById(R.id.includeTagsFloatingLabel);
         final ImageView includeTagsIcon = (ImageView) findViewById(R.id.includeTagsIcon);
         final ImageView includeTagsDropdown = (ImageView) findViewById(R.id.includeTagsDropdown);
         ImageView excludeTagsIcon = (ImageView) findViewById(R.id.excludeTagsIcon);
@@ -135,10 +135,8 @@ public class VNSearchActivity extends AppCompatActivity {
                             @Override
                             public boolean onMenuItemClick(MenuItem item) {
                                 if (item.getItemId() == R.id.item_include_all) {
-                                    includeTagsInput.setHint(R.string.include_all_tags);
                                     includeTagsFloatingLabel.setHint(getResources().getString(R.string.include_all_tags));
                                 } else if (item.getItemId() == R.id.item_include_one) {
-                                    includeTagsInput.setHint(R.string.include_one_tags);
                                     includeTagsFloatingLabel.setHint(getResources().getString(R.string.include_one_tags));
                                 }
                                 return false;
@@ -184,7 +182,6 @@ public class VNSearchActivity extends AppCompatActivity {
                 tagsInput.onRestoreInstanceState(savedState);
                 CharSequence hint = savedInstanceState.getCharSequence(INCLUDE_TAGS_HINT);
                 if (hint != null) {
-                    tagsInput.setHint(hint);
                     includeTagsFloatingLabel.setHint(hint.toString());
                 }
             }
@@ -252,7 +249,7 @@ public class VNSearchActivity extends AppCompatActivity {
             if (query.length() > 0)
                 filters.add("search ~ \"" + query.trim() + "\"");
             if (!includeTags.isEmpty()) {
-                if (includeTagsInput.getHint().toString().equals(getResources().getString(R.string.include_one_tags))) {
+                if (includeTagsFloatingLabel.getHint().toString().equals(getResources().getString(R.string.include_one_tags))) {
                     filters.add("tags = " + JSON.mapper.writeValueAsString(includeTags));
                 } else {
                     filters.add("tags = " + TextUtils.join(" and tags = ", includeTags));
@@ -277,13 +274,19 @@ public class VNSearchActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        VNDetailsActivity.goBackToVnlist = false;
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         if (searchView != null)
             savedInstanceState.putString(SAVED_QUERY_STATE, searchView.getQuery().toString());
         if (expandableListAdapter != null && includeTagsInput != null) {
             savedInstanceState.putParcelable(INCLUDE_TAGS_STATE, includeTagsInput.onSaveInstanceState());
             savedInstanceState.putParcelable(EXCLUDE_TAGS_STATE, excludeTagsInput.onSaveInstanceState());
-            savedInstanceState.putCharSequence(INCLUDE_TAGS_HINT, includeTagsInput.getHint());
+            savedInstanceState.putCharSequence(INCLUDE_TAGS_HINT, includeTagsFloatingLabel.getHint());
         }
         savedInstanceState.putInt(SEARCH_OPTIONS_VISIBILITY, searchOptionsLayout.getVisibility());
         savedInstanceState.putIntegerArrayList(INCLUDE_TAGS, new ArrayList<>(includeTags));

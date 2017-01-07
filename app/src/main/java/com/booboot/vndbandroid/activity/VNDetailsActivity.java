@@ -2,8 +2,13 @@ package com.booboot.vndbandroid.activity;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,17 +28,20 @@ import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.RadioButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.adapter.vndetails.VNDetailsElement;
+import com.booboot.vndbandroid.adapter.vndetails.VNDetailsListener;
 import com.booboot.vndbandroid.adapter.vndetails.VNExpandableListAdapter;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.DB;
@@ -50,19 +58,21 @@ import com.booboot.vndbandroid.bean.vndbandroid.Vote;
 import com.booboot.vndbandroid.bean.vndbandroid.VotelistItem;
 import com.booboot.vndbandroid.bean.vndbandroid.WishlistItem;
 import com.booboot.vndbandroid.bean.vnstat.SimilarNovel;
-import com.booboot.vndbandroid.factory.PlaceholderPictureFactory;
+import com.booboot.vndbandroid.factory.PopupMenuFactory;
 import com.booboot.vndbandroid.factory.VNDetailsFactory;
-import com.booboot.vndbandroid.listener.VNDetailsListener;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.Lightbox;
-import com.booboot.vndbandroid.util.Pixels;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
+import com.booboot.vndbandroid.util.image.BitmapTransformation;
+import com.booboot.vndbandroid.util.image.BlurIfDemoTransform;
+import com.booboot.vndbandroid.util.image.Pixels;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.nostra13.universalimageloader.core.ImageLoader;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -71,9 +81,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class VNDetailsActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
+    /* Attributes that need to be retrieved when this activity is recreated */
     public int spoilerLevel = -1;
+    public int nsfwLevel = -1;
+
+    /* If true, the activity must finish() on resume, so the user can go back to their VN list */
+    public static boolean goBackToVnlist;
     private ActionBar actionBar;
     private SwipeRefreshLayout refreshLayout;
+    private PopupWindow spoilerPopup;
 
     private Item vn;
     private VNlistItem vnlistVn;
@@ -85,7 +101,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
     private List<Item> releasesList;
     private List<SimilarNovel> similarNovels;
 
-    private ImageButton image;
+    private ImageView image;
     private Button statusButton;
     private Button wishlistButton;
     private Button votesButton;
@@ -120,11 +136,14 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         setContentView(R.layout.vn_details);
 
         vn = Cache.vns.get(getIntent().getIntExtra(VNTypeFragment.VN_ARG, -1));
-        assert vn != null;
 
         if (savedInstanceState != null) {
             spoilerLevel = savedInstanceState.getInt("SPOILER_LEVEL");
+            nsfwLevel = savedInstanceState.getInt("NSFW_LEVEL");
+            if (vn == null)
+                vn = Cache.vns.get(savedInstanceState.getInt(VNTypeFragment.VN_ARG));
         }
+        assert vn != null;
 
         if (spoilerLevel < 0) {
             if (SettingsManager.getSpoilerCompleted(this) && vn.getStatus() == Status.FINISHED)
@@ -132,10 +151,11 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
             else
                 spoilerLevel = SettingsManager.getSpoilerLevel(this);
         }
+        if (nsfwLevel < 0) {
+            nsfwLevel = SettingsManager.getNSFW(this) ? 1 : 0;
+        }
 
         init();
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
@@ -153,32 +173,11 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         if (Cache.similarNovels.get(vn.getId()) != null) {
             similarNovels = Cache.similarNovels.get(vn.getId());
         }
-        if (vn.getLanguages() == null && Cache.vns.get(vn.getId()) != null && Cache.vns.get(vn.getId()).getLanguages() != null) {
-            vn.setLanguages(Cache.vns.get(vn.getId()).getLanguages());
-        }
-        if (vn.getPlatforms() == null && Cache.vns.get(vn.getId()) != null && Cache.vns.get(vn.getId()).getPlatforms() != null) {
-            vn.setPlatforms(Cache.vns.get(vn.getId()).getPlatforms());
-        }
-        if (vn.getAnime() == null && Cache.vns.get(vn.getId()) != null && Cache.vns.get(vn.getId()).getAnime() != null) {
-            vn.setAnime(Cache.vns.get(vn.getId()).getAnime());
-        }
-        if (vn.getRelations() == null && Cache.vns.get(vn.getId()) != null && Cache.vns.get(vn.getId()).getRelations() != null) {
-            vn.setRelations(Cache.vns.get(vn.getId()).getRelations());
-        }
-        if (vn.getTags() == null && Cache.vns.get(vn.getId()) != null && Cache.vns.get(vn.getId()).getTags() != null) {
-            vn.setTags(Cache.vns.get(vn.getId()).getTags());
-        }
-        if (vn.getScreens() == null && Cache.vns.get(vn.getId()) != null && Cache.vns.get(vn.getId()).getScreens() != null) {
-            vn.setScreens(Cache.vns.get(vn.getId()).getScreens());
-        }
 
         initExpandableListView();
 
-        image = (ImageButton) findViewById(R.id.image);
-        statusButton = (Button) findViewById(R.id.statusButton);
-        wishlistButton = (Button) findViewById(R.id.wishlistButton);
-        votesButton = (Button) findViewById(R.id.votesButton);
-        notesTextView = (TextView) findViewById(R.id.notesTextView);
+        notesTextView.setHintTextColor(Utils.getTextColorFromBackground(this, R.color.secondaryText, R.color.light_gray, isNsfw()));
+        notesTextView.setTextColor(Utils.getTextColorFromBackground(this, R.color.primaryText, R.color.white, isNsfw()));
         notesTextView.setText(vnlistVn != null ? vnlistVn.getNotes() : "");
         listener = new VNDetailsListener(this, vn, notesTextView);
 
@@ -251,13 +250,6 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         Utils.setButtonColor(this, statusButton);
         Utils.setButtonColor(this, wishlistButton);
         Utils.setButtonColor(this, votesButton);
-
-        if (vn.isImage_nsfw() && !SettingsManager.getNSFW(this)) {
-            image.setImageResource(R.drawable.ic_nsfw);
-        } else {
-            ImageLoader.getInstance().displayImage(PlaceholderPictureFactory.USE_PLACEHOLDER ? PlaceholderPictureFactory.getPlaceholderPicture() : vn.getImage(), image);
-            Lightbox.set(VNDetailsActivity.this, image, vn.getImage());
-        }
     }
 
     private void initExpandableListView() {
@@ -265,7 +257,47 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         LinkedHashMap<String, VNDetailsElement> expandableListDetail = VNDetailsFactory.getData(this);
         List<String> expandableListTitle = new ArrayList<>(expandableListDetail.keySet());
         expandableListAdapter = new VNExpandableListAdapter(this, expandableListTitle, expandableListDetail);
-        expandableListView.addHeaderView(getLayoutInflater().inflate(R.layout.vn_details_header, null));
+
+        final View header = getLayoutInflater().inflate(R.layout.vn_details_header, null);
+        image = (ImageView) header.findViewById(R.id.image);
+        statusButton = (Button) header.findViewById(R.id.statusButton);
+        wishlistButton = (Button) header.findViewById(R.id.wishlistButton);
+        votesButton = (Button) header.findViewById(R.id.votesButton);
+        notesTextView = (TextView) header.findViewById(R.id.notesTextView);
+
+        /* Setting the header and the background image according to the preferences */
+        final ImageView blurBackground = ((ImageView) VNDetailsActivity.this.findViewById(R.id.blurBackground));
+        final boolean coverBackground = SettingsManager.getCoverBackground(this);
+        if (isNsfw()) {
+            image.setImageResource(R.drawable.ic_nsfw);
+            blurBackground.setImageResource(0);
+        } else if (coverBackground) {
+            blurBackground.setImageResource(R.drawable.blur_background_placeholder);
+
+            Target picassoTarget = new Target() {
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    Bitmap blurredImage = BitmapTransformation.darkBlur(VNDetailsActivity.this, bitmap);
+                    image.setImageBitmap(bitmap);
+                    blurBackground.setImageBitmap(blurredImage);
+                }
+
+                @Override
+                public void onBitmapFailed(Drawable errorDrawable) {
+                }
+
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {
+                }
+            };
+            image.setTag(picassoTarget);
+            Picasso.with(this).load(vn.getImage()).transform(new BlurIfDemoTransform(this)).into(picassoTarget);
+        } else {
+            Picasso.with(this).load(vn.getImage()).transform(new BlurIfDemoTransform(this)).into(image);
+        }
+        Lightbox.set(VNDetailsActivity.this, image, vn.getImage());
+
+        expandableListView.addHeaderView(header);
         expandableListView.setAdapter(expandableListAdapter);
 
         expandableListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -283,7 +315,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                     ClipData clip = ClipData.newPlainText("CLIPBOARD", copiedText);
                     clipboard.setPrimaryClip(clip);
 
-                    Toast.makeText(VNDetailsActivity.this, "Element copied to clipboard.", Toast.LENGTH_SHORT).show();
+                    Callback.showToast(VNDetailsActivity.this, "Element copied to clipboard.");
                 }
                 return false;
             }
@@ -296,7 +328,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                 boolean hasChildren = parent.getExpandableListAdapter().getChildrenCount(groupPosition) > 0;
 
                 if (!handledAsynchronously && !hasChildren) {
-                    Toast.makeText(VNDetailsActivity.this, "Nothing to show here...", Toast.LENGTH_SHORT).show();
+                    Callback.showToast(VNDetailsActivity.this, "Nothing to show here...");
                 }
                 return handledAsynchronously || !hasChildren;
             }
@@ -467,7 +499,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                         /* Database tables not init yet: going to send the API query */
                         switch (groupName) {
                             case VNDetailsFactory.TITLE_CHARACTERS:
-                                VNDBServer.get("character", Cache.CHARACTER_FLAGS, "(vn = " + vn.getId() + ")", Options.create(true, true, 0), 0, VNDetailsActivity.this, new Callback() {
+                                VNDBServer.get("character", Cache.CHARACTER_FLAGS, "(vn = " + vn.getId() + ")", Options.create(true, 0), 0, VNDetailsActivity.this, new Callback() {
                                     @Override
                                     protected void config() {
                                         if (results.getItems().isEmpty()) {
@@ -493,7 +525,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
 
                             case VNDetailsFactory.TITLE_INFORMATION:
                             case VNDetailsFactory.TITLE_RELEASES:
-                                VNDBServer.get("release", Cache.RELEASE_FLAGS, "(vn = " + vn.getId() + ")", Options.create(1, 25, "released", false, true, true, 0), 1, VNDetailsActivity.this, new Callback() {
+                                VNDBServer.get("release", Cache.RELEASE_FLAGS, "(vn = " + vn.getId() + ")", Options.create(1, 25, "released", false, true, 0), 1, VNDetailsActivity.this, new Callback() {
                                     @Override
                                     protected void config() {
                                         List<Item> releasesList;
@@ -575,7 +607,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
 
         boolean hasChildren = expandableListAdapter.getChildrenCount(groupPosition) > 0;
         if (!hasChildren) {
-            Toast.makeText(VNDetailsActivity.this, "Nothing to show here...", Toast.LENGTH_SHORT).show();
+            Callback.showToast(VNDetailsActivity.this, "Nothing to show here...");
         }
     }
 
@@ -598,6 +630,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
     private void groupReleasesByLanguage(List<Item> releasesList) {
         releases = new LinkedHashMap<>();
         for (Item release : releasesList) {
+            if (release.getLanguages() == null) continue;
             for (String language : release.getLanguages()) {
                 if (releases.get(language) == null)
                     releases.put(language, new ArrayList<Item>());
@@ -676,27 +709,41 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                 break;
 
             case R.id.action_view_on_vndb:
+                /* #78 : Disabling the deep linking feature temporarily : the user obviously wants to go to the web version if they click on this button! */
+                getPackageManager().setComponentEnabledSetting(new ComponentName(this, VNDBURLActivity.class), PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
                 Utils.openURL(this, Links.VNDB_PAGE + vn.getId());
+                getPackageManager().setComponentEnabledSetting(new ComponentName(this, VNDBURLActivity.class), PackageManager.COMPONENT_ENABLED_STATE_DEFAULT, PackageManager.DONT_KILL_APP);
+                break;
+
+            case R.id.action_go_back_to_list:
+                finish();
+                if (MainActivity.mainActivityExists) {
+                    goBackToVnlist = true;
+                    overridePendingTransition(R.anim.slide_back_in, R.anim.slide_back_out);
+                } else {
+                    startActivity(new Intent(this, LoginActivity.class));
+                }
                 break;
 
             case R.id.action_spoiler:
-                PopupMenu popup = new PopupMenu(this, findViewById(R.id.action_spoiler));
-                MenuInflater inflater = popup.getMenuInflater();
-                inflater.inflate(R.menu.spoiler, popup.getMenu());
-                switch (spoilerLevel) {
-                    case 1:
-                        popup.getMenu().findItem(R.id.item_spoil_1).setChecked(true);
-                        break;
-                    case 2:
-                        popup.getMenu().findItem(R.id.item_spoil_2).setChecked(true);
-                        break;
-                    default:
-                        popup.getMenu().findItem(R.id.item_spoil_0).setChecked(true);
-                        break;
-                }
-                popup.setOnMenuItemClickListener(listener);
-                listener.setPopupButton(null);
-                popup.show();
+                spoilerPopup = PopupMenuFactory.get(this, R.layout.spoiler_menu, findViewById(R.id.action_spoiler), spoilerPopup, new PopupMenuFactory.Callback() {
+                    @Override
+                    public void create(View content) {
+                        RadioButton itemSpoil0 = (RadioButton) content.findViewById(R.id.item_spoil_0);
+                        RadioButton itemSpoil1 = (RadioButton) content.findViewById(R.id.item_spoil_1);
+                        RadioButton itemSpoil2 = (RadioButton) content.findViewById(R.id.item_spoil_2);
+                        CheckBox checkNsfw = (CheckBox) content.findViewById(R.id.check_nsfw);
+                        itemSpoil0.setOnClickListener(listener);
+                        itemSpoil1.setOnClickListener(listener);
+                        itemSpoil2.setOnClickListener(listener);
+                        checkNsfw.setOnClickListener(listener);
+                        itemSpoil0.setChecked(spoilerLevel == 0);
+                        itemSpoil1.setChecked(spoilerLevel == 1);
+                        itemSpoil2.setChecked(spoilerLevel == 2);
+                        checkNsfw.setChecked(nsfwLevel == 1);
+                        listener.setPopupButton(null);
+                    }
+                });
                 break;
         }
 
@@ -714,9 +761,13 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         votesButton.setVisibility(hideVote ? View.GONE : View.VISIBLE);
     }
 
+    public boolean isNsfw() {
+        return vn.isImage_nsfw() && nsfwLevel <= 0;
+    }
+
     @Override
     public void onRefresh() {
-        VNDBServer.get("vn", Cache.VN_FLAGS, "(id = " + vn.getId() + ")", Options.create(false, false, 1), 0, this, new Callback() {
+        VNDBServer.get("vn", Cache.VN_FLAGS, "(id = " + vn.getId() + ")", Options.create(false, 1), 0, this, new Callback() {
             @Override
             protected void config() {
                 if (results.getItems().size() > 0) {
@@ -724,7 +775,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                     Cache.vns.put(vn.getId(), vn);
 
                     /* Deleting all saved data related to the VN, so we can replace it */
-                    DB.deleteVN(VNDetailsActivity.this, vn.getId(), false);
+                    DB.deleteVN(VNDetailsActivity.this, vn.getId(), true, false);
                     Cache.characters.remove(vn.getId());
                     Cache.releases.remove(vn.getId());
                     Cache.similarNovels.remove(vn.getId());
@@ -732,7 +783,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                     releases = null;
                     similarNovels = null;
 
-                    DB.saveVNs(VNDetailsActivity.this, false);
+                    DB.saveVNs(VNDetailsActivity.this, false, true);
 
                     /* Collapsing all submenus */
                     int count = expandableListAdapter.getGroupCount();
@@ -751,6 +802,8 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putInt("SPOILER_LEVEL", spoilerLevel);
+        savedInstanceState.putInt("NSFW_LEVEL", nsfwLevel);
+        savedInstanceState.putInt(VNTypeFragment.VN_ARG, vn != null ? vn.getId() : -1);
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -762,11 +815,12 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
 
     @Override
     protected void onDestroy() {
-        DB.saveVnlist(this);
-        DB.saveVotelist(this);
-        DB.saveWishlist(this);
-        DB.saveVNs(this);
+        DB.saveVnlist(this, true, false);
+        DB.saveVotelist(this, false, false);
+        DB.saveWishlist(this, false, false);
+        DB.saveVNs(this, false, true);
         Lightbox.dismiss();
+        if (spoilerPopup != null && spoilerPopup.isShowing()) spoilerPopup.dismiss();
         super.onDestroy();
     }
 
@@ -878,15 +932,10 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         this.similarNovels = similarNovels;
     }
 
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
     public Action getIndexApiAction() {
         Thing object = new Thing.Builder()
-                .setName("VNDetails Page") // TODO: Define a title for the content shown.
-                // TODO: Make sure this auto-generated URL is correct.
-                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
+                .setName("VN Details Page")
+                .setUrl(Uri.parse(Links.VNDB))
                 .build();
         return new Action.Builder(Action.TYPE_VIEW)
                 .setObject(object)
@@ -898,18 +947,23 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
     public void onStart() {
         super.onStart();
 
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
         client.connect();
         AppIndex.AppIndexApi.start(client, getIndexApiAction());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (goBackToVnlist) {
+            finish();
+            overridePendingTransition(R.anim.slide_back_in, R.anim.slide_back_out);
+        }
     }
 
     @Override
     public void onStop() {
         super.onStop();
 
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
         AppIndex.AppIndexApi.end(client, getIndexApiAction());
         client.disconnect();
     }

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="?attr/listPreferredItemPaddingLeft"
+    android:paddingRight="?attr/listPreferredItemPaddingRight">
+
+    <CheckBox
+        android:id="@+id/check_hide_in_wishlist"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/listPreferredItemHeightSmall"
+        android:gravity="left|center_vertical"
+        android:layoutDirection="rtl"
+        android:text="Hide already in wishlist"
+        android:textDirection="ltr"/>
+</LinearLayout>

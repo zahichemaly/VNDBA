@@ -10,8 +10,6 @@ import com.booboot.vndbandroid.bean.vndb.DbStats;
 import com.booboot.vndbandroid.bean.vndb.Results;
 import com.booboot.vndbandroid.bean.vnstat.VNStatItem;
 
-import java.util.concurrent.CountDownLatch;
-
 /**
  * Created by od on 12/03/2016.
  */
@@ -20,7 +18,8 @@ public abstract class Callback {
     public Results results;
     public DbStats dbstats;
     public VNStatItem vnStatResults;
-    public static CountDownLatch countDownLatch;
+    private static Toast toast;
+    private static CountDownTimer toastTimer;
 
     protected abstract void config();
 
@@ -38,7 +37,6 @@ public abstract class Callback {
             @Override
             public void config() {
                 showToast(context, message);
-                if (countDownLatch != null) countDownLatch.countDown();
             }
         };
     }
@@ -48,10 +46,13 @@ public abstract class Callback {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                final Toast toast = Toast.makeText(context, message, Toast.LENGTH_LONG);
+                if (toast != null) toast.cancel();
+                if (toastTimer != null) toastTimer.cancel();
+
+                toast = Toast.makeText(context, message, message.length() > 40 ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT);
                 toast.show();
                 if (message.length() > 90) {
-                    new CountDownTimer(8000, 1000) {
+                    toastTimer = new CountDownTimer(8000, 1000) {
                         public void onTick(long millisUntilFinished) {
                             toast.show();
                         }

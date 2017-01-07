@@ -3,23 +3,23 @@ package com.booboot.vndbandroid.factory;
 import android.app.Activity;
 import android.os.Build;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.booboot.vndbandroid.R;
-import com.booboot.vndbandroid.adapter.materiallistview.MaterialListView;
+import com.booboot.vndbandroid.adapter.vncards.Card;
+import com.booboot.vndbandroid.adapter.vncards.RecyclerItemClickListener;
+import com.booboot.vndbandroid.adapter.vncards.VNCardsListView;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.bean.vndb.Item;
 import com.booboot.vndbandroid.bean.vndb.Options;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.Utils;
-import com.dexafree.materialList.card.Card;
-import com.dexafree.materialList.listeners.RecyclerItemClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +30,7 @@ import java.util.List;
 public class ProgressiveResultLoader implements SwipeRefreshLayout.OnRefreshListener {
     private Activity activity;
     private View rootView;
-    private MaterialListView materialListView;
+    private VNCardsListView materialListView;
     private ProgressBar progressBar;
     private SwipeRefreshLayout refreshLayout;
 
@@ -47,8 +47,8 @@ public class ProgressiveResultLoader implements SwipeRefreshLayout.OnRefreshList
 
     public void init() {
         progressBar = (ProgressBar) (rootView == null ? activity.findViewById(R.id.progressBar) : rootView.findViewById(R.id.progressBar));
-        materialListView = (MaterialListView) (rootView == null ? activity.findViewById(R.id.materialListView) : rootView.findViewById(R.id.materialListView));
-        VNCardFactory.setCardsPerRow(activity, materialListView);
+        materialListView = (VNCardsListView) (rootView == null ? activity.findViewById(R.id.materialListView) : rootView.findViewById(R.id.materialListView));
+        VNCardFactory.setupList(activity, materialListView);
 
         /* [Fix] Set the background color to match the default one (not the case by default) */
         if (rootView == null) {
@@ -65,16 +65,12 @@ public class ProgressiveResultLoader implements SwipeRefreshLayout.OnRefreshList
             }
         }
 
-        materialListView.addOnItemTouchListener(new RecyclerItemClickListener.OnItemClickListener() {
+        materialListView.addOnItemTouchListener(new RecyclerItemClickListener(activity, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
-            public void onItemClick(Card card, int position) {
-                Cache.openVNDetails(activity, (int) card.getTag());
+            public void onItemClick(CardView cardView, int position) {
+                Cache.openVNDetails(activity, (int) cardView.getTag());
             }
-
-            @Override
-            public void onItemLongClick(Card card, int position) {
-            }
-        });
+        }));
 
         materialListView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -134,7 +130,7 @@ public class ProgressiveResultLoader implements SwipeRefreshLayout.OnRefreshList
             public void config() {
                 progressBar.setVisibility(View.INVISIBLE);
                 refreshLayout.setRefreshing(false);
-                Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
+                Callback.showToast(activity, message);
             }
         });
     }
@@ -148,7 +144,7 @@ public class ProgressiveResultLoader implements SwipeRefreshLayout.OnRefreshList
         init();
         for (Card card : cards) {
             if (card == null) continue;
-            int vnId = (int) card.getTag();
+            int vnId = card.getVnId();
             Item vn = Cache.vns.get(vnId);
             VNCardFactory.buildCard(activity, vn, materialListView, showFullDate, showRank, showRating, showPopularity, showVoteCount);
         }
@@ -176,7 +172,7 @@ public class ProgressiveResultLoader implements SwipeRefreshLayout.OnRefreshList
         this.rootView = rootView;
     }
 
-    public void setMaterialListView(MaterialListView materialListView) {
+    public void setMaterialListView(VNCardsListView materialListView) {
         this.materialListView = materialListView;
     }
 

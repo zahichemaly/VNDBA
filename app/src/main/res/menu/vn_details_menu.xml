@@ -11,4 +11,9 @@
         android:icon="@drawable/ic_world"
         android:title="@string/view_on_vndb_org"
         app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_go_back_to_list"
+        android:icon="@drawable/ic_logout_white"
+        android:title="Go back to your VN list"
+        app:showAsAction="never"/>
 </menu>

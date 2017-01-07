@@ -8,7 +8,6 @@ import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.bean.vndb.DbStats;
 import com.booboot.vndbandroid.bean.vndb.Error;
 import com.booboot.vndbandroid.bean.vndb.Fields;
-import com.booboot.vndbandroid.bean.vndb.Item;
 import com.booboot.vndbandroid.bean.vndb.Login;
 import com.booboot.vndbandroid.bean.vndb.Ok;
 import com.booboot.vndbandroid.bean.vndb.Options;
@@ -27,7 +26,6 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -49,21 +47,19 @@ public class VNDBServer {
 
     public final static int PROTOCOL = 1;
     public final static String CLIENT = "VNDB_ANDROID";
-    public final static double CLIENTVER = 2.0;
+    public final static double CLIENTVER = 2.1;
 
     private static Context context;
     private static Callback successCallback, errorCallback;
-    private static boolean useCacheIfError;
 
     /* Pipelining variables */
     private static ExecutorService threadManager;
     private static VNDBCommand[] plPageResults;
 
-    private static void init(Context c, Callback sc, Callback ec, boolean ucie) {
+    private static void init(Context c, Callback sc, Callback ec) {
         context = c;
         successCallback = sc;
         errorCallback = ec;
-        useCacheIfError = ucie;
     }
 
     public static boolean connect(int socketIndex) {
@@ -97,6 +93,7 @@ public class VNDBServer {
     }
 
     public static void login(final Context context, final int socketIndex, final Callback errorCallback) {
+        if (context == null) return;
         synchronized (SocketPool.getLock(socketIndex)) {
             if (SocketPool.getSocket(socketIndex) == null) {
                 if (!connect(socketIndex)) return;
@@ -115,7 +112,7 @@ public class VNDBServer {
     public static void get(final String type, final String flags, final String filters, final Options options, final int socketIndex, final Context context, final Callback successCallback, final Callback errorCallback) {
         new Thread() {
             public void run() {
-                init(context, successCallback, errorCallback, options.isUseCacheIfError());
+                init(context, successCallback, errorCallback);
                 final StringBuilder command = new StringBuilder();
                 command.append("get ");
                 command.append(type);
@@ -144,6 +141,9 @@ public class VNDBServer {
                         threadManager.awaitTermination(30, TimeUnit.MINUTES);
                         threadManager = null;
                         for (VNDBCommand plPageResult : plPageResults) {
+                            /* Error case: plPageResult is null, which means there was an exception in one thread and the results are incomplete.
+                            To avoid data corruption and/or bad behavior, we stop immediately: the error callback has already been called internally */
+                            if (plPageResult == null) return;
                             if (results == null) {
                                 results = plPageResult;
                             } else if (results instanceof Results && plPageResult instanceof Results) {
@@ -165,7 +165,7 @@ public class VNDBServer {
                         if (results == null) {
                             results = pageResults;
                         } else if (results instanceof Results && pageResults instanceof Results) {
-                                /* If there there's more than 1 page, we add the current page items to the overall results, to avoid overwriting the results of the previous pages */
+                            /* If there's more than 1 page, we add the current page items to the overall results, to avoid overwriting the results of the previous pages */
                             ((Results) results).getItems().addAll(((Results) pageResults).getItems());
                         }
 
@@ -185,7 +185,7 @@ public class VNDBServer {
     public static void set(final String type, final int id, final Fields fields, final Context context, final Callback successCallback, final Callback errorCallback) {
         new Thread() {
             public void run() {
-                init(context, successCallback, errorCallback, false);
+                init(context, successCallback, errorCallback);
                 StringBuilder command = new StringBuilder();
                 command.append("set ");
                 command.append(type);
@@ -203,7 +203,7 @@ public class VNDBServer {
     public static void dbstats(final Callback successCallback, final Callback errorCallback) {
         new Thread() {
             public void run() {
-                init(context, successCallback, errorCallback, false);
+                init(context, successCallback, errorCallback);
                 VNDBCommand results = sendCommand("dbstats", null, 0);
                 if (results instanceof DbStats) {
                     successCallback.dbstats = (DbStats) results;
@@ -224,6 +224,7 @@ public class VNDBServer {
                     query.append(JSON.mapper.writeValueAsString(params));
                 query.append(EOM);
             } catch (JsonProcessingException jpe) {
+                VNDBServer.close(socketIndex);
                 errorCallback.message = "Unable to process the query to the API as JSON. Aborting operation.";
                 errorCallback.call();
                 return null;
@@ -248,7 +249,7 @@ public class VNDBServer {
                     out.write(query.toString().getBytes("UTF-8"));
 
                     isThrottled = false;
-                    response = getResponse(in);
+                    response = getResponse(socketIndex, in);
                     if (response instanceof Error) {
                         Error error = (Error) response;
                         isThrottled = error.getId().equals("throttled");
@@ -271,27 +272,20 @@ public class VNDBServer {
                         }
                     }
                 } while (isThrottled);
-
             } catch (UnsupportedEncodingException uee) {
+                VNDBServer.close(socketIndex);
                 errorCallback.message = "Tried to send a query to the API with a wrong encoding. Aborting operation.";
                 errorCallback.call();
                 return null;
             } catch (SocketException se) {
                 se.printStackTrace();
                 VNDBServer.close(socketIndex);
-
-                if (!useCacheIfError || !Cache.loadFromCache(context)) {
-                    errorCallback.message = ConnectionReceiver.CONNECTION_ERROR_MESSAGE;
-                    errorCallback.call();
-                } else {
-                    Results results = new Results();
-                    results.setItems(new ArrayList<Item>());
-                    successCallback.results = results;
-                    successCallback.call();
-                }
+                errorCallback.message = ConnectionReceiver.CONNECTION_ERROR_MESSAGE;
+                errorCallback.call();
                 return null;
             } catch (IOException ioe) {
                 ioe.printStackTrace();
+                VNDBServer.close(socketIndex);
                 errorCallback.message = "An error occurred while sending a query to the API. Please try again later.";
                 errorCallback.call();
                 return null;
@@ -304,7 +298,7 @@ public class VNDBServer {
         }
     }
 
-    private static VNDBCommand getResponse(InputStreamReader in) {
+    private static VNDBCommand getResponse(int socketIndex, InputStreamReader in) {
         StringBuilder response = new StringBuilder();
         try {
             int read = in.read();
@@ -313,14 +307,15 @@ public class VNDBServer {
                 read = in.read();
                 // Log.e("D", response.toString());
             }
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            VNDBServer.close(socketIndex);
             errorCallback.message = "An error occurred while receiving the response from the API. Please try again later.";
             errorCallback.call();
             return null;
         }
         if (BuildConfig.DEBUG) {
-           //    log(response.toString());
+            //    log(response.toString());
         }
 
         int delimiterIndex = response.indexOf("{");
@@ -328,13 +323,11 @@ public class VNDBServer {
             if (response.toString().trim().equals("ok"))
                 return new Ok();
             else {
-                if (threadManager == null || !threadManager.isShutdown()) {
-                    /* Calling the error callback only if we're not pipelining (might be wrong to call the error callback while there are other threads running) */
-                    errorCallback.message = "An error occurred while reading the response from the API. Aborting operation.";
-                    errorCallback.call();
-                }
-                /* Undocumented error : the server returned an empty response (""), which (most of the time) means we have been throttled */
-                return new Error("throttled", 6, 10 * 60);
+                /* Undocumented error : the server returned an empty response (""), which means absolutely nothing but "leave the ship because something undebuggable happened!" */
+                VNDBServer.close(socketIndex);
+                errorCallback.message = "VNDB.org returned an unexpected error. Please try again later.";
+                errorCallback.call();
+                return null;
             }
         }
 
@@ -344,6 +337,7 @@ public class VNDBServer {
             return (VNDBCommand) JSON.mapper.readValue(params, VNDBCommand.getClass(command));
         } catch (IOException ioe) {
             ioe.printStackTrace();
+            VNDBServer.close(socketIndex);
             errorCallback.message = "An error occurred while decoding the response from the API. Aborting operation.";
             errorCallback.call();
             return null;
@@ -351,21 +345,17 @@ public class VNDBServer {
     }
 
     public static void close(final int socketIndex) {
-        new Thread() {
-            public void run() {
-                try {
-                    SSLSocket socket = SocketPool.getSocket(socketIndex);
-                    if (socket != null && !socket.isClosed()) {
-                        socket.getInputStream().close();
-                        socket.getOutputStream().close();
-                        socket.close();
-                    }
-                    SocketPool.setSocket(socketIndex, null);
-                } catch (IOException ioe) {
-                    ioe.printStackTrace();
-                }
+        try {
+            SSLSocket socket = SocketPool.getSocket(socketIndex);
+            if (socket != null && !socket.isClosed()) {
+                socket.getInputStream().close();
+                socket.getOutputStream().close();
+                socket.close();
             }
-        }.start();
+            SocketPool.setSocket(socketIndex, null);
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
     }
 
     public static void closeAll() {

@@ -1,4 +1,4 @@
-package com.booboot.vndbandroid.listener;
+package com.booboot.vndbandroid.adapter.vndetails;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -9,9 +9,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.MainActivity;
@@ -35,24 +35,12 @@ import java.util.Date;
 /**
  * Created by od on 12/04/2016.
  */
-public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, DialogInterface.OnClickListener {
+public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, DialogInterface.OnClickListener, View.OnClickListener {
     private VNDetailsActivity activity;
-    private VNlistItem vnlistVn;
-    private WishlistItem wishlistVn;
-    private VotelistItem votelistVn;
     private Item vn;
     private Button popupButton;
     private TextView notesTextView;
     private EditText notesInput;
-/*
-    public VNDetailsListener(VNDetailsActivity activity, VNlistItem vnlistVn, WishlistItem wishlistVn, VotelistItem votelistVn, TextView notesTextView) {
-        this.activity = activity;
-        this.vnlistVn = vnlistVn;
-        this.wishlistVn = wishlistVn;
-        this.votelistVn = votelistVn;
-        this.notesTextView = notesTextView;
-    }
-*/
 
     public VNDetailsListener(VNDetailsActivity activity, Item vn, TextView notesTextView) {
         this.activity = activity;
@@ -63,7 +51,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
     @Override
     public boolean onMenuItemClick(final MenuItem item) {
         if (!ConnectionReceiver.isConnected()) {
-            Toast.makeText(activity, ConnectionReceiver.CONNECTION_ERROR_MESSAGE, Toast.LENGTH_LONG).show();
+            Callback.showToast(activity, ConnectionReceiver.CONNECTION_ERROR_MESSAGE);
             return true;
         }
 
@@ -185,21 +173,6 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
                 type = "votelist";
                 fields = null;
                 break;
-
-            case R.id.item_spoil_0:
-                activity.spoilerLevel = 0;
-                Utils.recreate(activity);
-                return true;
-
-            case R.id.item_spoil_1:
-                activity.spoilerLevel = 1;
-                Utils.recreate(activity);
-                return true;
-
-            case R.id.item_spoil_2:
-                activity.spoilerLevel = 2;
-                Utils.recreate(activity);
-                return true;
 
             default:
                 return false;
@@ -381,6 +354,29 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
                     MainActivity.instance.refreshVnlistFragment();
             }
         }, Callback.errorCallback(activity));
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.item_spoil_0:
+                activity.spoilerLevel = 0;
+                break;
+
+            case R.id.item_spoil_1:
+                activity.spoilerLevel = 1;
+                break;
+
+            case R.id.item_spoil_2:
+                activity.spoilerLevel = 2;
+                break;
+
+            case R.id.check_nsfw:
+                activity.nsfwLevel = ((CheckBox) view).isChecked() ? 1 : 0;
+                break;
+        }
+
+        Utils.recreate(activity);
     }
 
     private void buildOtherVoteDialog(final String type, final Fields fields, final MenuItem item) {

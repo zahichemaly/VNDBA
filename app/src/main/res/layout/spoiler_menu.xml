@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="?attr/listPreferredItemPaddingLeft"
+    android:paddingRight="?attr/listPreferredItemPaddingRight">
+
+    <RadioGroup
+        android:id="@+id/radios"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/item_spoil_0"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/listPreferredItemHeightSmall"
+            android:gravity="left|center_vertical"
+            android:layoutDirection="rtl"
+            android:text="Hide spoilers"
+            android:textDirection="ltr"/>
+
+        <RadioButton
+            android:id="@+id/item_spoil_1"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/listPreferredItemHeightSmall"
+            android:gravity="left|center_vertical"
+            android:layoutDirection="rtl"
+            android:text="Show minor spoilers"
+            android:textDirection="ltr"/>
+
+        <RadioButton
+            android:id="@+id/item_spoil_2"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/listPreferredItemHeightSmall"
+            android:gravity="left|center_vertical"
+            android:layoutDirection="rtl"
+            android:text="Spoil me!"
+            android:textDirection="ltr"/>
+    </RadioGroup>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="@color/light_gray"/>
+
+    <CheckBox
+        android:id="@+id/check_nsfw"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/listPreferredItemHeightSmall"
+        android:gravity="left|center_vertical"
+        android:layoutDirection="rtl"
+        android:text="Show NSFW"
+        android:textDirection="ltr"/>
+</LinearLayout>

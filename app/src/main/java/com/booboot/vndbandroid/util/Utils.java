@@ -23,7 +23,6 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -31,6 +30,7 @@ import com.booboot.vndbandroid.BuildConfig;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.EmptyActivity;
 import com.booboot.vndbandroid.bean.vndbandroid.Mail;
+import com.booboot.vndbandroid.util.image.Pixels;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -70,6 +70,7 @@ public class Utils {
     }
 
     public static void openURL(Activity context, String url) {
+        if (context == null) return;
         if (SettingsManager.getInAppBrowser(context)) {
             CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
             builder.setToolbarColor(getThemeColor(context, R.attr.colorPrimary));
@@ -130,12 +131,21 @@ public class Utils {
         return min + (int) (Math.random() * ((max - min) + 1));
     }
 
-    public static void setButtonColor(Context context, Button button) {
+    public static void setButtonColor(Context context, TextView button) {
         ColorStateList buttonBackgroundColor = ColorStateList.valueOf(getThemeColor(context, R.attr.colorPrimaryDark));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             button.setBackgroundTintList(buttonBackgroundColor);
         } else {
             ViewCompat.setBackgroundTintList(button, buttonBackgroundColor);
+        }
+    }
+
+    public static void setElevation(Context context, View view, int dp) {
+        float px = Pixels.px(dp, context);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            view.setElevation(px);
+        } else {
+            ViewCompat.setElevation(view, px);
         }
     }
 
@@ -232,5 +242,15 @@ public class Utils {
 
     public static boolean isInMultiWindowMode(Activity activity) {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && activity.isInMultiWindowMode();
+    }
+
+    public static int getTextColorFromBackground(Context context, int darkColor, int lightColor, boolean nsfw) {
+        return context.getResources().getColor(!nsfw && SettingsManager.getCoverBackground(context) ? lightColor : darkColor);
+    }
+
+    public static int screenWidth(Activity activity) {
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+        return displaymetrics.widthPixels;
     }
 }

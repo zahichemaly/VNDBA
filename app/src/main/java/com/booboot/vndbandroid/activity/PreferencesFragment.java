@@ -13,8 +13,6 @@ import com.booboot.vndbandroid.bean.vndbandroid.Theme;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
 
-import java.util.HashMap;
-
 public class PreferencesFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener {
     private static Preference.OnPreferenceChangeListener bindPreferenceSummaryToValueListener;
 
@@ -33,6 +31,7 @@ public class PreferencesFragment extends PreferenceFragment implements Preferenc
         bindPreferenceSummaryToValue(findPreference(getActivity().getString(R.string.pref_key_spoiler)));
         bindPreferenceSummaryToValue(findPreference(getActivity().getString(R.string.pref_key_nsfw)));
         bindPreferenceSummaryToValue(findPreference(getActivity().getString(R.string.pref_key_browser)));
+        bindPreferenceSummaryToValue(findPreference(getActivity().getString(R.string.pref_key_cover_background)));
     }
 
     /**
@@ -88,6 +87,8 @@ public class PreferencesFragment extends PreferenceFragment implements Preferenc
                 SettingsManager.setNSFW(getActivity(), Boolean.parseBoolean(stringValue));
             } else if (preference.getKey().equals(getActivity().getString(R.string.pref_key_browser))) {
                 SettingsManager.setInAppBrowser(getActivity(), Boolean.parseBoolean(stringValue));
+            } else if (preference.getKey().equals(getActivity().getString(R.string.pref_key_cover_background))) {
+                SettingsManager.setCoverBackground(getActivity(), Boolean.parseBoolean(stringValue));
             }
         }
         return true;

@@ -54,7 +54,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         String savedUsername = SettingsManager.getUsername(this);
         String savedPassword = SettingsManager.getPassword(this);
-        boolean credentialsSaved = savedUsername != null && savedPassword != null;
+        boolean credentialsSaved = savedUsername != null && !savedUsername.isEmpty() && savedPassword != null;
         if (credentialsSaved) {
             /* Filling the inputs with saved values (for appearance's sake) */
             loginUsername.setText(savedUsername);
@@ -126,7 +126,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 Cache.pipeliningError = true;
                 Callback.showToast(LoginActivity.this, message);
                 enableAll();
-                if (countDownLatch != null) countDownLatch.countDown();
+                if (Cache.countDownLatch != null) Cache.countDownLatch.countDown();
             }
         };
     }

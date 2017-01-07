@@ -7,16 +7,29 @@
     android:orientation="vertical"
     tools:context=".activity.MainActivity">
 
-    <android.support.v4.widget.SwipeRefreshLayout android:id="@+id/refreshLayout"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ExpandableListView
-            android:id="@+id/expandableListView"
+        <ImageView
+            android:id="@+id/blurBackground"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:divider="#BDBDBD"
-            android:dividerHeight="0.5dp"
-            android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft"/>
-    </android.support.v4.widget.SwipeRefreshLayout>
+            android:scaleType="centerCrop"/>
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/refreshLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ExpandableListView
+                android:id="@+id/expandableListView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:divider="#00FFFFFF"
+                android:dividerHeight="0.5dp"
+                android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft"/>
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+    </RelativeLayout>
 </LinearLayout>

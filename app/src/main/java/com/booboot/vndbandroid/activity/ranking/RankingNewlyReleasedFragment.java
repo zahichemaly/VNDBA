@@ -20,14 +20,14 @@ public class RankingNewlyReleasedFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.vn_card_list_layout, container, false);
+        View rootView = inflater.inflate(R.layout.vn_card_list, container, false);
         Utils.setTitle(getActivity(), getActivity().getResources().getString(R.string.newly_released));
 
         if (progressiveResultLoader == null) {
             progressiveResultLoader = new ProgressiveResultLoader();
             progressiveResultLoader.setActivity(getActivity());
             progressiveResultLoader.setRootView(rootView);
-            progressiveResultLoader.setOptions(Options.create(1, 25, "released", true, false, false, 1));
+            progressiveResultLoader.setOptions(Options.create(1, 25, "released", true, false, 1));
             progressiveResultLoader.setShowFullDate(true);
             progressiveResultLoader.setShowRank(true);
             String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());

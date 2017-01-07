@@ -291,6 +291,10 @@ public class DB extends SQLiteOpenHelper {
     }
 
     public static void saveVnlist(Context context) {
+        saveVnlist(context, true, true);
+    }
+
+    public static void saveVnlist(Context context, boolean beginTransaction, boolean endTransaction) {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
 
@@ -298,7 +302,8 @@ public class DB extends SQLiteOpenHelper {
         int itemsToInsert = 0;
         /* Retrieving all items to check if we have TO INSERT or UPDATE */
         LinkedHashMap<Integer, VNlistItem> alreadyInsertedItems = loadVnlist(context);
-        db.beginTransaction();
+        if (beginTransaction)
+            db.beginTransaction();
 
         for (int vn : Cache.vnlist.keySet()) {
             VNlistItem item = Cache.vnlist.get(vn);
@@ -329,8 +334,10 @@ public class DB extends SQLiteOpenHelper {
             db.execSQL(query.toString());
         }
 
-        db.setTransactionSuccessful();
-        db.endTransaction();
+        if (endTransaction) {
+            db.setTransactionSuccessful();
+            db.endTransaction();
+        }
     }
 
     private static int checkInsertLimit(SQLiteDatabase db, StringBuilder query, int itemsToInsert, String tableName) {
@@ -346,6 +353,10 @@ public class DB extends SQLiteOpenHelper {
     }
 
     public static void saveVotelist(Context context) {
+        saveVotelist(context, true, true);
+    }
+
+    public static void saveVotelist(Context context, boolean beginTransaction, boolean endTransaction) {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
 
@@ -353,7 +364,8 @@ public class DB extends SQLiteOpenHelper {
         int itemsToInsert = 0;
         /* Retrieving all items to check if we have TO INSERT or UPDATE */
         LinkedHashMap<Integer, VotelistItem> alreadyInsertedItems = loadVotelist(context);
-        db.beginTransaction();
+        if (beginTransaction)
+            db.beginTransaction();
 
         for (int vn : Cache.votelist.keySet()) {
             VotelistItem item = Cache.votelist.get(vn);
@@ -382,11 +394,17 @@ public class DB extends SQLiteOpenHelper {
             db.execSQL(query.toString());
         }
 
-        db.setTransactionSuccessful();
-        db.endTransaction();
+        if (endTransaction) {
+            db.setTransactionSuccessful();
+            db.endTransaction();
+        }
     }
 
     public static void saveWishlist(Context context) {
+        saveWishlist(context, true, true);
+    }
+
+    public static void saveWishlist(Context context, boolean beginTransaction, boolean endTransaction) {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
 
@@ -394,7 +412,8 @@ public class DB extends SQLiteOpenHelper {
         int itemsToInsert = 0;
         /* Retrieving all items to check if we have TO INSERT or UPDATE */
         LinkedHashMap<Integer, WishlistItem> alreadyInsertedItems = loadWishlist(context);
-        db.beginTransaction();
+        if (beginTransaction)
+            db.beginTransaction();
 
         for (int vn : Cache.wishlist.keySet()) {
             WishlistItem item = Cache.wishlist.get(vn);
@@ -423,14 +442,16 @@ public class DB extends SQLiteOpenHelper {
             db.execSQL(query.toString());
         }
 
-        db.setTransactionSuccessful();
-        db.endTransaction();
+        if (endTransaction) {
+            db.setTransactionSuccessful();
+            db.endTransaction();
+        }
     }
 
-    public static void deleteVN(Context context, int vnId, boolean endTransaction) {
+    public static void deleteVN(Context context, int vnId, boolean beginTransaction, boolean endTransaction) {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
-        db.beginTransaction();
+        if (beginTransaction) db.beginTransaction();
 
         db.execSQL("DELETE FROM " + TABLE_VN + " WHERE id = " + vnId);
         db.execSQL("DELETE FROM " + TABLE_LANGUAGES + " WHERE vn = " + vnId);
@@ -451,10 +472,10 @@ public class DB extends SQLiteOpenHelper {
     }
 
     public static void saveVNs(Context context) {
-        saveVNs(context, true);
+        saveVNs(context, true, true);
     }
 
-    public static void saveVNs(Context context, boolean beginTransaction) {
+    public static void saveVNs(Context context, boolean beginTransaction, boolean endTransaction) {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
 
@@ -487,6 +508,13 @@ public class DB extends SQLiteOpenHelper {
             }
 
             Item item = Cache.vns.get(vn);
+
+            if (item.getLanguages() == null || item.getOrig_lang() == null || item.getPlatforms() == null || item.getAnime() == null || item.getRelations() == null || item.getScreens() == null || item.getTags() == null) {
+                /* A list attribute of the VN is null: that shouldn't be possible because the API NEVER returns null for these attributes (at least []).
+                If that ever happens, we don't insert this VN into the database because it would corrupt it with incomplete data. */
+                continue;
+            }
+
             queries[0].append("(")
                     .append(item.getId()).append(",")
                     .append(formatString(item.getTitle())).append(",")
@@ -564,6 +592,7 @@ public class DB extends SQLiteOpenHelper {
                         .append("),");
                 itemsToInsert[6] = checkInsertLimit(db, queries[6], itemsToInsert[6], TABLE_TAGS);
             }
+
             for (Screen screen : item.getScreens()) {
                 queries[7].append("(")
                         .append(item.getId()).append(",")
@@ -579,8 +608,10 @@ public class DB extends SQLiteOpenHelper {
 
         exec(db, queries, itemsToInsert);
 
-        db.setTransactionSuccessful();
-        db.endTransaction();
+        if (endTransaction) {
+            db.setTransactionSuccessful();
+            db.endTransaction();
+        }
     }
 
     public static void saveCharacters(Context context, List<Item> characters, int vnId) {
@@ -594,8 +625,9 @@ public class DB extends SQLiteOpenHelper {
         int[] itemsToInsert = new int[3];
 
         /* Retrieving all items to check if we have TO INSERT or UPDATE */
-        LinkedHashMap<Integer, Boolean> alreadyInsertedItems = new LinkedHashMap<>();
+        LinkedHashMap<Integer, Boolean> alreadyInsertedCharacters = new LinkedHashMap<>();
         LinkedHashMap<Integer, Boolean> alreadyLinkedCharacters = new LinkedHashMap<>();
+        LinkedHashMap<Integer, Boolean> newlyInsertedCharacters = new LinkedHashMap<>();
         Set<Integer> characterIds = new HashSet<>();
         for (Item character : characters) {
             characterIds.add(character.getId());
@@ -603,7 +635,7 @@ public class DB extends SQLiteOpenHelper {
 
         Cursor cursor = db.rawQuery("SELECT id FROM " + TABLE_CHARACTER + " WHERE id IN (" + TextUtils.join(",", characterIds) + ")", new String[]{});
         while (cursor.moveToNext()) {
-            alreadyInsertedItems.put(cursor.getInt(0), true);
+            alreadyInsertedCharacters.put(cursor.getInt(0), true);
         }
         cursor.close();
         cursor = db.rawQuery("SELECT character FROM " + TABLE_VN_CHARACTER + " WHERE vn = " + vnId, new String[]{});
@@ -615,40 +647,47 @@ public class DB extends SQLiteOpenHelper {
         db.beginTransaction();
 
         for (Item character : characters) {
-            if (alreadyInsertedItems.get(character.getId()) == null) {
-                String vns = null;
-                try {
-                    vns = JSON.mapper.writeValueAsString(character.getVns());
-                } catch (JsonProcessingException e) {
-                }
-                queries[1].append("(")
-                        .append(character.getId()).append(",")
-                        .append(formatString(character.getName())).append(",")
-                        .append(formatString(character.getOriginal())).append(",")
-                        .append(formatString(character.getGender())).append(",")
-                        .append(formatString(character.getBloodt())).append(",")
-                        .append(character.getBirthday()[0]).append(",")
-                        .append(character.getBirthday()[1]).append(",")
-                        .append(formatString(character.getAliases())).append(",")
-                        .append(formatString(character.getDescription())).append(",")
-                        .append(formatString(character.getImage())).append(",")
-                        .append(character.getBust()).append(",")
-                        .append(character.getWaist()).append(",")
-                        .append(character.getHip()).append(",")
-                        .append(character.getHeight()).append(",")
-                        .append(character.getWeight()).append(",")
-                        .append(formatString(vns))
-                        .append("),");
-                itemsToInsert[1] = checkInsertLimit(db, queries[1], itemsToInsert[1], TABLE_CHARACTER);
+            /* We've just inserted this character now so it is up to date : go to next */
+            if (newlyInsertedCharacters.get(character.getId()) != null) continue;
 
-                for (int[] trait : character.getTraits()) {
-                    queries[2].append("(")
-                            .append(character.getId()).append(",")
-                            .append(trait[0]).append(",")
-                            .append(trait[1])
-                            .append("),");
-                    itemsToInsert[2] = checkInsertLimit(db, queries[2], itemsToInsert[2], TABLE_TRAITS);
-                }
+            if (alreadyInsertedCharacters.get(character.getId()) != null) {
+                db.delete(TABLE_CHARACTER, "id=?", new String[]{character.getId() + ""});
+                db.delete(TABLE_TRAITS, "character=?", new String[]{character.getId() + ""});
+            }
+
+            String vns = null;
+            try {
+                vns = JSON.mapper.writeValueAsString(character.getVns());
+            } catch (JsonProcessingException e) {
+            }
+            queries[1].append("(")
+                    .append(character.getId()).append(",")
+                    .append(formatString(character.getName())).append(",")
+                    .append(formatString(character.getOriginal())).append(",")
+                    .append(formatString(character.getGender())).append(",")
+                    .append(formatString(character.getBloodt())).append(",")
+                    .append(character.getBirthday()[0]).append(",")
+                    .append(character.getBirthday()[1]).append(",")
+                    .append(formatString(character.getAliases())).append(",")
+                    .append(formatString(character.getDescription())).append(",")
+                    .append(formatString(character.getImage())).append(",")
+                    .append(character.getBust()).append(",")
+                    .append(character.getWaist()).append(",")
+                    .append(character.getHip()).append(",")
+                    .append(character.getHeight()).append(",")
+                    .append(character.getWeight()).append(",")
+                    .append(formatString(vns))
+                    .append("),");
+            itemsToInsert[1] = checkInsertLimit(db, queries[1], itemsToInsert[1], TABLE_CHARACTER);
+            newlyInsertedCharacters.put(character.getId(), true);
+
+            for (int[] trait : character.getTraits()) {
+                queries[2].append("(")
+                        .append(character.getId()).append(",")
+                        .append(trait[0]).append(",")
+                        .append(trait[1])
+                        .append("),");
+                itemsToInsert[2] = checkInsertLimit(db, queries[2], itemsToInsert[2], TABLE_TRAITS);
             }
 
             if (alreadyLinkedCharacters.get(character.getId()) == null) {
@@ -734,6 +773,8 @@ public class DB extends SQLiteOpenHelper {
         LinkedHashMap<Integer, Boolean> alreadyInsertedReleases = new LinkedHashMap<>();
         LinkedHashMap<Integer, Boolean> alreadyInsertedProducers = new LinkedHashMap<>();
         LinkedHashMap<Integer, Boolean> alreadyLinkedReleases = new LinkedHashMap<>();
+        LinkedHashMap<Integer, Boolean> newlyInsertedProducers = new LinkedHashMap<>();
+        LinkedHashMap<Integer, Boolean> newlyInsertedReleases = new LinkedHashMap<>();
         Set<Integer> releasesIds = new HashSet<>();
         Set<Integer> producersIds = new HashSet<>();
         for (Item release : releases) {
@@ -761,25 +802,36 @@ public class DB extends SQLiteOpenHelper {
         db.beginTransaction();
 
         for (Item release : releases) {
-            if (alreadyInsertedReleases.get(release.getId()) == null) {
-                queries[1].append("(")
-                        .append(release.getId()).append(",")
-                        .append(formatString(release.getTitle())).append(",")
-                        .append(formatString(release.getOriginal())).append(",")
-                        .append(formatString(release.getReleased())).append(",")
-                        .append(formatString(release.getType())).append(",")
-                        .append(formatBool(release.isPatch())).append(",")
-                        .append(formatBool(release.isFreeware())).append(",")
-                        .append(formatBool(release.isDoujin())).append(",")
-                        .append(formatString(release.getWebsite())).append(",")
-                        .append(formatString(release.getNotes())).append(",")
-                        .append(release.getMinage()).append(",")
-                        .append(formatString(release.getGtin())).append(",")
-                        .append(formatString(release.getCatalog()))
-                        .append("),");
-                itemsToInsert[1] = checkInsertLimit(db, queries[1], itemsToInsert[1], TABLE_RELEASE);
-                alreadyInsertedReleases.put(release.getId(), true);
+            /* We've just inserted this release now so it is up to date : go to next */
+            if (newlyInsertedReleases.get(release.getId()) != null) continue;
 
+            if (alreadyInsertedReleases.get(release.getId()) != null) {
+                db.delete(TABLE_RELEASE, "id=?", new String[]{release.getId() + ""});
+                db.delete(TABLE_RELEASE_LANGUAGES, "release=?", new String[]{release.getId() + ""});
+                db.delete(TABLE_RELEASE_PLATFORMS, "release=?", new String[]{release.getId() + ""});
+                db.delete(TABLE_RELEASE_MEDIA, "release=?", new String[]{release.getId() + ""});
+                db.delete(TABLE_RELEASE_PRODUCER, "release=?", new String[]{release.getId() + ""});
+            }
+
+            queries[1].append("(")
+                    .append(release.getId()).append(",")
+                    .append(formatString(release.getTitle())).append(",")
+                    .append(formatString(release.getOriginal())).append(",")
+                    .append(formatString(release.getReleased())).append(",")
+                    .append(formatString(release.getType())).append(",")
+                    .append(formatBool(release.isPatch())).append(",")
+                    .append(formatBool(release.isFreeware())).append(",")
+                    .append(formatBool(release.isDoujin())).append(",")
+                    .append(formatString(release.getWebsite())).append(",")
+                    .append(formatString(release.getNotes())).append(",")
+                    .append(release.getMinage()).append(",")
+                    .append(formatString(release.getGtin())).append(",")
+                    .append(formatString(release.getCatalog()))
+                    .append("),");
+            itemsToInsert[1] = checkInsertLimit(db, queries[1], itemsToInsert[1], TABLE_RELEASE);
+            newlyInsertedReleases.put(release.getId(), true);
+
+            if (release.getLanguages() != null) {
                 for (String language : release.getLanguages()) {
                     queries[2].append("(")
                             .append(release.getId()).append(",")
@@ -787,7 +839,9 @@ public class DB extends SQLiteOpenHelper {
                             .append("),");
                     itemsToInsert[2] = checkInsertLimit(db, queries[2], itemsToInsert[2], TABLE_RELEASE_LANGUAGES);
                 }
+            }
 
+            if (release.getPlatforms() != null) {
                 for (String platform : release.getPlatforms()) {
                     queries[3].append("(")
                             .append(release.getId()).append(",")
@@ -795,7 +849,9 @@ public class DB extends SQLiteOpenHelper {
                             .append("),");
                     itemsToInsert[3] = checkInsertLimit(db, queries[3], itemsToInsert[3], TABLE_RELEASE_PLATFORMS);
                 }
+            }
 
+            if (release.getMedia() != null) {
                 for (Media media : release.getMedia()) {
                     queries[4].append("(")
                             .append(release.getId()).append(",")
@@ -804,27 +860,33 @@ public class DB extends SQLiteOpenHelper {
                             .append("),");
                     itemsToInsert[4] = checkInsertLimit(db, queries[4], itemsToInsert[4], TABLE_RELEASE_MEDIA);
                 }
+            }
 
-                for (Producer producer : release.getProducers()) {
-                    queries[5].append("(")
-                            .append(release.getId()).append(",")
-                            .append(producer.getId()).append(",")
-                            .append(formatBool(producer.isDeveloper())).append(",")
-                            .append(formatBool(producer.isPublisher()))
-                            .append("),");
-                    itemsToInsert[5] = checkInsertLimit(db, queries[5], itemsToInsert[5], TABLE_RELEASE_PRODUCER);
+            for (Producer producer : release.getProducers()) {
+                queries[5].append("(")
+                        .append(release.getId()).append(",")
+                        .append(producer.getId()).append(",")
+                        .append(formatBool(producer.isDeveloper())).append(",")
+                        .append(formatBool(producer.isPublisher()))
+                        .append("),");
+                itemsToInsert[5] = checkInsertLimit(db, queries[5], itemsToInsert[5], TABLE_RELEASE_PRODUCER);
 
-                    if (alreadyInsertedProducers.get(producer.getId()) == null) {
-                        queries[6].append("(")
-                                .append(producer.getId()).append(",")
-                                .append(formatString(producer.getName())).append(",")
-                                .append(formatString(producer.getOriginal())).append(",")
-                                .append(formatString(producer.getType()))
-                                .append("),");
-                        itemsToInsert[6] = checkInsertLimit(db, queries[6], itemsToInsert[6], TABLE_PRODUCER);
-                        alreadyInsertedProducers.put(producer.getId(), true);
-                    }
+                /* We've just inserted this producer now so it is up to date : go to next */
+                if (newlyInsertedProducers.get(producer.getId()) != null) continue;
+
+                if (alreadyInsertedProducers.get(producer.getId()) != null) {
+                    /* The producer already existed : removing it so it is updated (even if used in another VN) */
+                    db.delete(TABLE_PRODUCER, "id=?", new String[]{producer.getId() + ""});
                 }
+
+                queries[6].append("(")
+                        .append(producer.getId()).append(",")
+                        .append(formatString(producer.getName())).append(",")
+                        .append(formatString(producer.getOriginal())).append(",")
+                        .append(formatString(producer.getType()))
+                        .append("),");
+                itemsToInsert[6] = checkInsertLimit(db, queries[6], itemsToInsert[6], TABLE_PRODUCER);
+                newlyInsertedProducers.put(producer.getId(), true);
             }
 
             if (alreadyLinkedReleases.get(release.getId()) == null) {
@@ -847,7 +909,7 @@ public class DB extends SQLiteOpenHelper {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
 
-        LinkedHashMap<Integer, Item> res = new LinkedHashMap<>(); // vn -> release
+        LinkedHashMap<Integer, Item> res = new LinkedHashMap<>(); // release_id -> release
 
         Cursor[] cursor = new Cursor[5];
 
@@ -866,6 +928,10 @@ public class DB extends SQLiteOpenHelper {
             release.setMinage(cursor[0].getInt(10));
             release.setGtin(cursor[0].getString(11));
             release.setCatalog(cursor[0].getString(12));
+            release.setLanguages(new ArrayList<String>());
+            release.setPlatforms(new ArrayList<String>());
+            release.setMedia(new ArrayList<Media>());
+            release.setProducers(new ArrayList<Producer>());
 
             res.put(cursor[0].getInt(0), release);
         }
@@ -875,8 +941,6 @@ public class DB extends SQLiteOpenHelper {
         while (cursor[1].moveToNext()) {
             Item release = res.get(cursor[1].getInt(0));
             if (release == null) continue;
-            if (release.getLanguages() == null)
-                release.setLanguages(new ArrayList<String>());
             release.getLanguages().add(cursor[1].getString(1));
         }
 
@@ -884,8 +948,6 @@ public class DB extends SQLiteOpenHelper {
         while (cursor[2].moveToNext()) {
             Item release = res.get(cursor[2].getInt(0));
             if (release == null) continue;
-            if (release.getPlatforms() == null)
-                release.setPlatforms(new ArrayList<String>());
             release.getPlatforms().add(cursor[2].getString(1));
         }
 
@@ -893,8 +955,6 @@ public class DB extends SQLiteOpenHelper {
         while (cursor[3].moveToNext()) {
             Item release = res.get(cursor[3].getInt(0));
             if (release == null) continue;
-            if (release.getMedia() == null)
-                release.setMedia(new ArrayList<Media>());
             release.getMedia().add(new Media(cursor[3].getString(1), cursor[3].getInt(2)));
         }
 
@@ -902,8 +962,7 @@ public class DB extends SQLiteOpenHelper {
         while (cursor[4].moveToNext()) {
             Item release = res.get(cursor[4].getInt(0));
             if (release == null) continue;
-            if (release.getProducers() == null)
-                release.setProducers(new ArrayList<Producer>());
+
             /* Since we've made a join between 2 tables, it's quite hard to determine the column indexes for what we want, and SQLite may change
             it depending on the devices. So to be sure and avoid bugs, we manually check the column names */
             int id_column_index = 4, developer_column_index = 2, publisher_column_index = 3, name_column_index = 5, original_column_index = 6, type_column_index = 7;

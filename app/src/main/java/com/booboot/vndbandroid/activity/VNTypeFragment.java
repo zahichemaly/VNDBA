@@ -3,13 +3,14 @@ package com.booboot.vndbandroid.activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.booboot.vndbandroid.R;
-import com.booboot.vndbandroid.adapter.materiallistview.MaterialListView;
+import com.booboot.vndbandroid.adapter.vncards.RecyclerItemClickListener;
+import com.booboot.vndbandroid.adapter.vncards.VNCardsListView;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.bean.vndbandroid.ListType;
 import com.booboot.vndbandroid.bean.vndbandroid.VNlistItem;
@@ -19,8 +20,6 @@ import com.booboot.vndbandroid.factory.FastScrollerFactory;
 import com.booboot.vndbandroid.factory.VNCardFactory;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.Utils;
-import com.dexafree.materialList.card.Card;
-import com.dexafree.materialList.listeners.RecyclerItemClickListener;
 
 import java.util.ArrayList;
 
@@ -32,21 +31,19 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
     public final static String VN_ARG = "VN";
 
     public static boolean refreshOnInit;
-    private MaterialListView materialListView;
+    private VNCardsListView materialListView;
     private SwipeRefreshLayout refreshLayout;
     private MainActivity activity;
 
-    private int type;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.vn_card_list_layout, container, false);
+        View rootView = inflater.inflate(R.layout.vn_card_list, container, false);
 
         int tabValue = getArguments().getInt(TAB_VALUE_ARG);
-        type = getArguments().getInt(VNListFragment.LIST_TYPE_ARG);
+        int type = getArguments().getInt(VNListFragment.LIST_TYPE_ARG);
 
-        materialListView = (MaterialListView) rootView.findViewById(R.id.materialListView);
-        VNCardFactory.setCardsPerRow(getActivity(), materialListView);
+        materialListView = (VNCardsListView) rootView.findViewById(R.id.materialListView);
+        VNCardFactory.setupList(getActivity(), materialListView);
 
         switch (type) {
             case ListType.VNLIST:
@@ -60,7 +57,7 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
             case ListType.VOTELIST:
                 for (final VotelistItem vn : new ArrayList<>(Cache.votelist.values())) {
                     if (Cache.vns.get(vn.getVn()) == null) Cache.votelist.remove(vn.getVn());
-                    if (type == ListType.VOTELIST && vn.getVote() / 10 != tabValue && vn.getVote() / 10 != tabValue - 1 || Cache.vns.get(vn.getVn()) == null)
+                    if (vn.getVote() / 10 != tabValue && vn.getVote() / 10 != tabValue - 1 || Cache.vns.get(vn.getVn()) == null)
                         continue;
                     VNCardFactory.buildCard(getActivity(), Cache.vns.get(vn.getVn()), materialListView, false, false, false, false, false);
                 }
@@ -69,23 +66,18 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
             case ListType.WISHLIST:
                 for (final WishlistItem vn : new ArrayList<>(Cache.wishlist.values())) {
                     if (Cache.vns.get(vn.getVn()) == null) Cache.wishlist.remove(vn.getVn());
-                    if (type == ListType.WISHLIST && vn.getPriority() != tabValue || Cache.vns.get(vn.getVn()) == null) continue;
+                    if (vn.getPriority() != tabValue || Cache.vns.get(vn.getVn()) == null) continue;
                     VNCardFactory.buildCard(getActivity(), Cache.vns.get(vn.getVn()), materialListView, false, false, false, false, false);
                 }
                 break;
         }
 
-        materialListView.addOnItemTouchListener(new RecyclerItemClickListener.OnItemClickListener() {
+        materialListView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), new RecyclerItemClickListener.OnItemClickListener() {
             @Override
-            public void onItemClick(Card card, int position) {
-                Cache.openVNDetails(getActivity(), (int) card.getTag());
+            public void onItemClick(CardView cardView, int position) {
+                Cache.openVNDetails(getActivity(), (int) cardView.getTag());
             }
-
-            @Override
-            public void onItemLongClick(Card card, int position) {
-                Log.d("LONG_CLICK", card.getProvider().getTitle());
-            }
-        });
+        }));
 
         initFilter();
 
@@ -113,11 +105,11 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
         activity.addActiveFragment(this);
         if (activity.getSearchView() != null)
-            materialListView.getAdapter().getFilter().filter(activity.getSearchView().getQuery());
+            filter(activity.getSearchView().getQuery());
     }
 
-    public MaterialListView getMaterialListView() {
-        return materialListView;
+    public void filter(CharSequence search) {
+        materialListView.getAdapter().getFilter().filter(search);
     }
 
     @Override
@@ -143,7 +135,7 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
                 Cache.pipeliningError = true;
                 Callback.showToast(getActivity(), message);
                 refreshLayout.setRefreshing(false);
-                if (countDownLatch != null) countDownLatch.countDown();
+                if (Cache.countDownLatch != null) Cache.countDownLatch.countDown();
             }
         });
     }

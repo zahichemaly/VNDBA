@@ -36,7 +36,7 @@ public class CharacterDataFactory {
         if (character.getDescription() != null) {
             String descriptionWithoutSpoilers = character.getDescription();
             if (!Tag.checkSpoilerLevel(activity, 2)) {
-                descriptionWithoutSpoilers = descriptionWithoutSpoilers.replaceAll("\\[spoiler\\].*\\[/spoiler\\]", "");
+                descriptionWithoutSpoilers = descriptionWithoutSpoilers.replaceAll("\\[spoiler\\][\\s\\S]*\\[/spoiler\\]", "");
             }
             characterData.add(new DoubleListElement("Description", descriptionWithoutSpoilers, true));
         }

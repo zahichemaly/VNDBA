@@ -14,5 +14,5 @@
 
     <include layout="@layout/vn_search_options"/>
 
-    <include layout="@layout/vn_card_list_layout"/>
+    <include layout="@layout/vn_card_list"/>
 </LinearLayout>

@@ -20,7 +20,7 @@ public class SettingsManager {
 
     public static String getUsername(Context context) {
         new SettingsManager(context);
-        return settings.getString("USERNAME", null);
+        return settings.getString("USERNAME", "");
     }
 
     public static void setUsername(Context context, String username) {
@@ -125,6 +125,39 @@ public class SettingsManager {
     public static void setInAppBrowser(Context context, boolean ok) {
         new SettingsManager(context);
         editor.putBoolean("IN_APP_BROWSER", ok);
+        editor.commit();
+    }
+
+    public static boolean getCoverBackground(Context context) {
+        new SettingsManager(context);
+        return settings.getBoolean("COVER_BACKGROUND", true);
+    }
+
+    public static void setCoverBackground(Context context, boolean ok) {
+        new SettingsManager(context);
+        editor.putBoolean("COVER_BACKGROUND", ok);
+        editor.commit();
+    }
+
+    public static boolean getHideRecommendationsInWishlist(Context context) {
+        new SettingsManager(context);
+        return settings.getBoolean("HIDE_RECOMMENDATIONS_IN_WISHLIST", false);
+    }
+
+    public static void setHideRecommendationsInWishlist(Context context, boolean ok) {
+        new SettingsManager(context);
+        editor.putBoolean("HIDE_RECOMMENDATIONS_IN_WISHLIST", ok);
+        editor.commit();
+    }
+
+    public static boolean isEmptyAccount(Context context) {
+        new SettingsManager(context);
+        return settings.getBoolean("EMPTY_ACCOUNT", false);
+    }
+
+    public static void setEmptyAccount(Context context, boolean ok) {
+        new SettingsManager(context);
+        editor.putBoolean("EMPTY_ACCOUNT", ok);
         editor.commit();
     }
 }

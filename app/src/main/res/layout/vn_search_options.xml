@@ -44,21 +44,21 @@
                 android:src="@drawable/ic_keyboard_arrow_down"/>
         </LinearLayout>
 
-        <com.wrapp.floatlabelededittext.FloatLabeledEditText
+        <android.support.design.widget.TextInputLayout
             android:id="@+id/includeTagsFloatingLabel"
+            android:hint="@string/include_all_tags"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <com.booboot.vndbandroid.view.TagAutoCompleteView
+            <com.booboot.vndbandroid.adapter.search.TagAutoCompleteView
                 android:id="@+id/includeTagsInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:focusableInTouchMode="true"
-                android:hint="@string/include_all_tags"
                 android:imeOptions="actionDone"
                 android:inputType="text|textNoSuggestions|textMultiLine"
                 android:textSize="16sp"/>
-        </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+        </android.support.design.widget.TextInputLayout>
     </LinearLayout>
 
     <LinearLayout
@@ -76,12 +76,11 @@
             android:background="@null"
             android:src="@drawable/ic_tag"/>
 
-        <com.wrapp.floatlabelededittext.FloatLabeledEditText
-            android:id="@+id/excludeTagsFloatingLabel"
+        <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <com.booboot.vndbandroid.view.TagAutoCompleteView
+            <com.booboot.vndbandroid.adapter.search.TagAutoCompleteView
                 android:id="@+id/excludeTagsInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -90,6 +89,6 @@
                 android:imeOptions="actionDone"
                 android:inputType="text|textNoSuggestions|textMultiLine"
                 android:textSize="16sp"/>
-        </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+        </android.support.design.widget.TextInputLayout>
     </LinearLayout>
 </LinearLayout>

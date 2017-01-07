@@ -16,14 +16,14 @@ public class RankingPopularFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.vn_card_list_layout, container, false);
+        View rootView = inflater.inflate(R.layout.vn_card_list, container, false);
         Utils.setTitle(getActivity(), getActivity().getResources().getString(R.string.popular));
 
         if (progressiveResultLoader == null) {
             progressiveResultLoader = new ProgressiveResultLoader();
             progressiveResultLoader.setActivity(getActivity());
             progressiveResultLoader.setRootView(rootView);
-            progressiveResultLoader.setOptions(Options.create(1, 25, "popularity", true, false, false, 1));
+            progressiveResultLoader.setOptions(Options.create(1, 25, "popularity", true, false, 1));
             progressiveResultLoader.setShowRank(true);
             progressiveResultLoader.setShowPopularity(true);
             progressiveResultLoader.setFilters("(id > 1)");

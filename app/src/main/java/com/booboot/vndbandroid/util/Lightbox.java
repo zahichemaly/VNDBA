@@ -5,20 +5,21 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.booboot.vndbandroid.R;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.booboot.vndbandroid.util.image.BlurIfDemoTransform;
+import com.booboot.vndbandroid.util.image.Pixels;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 /**
  * Created by od on 26/03/2016.
  */
-public class Lightbox implements ImageLoadingListener {
+public class Lightbox implements Target {
     private Context context;
     private ImageView lightbox;
     private static Dialog dialog;
@@ -41,8 +42,7 @@ public class Lightbox implements ImageLoadingListener {
                 dialog.setCancelable(true);
 
                 final ImageView lightbox = (ImageView) dialog.findViewById(R.id.lightboxView);
-                ImageLoader.getInstance().loadImage(url, new Lightbox(context, lightbox, dialog));
-
+                Picasso.with(context).load(url).transform(new BlurIfDemoTransform(context)).into(new Lightbox(context, lightbox, dialog));
             }
         });
     }
@@ -53,27 +53,15 @@ public class Lightbox implements ImageLoadingListener {
     }
 
     @Override
-    public void onLoadingStarted(String imageUri, View view) {
-    }
-
-    @Override
-    public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-        dialog.dismiss();
-        ImageLoader.getInstance().cancelDisplayTask(lightbox);
-        Toast.makeText(context, "Could not load image : " + failReason.getType(), Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-        lightbox.setMinimumWidth(Pixels.px(loadedImage.getWidth(), context));
-        lightbox.setMinimumHeight(Pixels.px(loadedImage.getHeight(), context));
-        lightbox.setImageBitmap(loadedImage);
+    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+        lightbox.setMinimumWidth(Pixels.px(bitmap.getWidth(), context));
+        lightbox.setMinimumHeight(Pixels.px(bitmap.getHeight(), context));
+        lightbox.setImageBitmap(bitmap);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         dialog.setCanceledOnTouchOutside(true);
         lightbox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ImageLoader.getInstance().cancelDisplayTask(lightbox);
                 dialog.dismiss();
             }
         });
@@ -83,6 +71,12 @@ public class Lightbox implements ImageLoadingListener {
     }
 
     @Override
-    public void onLoadingCancelled(String imageUri, View view) {
+    public void onBitmapFailed(Drawable errorDrawable) {
+        dialog.dismiss();
+        Callback.showToast(context, "Could not load image.");
+    }
+
+    @Override
+    public void onPrepareLoad(Drawable placeHolderDrawable) {
     }
 }

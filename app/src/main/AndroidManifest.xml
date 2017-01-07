@@ -14,42 +14,43 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activity.MainActivity" android:label="@string/app_name" android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+        <activity android:name=".activity.MainActivity" android:label="@string/app_name" android:theme="@style/AppTheme.NoActionBar"/>
 
-            </intent-filter>
-        </activity>
+        <activity android:name=".activity.VNDetailsActivity"/>
 
-        <activity android:name=".activity.VNDetailsActivity" android:label="@string/app_name">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-            </intent-filter>
-        </activity>
+        <activity android:name=".activity.VNSearchActivity"/>
 
-        <activity android:name=".activity.VNSearchActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH"/>
-            </intent-filter>
-        </activity>
+        <activity android:name=".activity.FeedbackActivity"/>
 
-        <activity android:name=".activity.FeedbackActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-            </intent-filter>
-        </activity>
-
-        <activity android:name=".activity.EmptyActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-            </intent-filter>
-        </activity>
+        <activity android:name=".activity.EmptyActivity"/>
 
         <activity android:name=".activity.URLActivity">
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <action android:name="android.intent.action.VIEW"/>
                 <data android:scheme="com.booboot.vndbandroid"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".activity.VNDBURLActivity" android:theme="@style/SplashScreen">
+            <intent-filter android:label="@string/app_name">
+                <action android:name="android.intent.action.VIEW"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <!-- Accepts URIs that begin with "https://vndb.org/v[0-9]"
+                Regexes in manifests cannot identify a number, and we absolutely have to avoid matching /v/rand,
+                so we have to repeat the pattern for each digit -->
+                <data android:host="vndb.org" android:pathPrefix="/v0" android:scheme="https"/>
+                <data android:host="vndb.org" android:pathPrefix="/v1" android:scheme="https"/>
+                <data android:host="vndb.org" android:pathPrefix="/v2" android:scheme="https"/>
+                <data android:host="vndb.org" android:pathPrefix="/v3" android:scheme="https"/>
+                <data android:host="vndb.org" android:pathPrefix="/v4" android:scheme="https"/>
+                <data android:host="vndb.org" android:pathPrefix="/v5" android:scheme="https"/>
+                <data android:host="vndb.org" android:pathPrefix="/v6" android:scheme="https"/>
+                <data android:host="vndb.org" android:pathPrefix="/v7" android:scheme="https"/>
+                <data android:host="vndb.org" android:pathPrefix="/v8" android:scheme="https"/>
+                <data android:host="vndb.org" android:pathPrefix="/v9" android:scheme="https"/>
             </intent-filter>
         </activity>
 
