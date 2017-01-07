@@ -50,12 +50,12 @@ We're trying to keep the required permissions to a minimum. Here are the current
 
 ### Screenshots
 <p align="center">
-  <img src="http://image.noelshack.com/fichiers/2016/41/1476098519-6-1.png" width="45%"/>
-  <img src="http://image.noelshack.com/fichiers/2016/17/1462036855-2016-04-30-17-20-17.png" width="45%"/>
-  <img src="http://image.noelshack.com/fichiers/2016/41/1476098575-6-2.png" width="45%"/>
-  <img src="http://image.noelshack.com/fichiers/2016/36/1473433113-2016-09-09-14-58-07.png" width="45%"/>
-  <img src="http://image.noelshack.com/fichiers/2016/41/1476098592-6-4.png" width="45%"/>
-  <img src="http://image.noelshack.com/fichiers/2016/41/1476098595-6-5.png" width="45%"/>
+  <img src="http://image.noelshack.com/fichiers/2017/01/1483793022-6-1.png" width="45%"/>
+  <img src="http://image.noelshack.com/fichiers/2017/01/1483793017-6-2.png" width="45%"/>
+  <img src="http://image.noelshack.com/fichiers/2017/01/1483793023-6-3.png" width="45%"/>
+  <img src="http://image.noelshack.com/fichiers/2017/01/1483793018-6-4.png" width="45%"/>
+  <img src="http://image.noelshack.com/fichiers/2017/01/1483793019-6-5.png" width="45%"/>
+  <img src="http://image.noelshack.com/fichiers/2017/01/1483793022-6-6.png" width="45%"/>
 </p>
 
 ### License
