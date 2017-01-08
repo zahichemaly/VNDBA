@@ -27,7 +27,7 @@ public class VNDBURLActivity extends AppCompatActivity {
                 /* If the cache is not loaded, load it so we can show the status, wish and vote of the user for this VN
                 (and it may also avoid "get vn"/"get character"/"get release" calls if they're already in the DB) */
                 if (!Cache.loadedFromCache) {
-                    if (!Cache.loadFromCache(this) && !SettingsManager.isEmptyAccount(this)) {
+                    if (!SettingsManager.isEmptyAccount(this) && !Cache.loadFromCache(this)) {
                         /* The DB is empty and it's not an empty account (i.e. newly-created account) : we now are 100% sure that the user has not been connected to the app,
                         so we leave (because we don't support opening deep links without being connected) */
                         Callback.showToast(this, "You must register your VNDB.org account in the app to open VNDB.org links.");
