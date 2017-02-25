@@ -18,6 +18,7 @@ import com.booboot.vndbandroid.bean.vndbandroid.Theme;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
+import com.crashlytics.android.Crashlytics;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     public static boolean autologin = true;
@@ -90,15 +91,34 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         if (Cache.loadedFromCache) {
             VNTypeFragment.refreshOnInit = true;
+            addInfoToCrashlytics();
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
         } else {
             Cache.loadData(LoginActivity.this, new Callback() {
                 @Override
                 protected void config() {
+                    addInfoToCrashlytics();
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                 }
             }, getCallback());
         }
+    }
+
+    private void addInfoToCrashlytics() {
+        Crashlytics.setUserName(SettingsManager.getUsername(this));
+        int theme = Integer.parseInt(SettingsManager.getTheme(this));
+        String[] themes = getResources().getStringArray(R.array.background_pref_titles);
+        Crashlytics.setString("THEME", themes[theme]);
+        Crashlytics.setBool("HIDE RECOMMENDATIONS IN WISHLIST", SettingsManager.getHideRecommendationsInWishlist(this));
+        Crashlytics.setBool("VN DETAILS BLURRED BACKGROUND", SettingsManager.getCoverBackground(this));
+        Crashlytics.setBool("IN-APP BROWSER ENABLED", SettingsManager.getInAppBrowser(this));
+        Crashlytics.setBool("SHOW NSFW BY DEFAULT", SettingsManager.getNSFW(this));
+        Crashlytics.setString("SORT", Cache.SORT_OPTIONS[SettingsManager.getSort(this)]);
+        Crashlytics.setBool("REVERSE SORT", SettingsManager.getReverseSort(this));
+        Crashlytics.setBool("SPOIL ME IF FINISHED", SettingsManager.getSpoilerCompleted(this));
+        int spoilerLevel = SettingsManager.getSpoilerLevel(this);
+        String[] spoilerLevels = getResources().getStringArray(R.array.spoiler_pref_titles);
+        Crashlytics.setString("DEFAULT SPOILER LEVEL", spoilerLevels[spoilerLevel]);
     }
 
     public void enableAll() {

@@ -9,3 +9,4 @@
 .idea
 images/
 app/src/main/res/raw/mail.json
+app/fabric.properties

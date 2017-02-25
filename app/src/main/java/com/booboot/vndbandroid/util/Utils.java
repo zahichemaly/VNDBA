@@ -99,19 +99,6 @@ public class Utils {
         activity.recreate();
     }
 
-    public static boolean isDeviceWide(Activity activity, int orientation) {
-        Display display = activity.getWindowManager().getDefaultDisplay();
-        DisplayMetrics outMetrics = new DisplayMetrics();
-        display.getMetrics(outMetrics);
-
-        int baseSize = activity.getResources().getConfiguration().orientation == orientation ? outMetrics.widthPixels : outMetrics.heightPixels;
-        float density = activity.getResources().getDisplayMetrics().density;
-        float widthAllocatedForCards = (baseSize - activity.getResources().getDimension(R.dimen.activity_horizontal_margin) * 2) / density;
-
-        int threshold = orientation == PORTRAIT ? 750 : 1100;
-        return widthAllocatedForCards > threshold;
-    }
-
     public static void setTitle(Activity activity, String title) {
         ActionBar actionBar = ((AppCompatActivity) activity).getSupportActionBar();
         if (actionBar != null)
