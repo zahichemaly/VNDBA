@@ -42,15 +42,14 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
     private TextView notesTextView;
     private EditText notesInput;
 
-    public VNDetailsListener(VNDetailsActivity activity, Item vn, TextView notesTextView) {
+    public VNDetailsListener(VNDetailsActivity activity, Item vn) {
         this.activity = activity;
         this.vn = vn;
-        this.notesTextView = notesTextView;
     }
 
     @Override
     public boolean onMenuItemClick(final MenuItem item) {
-        if (!ConnectionReceiver.isConnected()) {
+        if (!ConnectionReceiver.isConnected(activity)) {
             Callback.showToast(activity, ConnectionReceiver.CONNECTION_ERROR_MESSAGE);
             return true;
         }
@@ -482,5 +481,9 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
 
     public void setNotesInput(EditText notesInput) {
         this.notesInput = notesInput;
+    }
+
+    public void setNotesTextView(TextView notesTextView) {
+        this.notesTextView = notesTextView;
     }
 }

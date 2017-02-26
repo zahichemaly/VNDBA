@@ -108,7 +108,6 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
     private TextView notesTextView;
     private ImageButton notesEditButton;
 
-    private VNDetailsListener listener;
     private ExpandableListView expandableListView;
     private ExpandableListAdapter expandableListAdapter;
 
@@ -179,7 +178,6 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         notesTextView.setHintTextColor(Utils.getTextColorFromBackground(this, R.color.secondaryText, R.color.light_gray, isNsfw()));
         notesTextView.setTextColor(Utils.getTextColorFromBackground(this, R.color.primaryText, R.color.white, isNsfw()));
         notesTextView.setText(vnlistVn != null ? vnlistVn.getNotes() : "");
-        listener = new VNDetailsListener(this, vn, notesTextView);
 
         notesEditButton = (ImageButton) findViewById(R.id.notesEditButton);
         notesEditButton.setColorFilter(Utils.getThemeColor(this, R.attr.colorPrimary), PorterDuff.Mode.SRC_ATOP);
@@ -207,6 +205,8 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                         input.setMaxHeight(Pixels.px(200, VNDetailsActivity.this));
                         params.addView(input, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                         builder.setView(params);
+                        VNDetailsListener listener = new VNDetailsListener(VNDetailsActivity.this, vn);
+                        listener.setNotesTextView(notesTextView);
                         listener.setNotesInput(input);
                         listener.setPopupButton(statusButton);
                         builder.setPositiveButton("Save", listener);
@@ -671,8 +671,10 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         PopupMenu popup = new PopupMenu(this, v);
         MenuInflater inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.status, popup.getMenu());
-        popup.setOnMenuItemClickListener(listener);
+        VNDetailsListener listener = new VNDetailsListener(VNDetailsActivity.this, vn);
+        listener.setNotesTextView(notesTextView);
         listener.setPopupButton(statusButton);
+        popup.setOnMenuItemClickListener(listener);
         popup.show();
     }
 
@@ -680,8 +682,10 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         PopupMenu popup = new PopupMenu(this, v);
         MenuInflater inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.wishlist, popup.getMenu());
-        popup.setOnMenuItemClickListener(listener);
+        VNDetailsListener listener = new VNDetailsListener(VNDetailsActivity.this, vn);
+        listener.setNotesTextView(notesTextView);
         listener.setPopupButton(wishlistButton);
+        popup.setOnMenuItemClickListener(listener);
         popup.show();
     }
 
@@ -689,8 +693,10 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         PopupMenu popup = new PopupMenu(this, v);
         MenuInflater inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.votes, popup.getMenu());
-        popup.setOnMenuItemClickListener(listener);
+        VNDetailsListener listener = new VNDetailsListener(VNDetailsActivity.this, vn);
+        listener.setNotesTextView(notesTextView);
         listener.setPopupButton(votesButton);
+        popup.setOnMenuItemClickListener(listener);
         popup.show();
     }
 
@@ -733,6 +739,8 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                         RadioButton itemSpoil1 = (RadioButton) content.findViewById(R.id.item_spoil_1);
                         RadioButton itemSpoil2 = (RadioButton) content.findViewById(R.id.item_spoil_2);
                         CheckBox checkNsfw = (CheckBox) content.findViewById(R.id.check_nsfw);
+
+                        VNDetailsListener listener = new VNDetailsListener(VNDetailsActivity.this, vn);
                         itemSpoil0.setOnClickListener(listener);
                         itemSpoil1.setOnClickListener(listener);
                         itemSpoil2.setOnClickListener(listener);
