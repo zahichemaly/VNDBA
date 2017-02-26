@@ -2,6 +2,7 @@ package com.booboot.vndbandroid.activity;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -17,6 +18,8 @@ import com.booboot.vndbandroid.BuildConfig;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.bean.vndb.Links;
 import com.booboot.vndbandroid.util.Utils;
+
+import java.util.Date;
 
 /**
  * Created by od on 11/06/2016.
@@ -89,8 +92,11 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.feedbackButton:
-                Intent intent = new Intent(getActivity(), FeedbackActivity.class);
-                getActivity().startActivity(intent);
+                Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", Links.EMAIL, null));
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "[VNDB Android] Feedback @ " + new Date().toString());
+                emailIntent.putExtra(Intent.EXTRA_TEXT, "\n\n\n\n" + Utils.getDeviceInfo(getActivity()));
+                emailIntent.putExtra(Intent.EXTRA_EMAIL, Links.EMAIL); // Android 4.3 fix
+                startActivity(Intent.createChooser(emailIntent, "Send a feedback with..."));
                 getActivity().overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
                 break;
 

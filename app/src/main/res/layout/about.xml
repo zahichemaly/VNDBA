@@ -75,7 +75,7 @@
             android:paddingStart="10dp"
             android:paddingEnd="10dp"
             android:layout_marginBottom="20dp"
-            android:text="VNDB Android is an open-source Android client for the Visual Novel Database (VNDB - https://vndb.org).\n\nYou can contribute to the application by submitting a feedback or issues on GitHub.\n\nIf you want to report a bug, please provide as many details as possible to help me fix it, as well as your email address so I can contact you back."/>
+            android:text="VNDB Android is an open-source Android client for the Visual Novel Database (VNDB - https://vndb.org).\n\nYou can contribute to the application by submitting a feedback or issues on GitHub.\n\nIf you want to report a bug, please provide as many details as possible to help me fix it."/>
 
         <Button
             android:id="@+id/feedbackButton"

@@ -20,8 +20,6 @@
 
         <activity android:name=".activity.VNSearchActivity"/>
 
-        <activity android:name=".activity.FeedbackActivity"/>
-
         <activity android:name=".activity.EmptyActivity"/>
 
         <activity android:name=".activity.URLActivity">

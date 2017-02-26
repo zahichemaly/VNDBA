@@ -21,7 +21,6 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
-import android.view.Display;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -29,7 +28,6 @@ import android.widget.TextView;
 import com.booboot.vndbandroid.BuildConfig;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.EmptyActivity;
-import com.booboot.vndbandroid.bean.vndbandroid.Mail;
 import com.booboot.vndbandroid.util.image.Pixels;
 
 import java.text.DateFormat;
@@ -44,9 +42,6 @@ import java.util.zip.ZipFile;
  * Created by od on 03/04/2016.
  */
 public class Utils {
-    public final static int PORTRAIT = 1;
-    public final static int LANDSCAPE = 2;
-
     public static String capitalize(String s) {
         if (s == null) return null;
         if (s.length() == 1) {
@@ -163,21 +158,6 @@ public class Utils {
         textView.setHighlightColor(Color.TRANSPARENT);
     }
 
-    public static String getBuildDateAsString(Context context, DateFormat dateFormat) {
-        String buildDate;
-        try {
-            ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), 0);
-            ZipFile zf = new ZipFile(ai.sourceDir);
-            ZipEntry ze = zf.getEntry("classes.dex");
-            long time = ze.getTime();
-            buildDate = dateFormat.format(new Date(time));
-            zf.close();
-        } catch (Exception e) {
-            buildDate = "Unknown";
-        }
-        return buildDate;
-    }
-
     public static String getDeviceModelName() {
         String manufacturer = Build.MANUFACTURER;
         String model = Build.MODEL;
@@ -192,25 +172,11 @@ public class Utils {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 
         String res = "Build version: " + BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ") \n";
-        res += "Build date: " + Utils.getBuildDateAsString(context, dateFormat) + " \n";
         res += "Current date: " + dateFormat.format(new Date()) + " \n";
         res += "Device: " + Utils.getDeviceModelName() + " \n";
         res += "Android version: " + Build.VERSION.RELEASE + " \n";
         res += "VNDB username: " + SettingsManager.getUsername(context) + " \n \n";
         return res;
-    }
-
-    public static void sendEmail(final Context context, final String title, final String body) {
-        new Thread() {
-            @Override
-            public void run() {
-                MailService mailer = new MailService(Mail.getInfo(context).getUsername(), Mail.getInfo(context).getTo(), title, body, null);
-                try {
-                    mailer.sendAuthenticated();
-                } catch (Exception e) {
-                }
-            }
-        }.start();
     }
 
     public static void tintImage(Context context, ImageView imageView, int res, boolean attribute) {

@@ -18,6 +18,7 @@ public class Links extends VNDBCommand {
     public final static String MY_VNDB_PROFILE = "https://vndb.org/u104775";
     public final static String PLAY_STORE = "https://play.google.com/store/apps/details?id=com.booboot.vndbandroid";
     public final static String VNSTAT = "https://vnstat.net/";
+    public final static String EMAIL = "vndb.android@laposte.net";
 
     private String wikipedia;
     private String encubed;
