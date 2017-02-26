@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.booboot.vndbandroid.BuildConfig;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.bean.vndb.Links;
@@ -105,6 +106,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void addInfoToCrashlytics() {
+        if (BuildConfig.DEBUG) return;
         Crashlytics.setUserName(SettingsManager.getUsername(this));
         int theme = Integer.parseInt(SettingsManager.getTheme(this));
         String[] themes = getResources().getStringArray(R.array.background_pref_titles);

@@ -18,8 +18,8 @@ public class ConnectionReceiver extends BroadcastReceiver {
         VNDBServer.closeAll();
     }
 
-    public static boolean isConnected() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) VNDBApplication.applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+    public static boolean isConnected(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = null;
         if (connectivityManager != null) {
             networkInfo = connectivityManager.getActiveNetworkInfo();
