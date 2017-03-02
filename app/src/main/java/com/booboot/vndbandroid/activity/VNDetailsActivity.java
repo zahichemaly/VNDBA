@@ -39,6 +39,7 @@ import android.widget.PopupWindow;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import com.booboot.vndbandroid.BuildConfig;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.adapter.vndetails.VNDetailsElement;
 import com.booboot.vndbandroid.adapter.vndetails.VNDetailsListener;
@@ -67,6 +68,7 @@ import com.booboot.vndbandroid.util.Utils;
 import com.booboot.vndbandroid.util.image.BitmapTransformation;
 import com.booboot.vndbandroid.util.image.BlurIfDemoTransform;
 import com.booboot.vndbandroid.util.image.Pixels;
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
@@ -134,7 +136,9 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         setTheme(Theme.THEMES.get(SettingsManager.getTheme(this)).getStyle());
         setContentView(R.layout.vn_details);
 
-        vn = Cache.vns.get(getIntent().getIntExtra(VNTypeFragment.VN_ARG, -1));
+        int id = getIntent().getIntExtra(VNTypeFragment.VN_ARG, -1);
+        addInfoToCrashlytics(id);
+        vn = Cache.vns.get(id);
 
         if (savedInstanceState != null) {
             spoilerLevel = savedInstanceState.getInt("SPOILER_LEVEL");
@@ -949,6 +953,11 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                 .setObject(object)
                 .setActionStatus(Action.STATUS_TYPE_COMPLETED)
                 .build();
+    }
+
+    private void addInfoToCrashlytics(int id) {
+        if (BuildConfig.DEBUG) return;
+        Crashlytics.setInt("LAST VN VISITED", id);
     }
 
     @Override

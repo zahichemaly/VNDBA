@@ -29,6 +29,7 @@ import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 
+import com.booboot.vndbandroid.BuildConfig;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.ranking.RankingMostVotedFragment;
 import com.booboot.vndbandroid.activity.ranking.RankingNewlyAddedFragment;
@@ -44,6 +45,7 @@ import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
 import com.booboot.vndbandroid.util.image.BlurIfDemoTransform;
 import com.booboot.vndbandroid.util.image.Pixels;
+import com.crashlytics.android.Crashlytics;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -319,10 +321,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    private void addInfoToCrashlytics() {
+        if (BuildConfig.DEBUG) return;
+        Crashlytics.setInt("VNS SIZE", Cache.vns.size());
+        Crashlytics.setInt("VNLIST SIZE", Cache.vnlist.size());
+        Crashlytics.setInt("VOTELIST SIZE", Cache.votelist.size());
+        Crashlytics.setInt("WISHLIST SIZE", Cache.wishlist.size());
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
         VNDetailsActivity.goBackToVnlist = false;
+        addInfoToCrashlytics();
     }
 
     @Override
