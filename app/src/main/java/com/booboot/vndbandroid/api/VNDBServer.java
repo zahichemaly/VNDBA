@@ -33,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 import javax.net.SocketFactory;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
@@ -215,7 +216,11 @@ public class VNDBServer {
         }.start();
     }
 
-    public static VNDBCommand sendCommand(String command, VNDBCommand params, int socketIndex) {
+    private static VNDBCommand sendCommand(String command, VNDBCommand params, int socketIndex) {
+        return sendCommand(command, params, socketIndex, false);
+    }
+
+    private static VNDBCommand sendCommand(String command, VNDBCommand params, int socketIndex, boolean retry) {
         synchronized (SocketPool.getLock(socketIndex)) {
             StringBuilder query = new StringBuilder();
             try {
@@ -237,8 +242,8 @@ public class VNDBServer {
             try {
                 SSLSocket socket = SocketPool.getSocket(context, socketIndex, errorCallback);
                 if (socket == null) return null;
-                in = new InputStreamReader(socket.getInputStream());
                 out = socket.getOutputStream();
+                in = new InputStreamReader(socket.getInputStream());
 
                 do {
                     if (BuildConfig.DEBUG) {
@@ -278,13 +283,23 @@ public class VNDBServer {
                 errorCallback.call();
                 return null;
             } catch (SocketException se) {
-                se.printStackTrace();
+                if (BuildConfig.DEBUG) se.printStackTrace();
                 VNDBServer.close(socketIndex);
                 errorCallback.message = ConnectionReceiver.CONNECTION_ERROR_MESSAGE;
                 errorCallback.call();
                 return null;
+            } catch (SSLException ssle) {
+                if (BuildConfig.DEBUG) ssle.printStackTrace();
+                VNDBServer.close(socketIndex);
+                if (retry) {
+                    errorCallback.message = "An error occurred while writing a query to the API. Please try again later.";
+                    errorCallback.call();
+                    return null;
+                } else {
+                    return sendCommand(command, params, socketIndex, true);
+                }
             } catch (IOException ioe) {
-                ioe.printStackTrace();
+                if (BuildConfig.DEBUG) ioe.printStackTrace();
                 VNDBServer.close(socketIndex);
                 errorCallback.message = "An error occurred while sending a query to the API. Please try again later.";
                 errorCallback.call();
