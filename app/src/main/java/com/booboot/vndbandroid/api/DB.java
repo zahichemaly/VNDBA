@@ -448,6 +448,58 @@ public class DB extends SQLiteOpenHelper {
         }
     }
 
+    public static void deleteVnlist(Context context, int vnId) {
+      deleteVnlist(context, vnId, true, true);
+    }
+
+    public static void deleteVnlist(Context context, int vnId, boolean beginTransaction, boolean endTransaction) {
+        if (instance == null) instance = new DB(context);
+        SQLiteDatabase db = instance.getWritableDatabase();
+        if (beginTransaction) db.beginTransaction();
+
+        db.execSQL("DELETE FROM " + TABLE_VNLIST + " WHERE vn = " + vnId);
+
+        if (endTransaction) {
+            db.setTransactionSuccessful();
+            db.endTransaction();
+        }
+    }
+
+    public static void deleteVotelist(Context context, int vnId) {
+        deleteVotelist(context, vnId, true, true);
+    }
+
+    public static void deleteVotelist(Context context, int vnId, boolean beginTransaction, boolean endTransaction) {
+        if (instance == null) instance = new DB(context);
+        SQLiteDatabase db = instance.getWritableDatabase();
+        if (beginTransaction) db.beginTransaction();
+
+        db.execSQL("DELETE FROM " + TABLE_VOTELIST + " WHERE vn = " + vnId);
+
+        if (endTransaction) {
+            db.setTransactionSuccessful();
+            db.endTransaction();
+        }
+    }
+
+    public static void deleteWishlist(Context context, int vnId) {
+        deleteWishlist(context, vnId, true, true);
+    }
+
+
+    public static void deleteWishlist(Context context, int vnId, boolean beginTransaction, boolean endTransaction) {
+        if (instance == null) instance = new DB(context);
+        SQLiteDatabase db = instance.getWritableDatabase();
+        if (beginTransaction) db.beginTransaction();
+
+        db.execSQL("DELETE FROM " + TABLE_WISHLIST + " WHERE vn = " + vnId);
+
+        if (endTransaction) {
+            db.setTransactionSuccessful();
+            db.endTransaction();
+        }
+    }
+
     public static void deleteVN(Context context, int vnId, boolean beginTransaction, boolean endTransaction) {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
