@@ -14,7 +14,6 @@ repositories {
     maven { url 'https://maven.fabric.io/public' }
 }
 
-
 android {
     compileSdkVersion 25
     buildToolsVersion '25.0.2'
@@ -23,8 +22,8 @@ android {
         applicationId "com.booboot.vndbandroid"
         minSdkVersion 17
         targetSdkVersion 25
-        versionCode 30
-        versionName "2.1.1"
+        versionCode 31
+        versionName "2.2.0"
 
         renderscriptTargetApi 19
         renderscriptSupportModeEnabled true
@@ -74,7 +73,7 @@ dependencies {
     compile 'com.github.pluscubed:recycler-fast-scroll:0.3.2'
     compile 'cat.ereza:customactivityoncrash:1.5.0'
     compile 'com.splitwise:tokenautocomplete:2.0.7'
-    compile('com.crashlytics.sdk.android:crashlytics:2.6.6@aar') {
+    compile('com.crashlytics.sdk.android:crashlytics:2.6.7@aar') {
         transitive = true;
     }
 }

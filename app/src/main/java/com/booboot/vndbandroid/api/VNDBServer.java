@@ -43,12 +43,12 @@ import javax.net.ssl.SSLSocketFactory;
  */
 public class VNDBServer {
     public final static String HOST = "api.vndb.org";
-    public final static int PORT = 19535;
-    public final static char EOM = 0x04;
+    private final static int PORT = 19535;
+    private final static char EOM = 0x04;
 
-    public final static int PROTOCOL = 1;
-    public final static String CLIENT = "VNDB_ANDROID";
-    public final static double CLIENTVER = 2.1;
+    private final static int PROTOCOL = 1;
+    private final static String CLIENT = "VNDB_ANDROID";
+    private final static double CLIENTVER = 2.2;
 
     private static Context context;
     private static Callback successCallback, errorCallback;
