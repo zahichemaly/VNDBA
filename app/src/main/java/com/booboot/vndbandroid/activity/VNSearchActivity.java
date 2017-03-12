@@ -259,6 +259,7 @@ public class VNSearchActivity extends AppCompatActivity {
                 filters.add("tags != " + JSON.mapper.writeValueAsString(excludeTags));
             }
         } catch (JsonProcessingException e) {
+            Utils.processException(e);
             Callback.showToast(VNSearchActivity.this, "An error occurred while creating your search. Please try again later.");
             return false;
         }

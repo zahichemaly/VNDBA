@@ -3,7 +3,6 @@ package com.booboot.vndbandroid.util;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.content.res.ColorStateList;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -29,14 +28,13 @@ import com.booboot.vndbandroid.BuildConfig;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.EmptyActivity;
 import com.booboot.vndbandroid.util.image.Pixels;
+import com.crashlytics.android.Crashlytics;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 /**
  * Created by od on 03/04/2016.
@@ -205,5 +203,10 @@ public class Utils {
         DisplayMetrics displaymetrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         return displaymetrics.widthPixels;
+    }
+
+    public static void processException(Exception exception) {
+        if (BuildConfig.DEBUG) exception.printStackTrace();
+        else Crashlytics.logException(exception);
     }
 }

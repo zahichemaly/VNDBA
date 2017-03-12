@@ -19,6 +19,7 @@ import com.booboot.vndbandroid.bean.vnstat.SimilarNovel;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.JSON;
 import com.booboot.vndbandroid.util.SettingsManager;
+import com.booboot.vndbandroid.util.Utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -113,7 +114,8 @@ public class Cache {
 
                 try {
                     countDownLatch.await();
-                } catch (InterruptedException E) {
+                } catch (InterruptedException exception) {
+                    Utils.processException(exception);
                     errorCallback.message = "An unexpected error occurred while loading your lists. Please try again later.";
                     errorCallback.call();
                     return;
@@ -310,7 +312,7 @@ public class Cache {
         try {
             JSON.mapper.writeValue(file, object);
         } catch (IOException e) {
-            e.printStackTrace();
+            Utils.processException(e);
         }
     }
 
@@ -333,7 +335,7 @@ public class Cache {
             try {
                 dbstats = JSON.mapper.readValue(dbstatsFile, DbStats.class);
             } catch (IOException e) {
-                e.printStackTrace();
+                Utils.processException(e);
             }
         }
     }

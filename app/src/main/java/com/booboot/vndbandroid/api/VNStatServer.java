@@ -3,6 +3,7 @@ package com.booboot.vndbandroid.api;
 import com.booboot.vndbandroid.bean.vnstat.VNStatResults;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.JSON;
+import com.booboot.vndbandroid.util.Utils;
 
 import java.io.IOException;
 import java.net.URL;
@@ -29,7 +30,7 @@ public class VNStatServer {
                         errorCallback.call();
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Utils.processException(e);
                     errorCallback.message = "Unable to reach the server " + HOST + ". Please try again later.";
                     errorCallback.call();
                 }

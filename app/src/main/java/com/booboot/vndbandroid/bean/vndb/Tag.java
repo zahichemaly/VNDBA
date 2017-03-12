@@ -5,6 +5,7 @@ import android.content.Context;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.VNDetailsActivity;
 import com.booboot.vndbandroid.util.JSON;
+import com.booboot.vndbandroid.util.Utils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -44,7 +45,7 @@ public class Tag extends VNDBCommand implements Serializable {
                 tags.put(tag.getId(), tag);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Utils.processException(e);
         }
 
         return tags;

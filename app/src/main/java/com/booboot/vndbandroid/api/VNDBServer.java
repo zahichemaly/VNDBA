@@ -18,6 +18,7 @@ import com.booboot.vndbandroid.util.ConnectionReceiver;
 import com.booboot.vndbandroid.util.JSON;
 import com.booboot.vndbandroid.util.NumberedThread;
 import com.booboot.vndbandroid.util.SettingsManager;
+import com.booboot.vndbandroid.util.Utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.io.IOException;
@@ -82,11 +83,12 @@ public class VNDBServer {
             SocketPool.setSocket(socketIndex, socket);
             return true;
         } catch (UnknownHostException uhe) {
+            Utils.processException(uhe);
             errorCallback.message = "Unable to reach the server " + HOST + ". Please try again later.";
             errorCallback.call();
             return false;
         } catch (IOException ioe) {
-            ioe.printStackTrace();
+            Utils.processException(ioe);
             errorCallback.message = "An error occurred during the connection to the server. Please try again later.";
             errorCallback.call();
             return false;
@@ -157,7 +159,7 @@ public class VNDBServer {
                             successCallback.call();
                         }
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        Utils.processException(e);
                     }
                 } else {
                     VNDBCommand pageResults;
@@ -229,6 +231,7 @@ public class VNDBServer {
                     query.append(JSON.mapper.writeValueAsString(params));
                 query.append(EOM);
             } catch (JsonProcessingException jpe) {
+                Utils.processException(jpe);
                 VNDBServer.close(socketIndex);
                 errorCallback.message = "Unable to process the query to the API as JSON. Aborting operation.";
                 errorCallback.call();
@@ -278,20 +281,21 @@ public class VNDBServer {
                     }
                 } while (isThrottled);
             } catch (UnsupportedEncodingException uee) {
+                Utils.processException(uee);
                 VNDBServer.close(socketIndex);
                 errorCallback.message = "Tried to send a query to the API with a wrong encoding. Aborting operation.";
                 errorCallback.call();
                 return null;
             } catch (SocketException se) {
-                if (BuildConfig.DEBUG) se.printStackTrace();
+                Utils.processException(se);
                 VNDBServer.close(socketIndex);
                 errorCallback.message = ConnectionReceiver.CONNECTION_ERROR_MESSAGE;
                 errorCallback.call();
                 return null;
             } catch (SSLException ssle) {
-                if (BuildConfig.DEBUG) ssle.printStackTrace();
                 VNDBServer.close(socketIndex);
                 if (retry) {
+                    Utils.processException(ssle);
                     errorCallback.message = "An error occurred while writing a query to the API. Please try again later.";
                     errorCallback.call();
                     return null;
@@ -299,7 +303,7 @@ public class VNDBServer {
                     return sendCommand(command, params, socketIndex, true);
                 }
             } catch (IOException ioe) {
-                if (BuildConfig.DEBUG) ioe.printStackTrace();
+                Utils.processException(ioe);
                 VNDBServer.close(socketIndex);
                 errorCallback.message = "An error occurred while sending a query to the API. Please try again later.";
                 errorCallback.call();
@@ -323,7 +327,7 @@ public class VNDBServer {
                 // Log.e("D", response.toString());
             }
         } catch (Exception exception) {
-            exception.printStackTrace();
+            Utils.processException(exception);
             VNDBServer.close(socketIndex);
             errorCallback.message = "An error occurred while receiving the response from the API. Please try again later.";
             errorCallback.call();
@@ -341,6 +345,7 @@ public class VNDBServer {
                 /* Undocumented error : the server returned an empty response (""), which means absolutely nothing but "leave the ship because something undebuggable happened!" */
                 VNDBServer.close(socketIndex);
                 errorCallback.message = "VNDB.org returned an unexpected error. Please try again later.";
+                Utils.processException(new Exception(errorCallback.message));
                 errorCallback.call();
                 return null;
             }
@@ -351,7 +356,7 @@ public class VNDBServer {
             String params = response.substring(delimiterIndex, response.length()).replace(EOM + "", "");
             return (VNDBCommand) JSON.mapper.readValue(params, VNDBCommand.getClass(command));
         } catch (IOException ioe) {
-            ioe.printStackTrace();
+            Utils.processException(ioe);
             VNDBServer.close(socketIndex);
             errorCallback.message = "An error occurred while decoding the response from the API. Aborting operation.";
             errorCallback.call();
@@ -369,7 +374,7 @@ public class VNDBServer {
             }
             SocketPool.setSocket(socketIndex, null);
         } catch (IOException ioe) {
-            ioe.printStackTrace();
+            Utils.processException(ioe);
         }
     }
 
@@ -387,7 +392,7 @@ public class VNDBServer {
                         SocketPool.setSocket(i, null);
                     }
                 } catch (IOException ioe) {
-                    ioe.printStackTrace();
+                    Utils.processException(ioe);
                 }
             }
         }.start();

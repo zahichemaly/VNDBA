@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.util.JSON;
+import com.booboot.vndbandroid.util.Utils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -40,7 +41,7 @@ public class Trait extends VNDBCommand {
                 traits.put(trait.getId(), trait);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Utils.processException(e);
         }
 
         return traits;
