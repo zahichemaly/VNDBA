@@ -13,8 +13,8 @@ import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.api.Cache;
-import com.booboot.vndbandroid.bean.vndb.Links;
-import com.booboot.vndbandroid.bean.vndbandroid.Theme;
+import com.booboot.vndbandroid.model.vndb.Links;
+import com.booboot.vndbandroid.model.vndbandroid.Theme;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;

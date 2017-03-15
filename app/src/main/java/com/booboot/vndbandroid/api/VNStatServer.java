@@ -1,6 +1,6 @@
 package com.booboot.vndbandroid.api;
 
-import com.booboot.vndbandroid.bean.vnstat.VNStatResults;
+import com.booboot.vndbandroid.model.vnstat.VNStatResults;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.JSON;
 import com.booboot.vndbandroid.util.Utils;

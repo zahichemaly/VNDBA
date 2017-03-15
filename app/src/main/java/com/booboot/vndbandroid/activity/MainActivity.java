@@ -37,8 +37,8 @@ import com.booboot.vndbandroid.activity.ranking.RankingPopularFragment;
 import com.booboot.vndbandroid.activity.ranking.RankingTopFragment;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.VNDBServer;
-import com.booboot.vndbandroid.bean.vndbandroid.ListType;
-import com.booboot.vndbandroid.bean.vndbandroid.Theme;
+import com.booboot.vndbandroid.model.vndbandroid.ListType;
+import com.booboot.vndbandroid.model.vndbandroid.Theme;
 import com.booboot.vndbandroid.util.ConnectionReceiver;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
@@ -271,11 +271,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Cache.clearCache(this);
         SettingsManager.setUserId(this, -1);
 
-        RankingMostVotedFragment.progressiveResultLoader = null;
-        RankingNewlyAddedFragment.progressiveResultLoader = null;
-        RankingNewlyReleasedFragment.progressiveResultLoader = null;
-        RankingPopularFragment.progressiveResultLoader = null;
-        RankingTopFragment.progressiveResultLoader = null;
+        RankingMostVotedFragment.options = null;
+        RankingNewlyAddedFragment.options = null;
+        RankingNewlyReleasedFragment.options = null;
+        RankingPopularFragment.options = null;
+        RankingTopFragment.options = null;
         RecommendationsFragment.recommendations = null;
 
         startActivity(new Intent(this, LoginActivity.class));

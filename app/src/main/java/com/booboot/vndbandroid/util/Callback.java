@@ -6,9 +6,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
 
-import com.booboot.vndbandroid.bean.vndb.DbStats;
-import com.booboot.vndbandroid.bean.vndb.Results;
-import com.booboot.vndbandroid.bean.vnstat.VNStatItem;
+import com.booboot.vndbandroid.model.vndb.DbStats;
+import com.booboot.vndbandroid.model.vndb.Results;
+import com.booboot.vndbandroid.model.vnstat.VNStatItem;
 
 /**
  * Created by od on 12/03/2016.

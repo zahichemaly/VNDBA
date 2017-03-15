@@ -14,7 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
-import com.booboot.vndbandroid.bean.vndb.Tag;
+import com.booboot.vndbandroid.model.vndb.Tag;
 import com.booboot.vndbandroid.util.Utils;
 import com.tokenautocomplete.TokenCompleteTextView;
 

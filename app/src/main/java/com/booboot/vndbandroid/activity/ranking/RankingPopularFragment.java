@@ -7,34 +7,41 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.booboot.vndbandroid.R;
-import com.booboot.vndbandroid.bean.vndb.Options;
 import com.booboot.vndbandroid.factory.ProgressiveResultLoader;
+import com.booboot.vndbandroid.model.vndb.Options;
+import com.booboot.vndbandroid.model.vndbandroid.ProgressiveResultLoaderOptions;
 import com.booboot.vndbandroid.util.Utils;
 
 public class RankingPopularFragment extends Fragment {
-    public static ProgressiveResultLoader progressiveResultLoader;
+    public static ProgressiveResultLoaderOptions options;
+    private ProgressiveResultLoader progressiveResultLoader;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.vn_card_list, container, false);
         Utils.setTitle(getActivity(), getActivity().getResources().getString(R.string.popular));
 
-        if (progressiveResultLoader == null) {
-            progressiveResultLoader = new ProgressiveResultLoader();
-            progressiveResultLoader.setActivity(getActivity());
-            progressiveResultLoader.setRootView(rootView);
-            progressiveResultLoader.setOptions(Options.create(1, 25, "popularity", true, false, 1));
-            progressiveResultLoader.setShowRank(true);
-            progressiveResultLoader.setShowPopularity(true);
-            progressiveResultLoader.setFilters("(id > 1)");
+        progressiveResultLoader = new ProgressiveResultLoader();
+        progressiveResultLoader.setActivity(getActivity());
+        progressiveResultLoader.setRootView(rootView);
+        progressiveResultLoader.setOptions(Options.create(1, 25, "popularity", true, false, 1));
+        progressiveResultLoader.setShowRank(true);
+        progressiveResultLoader.setShowPopularity(true);
+        progressiveResultLoader.setFilters("(id > 1)");
+
+        if (options == null) {
             progressiveResultLoader.init();
             progressiveResultLoader.loadResults(true);
         } else {
-            progressiveResultLoader.setActivity(getActivity());
-            progressiveResultLoader.setRootView(rootView);
-            progressiveResultLoader.initFromExisting();
+            progressiveResultLoader.initFromExisting(options);
         }
 
         return rootView;
+    }
+
+    @Override
+    public void onDestroyView() {
+        options = ProgressiveResultLoaderOptions.build(progressiveResultLoader);
+        super.onDestroyView();
     }
 }
