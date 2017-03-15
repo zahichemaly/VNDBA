@@ -386,8 +386,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
                 }
 
                 activity.toggleButtons();
-                if (MainActivity.instance != null)
-                    MainActivity.instance.refreshVnlistFragment();
+                MainActivity.shouldRefresh = true;
             }
         }, Callback.errorCallback(activity));
     }
@@ -481,9 +480,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
 
                 DB.saveVnlist(activity, true, false);
                 DB.saveVNs(activity, false, true);
-
-                if (MainActivity.instance != null)
-                    MainActivity.instance.refreshVnlistFragment();
+                MainActivity.shouldRefresh = true;
             }
         }, Callback.errorCallback(activity));
     }

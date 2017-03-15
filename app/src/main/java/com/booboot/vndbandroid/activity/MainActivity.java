@@ -51,8 +51,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    public static MainActivity instance;
     public static boolean mainActivityExists = false;
+    public static boolean shouldRefresh = false;
     private SearchView searchView;
     private List<VNTypeFragment> activeFragments = new ArrayList<>();
     private Fragment directSubfragment;
@@ -65,7 +65,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setTheme(Theme.THEMES.get(SettingsManager.getTheme(this)).getNoActionBarStyle());
         setContentView(R.layout.activity_main);
-        instance = this;
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -281,7 +280,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         startActivity(new Intent(this, LoginActivity.class));
         selectedItem = 0;
-        instance = null;
         finish();
         return true;
     }
@@ -332,6 +330,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onResume();
         VNDetailsActivity.goBackToVnlist = false;
         addInfoToCrashlytics();
+        if (shouldRefresh) refreshVnlistFragment();
+        shouldRefresh = false;
     }
 
     @Override

@@ -123,8 +123,10 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
         Cache.loadData(getActivity(), new Callback() {
             @Override
             protected void config() {
-                if (Cache.shouldRefreshView && MainActivity.instance != null && !MainActivity.instance.isDestroyed()) {
-                    MainActivity.instance.refreshVnlistFragment();
+                if (Cache.shouldRefreshView) {
+                    if (getActivity() instanceof MainActivity && !getActivity().isDestroyed()) {
+                        ((MainActivity) getActivity()).refreshVnlistFragment();
+                    }
                 }
                 refreshLayout.setRefreshing(false);
             }
