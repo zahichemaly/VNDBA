@@ -27,7 +27,6 @@ import android.widget.TextView;
 import com.booboot.vndbandroid.BuildConfig;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.EmptyActivity;
-import com.booboot.vndbandroid.activity.LoginActivity;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.util.image.Pixels;
 import com.crashlytics.android.Crashlytics;
@@ -52,12 +51,12 @@ public class Utils {
         System.exit(10);
     }
 
-    public static void restartIfKilled(Activity activity) {
-        if (isKilled(activity)) restart(activity);
+    public static void restartIfReset(Activity activity) {
+        if (isReset()) restart(activity);
     }
 
-    public static boolean isKilled(Activity activity) {
-        return Cache.vns.isEmpty() && Cache.vnlist.isEmpty() && Cache.votelist.isEmpty() && Cache.wishlist.isEmpty() && LoginActivity.autologin && !SettingsManager.isEmptyAccount(activity);
+    public static boolean isReset() {
+        return Cache.vns.isEmpty() && Cache.vnlist.isEmpty() && Cache.votelist.isEmpty() && Cache.wishlist.isEmpty() && VNDBApplication.reset;
     }
 
     public static String capitalize(String s) {
