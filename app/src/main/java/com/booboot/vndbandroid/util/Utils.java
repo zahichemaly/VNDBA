@@ -27,6 +27,8 @@ import android.widget.TextView;
 import com.booboot.vndbandroid.BuildConfig;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.EmptyActivity;
+import com.booboot.vndbandroid.activity.LoginActivity;
+import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.util.image.Pixels;
 import com.crashlytics.android.Crashlytics;
 
@@ -40,6 +42,24 @@ import java.util.Locale;
  * Created by od on 03/04/2016.
  */
 public class Utils {
+    public static void restart(Activity activity) {
+        Intent intent = activity.getPackageManager().getLaunchIntentForPackage(activity.getPackageName());
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        activity.startActivity(intent);
+        activity.overridePendingTransition(0, 0);
+        activity.finish();
+        android.os.Process.killProcess(android.os.Process.myPid());
+        System.exit(10);
+    }
+
+    public static void restartIfKilled(Activity activity) {
+        if (isKilled(activity)) restart(activity);
+    }
+
+    public static boolean isKilled(Activity activity) {
+        return Cache.vns.isEmpty() && Cache.vnlist.isEmpty() && Cache.votelist.isEmpty() && Cache.wishlist.isEmpty() && LoginActivity.autologin && !SettingsManager.isEmptyAccount(activity);
+    }
+
     public static String capitalize(String s) {
         if (s == null) return null;
         if (s.length() == 1) {

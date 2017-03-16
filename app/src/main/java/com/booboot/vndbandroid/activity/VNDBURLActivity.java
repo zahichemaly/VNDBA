@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.SettingsManager;
+import com.booboot.vndbandroid.util.Utils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,6 +24,7 @@ public class VNDBURLActivity extends AppCompatActivity {
             Pattern pattern = Pattern.compile("\\.org/v([0-9]+)");
             Matcher matcher = pattern.matcher(data);
             if (matcher.find()) { // we found a VN in the link
+                boolean clearActivities = Utils.isKilled(this);
 
                 /* If the cache is not loaded, load it so we can show the status, wish and vote of the user for this VN
                 (and it may also avoid "get vn"/"get character"/"get release" calls if they're already in the DB) */
@@ -49,7 +51,7 @@ public class VNDBURLActivity extends AppCompatActivity {
                         Callback.showToast(VNDBURLActivity.this, message);
                         finish();
                     }
-                });
+                }, clearActivities);
             } else finish();
         } else finish();
     }
