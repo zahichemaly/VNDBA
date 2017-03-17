@@ -17,8 +17,6 @@ import io.fabric.sdk.android.Fabric;
  * Created by od on 22/05/2016.
  */
 public class VNDBApplication extends Application {
-    public static boolean reset = true;
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -33,6 +31,5 @@ public class VNDBApplication extends Application {
 
         CrashlyticsCore core = new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build();
         Fabric.with(this, new Crashlytics.Builder().core(core).build());
-        reset = false;
     }
 }

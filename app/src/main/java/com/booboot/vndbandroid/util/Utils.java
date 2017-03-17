@@ -41,24 +41,6 @@ import java.util.Locale;
  * Created by od on 03/04/2016.
  */
 public class Utils {
-    public static void restart(Activity activity) {
-        Intent intent = activity.getPackageManager().getLaunchIntentForPackage(activity.getPackageName());
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        activity.startActivity(intent);
-        activity.overridePendingTransition(0, 0);
-        activity.finish();
-        android.os.Process.killProcess(android.os.Process.myPid());
-        System.exit(10);
-    }
-
-    public static void restartIfReset(Activity activity) {
-        if (isReset()) restart(activity);
-    }
-
-    public static boolean isReset() {
-        return Cache.vns.isEmpty() && Cache.vnlist.isEmpty() && Cache.votelist.isEmpty() && Cache.wishlist.isEmpty() && VNDBApplication.reset;
-    }
-
     public static String capitalize(String s) {
         if (s == null) return null;
         if (s.length() == 1) {

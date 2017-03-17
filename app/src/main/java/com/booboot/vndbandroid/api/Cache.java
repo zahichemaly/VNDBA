@@ -279,10 +279,10 @@ public class Cache {
     }
 
     public static void openVNDetails(final Activity activity, final int vnId) {
-        openVNDetails(activity, vnId, null, null, false);
+        openVNDetails(activity, vnId, null, null);
     }
 
-    public static void openVNDetails(final Activity activity, final int vnId, final Callback successCallback, final Callback errorCallback, final boolean clearActivities) {
+    public static void openVNDetails(final Activity activity, final int vnId, final Callback successCallback, final Callback errorCallback) {
         if (Cache.vns.get(vnId) != null) {
             Intent intent = new Intent(activity, VNDetailsActivity.class);
             intent.putExtra(VNTypeFragment.VN_ARG, vnId);
@@ -298,9 +298,6 @@ public class Cache {
                 if (!results.getItems().isEmpty()) {
                     Cache.vns.put(vnId, results.getItems().get(0));
                     Intent intent = new Intent(activity, VNDetailsActivity.class);
-                    if (clearActivities) { // #97 : if true, opening a deep link while the static variables were killed : make sure we can't go back to the old activities
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    }
                     intent.putExtra(VNTypeFragment.VN_ARG, vnId);
                     activity.startActivity(intent);
                     activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);

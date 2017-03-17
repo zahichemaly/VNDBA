@@ -24,8 +24,6 @@ public class VNDBURLActivity extends AppCompatActivity {
             Pattern pattern = Pattern.compile("\\.org/v([0-9]+)");
             Matcher matcher = pattern.matcher(data);
             if (matcher.find()) { // we found a VN in the link
-                boolean clearActivities = Utils.isReset();
-
                 /* If the cache is not loaded, load it so we can show the status, wish and vote of the user for this VN
                 (and it may also avoid "get vn"/"get character"/"get release" calls if they're already in the DB) */
                 if (!Cache.loadedFromCache) {
@@ -51,7 +49,7 @@ public class VNDBURLActivity extends AppCompatActivity {
                         Callback.showToast(VNDBURLActivity.this, message);
                         finish();
                     }
-                }, clearActivities);
+                });
             } else finish();
         } else finish();
     }

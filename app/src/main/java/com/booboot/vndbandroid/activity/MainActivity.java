@@ -62,7 +62,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Utils.restartIfReset(this);
         super.onCreate(savedInstanceState);
         setTheme(Theme.THEMES.get(SettingsManager.getTheme(this)).getNoActionBarStyle());
         setContentView(R.layout.activity_main);

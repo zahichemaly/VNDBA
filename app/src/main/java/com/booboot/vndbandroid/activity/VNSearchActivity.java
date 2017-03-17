@@ -67,7 +67,6 @@ public class VNSearchActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Utils.restartIfReset(this);
         super.onCreate(savedInstanceState);
         setTheme(Theme.THEMES.get(SettingsManager.getTheme(this)).getStyle());
         setContentView(R.layout.vn_search);
