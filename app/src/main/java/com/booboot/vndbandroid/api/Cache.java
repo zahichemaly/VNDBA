@@ -177,6 +177,7 @@ public class Cache {
                         DB.saveVotelist(context, false, false);
                         DB.saveWishlist(context, false, false);
                         DB.saveVNs(context, false, true);
+                        loadedFromCache = true;
 
                         shouldRefreshView = true;
                         successCallback.call();

@@ -132,8 +132,8 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTheme(Theme.THEMES.get(SettingsManager.getTheme(this)).getStyle());
-        setContentView(R.layout.vn_details);
+        Cache.loadFromCache(this);
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
 
         int id = getIntent().getIntExtra(VNTypeFragment.VN_ARG, -1);
         Crashlytics.setInt("LAST VN VISITED", id);
@@ -142,10 +142,40 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         if (savedInstanceState != null) {
             spoilerLevel = savedInstanceState.getInt("SPOILER_LEVEL");
             nsfwLevel = savedInstanceState.getInt("NSFW_LEVEL");
-            if (vn == null)
-                vn = Cache.vns.get(savedInstanceState.getInt(VNTypeFragment.VN_ARG));
+            if (vn == null) {
+                if (id < 0) id = savedInstanceState.getInt(VNTypeFragment.VN_ARG);
+                vn = Cache.vns.get(id);
+            }
         }
-        assert vn != null;
+
+        if (vn == null) { // #97
+            VNDBServer.get("vn", Cache.VN_FLAGS, "(id = " + id + ")", Options.create(false, 1), 0, this, new Callback() {
+                @Override
+                protected void config() {
+                    if (!results.getItems().isEmpty()) {
+                        vn = results.getItems().get(0);
+                        Cache.vns.put(vn.getId(), vn);
+                        // #97 : we have to recreate the activity here, instead of just calling init(), because since we're in callback, we're no longer in onCreate()
+                        // so we cannot setTheme() anymore. Therefore, we can no longer remove R.style.SplashScreen (which is still very useful to show that the app is loading,
+                        // instead of showing a blank activity until this callback is called). So it's more seamless to the user to recreate() (although very slightly slower).
+                        recreate();
+                    }
+                }
+            }, new Callback() {
+                @Override
+                protected void config() {
+                    Callback.showToast(VNDetailsActivity.this, message);
+                    finish();
+                }
+            });
+        } else {
+            init();
+        }
+    }
+
+    private void init() {
+        setTheme(Theme.THEMES.get(SettingsManager.getTheme(this)).getStyle());
+        setContentView(R.layout.vn_details);
 
         if (spoilerLevel < 0) {
             if (SettingsManager.getSpoilerCompleted(this) && vn.getStatus() == Status.FINISHED)
@@ -157,11 +187,6 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
             nsfwLevel = SettingsManager.getNSFW(this) ? 1 : 0;
         }
 
-        init();
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
-    }
-
-    private void init() {
         vnlistVn = Cache.vnlist.get(vn.getId());
         wishlistVn = Cache.wishlist.get(vn.getId());
         votelistVn = Cache.votelist.get(vn.getId());

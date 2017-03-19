@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Cache.loadFromCache(this);
         setTheme(Theme.THEMES.get(SettingsManager.getTheme(this)).getNoActionBarStyle());
         setContentView(R.layout.activity_main);
 
@@ -277,6 +278,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         RankingPopularFragment.options = null;
         RankingTopFragment.options = null;
         RecommendationsFragment.recommendations = null;
+        LoginActivity.autologin = false;
 
         startActivity(new Intent(this, LoginActivity.class));
         selectedItem = 0;
