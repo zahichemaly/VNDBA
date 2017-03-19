@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         int searchIconId = searchView.getContext().getResources().getIdentifier("android:id/search_button", null, null);
         ImageView searchIcon = (ImageView) searchView.findViewById(searchIconId);
-        searchIcon.setImageResource(R.drawable.ic_action_filter);
+        searchIcon.setImageResource(R.drawable.ic_filter_list_white_24dp);
 
         return true;
     }
