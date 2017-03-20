@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private SearchView searchView;
     private List<VNTypeFragment> activeFragments = new ArrayList<>();
     private Fragment directSubfragment;
-    public static int selectedItem;
+    public int selectedItem;
     private NavigationView navigationView;
     private ConnectionReceiver connectionReceiver;
 
@@ -107,14 +107,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             });
         }
 
-        if (selectedItem > 0) {
-            /* When the screen rotates, MainActivity is recreated so we have to go to where we were before (correct menu item and page) ! */
-            int currentPage = VNListFragment.currentPage;
-            goToFragment(selectedItem);
-            VNListFragment.currentPage = currentPage;
-        } else {
-            navigationView.getMenu().getItem(0).setChecked(true);
-            onNavigationItemSelected(navigationView.getMenu().getItem(0));
+        if (savedInstanceState != null) {
+            selectedItem = savedInstanceState.getInt("SELECTED_ITEM");
+        }
+
+        Fragment oldFragment = getFragmentManager().findFragmentByTag("FRAGMENT");
+
+        if (oldFragment == null) {
+            if (selectedItem > 0) {
+                /* When the screen rotates, MainActivity is recreated so we have to go to where we were before (correct menu item and page) ! */
+                int currentPage = VNListFragment.currentPage;
+                goToFragment(selectedItem);
+                VNListFragment.currentPage = currentPage;
+            } else {
+                navigationView.getMenu().getItem(0).setChecked(true);
+                onNavigationItemSelected(navigationView.getMenu().getItem(0));
+            }
         }
 
         updateMenuCounters();
@@ -194,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         SettingsManager.setReverseSort(MainActivity.this, reverseCheckbox.isChecked());
                         SettingsManager.setSort(MainActivity.this, which);
                         Cache.sortAll(MainActivity.this);
-                        goToFragment(MainActivity.selectedItem);
+                        goToFragment(selectedItem);
                         dialog.dismiss();
                     }
                 });
@@ -334,6 +342,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         addInfoToCrashlytics();
         if (shouldRefresh) refreshVnlistFragment();
         shouldRefresh = false;
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt("SELECTED_ITEM", selectedItem);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
