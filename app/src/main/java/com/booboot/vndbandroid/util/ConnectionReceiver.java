@@ -13,6 +13,7 @@ public class ConnectionReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        if (isInitialStickyBroadcast()) return;
         /* Resetting the sockets everytime the connection changes, to avoid dead sockets */
         VNDBServer.closeAll();
     }
