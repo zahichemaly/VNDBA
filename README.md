@@ -1,4 +1,4 @@
-# VNDB Android <a href="https://play.google.com/store/apps/details?id=com.booboot.vndbandroid"><img src="http://image.noelshack.com/fichiers/2016/18/1462457656-google-play-badge-250x8512.png" height="40"/></a>
+# VNDB Android <img src="http://image.noelshack.com/fichiers/2017/12/1490207039-web-hi-res-512.png" height="50" align="right"/><a href="https://play.google.com/store/apps/details?id=com.booboot.vndbandroid"><img src="http://image.noelshack.com/fichiers/2017/12/1490206761-google-play-badge.png" height="50" align="right"/></a>
 
 This project is an open-source Android client for the Visual Novel Database (VNDB - https://vndb.org/). The purpose of this app is to relate information on visual novels and enable you to keep track of and mark the visual novels you played. You'll need a VNDB.org account to use this app.
 
