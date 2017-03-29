@@ -6,6 +6,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/white"
         android:orientation="vertical">
 
         <LinearLayout
@@ -36,66 +37,66 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/app_name"
-                    android:textStyle="bold"
                     android:textColor="@color/white"
-                    android:textSize="18sp"/>
+                    android:textSize="18sp"
+                    android:textStyle="bold"/>
 
                 <TextView
                     android:id="@+id/appVersion"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textStyle="bold"
                     android:textColor="@color/white"
-                    android:textSize="18sp"/>
+                    android:textSize="18sp"
+                    android:textStyle="bold"/>
             </LinearLayout>
         </LinearLayout>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Developed by Thomas Herbeth"
             android:layout_marginTop="15dp"
-            android:textStyle="bold"
-            android:textAlignment="center"/>
+            android:text="Developed by Thomas Herbeth"
+            android:textAlignment="center"
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/thanksTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Thanks to Yorhel and [url=https://www.reddit.com/user/Noslyl]Noslyl[/url]"
-            android:layout_marginTop="10dp"
             android:layout_marginBottom="15dp"
+            android:layout_marginTop="10dp"
+            android:text="Thanks to Yorhel and [url=https://www.reddit.com/user/Noslyl]Noslyl[/url]"
             android:textAlignment="center"/>
 
         <TextView
             android:id="@+id/aboutDescription"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:autoLink="all"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
             android:layout_marginBottom="20dp"
+            android:autoLink="all"
+            android:paddingEnd="10dp"
+            android:paddingStart="10dp"
             android:text="VNDB Android is an open-source Android client for the Visual Novel Database (VNDB - https://vndb.org).\n\nYou can contribute to the application by submitting a feedback or issues on GitHub.\n\nIf you want to report a bug, please provide as many details as possible to help me fix it."/>
 
         <Button
             android:id="@+id/feedbackButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:text="@string/send_a_feedback"/>
+            android:text="@string/send_a_feedback"
+            android:textColor="@color/white"/>
 
         <Button
             android:id="@+id/githubButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:text="Github page"/>
+            android:text="Github page"
+            android:textColor="@color/white"/>
 
         <Button
             android:id="@+id/vnstatButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:text="VNStat official page"/>
+            android:text="VNStat official page"
+            android:textColor="@color/white"/>
     </LinearLayout>
 </ScrollView>
