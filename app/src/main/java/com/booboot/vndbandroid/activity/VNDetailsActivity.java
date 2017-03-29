@@ -68,10 +68,6 @@ import com.booboot.vndbandroid.util.image.BitmapTransformation;
 import com.booboot.vndbandroid.util.image.BlurIfDemoTransform;
 import com.booboot.vndbandroid.util.image.Pixels;
 import com.crashlytics.android.Crashlytics;
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.appindexing.Thing;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -123,17 +119,11 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
     private VNDetailsElement tagsSubmenu;
     private VNDetailsElement genresSubmenu;
     private VNDetailsElement screensSubmenu;
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Cache.loadFromCache(this);
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
 
         int id = getIntent().getIntExtra(VNTypeFragment.VN_ARG, -1);
         Crashlytics.setInt("LAST VN VISITED", id);
@@ -968,25 +958,6 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         this.similarNovels = similarNovels;
     }
 
-    public Action getIndexApiAction() {
-        Thing object = new Thing.Builder()
-                .setName("VN Details Page")
-                .setUrl(Uri.parse(Links.VNDB))
-                .build();
-        return new Action.Builder(Action.TYPE_VIEW)
-                .setObject(object)
-                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
-                .build();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        client.connect();
-        AppIndex.AppIndexApi.start(client, getIndexApiAction());
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -994,13 +965,5 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
             finish();
             overridePendingTransition(R.anim.slide_back_in, R.anim.slide_back_out);
         }
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        AppIndex.AppIndexApi.end(client, getIndexApiAction());
-        client.disconnect();
     }
 }
