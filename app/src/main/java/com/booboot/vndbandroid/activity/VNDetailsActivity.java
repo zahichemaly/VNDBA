@@ -9,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -167,8 +166,12 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         setTheme(Theme.THEMES.get(SettingsManager.getTheme(this)).getStyle());
         setContentView(R.layout.vn_details);
 
+        vnlistVn = Cache.vnlist.get(vn.getId());
+        wishlistVn = Cache.wishlist.get(vn.getId());
+        votelistVn = Cache.votelist.get(vn.getId());
+
         if (spoilerLevel < 0) {
-            if (SettingsManager.getSpoilerCompleted(this) && vn.getStatus() == Status.FINISHED)
+            if (vnlistVn != null && vnlistVn.getStatus() == Status.FINISHED && SettingsManager.getSpoilerCompleted(this))
                 spoilerLevel = 2;
             else
                 spoilerLevel = SettingsManager.getSpoilerLevel(this);
@@ -176,10 +179,6 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         if (nsfwLevel < 0) {
             nsfwLevel = SettingsManager.getNSFW(this) ? 1 : 0;
         }
-
-        vnlistVn = Cache.vnlist.get(vn.getId());
-        wishlistVn = Cache.wishlist.get(vn.getId());
-        votelistVn = Cache.votelist.get(vn.getId());
 
         if (Cache.characters.get(vn.getId()) != null) {
             characters = Cache.characters.get(vn.getId());
