@@ -4,9 +4,9 @@ import android.text.TextUtils;
 
 import com.booboot.vndbandroid.activity.VNDetailsActivity;
 import com.booboot.vndbandroid.adapter.doublelist.DoubleListElement;
-import com.booboot.vndbandroid.bean.vndb.Item;
-import com.booboot.vndbandroid.bean.vndb.Tag;
-import com.booboot.vndbandroid.bean.vndb.Trait;
+import com.booboot.vndbandroid.model.vndb.Item;
+import com.booboot.vndbandroid.model.vndb.Tag;
+import com.booboot.vndbandroid.model.vndb.Trait;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

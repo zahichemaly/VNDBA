@@ -3,7 +3,6 @@ package com.booboot.vndbandroid.util;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.content.res.ColorStateList;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -21,7 +20,6 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
-import android.view.Display;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -29,24 +27,20 @@ import android.widget.TextView;
 import com.booboot.vndbandroid.BuildConfig;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.EmptyActivity;
-import com.booboot.vndbandroid.bean.vndbandroid.Mail;
+import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.util.image.Pixels;
+import com.crashlytics.android.Crashlytics;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 /**
  * Created by od on 03/04/2016.
  */
 public class Utils {
-    public final static int PORTRAIT = 1;
-    public final static int LANDSCAPE = 2;
-
     public static String capitalize(String s) {
         if (s == null) return null;
         if (s.length() == 1) {
@@ -97,19 +91,6 @@ public class Utils {
         Intent intent = new Intent(activity, EmptyActivity.class);
         activity.startActivity(intent);
         activity.recreate();
-    }
-
-    public static boolean isDeviceWide(Activity activity, int orientation) {
-        Display display = activity.getWindowManager().getDefaultDisplay();
-        DisplayMetrics outMetrics = new DisplayMetrics();
-        display.getMetrics(outMetrics);
-
-        int baseSize = activity.getResources().getConfiguration().orientation == orientation ? outMetrics.widthPixels : outMetrics.heightPixels;
-        float density = activity.getResources().getDisplayMetrics().density;
-        float widthAllocatedForCards = (baseSize - activity.getResources().getDimension(R.dimen.activity_horizontal_margin) * 2) / density;
-
-        int threshold = orientation == PORTRAIT ? 750 : 1100;
-        return widthAllocatedForCards > threshold;
     }
 
     public static void setTitle(Activity activity, String title) {
@@ -176,21 +157,6 @@ public class Utils {
         textView.setHighlightColor(Color.TRANSPARENT);
     }
 
-    public static String getBuildDateAsString(Context context, DateFormat dateFormat) {
-        String buildDate;
-        try {
-            ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), 0);
-            ZipFile zf = new ZipFile(ai.sourceDir);
-            ZipEntry ze = zf.getEntry("classes.dex");
-            long time = ze.getTime();
-            buildDate = dateFormat.format(new Date(time));
-            zf.close();
-        } catch (Exception e) {
-            buildDate = "Unknown";
-        }
-        return buildDate;
-    }
-
     public static String getDeviceModelName() {
         String manufacturer = Build.MANUFACTURER;
         String model = Build.MODEL;
@@ -205,25 +171,11 @@ public class Utils {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 
         String res = "Build version: " + BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ") \n";
-        res += "Build date: " + Utils.getBuildDateAsString(context, dateFormat) + " \n";
         res += "Current date: " + dateFormat.format(new Date()) + " \n";
         res += "Device: " + Utils.getDeviceModelName() + " \n";
         res += "Android version: " + Build.VERSION.RELEASE + " \n";
         res += "VNDB username: " + SettingsManager.getUsername(context) + " \n \n";
         return res;
-    }
-
-    public static void sendEmail(final Context context, final String title, final String body) {
-        new Thread() {
-            @Override
-            public void run() {
-                MailService mailer = new MailService(Mail.getInfo(context).getUsername(), Mail.getInfo(context).getTo(), title, body, null);
-                try {
-                    mailer.sendAuthenticated();
-                } catch (Exception e) {
-                }
-            }
-        }.start();
     }
 
     public static void tintImage(Context context, ImageView imageView, int res, boolean attribute) {
@@ -252,5 +204,10 @@ public class Utils {
         DisplayMetrics displaymetrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         return displaymetrics.widthPixels;
+    }
+
+    public static void processException(Exception exception) {
+        if (BuildConfig.DEBUG) exception.printStackTrace();
+        else Crashlytics.logException(exception);
     }
 }

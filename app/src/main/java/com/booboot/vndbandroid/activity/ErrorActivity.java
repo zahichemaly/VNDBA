@@ -30,21 +30,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.booboot.vndbandroid.bean.vndbandroid.Theme;
+import com.booboot.vndbandroid.model.vndbandroid.Theme;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.SettingsManager;
-import com.booboot.vndbandroid.util.Utils;
-
-import java.util.Date;
 
 import cat.ereza.customactivityoncrash.CustomActivityOnCrash;
 import cat.ereza.customactivityoncrash.R;
 
 public final class ErrorActivity extends AppCompatActivity {
-    private String fullErrorMessage;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,9 +54,6 @@ public final class ErrorActivity extends AppCompatActivity {
 
         final Class<? extends Activity> restartActivityClass = CustomActivityOnCrash.getRestartActivityClassFromIntent(getIntent());
         final CustomActivityOnCrash.EventListener eventListener = CustomActivityOnCrash.getEventListenerFromIntent(getIntent());
-        fullErrorMessage = CustomActivityOnCrash.getAllErrorDetailsFromIntent(ErrorActivity.this, getIntent());
-        fullErrorMessage = addErrorInfo("Android version: " + Build.VERSION.RELEASE);
-        fullErrorMessage = addErrorInfo("VNDB username: " + SettingsManager.getUsername(this));
 
         if (restartActivityClass != null) {
             restartButton.setText(R.string.customactivityoncrash_error_activity_restart_app);
@@ -92,7 +83,7 @@ public final class ErrorActivity extends AppCompatActivity {
                     //We retrieve all the error data and show it
                     AlertDialog dialog = new AlertDialog.Builder(ErrorActivity.this)
                             .setTitle(R.string.customactivityoncrash_error_activity_error_details_title)
-                            .setMessage(fullErrorMessage)
+                            .setMessage(CustomActivityOnCrash.getAllErrorDetailsFromIntent(ErrorActivity.this, getIntent()))
                             .setPositiveButton(R.string.customactivityoncrash_error_activity_error_details_close, null)
                             .setNeutralButton(R.string.customactivityoncrash_error_activity_error_details_copy,
                                     new DialogInterface.OnClickListener() {
@@ -121,13 +112,6 @@ public final class ErrorActivity extends AppCompatActivity {
             //noinspection deprecation
             errorImageView.setImageDrawable(getResources().getDrawable(defaultErrorActivityDrawableId));
         }
-
-        Utils.sendEmail(this, "[VNDB Android] Bug @ " + new Date().toString(), fullErrorMessage);
-    }
-
-    private String addErrorInfo(String s) {
-        int insertPosition = fullErrorMessage.indexOf("Stack trace") - 2;
-        return new StringBuilder(fullErrorMessage).insert(insertPosition, s + "\n").toString();
     }
 
     private void copyErrorToClipboard() {

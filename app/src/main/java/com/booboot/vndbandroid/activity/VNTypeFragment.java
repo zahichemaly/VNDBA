@@ -12,10 +12,10 @@ import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.adapter.vncards.RecyclerItemClickListener;
 import com.booboot.vndbandroid.adapter.vncards.VNCardsListView;
 import com.booboot.vndbandroid.api.Cache;
-import com.booboot.vndbandroid.bean.vndbandroid.ListType;
-import com.booboot.vndbandroid.bean.vndbandroid.VNlistItem;
-import com.booboot.vndbandroid.bean.vndbandroid.VotelistItem;
-import com.booboot.vndbandroid.bean.vndbandroid.WishlistItem;
+import com.booboot.vndbandroid.model.vndbandroid.ListType;
+import com.booboot.vndbandroid.model.vndbandroid.VNlistItem;
+import com.booboot.vndbandroid.model.vndbandroid.VotelistItem;
+import com.booboot.vndbandroid.model.vndbandroid.WishlistItem;
 import com.booboot.vndbandroid.factory.FastScrollerFactory;
 import com.booboot.vndbandroid.factory.VNCardFactory;
 import com.booboot.vndbandroid.util.Callback;
@@ -123,8 +123,10 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
         Cache.loadData(getActivity(), new Callback() {
             @Override
             protected void config() {
-                if (Cache.shouldRefreshView && MainActivity.instance != null && !MainActivity.instance.isDestroyed()) {
-                    MainActivity.instance.refreshVnlistFragment();
+                if (Cache.shouldRefreshView) {
+                    if (getActivity() instanceof MainActivity && !getActivity().isDestroyed()) {
+                        ((MainActivity) getActivity()).refreshVnlistFragment();
+                    }
                 }
                 refreshLayout.setRefreshing(false);
             }

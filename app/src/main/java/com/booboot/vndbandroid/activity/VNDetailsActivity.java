@@ -9,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -47,19 +46,19 @@ import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.DB;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.VNStatServer;
-import com.booboot.vndbandroid.bean.vndb.Item;
-import com.booboot.vndbandroid.bean.vndb.Links;
-import com.booboot.vndbandroid.bean.vndb.Options;
-import com.booboot.vndbandroid.bean.vndbandroid.Priority;
-import com.booboot.vndbandroid.bean.vndbandroid.Status;
-import com.booboot.vndbandroid.bean.vndbandroid.Theme;
-import com.booboot.vndbandroid.bean.vndbandroid.VNlistItem;
-import com.booboot.vndbandroid.bean.vndbandroid.Vote;
-import com.booboot.vndbandroid.bean.vndbandroid.VotelistItem;
-import com.booboot.vndbandroid.bean.vndbandroid.WishlistItem;
-import com.booboot.vndbandroid.bean.vnstat.SimilarNovel;
 import com.booboot.vndbandroid.factory.PopupMenuFactory;
 import com.booboot.vndbandroid.factory.VNDetailsFactory;
+import com.booboot.vndbandroid.model.vndb.Item;
+import com.booboot.vndbandroid.model.vndb.Links;
+import com.booboot.vndbandroid.model.vndb.Options;
+import com.booboot.vndbandroid.model.vndbandroid.Priority;
+import com.booboot.vndbandroid.model.vndbandroid.Status;
+import com.booboot.vndbandroid.model.vndbandroid.Theme;
+import com.booboot.vndbandroid.model.vndbandroid.VNlistItem;
+import com.booboot.vndbandroid.model.vndbandroid.Vote;
+import com.booboot.vndbandroid.model.vndbandroid.VotelistItem;
+import com.booboot.vndbandroid.model.vndbandroid.WishlistItem;
+import com.booboot.vndbandroid.model.vnstat.SimilarNovel;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.Lightbox;
 import com.booboot.vndbandroid.util.SettingsManager;
@@ -67,10 +66,7 @@ import com.booboot.vndbandroid.util.Utils;
 import com.booboot.vndbandroid.util.image.BitmapTransformation;
 import com.booboot.vndbandroid.util.image.BlurIfDemoTransform;
 import com.booboot.vndbandroid.util.image.Pixels;
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.appindexing.Thing;
-import com.google.android.gms.common.api.GoogleApiClient;
+import com.crashlytics.android.Crashlytics;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -108,7 +104,6 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
     private TextView notesTextView;
     private ImageButton notesEditButton;
 
-    private VNDetailsListener listener;
     private ExpandableListView expandableListView;
     private ExpandableListAdapter expandableListAdapter;
 
@@ -123,30 +118,60 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
     private VNDetailsElement tagsSubmenu;
     private VNDetailsElement genresSubmenu;
     private VNDetailsElement screensSubmenu;
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTheme(Theme.THEMES.get(SettingsManager.getTheme(this)).getStyle());
-        setContentView(R.layout.vn_details);
+        Cache.loadFromCache(this);
 
-        vn = Cache.vns.get(getIntent().getIntExtra(VNTypeFragment.VN_ARG, -1));
+        int id = getIntent().getIntExtra(VNTypeFragment.VN_ARG, -1);
+        Crashlytics.setInt("LAST VN VISITED", id);
+        vn = Cache.vns.get(id);
 
         if (savedInstanceState != null) {
             spoilerLevel = savedInstanceState.getInt("SPOILER_LEVEL");
             nsfwLevel = savedInstanceState.getInt("NSFW_LEVEL");
-            if (vn == null)
-                vn = Cache.vns.get(savedInstanceState.getInt(VNTypeFragment.VN_ARG));
+            if (vn == null) {
+                if (id < 0) id = savedInstanceState.getInt(VNTypeFragment.VN_ARG);
+                vn = Cache.vns.get(id);
+            }
         }
-        assert vn != null;
+
+        if (vn == null) { // #97
+            VNDBServer.get("vn", Cache.VN_FLAGS, "(id = " + id + ")", Options.create(false, 1), 0, this, new Callback() {
+                @Override
+                protected void config() {
+                    if (!results.getItems().isEmpty()) {
+                        vn = results.getItems().get(0);
+                        Cache.vns.put(vn.getId(), vn);
+                        // #97 : we have to recreate the activity here, instead of just calling init(), because since we're in callback, we're no longer in onCreate()
+                        // so we cannot setTheme() anymore. Therefore, we can no longer remove R.style.SplashScreen (which is still very useful to show that the app is loading,
+                        // instead of showing a blank activity until this callback is called). So it's more seamless to the user to recreate() (although very slightly slower).
+                        recreate();
+                    }
+                }
+            }, new Callback() {
+                @Override
+                protected void config() {
+                    Callback.showToast(VNDetailsActivity.this, message);
+                    finish();
+                }
+            });
+        } else {
+            init();
+        }
+    }
+
+    private void init() {
+        setTheme(Theme.THEMES.get(SettingsManager.getTheme(this)).getStyle());
+        setContentView(R.layout.vn_details);
+
+        vnlistVn = Cache.vnlist.get(vn.getId());
+        wishlistVn = Cache.wishlist.get(vn.getId());
+        votelistVn = Cache.votelist.get(vn.getId());
 
         if (spoilerLevel < 0) {
-            if (SettingsManager.getSpoilerCompleted(this) && vn.getStatus() == Status.FINISHED)
+            if (vnlistVn != null && vnlistVn.getStatus() == Status.FINISHED && SettingsManager.getSpoilerCompleted(this))
                 spoilerLevel = 2;
             else
                 spoilerLevel = SettingsManager.getSpoilerLevel(this);
@@ -154,15 +179,6 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         if (nsfwLevel < 0) {
             nsfwLevel = SettingsManager.getNSFW(this) ? 1 : 0;
         }
-
-        init();
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
-    }
-
-    private void init() {
-        vnlistVn = Cache.vnlist.get(vn.getId());
-        wishlistVn = Cache.wishlist.get(vn.getId());
-        votelistVn = Cache.votelist.get(vn.getId());
 
         if (Cache.characters.get(vn.getId()) != null) {
             characters = Cache.characters.get(vn.getId());
@@ -179,7 +195,6 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         notesTextView.setHintTextColor(Utils.getTextColorFromBackground(this, R.color.secondaryText, R.color.light_gray, isNsfw()));
         notesTextView.setTextColor(Utils.getTextColorFromBackground(this, R.color.primaryText, R.color.white, isNsfw()));
         notesTextView.setText(vnlistVn != null ? vnlistVn.getNotes() : "");
-        listener = new VNDetailsListener(this, vn, notesTextView);
 
         notesEditButton = (ImageButton) findViewById(R.id.notesEditButton);
         notesEditButton.setColorFilter(Utils.getThemeColor(this, R.attr.colorPrimary), PorterDuff.Mode.SRC_ATOP);
@@ -207,6 +222,8 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                         input.setMaxHeight(Pixels.px(200, VNDetailsActivity.this));
                         params.addView(input, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                         builder.setView(params);
+                        VNDetailsListener listener = new VNDetailsListener(VNDetailsActivity.this, vn);
+                        listener.setNotesTextView(notesTextView);
                         listener.setNotesInput(input);
                         listener.setPopupButton(statusButton);
                         builder.setPositiveButton("Save", listener);
@@ -671,8 +688,10 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         PopupMenu popup = new PopupMenu(this, v);
         MenuInflater inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.status, popup.getMenu());
-        popup.setOnMenuItemClickListener(listener);
+        VNDetailsListener listener = new VNDetailsListener(VNDetailsActivity.this, vn);
+        listener.setNotesTextView(notesTextView);
         listener.setPopupButton(statusButton);
+        popup.setOnMenuItemClickListener(listener);
         popup.show();
     }
 
@@ -680,8 +699,10 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         PopupMenu popup = new PopupMenu(this, v);
         MenuInflater inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.wishlist, popup.getMenu());
-        popup.setOnMenuItemClickListener(listener);
+        VNDetailsListener listener = new VNDetailsListener(VNDetailsActivity.this, vn);
+        listener.setNotesTextView(notesTextView);
         listener.setPopupButton(wishlistButton);
+        popup.setOnMenuItemClickListener(listener);
         popup.show();
     }
 
@@ -689,8 +710,10 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         PopupMenu popup = new PopupMenu(this, v);
         MenuInflater inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.votes, popup.getMenu());
-        popup.setOnMenuItemClickListener(listener);
+        VNDetailsListener listener = new VNDetailsListener(VNDetailsActivity.this, vn);
+        listener.setNotesTextView(notesTextView);
         listener.setPopupButton(votesButton);
+        popup.setOnMenuItemClickListener(listener);
         popup.show();
     }
 
@@ -733,6 +756,8 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                         RadioButton itemSpoil1 = (RadioButton) content.findViewById(R.id.item_spoil_1);
                         RadioButton itemSpoil2 = (RadioButton) content.findViewById(R.id.item_spoil_2);
                         CheckBox checkNsfw = (CheckBox) content.findViewById(R.id.check_nsfw);
+
+                        VNDetailsListener listener = new VNDetailsListener(VNDetailsActivity.this, vn);
                         itemSpoil0.setOnClickListener(listener);
                         itemSpoil1.setOnClickListener(listener);
                         itemSpoil2.setOnClickListener(listener);
@@ -932,25 +957,6 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         this.similarNovels = similarNovels;
     }
 
-    public Action getIndexApiAction() {
-        Thing object = new Thing.Builder()
-                .setName("VN Details Page")
-                .setUrl(Uri.parse(Links.VNDB))
-                .build();
-        return new Action.Builder(Action.TYPE_VIEW)
-                .setObject(object)
-                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
-                .build();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        client.connect();
-        AppIndex.AppIndexApi.start(client, getIndexApiAction());
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -958,13 +964,5 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
             finish();
             overridePendingTransition(R.anim.slide_back_in, R.anim.slide_back_out);
         }
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        AppIndex.AppIndexApi.end(client, getIndexApiAction());
-        client.disconnect();
     }
 }

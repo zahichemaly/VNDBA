@@ -16,8 +16,9 @@ import com.booboot.vndbandroid.adapter.vncards.RecyclerItemClickListener;
 import com.booboot.vndbandroid.adapter.vncards.VNCardsListView;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.VNDBServer;
-import com.booboot.vndbandroid.bean.vndb.Item;
-import com.booboot.vndbandroid.bean.vndb.Options;
+import com.booboot.vndbandroid.model.vndb.Item;
+import com.booboot.vndbandroid.model.vndb.Options;
+import com.booboot.vndbandroid.model.vndbandroid.ProgressiveResultLoaderOptions;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.Utils;
 
@@ -35,10 +36,10 @@ public class ProgressiveResultLoader implements SwipeRefreshLayout.OnRefreshList
     private SwipeRefreshLayout refreshLayout;
 
     private int currentPage = 1;
-    private String filters;
-    private Options options;
     private boolean moreResults;
 
+    private String filters;
+    private Options options;
     private boolean showFullDate;
     private boolean showRank;
     private boolean showRating;
@@ -135,14 +136,11 @@ public class ProgressiveResultLoader implements SwipeRefreshLayout.OnRefreshList
         });
     }
 
-    public void initFromExisting() {
-        List<Card> cards = new ArrayList<>();
-        for (int i = 0; i < materialListView.getAdapter().getItemCount(); i++) {
-            cards.add(materialListView.getAdapter().getCard(i));
-        }
-
+    public void initFromExisting(ProgressiveResultLoaderOptions options) {
         init();
-        for (Card card : cards) {
+        currentPage = options.getCurrentPage();
+        moreResults = options.isMoreResults();
+        for (Card card : options.getCards()) {
             if (card == null) continue;
             int vnId = card.getVnId();
             Item vn = Cache.vns.get(vnId);
@@ -154,6 +152,14 @@ public class ProgressiveResultLoader implements SwipeRefreshLayout.OnRefreshList
     public void onRefresh() {
         currentPage = 1;
         loadResults(true);
+    }
+
+    public List<Card> getCards() {
+        List<Card> cards = new ArrayList<>();
+        for (int i = 0; i < materialListView.getAdapter().getItemCount(); i++) {
+            cards.add(materialListView.getAdapter().getCard(i));
+        }
+        return cards;
     }
 
     public void setFilters(String filters) {
@@ -206,5 +212,13 @@ public class ProgressiveResultLoader implements SwipeRefreshLayout.OnRefreshList
 
     public void setShowVoteCount(boolean showVoteCount) {
         this.showVoteCount = showVoteCount;
+    }
+
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public boolean isMoreResults() {
+        return moreResults;
     }
 }

@@ -3,7 +3,7 @@ package com.booboot.vndbandroid.factory;
 import android.text.TextUtils;
 
 import com.booboot.vndbandroid.adapter.doublelist.DoubleListElement;
-import com.booboot.vndbandroid.bean.vndb.Tag;
+import com.booboot.vndbandroid.model.vndb.Tag;
 
 import java.util.ArrayList;
 import java.util.List;

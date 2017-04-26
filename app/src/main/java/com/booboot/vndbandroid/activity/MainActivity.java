@@ -37,34 +37,35 @@ import com.booboot.vndbandroid.activity.ranking.RankingPopularFragment;
 import com.booboot.vndbandroid.activity.ranking.RankingTopFragment;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.VNDBServer;
-import com.booboot.vndbandroid.bean.vndbandroid.ListType;
-import com.booboot.vndbandroid.bean.vndbandroid.Theme;
+import com.booboot.vndbandroid.model.vndbandroid.ListType;
+import com.booboot.vndbandroid.model.vndbandroid.Theme;
 import com.booboot.vndbandroid.util.ConnectionReceiver;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
 import com.booboot.vndbandroid.util.image.BlurIfDemoTransform;
 import com.booboot.vndbandroid.util.image.Pixels;
+import com.crashlytics.android.Crashlytics;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    public static MainActivity instance;
     public static boolean mainActivityExists = false;
+    public static boolean shouldRefresh = false;
     private SearchView searchView;
     private List<VNTypeFragment> activeFragments = new ArrayList<>();
     private Fragment directSubfragment;
-    public static int selectedItem;
+    public int selectedItem;
     private NavigationView navigationView;
     private ConnectionReceiver connectionReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Cache.loadFromCache(this);
         setTheme(Theme.THEMES.get(SettingsManager.getTheme(this)).getNoActionBarStyle());
         setContentView(R.layout.activity_main);
-        instance = this;
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -106,14 +107,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             });
         }
 
-        if (selectedItem > 0) {
-            /* When the screen rotates, MainActivity is recreated so we have to go to where we were before (correct menu item and page) ! */
-            int currentPage = VNListFragment.currentPage;
-            goToFragment(selectedItem);
-            VNListFragment.currentPage = currentPage;
-        } else {
-            navigationView.getMenu().getItem(0).setChecked(true);
-            onNavigationItemSelected(navigationView.getMenu().getItem(0));
+        if (savedInstanceState != null) {
+            selectedItem = savedInstanceState.getInt("SELECTED_ITEM");
+        }
+
+        Fragment oldFragment = getFragmentManager().findFragmentByTag("FRAGMENT");
+
+        if (oldFragment == null) {
+            if (selectedItem > 0) {
+                /* When the screen rotates, MainActivity is recreated so we have to go to where we were before (correct menu item and page) ! */
+                int currentPage = VNListFragment.currentPage;
+                goToFragment(selectedItem);
+                VNListFragment.currentPage = currentPage;
+            } else {
+                navigationView.getMenu().getItem(0).setChecked(true);
+                onNavigationItemSelected(navigationView.getMenu().getItem(0));
+            }
         }
 
         updateMenuCounters();
@@ -167,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         int searchIconId = searchView.getContext().getResources().getIdentifier("android:id/search_button", null, null);
         ImageView searchIcon = (ImageView) searchView.findViewById(searchIconId);
-        searchIcon.setImageResource(R.drawable.ic_action_filter);
+        searchIcon.setImageResource(R.drawable.ic_filter_list_white_24dp);
 
         return true;
     }
@@ -193,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         SettingsManager.setReverseSort(MainActivity.this, reverseCheckbox.isChecked());
                         SettingsManager.setSort(MainActivity.this, which);
                         Cache.sortAll(MainActivity.this);
-                        goToFragment(MainActivity.selectedItem);
+                        goToFragment(selectedItem);
                         dialog.dismiss();
                     }
                 });
@@ -271,16 +280,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Cache.clearCache(this);
         SettingsManager.setUserId(this, -1);
 
-        RankingMostVotedFragment.progressiveResultLoader = null;
-        RankingNewlyAddedFragment.progressiveResultLoader = null;
-        RankingNewlyReleasedFragment.progressiveResultLoader = null;
-        RankingPopularFragment.progressiveResultLoader = null;
-        RankingTopFragment.progressiveResultLoader = null;
+        RankingMostVotedFragment.options = null;
+        RankingNewlyAddedFragment.options = null;
+        RankingNewlyReleasedFragment.options = null;
+        RankingPopularFragment.options = null;
+        RankingTopFragment.options = null;
         RecommendationsFragment.recommendations = null;
+        LoginActivity.autologin = false;
 
         startActivity(new Intent(this, LoginActivity.class));
         selectedItem = 0;
-        instance = null;
         finish();
         return true;
     }
@@ -319,10 +328,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    private void addInfoToCrashlytics() {
+        Crashlytics.setInt("VNS SIZE", Cache.vns.size());
+        Crashlytics.setInt("VNLIST SIZE", Cache.vnlist.size());
+        Crashlytics.setInt("VOTELIST SIZE", Cache.votelist.size());
+        Crashlytics.setInt("WISHLIST SIZE", Cache.wishlist.size());
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
         VNDetailsActivity.goBackToVnlist = false;
+        addInfoToCrashlytics();
+        if (shouldRefresh) refreshVnlistFragment();
+        shouldRefresh = false;
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt("SELECTED_ITEM", selectedItem);
+        super.onSaveInstanceState(outState);
     }
 
     @Override

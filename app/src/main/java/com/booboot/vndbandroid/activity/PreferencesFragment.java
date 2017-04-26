@@ -7,9 +7,12 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.booboot.vndbandroid.R;
-import com.booboot.vndbandroid.bean.vndbandroid.Theme;
+import com.booboot.vndbandroid.model.vndbandroid.Theme;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
 
@@ -32,6 +35,13 @@ public class PreferencesFragment extends PreferenceFragment implements Preferenc
         bindPreferenceSummaryToValue(findPreference(getActivity().getString(R.string.pref_key_nsfw)));
         bindPreferenceSummaryToValue(findPreference(getActivity().getString(R.string.pref_key_browser)));
         bindPreferenceSummaryToValue(findPreference(getActivity().getString(R.string.pref_key_cover_background)));
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        view.setBackgroundColor(getResources().getColor(android.R.color.white));
+        return view;
     }
 
     /**

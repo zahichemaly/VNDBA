@@ -7,17 +7,17 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 
-import com.booboot.vndbandroid.bean.vndb.Anime;
-import com.booboot.vndbandroid.bean.vndb.Item;
-import com.booboot.vndbandroid.bean.vndb.Links;
-import com.booboot.vndbandroid.bean.vndb.Media;
-import com.booboot.vndbandroid.bean.vndb.Producer;
-import com.booboot.vndbandroid.bean.vndb.Relation;
-import com.booboot.vndbandroid.bean.vndb.Screen;
-import com.booboot.vndbandroid.bean.vndbandroid.VNlistItem;
-import com.booboot.vndbandroid.bean.vndbandroid.VotelistItem;
-import com.booboot.vndbandroid.bean.vndbandroid.WishlistItem;
-import com.booboot.vndbandroid.bean.vnstat.SimilarNovel;
+import com.booboot.vndbandroid.model.vndb.Anime;
+import com.booboot.vndbandroid.model.vndb.Item;
+import com.booboot.vndbandroid.model.vndb.Links;
+import com.booboot.vndbandroid.model.vndb.Media;
+import com.booboot.vndbandroid.model.vndb.Producer;
+import com.booboot.vndbandroid.model.vndb.Relation;
+import com.booboot.vndbandroid.model.vndb.Screen;
+import com.booboot.vndbandroid.model.vndbandroid.VNlistItem;
+import com.booboot.vndbandroid.model.vndbandroid.VotelistItem;
+import com.booboot.vndbandroid.model.vndbandroid.WishlistItem;
+import com.booboot.vndbandroid.model.vnstat.SimilarNovel;
 import com.booboot.vndbandroid.util.JSON;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -441,6 +441,58 @@ public class DB extends SQLiteOpenHelper {
             query.setLength(query.length() - 1);
             db.execSQL(query.toString());
         }
+
+        if (endTransaction) {
+            db.setTransactionSuccessful();
+            db.endTransaction();
+        }
+    }
+
+    public static void deleteVnlist(Context context, int vnId) {
+      deleteVnlist(context, vnId, true, true);
+    }
+
+    public static void deleteVnlist(Context context, int vnId, boolean beginTransaction, boolean endTransaction) {
+        if (instance == null) instance = new DB(context);
+        SQLiteDatabase db = instance.getWritableDatabase();
+        if (beginTransaction) db.beginTransaction();
+
+        db.execSQL("DELETE FROM " + TABLE_VNLIST + " WHERE vn = " + vnId);
+
+        if (endTransaction) {
+            db.setTransactionSuccessful();
+            db.endTransaction();
+        }
+    }
+
+    public static void deleteVotelist(Context context, int vnId) {
+        deleteVotelist(context, vnId, true, true);
+    }
+
+    public static void deleteVotelist(Context context, int vnId, boolean beginTransaction, boolean endTransaction) {
+        if (instance == null) instance = new DB(context);
+        SQLiteDatabase db = instance.getWritableDatabase();
+        if (beginTransaction) db.beginTransaction();
+
+        db.execSQL("DELETE FROM " + TABLE_VOTELIST + " WHERE vn = " + vnId);
+
+        if (endTransaction) {
+            db.setTransactionSuccessful();
+            db.endTransaction();
+        }
+    }
+
+    public static void deleteWishlist(Context context, int vnId) {
+        deleteWishlist(context, vnId, true, true);
+    }
+
+
+    public static void deleteWishlist(Context context, int vnId, boolean beginTransaction, boolean endTransaction) {
+        if (instance == null) instance = new DB(context);
+        SQLiteDatabase db = instance.getWritableDatabase();
+        if (beginTransaction) db.beginTransaction();
+
+        db.execSQL("DELETE FROM " + TABLE_WISHLIST + " WHERE vn = " + vnId);
 
         if (endTransaction) {
             db.setTransactionSuccessful();

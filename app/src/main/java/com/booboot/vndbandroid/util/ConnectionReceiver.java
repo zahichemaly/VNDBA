@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.util.Log;
 
 import com.booboot.vndbandroid.api.VNDBServer;
 
@@ -14,12 +13,13 @@ public class ConnectionReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        if (isInitialStickyBroadcast()) return;
         /* Resetting the sockets everytime the connection changes, to avoid dead sockets */
         VNDBServer.closeAll();
     }
 
-    public static boolean isConnected() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) VNDBApplication.applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+    public static boolean isConnected(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = null;
         if (connectivityManager != null) {
             networkInfo = connectivityManager.getActiveNetworkInfo();

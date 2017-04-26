@@ -24,9 +24,9 @@ import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.adapter.search.SearchOptionsAdapter;
 import com.booboot.vndbandroid.adapter.search.TagAutoCompleteView;
 import com.booboot.vndbandroid.adapter.search.TagFilteredArrayAdapter;
-import com.booboot.vndbandroid.bean.vndb.Options;
-import com.booboot.vndbandroid.bean.vndb.Tag;
-import com.booboot.vndbandroid.bean.vndbandroid.Theme;
+import com.booboot.vndbandroid.model.vndb.Options;
+import com.booboot.vndbandroid.model.vndb.Tag;
+import com.booboot.vndbandroid.model.vndbandroid.Theme;
 import com.booboot.vndbandroid.factory.ProgressiveResultLoader;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.JSON;
@@ -259,6 +259,7 @@ public class VNSearchActivity extends AppCompatActivity {
                 filters.add("tags != " + JSON.mapper.writeValueAsString(excludeTags));
             }
         } catch (JsonProcessingException e) {
+            Utils.processException(e);
             Callback.showToast(VNSearchActivity.this, "An error occurred while creating your search. Please try again later.");
             return false;
         }

@@ -8,17 +8,18 @@ import android.text.TextUtils;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.VNDetailsActivity;
 import com.booboot.vndbandroid.activity.VNTypeFragment;
-import com.booboot.vndbandroid.bean.vndb.DbStats;
-import com.booboot.vndbandroid.bean.vndb.Item;
-import com.booboot.vndbandroid.bean.vndb.Options;
-import com.booboot.vndbandroid.bean.vndbandroid.CacheItem;
-import com.booboot.vndbandroid.bean.vndbandroid.VNlistItem;
-import com.booboot.vndbandroid.bean.vndbandroid.VotelistItem;
-import com.booboot.vndbandroid.bean.vndbandroid.WishlistItem;
-import com.booboot.vndbandroid.bean.vnstat.SimilarNovel;
+import com.booboot.vndbandroid.model.vndb.DbStats;
+import com.booboot.vndbandroid.model.vndb.Item;
+import com.booboot.vndbandroid.model.vndb.Options;
+import com.booboot.vndbandroid.model.vndbandroid.CacheItem;
+import com.booboot.vndbandroid.model.vndbandroid.VNlistItem;
+import com.booboot.vndbandroid.model.vndbandroid.VotelistItem;
+import com.booboot.vndbandroid.model.vndbandroid.WishlistItem;
+import com.booboot.vndbandroid.model.vnstat.SimilarNovel;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.JSON;
 import com.booboot.vndbandroid.util.SettingsManager;
+import com.booboot.vndbandroid.util.Utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -113,7 +114,8 @@ public class Cache {
 
                 try {
                     countDownLatch.await();
-                } catch (InterruptedException E) {
+                } catch (InterruptedException exception) {
+                    Utils.processException(exception);
                     errorCallback.message = "An unexpected error occurred while loading your lists. Please try again later.";
                     errorCallback.call();
                     return;
@@ -175,6 +177,7 @@ public class Cache {
                         DB.saveVotelist(context, false, false);
                         DB.saveWishlist(context, false, false);
                         DB.saveVNs(context, false, true);
+                        loadedFromCache = true;
 
                         shouldRefreshView = true;
                         successCallback.call();
@@ -280,7 +283,7 @@ public class Cache {
         openVNDetails(activity, vnId, null, null);
     }
 
-    public static void openVNDetails(final Activity activity, final int vnId, final Callback successCallback, Callback errorCallback) {
+    public static void openVNDetails(final Activity activity, final int vnId, final Callback successCallback, final Callback errorCallback) {
         if (Cache.vns.get(vnId) != null) {
             Intent intent = new Intent(activity, VNDetailsActivity.class);
             intent.putExtra(VNTypeFragment.VN_ARG, vnId);
@@ -310,7 +313,7 @@ public class Cache {
         try {
             JSON.mapper.writeValue(file, object);
         } catch (IOException e) {
-            e.printStackTrace();
+            Utils.processException(e);
         }
     }
 
@@ -333,7 +336,7 @@ public class Cache {
             try {
                 dbstats = JSON.mapper.readValue(dbstatsFile, DbStats.class);
             } catch (IOException e) {
-                e.printStackTrace();
+                Utils.processException(e);
             }
         }
     }

@@ -1,21 +1,12 @@
-# VNDB Android <a href="https://play.google.com/store/apps/details?id=com.booboot.vndbandroid"><img src="http://image.noelshack.com/fichiers/2016/18/1462457656-google-play-badge-250x8512.png" height="40"/></a>
+# VNDB Android <img src="http://image.noelshack.com/fichiers/2017/12/1490207039-web-hi-res-512.png" height="50" align="right"/><a href="https://play.google.com/store/apps/details?id=com.booboot.vndbandroid"><img src="http://image.noelshack.com/fichiers/2017/12/1490206761-google-play-badge.png" height="50" align="right"/></a>
 
-This project is an open-source Android client for the Visual Novel Database (VNDB - https://vndb.org/). The purpose of this app is to relate information on visual novels and enable you to keep track and mark the visual novels you played. You'll need a VNDB account to use this app.
+This project is an open-source Android client for the Visual Novel Database (VNDB - https://vndb.org/). The purpose of this app is to relate information on visual novels and enable you to keep track of and mark the visual novels you played. You'll need a VNDB.org account to use this app.
 
 ### Features
-- View your visual novel list, votelist and wishlist organized by tabs.
+- Your visual novel list, votelist and wishlist organized by tabs.
 - Filter your lists by name.
-- Sort your lists by:
-  - ID
-  - Title
-  - Release date
-  - Length
-  - Popularity
-  - Rating
-  - Status
-  - Vote
-  - Wish
-- View all information about a VN on a single page:
+- Sort your lists (by ID, title, release date, length, popularity, rating, status, vote or priority).
+- All information about a VN on a single page:
   - General information (title, released date, length...)
   - Description
   - Genres
@@ -30,13 +21,13 @@ This project is an open-source Android client for the Visual Novel Database (VND
   - Platforms
   - Languages
 - Add or modify a VN in your visual novel list, votelist or wishlist.
-- Add personal notes to a VN
+- Add personal notes to a VN.
 - Search through all existing VNs with a smart search. Search by tags.
 - Enable or disable NSFW content.
 - Define a default spoiler level and a spoiler level for each VN.
-- View rankings (best voted, most popular, most voted, newly released...)
-- View personal recommendations based on your lists.
-- View VNDB.org database statistics.
+- Rankings (best voted, most popular, most voted, newly released...)
+- Personal recommendations based on your lists.
+- VNDB.org database statistics.
 - Change the appearance of your app through a selection of 21 different themes.
 
 ### Compatibility
