@@ -45,6 +45,11 @@ public class ProgressiveResultLoader implements SwipeRefreshLayout.OnRefreshList
     private boolean showRating;
     private boolean showPopularity;
     private boolean showVoteCount;
+    private ProgressiveResultLoaderCallback callback;
+
+    public interface ProgressiveResultLoaderCallback {
+        void onResultsLoaded();
+    }
 
     public void init() {
         progressBar = (ProgressBar) (rootView == null ? activity.findViewById(R.id.progressBar) : rootView.findViewById(R.id.progressBar));
@@ -123,6 +128,8 @@ public class ProgressiveResultLoader implements SwipeRefreshLayout.OnRefreshList
                 /* Scrolling to top only when we fetch the first results page and if there are results (otherwise the scroll is messed up) */
                 if (currentPage == 1 && results.getItems().size() > 0)
                     materialListView.scrollToPosition(0);
+
+                if (callback != null) callback.onResultsLoaded();
                 progressBar.setVisibility(View.INVISIBLE);
                 refreshLayout.setRefreshing(false);
             }
@@ -220,5 +227,9 @@ public class ProgressiveResultLoader implements SwipeRefreshLayout.OnRefreshList
 
     public boolean isMoreResults() {
         return moreResults;
+    }
+
+    public void setCallback(ProgressiveResultLoaderCallback callback) {
+        this.callback = callback;
     }
 }

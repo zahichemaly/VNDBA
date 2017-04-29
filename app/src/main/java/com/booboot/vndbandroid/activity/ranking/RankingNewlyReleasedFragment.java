@@ -33,8 +33,15 @@ public class RankingNewlyReleasedFragment extends Fragment {
         progressiveResultLoader.setShowRank(true);
         String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.US).format(new Date());
         progressiveResultLoader.setFilters("(released <= \"" + currentDate + "\")");
+        progressiveResultLoader.setCallback(new ProgressiveResultLoader.ProgressiveResultLoaderCallback() {
+            @Override
+            public void onResultsLoaded() {
+                options = ProgressiveResultLoaderOptions.build(progressiveResultLoader);
+            }
+        });
 
-        if (options == null) {
+        if (options == null || !options.isComplete()) {
+            options = null;
             progressiveResultLoader.init();
             progressiveResultLoader.loadResults(true);
         } else {
@@ -42,11 +49,5 @@ public class RankingNewlyReleasedFragment extends Fragment {
         }
 
         return rootView;
-    }
-
-    @Override
-    public void onDestroyView() {
-        options = ProgressiveResultLoaderOptions.build(progressiveResultLoader);
-        super.onDestroyView();
     }
 }

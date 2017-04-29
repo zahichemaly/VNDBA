@@ -1,13 +1,11 @@
 package com.booboot.vndbandroid.model.vndbandroid;
 
 import com.booboot.vndbandroid.adapter.vncards.Card;
+import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.factory.ProgressiveResultLoader;
+import com.booboot.vndbandroid.model.vndb.Item;
 
 import java.util.List;
-
-/**
- * Created by od on 15/03/2017.
- */
 
 public class ProgressiveResultLoaderOptions {
     private List<Card> cards;
@@ -22,6 +20,17 @@ public class ProgressiveResultLoaderOptions {
         options.currentPage = progressiveResultLoader.getCurrentPage();
         options.moreResults = progressiveResultLoader.isMoreResults();
         return options;
+    }
+
+    public boolean isComplete() {
+        if (cards == null || cards.isEmpty()) return false;
+        for (Card card : cards) {
+            if (card == null) continue;
+            int vnId = card.getVnId();
+            Item vn = Cache.vns.get(vnId);
+            if (vn == null) return false;
+        }
+        return true;
     }
 
     public List<Card> getCards() {
