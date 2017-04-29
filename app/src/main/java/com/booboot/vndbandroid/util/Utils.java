@@ -27,7 +27,6 @@ import android.widget.TextView;
 import com.booboot.vndbandroid.BuildConfig;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.EmptyActivity;
-import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.util.image.Pixels;
 import com.crashlytics.android.Crashlytics;
 
@@ -189,6 +188,7 @@ public class Utils {
     }
 
     public static String convertLink(Context context, String bbcodeLink) {
+        if (bbcodeLink == null) return "";
         return bbcodeLink.replaceAll("\\[url=(.*?)\\](.*?)\\[/url\\]", "<a href=\"" + context.getPackageName() + "://$1\">$2</a>");
     }
 
