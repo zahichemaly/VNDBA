@@ -22,8 +22,8 @@ android {
         applicationId "com.booboot.vndbandroid"
         minSdkVersion 17
         targetSdkVersion 25
-        versionCode 31
-        versionName "2.2.0"
+        versionCode 32
+        versionName "2.2.1"
 
         renderscriptTargetApi 19
         renderscriptSupportModeEnabled true
