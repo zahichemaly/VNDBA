@@ -29,6 +29,7 @@ import com.booboot.vndbandroid.model.vndbandroid.VotelistItem;
 import com.booboot.vndbandroid.model.vndbandroid.WishlistItem;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.ConnectionReceiver;
+import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
 
 import java.util.Date;
@@ -211,6 +212,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
 
                         DB.saveVnlist(activity, true, false);
                         DB.saveVNs(activity, false, true);
+                        SettingsManager.setEmptyAccount(activity, false);
                         break;
 
                     case R.id.item_finished:
@@ -226,6 +228,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
 
                         DB.saveVnlist(activity, true, false);
                         DB.saveVNs(activity, false, true);
+                        SettingsManager.setEmptyAccount(activity, false);
                         break;
 
                     case R.id.item_stalled:
@@ -241,6 +244,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
 
                         DB.saveVnlist(activity, true, false);
                         DB.saveVNs(activity, false, true);
+                        SettingsManager.setEmptyAccount(activity, false);
                         break;
 
                     case R.id.item_dropped:
@@ -256,6 +260,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
 
                         DB.saveVnlist(activity, true, false);
                         DB.saveVNs(activity, false, true);
+                        SettingsManager.setEmptyAccount(activity, false);
                         break;
 
                     case R.id.item_unknown:
@@ -271,6 +276,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
 
                         DB.saveVnlist(activity, true, false);
                         DB.saveVNs(activity, false, true);
+                        SettingsManager.setEmptyAccount(activity, false);
                         break;
 
                     case R.id.item_no_status:
@@ -279,6 +285,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
                         notesTextView.setText("");
 
                         DB.deleteVnlist(activity, vn.getId());
+                        SettingsManager.setEmptyAccount(activity, Cache.vnlist.isEmpty() && Cache.votelist.isEmpty() && Cache.wishlist.isEmpty());
                         break;
 
                     case R.id.item_high:
@@ -294,6 +301,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
 
                         DB.saveWishlist(activity, true, false);
                         DB.saveVNs(activity, false, true);
+                        SettingsManager.setEmptyAccount(activity, false);
                         break;
 
                     case R.id.item_medium:
@@ -309,6 +317,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
 
                         DB.saveWishlist(activity, true, false);
                         DB.saveVNs(activity, false, true);
+                        SettingsManager.setEmptyAccount(activity, false);
                         break;
 
                     case R.id.item_low:
@@ -324,6 +333,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
 
                         DB.saveWishlist(activity, true, false);
                         DB.saveVNs(activity, false, true);
+                        SettingsManager.setEmptyAccount(activity, false);
                         break;
 
                     case R.id.item_blacklist:
@@ -339,6 +349,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
 
                         DB.saveWishlist(activity, true, false);
                         DB.saveVNs(activity, false, true);
+                        SettingsManager.setEmptyAccount(activity, false);
                         break;
 
                     case R.id.item_no_wishlist:
@@ -346,6 +357,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
                         popupButton.setText(Priority.DEFAULT);
 
                         DB.deleteWishlist(activity, vn.getId());
+                        SettingsManager.setEmptyAccount(activity, Cache.vnlist.isEmpty() && Cache.votelist.isEmpty() && Cache.wishlist.isEmpty());
                         break;
 
                     case R.id.item_10:
@@ -372,6 +384,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
 
                         DB.saveVotelist(activity, true, false);
                         DB.saveVNs(activity, false, true);
+                        SettingsManager.setEmptyAccount(activity, false);
                         break;
 
                     case R.id.item_no_vote:
@@ -379,6 +392,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
                         popupButton.setText(Vote.DEFAULT);
 
                         DB.deleteVotelist(activity, vn.getId());
+                        SettingsManager.setEmptyAccount(activity, Cache.vnlist.isEmpty() && Cache.votelist.isEmpty() && Cache.wishlist.isEmpty());
                         break;
 
                     default:

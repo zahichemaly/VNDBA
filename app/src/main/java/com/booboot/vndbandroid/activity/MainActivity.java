@@ -287,6 +287,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         RankingTopFragment.options = null;
         RecommendationsFragment.recommendations = null;
         LoginActivity.autologin = false;
+        SettingsManager.setEmptyAccount(this, false);
 
         startActivity(new Intent(this, LoginActivity.class));
         selectedItem = 0;

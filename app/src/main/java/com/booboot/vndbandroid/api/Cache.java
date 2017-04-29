@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.VNDetailsActivity;
@@ -318,15 +319,16 @@ public class Cache {
     }
 
     public static boolean loadFromCache(Context context) {
-        if (loadedFromCache) return true;
+        if (loadedFromCache || SettingsManager.isEmptyAccount(context)) return true;
 
         vnlist = DB.loadVnlist(context);
         votelist = DB.loadVotelist(context);
         wishlist = DB.loadWishlist(context);
-        vns = DB.loadVns(context);
+        vns.putAll(DB.loadVns(context));
 
         sortAll(context);
         loadedFromCache = vnlist.size() > 0 || votelist.size() > 0 || wishlist.size() > 0;
+
         return loadedFromCache;
     }
 

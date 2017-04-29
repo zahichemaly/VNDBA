@@ -87,9 +87,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void login() {
-        Cache.loadFromCache(this);
-
-        if (Cache.loadedFromCache) {
+        if (SettingsManager.isEmptyAccount(this) || Cache.loadFromCache(this)) {
             VNTypeFragment.refreshOnInit = true;
             addInfoToCrashlytics();
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
