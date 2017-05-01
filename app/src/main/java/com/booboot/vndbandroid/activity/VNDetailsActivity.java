@@ -323,10 +323,16 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                 if (view.getId() == R.id.list_item_text_layout) {
                     TextView itemLeftText = (TextView) view.findViewById(R.id.itemLeftText);
                     TextView itemRightText = (TextView) view.findViewById(R.id.itemRightText);
+                    String copiedText = "";
 
-                    String copiedText = itemLeftText.getText().toString();
-                    if (!itemRightText.getText().toString().isEmpty())
-                        copiedText += " : " + itemRightText.getText().toString();
+                    if (itemLeftText != null && itemLeftText.getText() != null) {
+                        copiedText = itemLeftText.getText().toString();
+                    }
+
+                    if (itemRightText != null && itemRightText.getText() != null && !itemRightText.getText().toString().isEmpty()) {
+                        if (!copiedText.isEmpty()) copiedText += " : ";
+                        copiedText += itemRightText.getText().toString();
+                    }
 
                     ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                     ClipData clip = ClipData.newPlainText("CLIPBOARD", copiedText);
