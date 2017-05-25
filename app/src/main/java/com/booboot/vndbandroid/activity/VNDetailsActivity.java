@@ -109,6 +109,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
 
     private VNDetailsElement informationSubmenu;
     private VNDetailsElement charactersSubmenu;
+    private VNDetailsElement staffSubmenu;
     private VNDetailsElement releasesSubmenu;
     private VNDetailsElement languagesSubmenu;
     private VNDetailsElement platformsSubmenu;
@@ -373,6 +374,11 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
             case VNDetailsFactory.TITLE_CHARACTERS:
                 alreadyInit = Cache.characters.get(vn.getId()) != null;
                 break;
+            case VNDetailsFactory.TITLE_STAFF:
+                alreadyInit = vn.getStaff() != null;
+                hasChildren = expandableListAdapter.getChildrenCount(groupPosition) > 0;
+                if (alreadyInit && !hasChildren) VNDetailsFactory.setStaffSubmenu(this);
+                break;
             case VNDetailsFactory.TITLE_INFORMATION:
                 alreadyInit = Cache.releases.get(vn.getId()) != null;
                 hasChildren = expandableListAdapter.getChildrenCount(groupPosition) > 0;
@@ -425,6 +431,10 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                             characters = DB.loadCharacters(VNDetailsActivity.this, vn.getId());
                             alreadyInDatabase = characters.size() > 0;
                             break;
+                        case VNDetailsFactory.TITLE_STAFF:
+                            vn.setStaff(DB.loadStaff(VNDetailsActivity.this, vn.getId()));
+                            alreadyInDatabase = true;
+                            break;
                         case VNDetailsFactory.TITLE_INFORMATION:
                         case VNDetailsFactory.TITLE_RELEASES:
                             releasesList = DB.loadReleases(VNDetailsActivity.this, vn.getId());
@@ -470,6 +480,10 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                                         Cache.characters.put(vn.getId(), characters);
                                         groupCharactersByRole();
                                         VNDetailsFactory.setCharactersSubmenu(VNDetailsActivity.this);
+                                        break;
+                                    case VNDetailsFactory.TITLE_STAFF:
+                                        Cache.vns.put(vn.getId(), vn);
+                                        VNDetailsFactory.setStaffSubmenu(VNDetailsActivity.this);
                                         break;
                                     case VNDetailsFactory.TITLE_INFORMATION:
                                         Cache.releases.put(vn.getId(), releasesList);
@@ -865,6 +879,14 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
 
     public void setCharactersSubmenu(VNDetailsElement characterElement) {
         this.charactersSubmenu = characterElement;
+    }
+
+    public VNDetailsElement getStaffSubmenu() {
+        return staffSubmenu;
+    }
+
+    public void setStaffSubmenu(VNDetailsElement staffSubmenu) {
+        this.staffSubmenu = staffSubmenu;
     }
 
     public VNDetailsElement getReleasesSubmenu() {

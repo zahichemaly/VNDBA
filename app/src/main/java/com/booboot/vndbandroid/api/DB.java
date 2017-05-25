@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.booboot.vndbandroid.model.vndb.Anime;
 import com.booboot.vndbandroid.model.vndb.Item;
@@ -14,6 +15,7 @@ import com.booboot.vndbandroid.model.vndb.Media;
 import com.booboot.vndbandroid.model.vndb.Producer;
 import com.booboot.vndbandroid.model.vndb.Relation;
 import com.booboot.vndbandroid.model.vndb.Screen;
+import com.booboot.vndbandroid.model.vndb.StaffSummary;
 import com.booboot.vndbandroid.model.vndbandroid.VNlistItem;
 import com.booboot.vndbandroid.model.vndbandroid.VotelistItem;
 import com.booboot.vndbandroid.model.vndbandroid.WishlistItem;
@@ -37,7 +39,7 @@ import java.util.Set;
 public class DB extends SQLiteOpenHelper {
     private static DB instance;
     private final static String NAME = "VNDB_ANDROID";
-    private final static int VERSION = 1;
+    private final static int VERSION = 2;
     private final static int SQLITE_LIMIT_COMPOUND_SELECT = 500;
 
     private final static String TABLE_VNLIST = "vnlist";
@@ -53,6 +55,8 @@ public class DB extends SQLiteOpenHelper {
     private final static String TABLE_SCREENS = "screens";
     private final static String TABLE_VN_CHARACTER = "vn_character";
     private final static String TABLE_CHARACTER = "character";
+    private final static String TABLE_VN_STAFF = "vn_staff";
+    private final static String TABLE_STAFF = "staff";
     private final static String TABLE_TRAITS = "traits";
     private final static String TABLE_VN_RELEASE = "vn_release";
     private final static String TABLE_RELEASE = "release";
@@ -70,6 +74,7 @@ public class DB extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        Log.e("D", "onCreate");
         db.execSQL("CREATE TABLE " + TABLE_VNLIST + " (" +
                 "vn INTEGER PRIMARY KEY, " +
                 "added INTEGER, " +
@@ -283,11 +288,29 @@ public class DB extends SQLiteOpenHelper {
         db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_RELEASE_MEDIA + "_release ON " + TABLE_RELEASE_MEDIA + "(release)");
         db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_RELEASE_PRODUCER + "_release ON " + TABLE_RELEASE_PRODUCER + "(release)");
         db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_SIMILAR_NOVELS + "_vn ON " + TABLE_SIMILAR_NOVELS + "(vn)");
+
+        onUpgrade(db, 1, VERSION);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        onCreate(db);
+        Log.e("D", "onUpgrade : " + oldVersion + " ; " + newVersion);
+        if (oldVersion < 2) {
+            db.execSQL("CREATE TABLE " + TABLE_VN_STAFF + " (" +
+                    "vid INTEGER, " +
+                    "sid INTEGER, " +
+                    "aid INTEGER, " +
+                    "name TEXT, " +
+                    "original TEXT, " +
+                    "role TEXT, " +
+                    "note TEXT" +
+                    ")");
+
+            db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_VN_STAFF + "_vn ON " + TABLE_VN_STAFF + "(vid)");
+        }
+
+//        if (oldVersion < 3) {
+//        }
     }
 
     public static void saveVnlist(Context context) {
@@ -449,7 +472,7 @@ public class DB extends SQLiteOpenHelper {
     }
 
     public static void deleteVnlist(Context context, int vnId) {
-      deleteVnlist(context, vnId, true, true);
+        deleteVnlist(context, vnId, true, true);
     }
 
     public static void deleteVnlist(Context context, int vnId, boolean beginTransaction, boolean endTransaction) {
@@ -485,7 +508,6 @@ public class DB extends SQLiteOpenHelper {
     public static void deleteWishlist(Context context, int vnId) {
         deleteWishlist(context, vnId, true, true);
     }
-
 
     public static void deleteWishlist(Context context, int vnId, boolean beginTransaction, boolean endTransaction) {
         if (instance == null) instance = new DB(context);
@@ -531,8 +553,8 @@ public class DB extends SQLiteOpenHelper {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
 
-        int itemsToInsert[] = new int[8];
-        StringBuilder[] queries = new StringBuilder[8];
+        int itemsToInsert[] = new int[9];
+        StringBuilder[] queries = new StringBuilder[9];
         queries[0] = new StringBuilder("INSERT INTO ").append(TABLE_VN).append(" VALUES ");
         queries[1] = new StringBuilder("INSERT INTO ").append(TABLE_LANGUAGES).append(" VALUES ");
         queries[2] = new StringBuilder("INSERT INTO ").append(TABLE_ORIG_LANG).append(" VALUES ");
@@ -541,6 +563,7 @@ public class DB extends SQLiteOpenHelper {
         queries[5] = new StringBuilder("INSERT INTO ").append(TABLE_RELATION).append(" VALUES ");
         queries[6] = new StringBuilder("INSERT INTO ").append(TABLE_TAGS).append(" VALUES ");
         queries[7] = new StringBuilder("INSERT INTO ").append(TABLE_SCREENS).append(" VALUES ");
+        queries[8] = new StringBuilder("INSERT INTO ").append(TABLE_VN_STAFF).append(" VALUES ");
 
         if (beginTransaction)
             db.beginTransaction();
@@ -561,7 +584,7 @@ public class DB extends SQLiteOpenHelper {
 
             Item item = Cache.vns.get(vn);
 
-            if (item.getLanguages() == null || item.getOrig_lang() == null || item.getPlatforms() == null || item.getAnime() == null || item.getRelations() == null || item.getScreens() == null || item.getTags() == null) {
+            if (item.getLanguages() == null || item.getOrig_lang() == null || item.getPlatforms() == null || item.getAnime() == null || item.getRelations() == null || item.getScreens() == null || item.getTags() == null || item.getStaff() == null) {
                 /* A list attribute of the VN is null: that shouldn't be possible because the API NEVER returns null for these attributes (at least []).
                 If that ever happens, we don't insert this VN into the database because it would corrupt it with incomplete data. */
                 continue;
@@ -655,6 +678,20 @@ public class DB extends SQLiteOpenHelper {
                         .append(screen.getWidth())
                         .append("),");
                 itemsToInsert[7] = checkInsertLimit(db, queries[7], itemsToInsert[7], TABLE_SCREENS);
+            }
+
+            for (StaffSummary staff : item.getStaff()) {
+                Log.e("D", item.getId() + " ; " + staff.getSid() + " ; " + staff.getRole());
+                queries[8].append("(")
+                        .append(item.getId()).append(",")
+                        .append(staff.getSid()).append(",")
+                        .append(staff.getAid()).append(",")
+                        .append(formatString(staff.getName())).append(",")
+                        .append(formatString(staff.getOriginal())).append(",")
+                        .append(formatString(staff.getRole())).append(",")
+                        .append(formatString(staff.getNote()))
+                        .append("),");
+                itemsToInsert[8] = checkInsertLimit(db, queries[8], itemsToInsert[8], TABLE_VN_STAFF);
             }
         }
 
@@ -1347,6 +1384,29 @@ public class DB extends SQLiteOpenHelper {
         return res;
     }
 
+    public static List<StaffSummary> loadStaff(Context context, int vnId) {
+        if (instance == null) instance = new DB(context);
+        SQLiteDatabase db = instance.getWritableDatabase();
+
+        List<StaffSummary> res = new ArrayList<>();
+        Cursor cursor = db.rawQuery("select * from " + TABLE_VN_STAFF + " WHERE vid = " + vnId, new String[]{});
+
+        while (cursor.moveToNext()) {
+            StaffSummary staff = new StaffSummary();
+            staff.setVid(vnId);
+            staff.setSid(cursor.getInt(1));
+            staff.setAid(cursor.getInt(2));
+            staff.setName(cursor.getString(3));
+            staff.setOriginal(cursor.getString(4));
+            staff.setRole(cursor.getString(5));
+            staff.setNote(cursor.getString(6));
+            res.add(staff);
+        }
+
+        cursor.close();
+        return res;
+    }
+
     public static List<Screen> loadScreens(Context context, int vnId) {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
@@ -1385,6 +1445,7 @@ public class DB extends SQLiteOpenHelper {
         db.execSQL("DELETE FROM " + TABLE_SCREENS);
         db.execSQL("DELETE FROM " + TABLE_VN_CHARACTER);
         db.execSQL("DELETE FROM " + TABLE_CHARACTER);
+        db.execSQL("DELETE FROM " + TABLE_VN_STAFF);
         db.execSQL("DELETE FROM " + TABLE_TRAITS);
         db.execSQL("DELETE FROM " + TABLE_VN_RELEASE);
         db.execSQL("DELETE FROM " + TABLE_RELEASE);
@@ -1432,6 +1493,7 @@ public class DB extends SQLiteOpenHelper {
         db.execSQL("DELETE FROM " + TABLE_RELATION + " WHERE vn " + notInListVnIds);
         db.execSQL("DELETE FROM " + TABLE_TAGS + " WHERE vn " + notInListVnIds);
         db.execSQL("DELETE FROM " + TABLE_SCREENS + " WHERE vn " + notInListVnIds);
+        db.execSQL("DELETE FROM " + TABLE_VN_STAFF + " WHERE vid " + notInListVnIds);
         db.execSQL("DELETE FROM " + TABLE_VN_CHARACTER + " WHERE vn " + notInListVnIds);
         db.execSQL("DELETE FROM " + TABLE_VN_RELEASE + " WHERE vn " + notInListVnIds);
         db.execSQL("DELETE FROM " + TABLE_SIMILAR_NOVELS + " WHERE vn " + notInListVnIds);

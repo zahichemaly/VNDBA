@@ -11,6 +11,7 @@ import com.booboot.vndbandroid.model.vndb.Links;
 import com.booboot.vndbandroid.model.vndb.Producer;
 import com.booboot.vndbandroid.model.vndb.Relation;
 import com.booboot.vndbandroid.model.vndb.Screen;
+import com.booboot.vndbandroid.model.vndb.StaffSummary;
 import com.booboot.vndbandroid.model.vndb.Tag;
 import com.booboot.vndbandroid.model.vndbandroid.Category;
 import com.booboot.vndbandroid.model.vndbandroid.Genre;
@@ -33,6 +34,7 @@ public class VNDetailsFactory {
     public final static String TITLE_DESCRIPTION = "Description";
     public final static String TITLE_GENRES = "Genres";
     public final static String TITLE_CHARACTERS = "Characters";
+    public final static String TITLE_STAFF = "Staff";
     public final static String TITLE_SCREENSHOTS = "Screenshots";
     public final static String TITLE_STATS = "Stats";
     public final static String TITLE_TAGS = "Tags";
@@ -69,6 +71,7 @@ public class VNDetailsFactory {
         setInformationSubmenu(activity);
         setGenresSubmenu(activity);
         setCharactersSubmenu(activity);
+        setStaffSubmenu(activity);
         setReleasesSubmenu(activity);
         setTagsSubmenu(activity);
         setRelationsSubmenu(activity);
@@ -82,6 +85,7 @@ public class VNDetailsFactory {
         expandableListDetail.put(TITLE_DESCRIPTION, new VNDetailsElement(null, description, null, null, null, null, VNDetailsElement.TYPE_TEXT));
         expandableListDetail.put(TITLE_GENRES, activity.getGenresSubmenu());
         expandableListDetail.put(TITLE_CHARACTERS, activity.getCharactersSubmenu());
+        expandableListDetail.put(TITLE_STAFF, activity.getStaffSubmenu());
         expandableListDetail.put(TITLE_SCREENSHOTS, activity.getScreensSubmenu());
         expandableListDetail.put(TITLE_STATS, new VNDetailsElement(null, statLeft, statRight, statRightImages, null, null, VNDetailsElement.TYPE_TEXT));
         expandableListDetail.put(TITLE_TAGS, activity.getTagsSubmenu());
@@ -367,8 +371,22 @@ public class VNDetailsFactory {
         List<String> names = new ArrayList<>();
         List<String> subnames = new ArrayList<>();
         List<Integer> ids = new ArrayList<>();
+        boolean canBuildMenu = activity.getCharacters() != null;
 
-        if (activity.getCharacters() == null) {
+        /*
+        boolean canBuildMenu = activity.getCharacters() != null && activity.getCharacters().getVoiced() != null;
+
+        if (canBuildMenu) {
+            for (StaffSummary staff : activity.getCharacters().getVoiced()) {
+                if (Cache.staff.get(staff.getId()) == null) {
+                    canBuildMenu = false;
+                    break;
+                }
+            }
+        }
+*/
+
+        if (!canBuildMenu) {
             activity.setCharactersSubmenu(new VNDetailsElement(null, names, subnames, null, images, ids, VNDetailsElement.TYPE_SUBTITLE));
         } else {
             for (Item character : activity.getCharacters()) {
@@ -399,6 +417,42 @@ public class VNDetailsFactory {
                 activity.getCharactersSubmenu().setPrimaryData(names);
                 activity.getCharactersSubmenu().setSecondaryData(subnames);
                 activity.getCharactersSubmenu().setUrlImages(images);
+            }
+        }
+    }
+
+    public static void setStaffSubmenu(VNDetailsActivity activity) {
+        List<String> staffNames = new ArrayList<>();
+        List<String> staffNotes = new ArrayList<>();
+        List<Integer> staffIds = new ArrayList<>();
+
+        if (activity.getVn().getStaff() == null) {
+            activity.setStaffSubmenu(new VNDetailsElement(null, staffNames, staffNotes, null, null, staffIds, VNDetailsElement.TYPE_SUBTITLE));
+        } else {
+            Map<String, Boolean> alreadyProcessedRoles = new HashMap<>();
+            for (StaffSummary staff : activity.getVn().getStaff()) {
+                String role = staff.getRole();
+                if (role != null && alreadyProcessedRoles.get(role) == null) {
+                    alreadyProcessedRoles.put(role, true);
+                    staffNames.add("<b>" + Category.CATEGORIES.get(role) + " :</b>");
+                    staffNotes.add(null);
+                    staffIds.add(-1);
+                    for (StaffSummary staffInfo : activity.getVn().getStaff()) {
+                        if (staffInfo != null && staffInfo.getRole().equals(role)) {
+                            staffNames.add(staffInfo.getName());
+                            staffNotes.add(staffInfo.getNote());
+                            staffIds.add(staffInfo.getId());
+                        }
+                    }
+                }
+            }
+
+            if (activity.getStaffSubmenu() == null) {
+                activity.setStaffSubmenu(new VNDetailsElement(null, staffNames, staffNotes, null, null, staffIds, VNDetailsElement.TYPE_SUBTITLE));
+            } else {
+                activity.getStaffSubmenu().setPrimaryData(staffNames);
+                activity.getStaffSubmenu().setSecondaryData(staffNotes);
+                activity.getStaffSubmenu().setIds(staffIds);
             }
         }
     }

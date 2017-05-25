@@ -17,5 +17,12 @@ public class Category extends VNDBCommand {
         CATEGORIES.put("tech", "Technical");
         CATEGORIES.put("cont", "Content");
         CATEGORIES.put("ero", "Sexual content");
+
+        CATEGORIES.put("songs", "Vocals");
+        CATEGORIES.put("staff", "Staff");
+        CATEGORIES.put("scenario", "Scenario");
+        CATEGORIES.put("music", "Composer");
+        CATEGORIES.put("art", "Artist");
+        CATEGORIES.put("director", "Director");
     }
 }

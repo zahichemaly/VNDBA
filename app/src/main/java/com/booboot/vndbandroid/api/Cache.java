@@ -44,10 +44,11 @@ public class Cache {
     public static LinkedHashMap<Integer, WishlistItem> wishlist = new LinkedHashMap<>();
     public static LinkedHashMap<Integer, Item> vns = new LinkedHashMap<>();
     public static LinkedHashMap<Integer, List<Item>> characters = new LinkedHashMap<>();
+    public static LinkedHashMap<Integer, List<Item>> staff = new LinkedHashMap<>();
     public static LinkedHashMap<Integer, List<Item>> releases = new LinkedHashMap<>();
     public static LinkedHashMap<Integer, List<SimilarNovel>> similarNovels = new LinkedHashMap<>();
 
-    public final static String VN_FLAGS = "basic,details,screens,tags,stats,relations,anime";
+    public final static String VN_FLAGS = "basic,details,screens,tags,stats,relations,anime,staff";
     public final static String CHARACTER_FLAGS = "basic,details,meas,traits,vns";
     public final static String RELEASE_FLAGS = "basic,details,producers";
 
