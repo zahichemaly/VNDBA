@@ -1,9 +1,5 @@
 package com.booboot.vndbandroid.adapter.vndetails;
 
-/**
- * Created by od on 18/03/2016.
- */
-
 import android.content.Context;
 import android.graphics.Typeface;
 import android.text.Html;
@@ -21,17 +17,17 @@ import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.VNDetailsActivity;
 import com.booboot.vndbandroid.adapter.doublelist.DoubleListListener;
 import com.booboot.vndbandroid.api.Cache;
-import com.booboot.vndbandroid.model.vndb.Item;
-import com.booboot.vndbandroid.model.vndb.Links;
-import com.booboot.vndbandroid.model.vndb.Tag;
 import com.booboot.vndbandroid.factory.CharacterDataFactory;
 import com.booboot.vndbandroid.factory.ReleaseDataFactory;
 import com.booboot.vndbandroid.factory.TagDataFactory;
 import com.booboot.vndbandroid.factory.VNDetailsFactory;
+import com.booboot.vndbandroid.model.vndb.Item;
+import com.booboot.vndbandroid.model.vndb.Links;
+import com.booboot.vndbandroid.model.vndb.Tag;
 import com.booboot.vndbandroid.util.Lightbox;
+import com.booboot.vndbandroid.util.Utils;
 import com.booboot.vndbandroid.util.image.BlurIfDemoTransform;
 import com.booboot.vndbandroid.util.image.Pixels;
-import com.booboot.vndbandroid.util.Utils;
 import com.squareup.picasso.Picasso;
 
 import java.util.LinkedHashMap;
@@ -63,7 +59,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
         return rightData.get(expandedListPosition);
     }
 
-    public int getChildLayout(int listPosition) {
+    private int getChildLayout(int listPosition) {
         int type = vnDetailsElements.get(getGroup(listPosition)).getType();
         if (type == VNDetailsElement.TYPE_TEXT) return R.layout.list_item_text;
         if (type == VNDetailsElement.TYPE_IMAGES) return R.layout.list_item_images;
@@ -85,7 +81,8 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
         final LayoutInflater layoutInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         convertView = layoutInflater.inflate(layout, null);
         ImageView itemLeftImage, itemRightImage;
-        int rightImage;
+        int leftImage, rightImage;
+        final VNDetailsElement element = getElement(listPosition);
 
         switch (layout) {
             case R.layout.list_item_text:
@@ -109,22 +106,20 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                         itemRightText.setMovementMethod(LinkMovementMethod.getInstance());
                 }
 
-                int leftImage;
-                if (getElement(listPosition).getPrimaryImages() != null && (leftImage = getElement(listPosition).getPrimaryImages().get(expandedListPosition)) > 0) {
+                if (element.getPrimaryImages() != null && (leftImage = element.getPrimaryImages().get(expandedListPosition)) > 0) {
                     itemLeftImage.setImageResource(leftImage);
                 } else {
                     itemLeftImage.setVisibility(View.GONE);
                 }
 
-                if (getElement(listPosition).getSecondaryImages() != null && (rightImage = getElement(listPosition).getSecondaryImages().get(expandedListPosition)) > 0) {
+                if (element.getSecondaryImages() != null && (rightImage = element.getSecondaryImages().get(expandedListPosition)) > 0) {
                     itemRightImage.setImageResource(rightImage);
                 } else {
                     itemRightImage.setVisibility(View.GONE);
                 }
 
-                String group = (String) getGroup(listPosition);
-                if (group.equals(VNDetailsFactory.TITLE_TAGS)) {
-                    int tagId = getElement(listPosition).getIds().get(expandedListPosition);
+                if (getGroup(listPosition).equals(VNDetailsFactory.TITLE_TAGS)) {
+                    int tagId = element.getIds().get(expandedListPosition);
                     if (tagId > 0) {
                         Tag tag = Tag.getTags(activity).get(tagId);
                         if (tag != null) {
@@ -146,16 +141,22 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                 itemRightImage = (ImageView) convertView.findViewById(R.id.itemRightImage);
                 TextView title = (TextView) convertView.findViewById(R.id.title);
                 TextView subtitle = (TextView) convertView.findViewById(R.id.subtitle);
+                boolean hasLeftImage = false;
 
-                if (getElement(listPosition).getUrlImages() == null) {
-                    itemLeftImage.setVisibility(View.GONE);
-                } else {
-                    String url = getElement(listPosition).getUrlImages().get(expandedListPosition);
+                if (element.getUrlImages() != null) {
+                    String url = element.getUrlImages().get(expandedListPosition);
                     Picasso.with(activity).load(url).transform(new BlurIfDemoTransform(activity)).into(itemLeftImage);
                     Lightbox.set(activity, itemLeftImage, url);
+                    hasLeftImage = true;
                 }
 
-                if (getElement(listPosition).getSecondaryImages() != null && (rightImage = getElement(listPosition).getSecondaryImages().get(expandedListPosition)) > 0) {
+                if (element.getPrimaryImages() != null && (leftImage = element.getPrimaryImages().get(expandedListPosition)) > 0) {
+                    itemLeftImage.setImageResource(leftImage);
+                    hasLeftImage = true;
+                }
+                if (!hasLeftImage) itemLeftImage.setVisibility(View.GONE);
+
+                if (element.getSecondaryImages() != null && (rightImage = element.getSecondaryImages().get(expandedListPosition)) > 0) {
                     itemRightImage.setImageResource(rightImage);
                 } else {
                     itemRightImage.setVisibility(View.GONE);
@@ -171,10 +172,10 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                     subtitle.setText(secondaryText);
                 }
 
-                switch ((String) getGroup(listPosition)) {
+                switch (getGroup(listPosition)) {
                     case VNDetailsFactory.TITLE_RELATIONS:
                     case VNDetailsFactory.TITLE_SIMILAR_NOVELS:
-                        final int vnId = getElement(listPosition).getIds().get(expandedListPosition);
+                        final int vnId = element.getIds().get(expandedListPosition);
                         convertView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -184,7 +185,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                         break;
 
                     case VNDetailsFactory.TITLE_CHARACTERS:
-                        int characterId = getElement(listPosition).getIds().get(expandedListPosition);
+                        int characterId = element.getIds().get(expandedListPosition);
                         // TODO : use Cache.characters for O(1) instead of O(n) loop?
                         for (Item character : activity.getCharacters()) {
                             if (character.getId() == characterId) {
@@ -194,25 +195,28 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                         }
                         break;
 
+                    case VNDetailsFactory.TITLE_STAFF:
+                        /* Display an icon next to the name */
+                        if (itemLeftImage.getVisibility() == View.VISIBLE) {
+                            ViewGroup.LayoutParams layoutParams = itemLeftImage.getLayoutParams();
+                            layoutParams.width = Pixels.px(25, activity);
+                            layoutParams.height = Pixels.px(25, activity);
+                            itemLeftImage.setLayoutParams(layoutParams);
+                        }
+                        break;
+
                     case VNDetailsFactory.TITLE_RELEASES:
                         /* Display a flag next to the language */
-                        if (getElement(listPosition).getPrimaryImages() != null) {
-                            Integer image = getElement(listPosition).getPrimaryImages().get(expandedListPosition);
-                            if (image != null) {
-                                itemLeftImage.setImageResource(image);
-                                itemLeftImage.setMaxWidth(Pixels.px(35, activity));
-                                itemLeftImage.setMaxHeight(Pixels.px(40, activity));
-                                ViewGroup.LayoutParams layoutParams = itemLeftImage.getLayoutParams();
-                                layoutParams.width = Pixels.px(35, activity);
-                                layoutParams.height = Pixels.px(40, activity);
-                                itemLeftImage.setLayoutParams(layoutParams);
-                                itemLeftImage.setVisibility(View.VISIBLE);
-                            }
+                        if (itemLeftImage.getVisibility() == View.VISIBLE) {
+                            ViewGroup.LayoutParams layoutParams = itemLeftImage.getLayoutParams();
+                            layoutParams.width = Pixels.px(35, activity);
+                            layoutParams.height = Pixels.px(40, activity);
+                            itemLeftImage.setLayoutParams(layoutParams);
                         }
 
                         /* Retrieve the release matching the element */
-                        final Integer releaseId = getElement(listPosition).getIds().get(expandedListPosition);
-                        if (releaseId == null) break;
+                        int releaseId = element.getIds().get(expandedListPosition);
+                        if (releaseId < 0) break;
                         Item release = null;
                         for (Item tmp : Cache.releases.get(activity.getVn().getId())) {
                             if (tmp.getId() == releaseId) {
@@ -226,7 +230,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                         break;
 
                     case VNDetailsFactory.TITLE_ANIME:
-                        final int id = getElement(listPosition).getIds().get(expandedListPosition);
+                        final int id = element.getIds().get(expandedListPosition);
                         convertView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -247,7 +251,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public Object getGroup(int listPosition) {
+    public String getGroup(int listPosition) {
         return titles.get(listPosition);
     }
 
@@ -263,7 +267,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getGroupView(int listPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-        String listTitle = (String) getGroup(listPosition);
+        String listTitle = getGroup(listPosition);
         if (convertView == null) {
             LayoutInflater layoutInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = layoutInflater.inflate(R.layout.list_group, null);

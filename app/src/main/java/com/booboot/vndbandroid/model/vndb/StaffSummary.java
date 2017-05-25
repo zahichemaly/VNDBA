@@ -1,5 +1,6 @@
 package com.booboot.vndbandroid.model.vndb;
 
+import com.booboot.vndbandroid.R;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -75,5 +76,24 @@ public class StaffSummary {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public Integer getIcon() {
+        switch (role) {
+            case "songs":
+                return R.drawable.ic_mic_white_48dp;
+            case "staff":
+                return R.drawable.ic_assignment_ind_white_48dp;
+            case "scenario":
+                return R.drawable.ic_text_format_white_48dp;
+            case "music":
+                return R.drawable.ic_audiotrack_white_48dp;
+            case "art":
+                return R.drawable.ic_brush_white_48dp;
+            case "director":
+                return R.drawable.ic_theaters_white_48dp;
+            default:
+                return R.drawable.ic_assignment_ind_white_48dp;
+        }
     }
 }
