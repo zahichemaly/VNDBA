@@ -46,7 +46,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public Object getChild(int listPosition, int expandedListPosition) {
-        return getElement(listPosition).getPrimaryData().get(expandedListPosition);
+        return getElement(listPosition).getData().get(expandedListPosition).text1;
     }
 
     private VNDetailsElement getElement(int listPosition) {
@@ -54,9 +54,9 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     private Object getRightChild(int listPosition, int expandedListPosition) {
-        List<String> rightData = getElement(listPosition).getSecondaryData();
-        if (rightData == null || rightData.size() <= expandedListPosition) return null;
-        return rightData.get(expandedListPosition);
+        List<VNDetailsElement.Data> data = getElement(listPosition).getData();
+        if (data.size() <= expandedListPosition) return null;
+        return data.get(expandedListPosition).text2;
     }
 
     private int getChildLayout(int listPosition) {
@@ -81,8 +81,10 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
         final LayoutInflater layoutInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         convertView = layoutInflater.inflate(layout, null);
         ImageView itemLeftImage, itemRightImage;
-        int leftImage, rightImage;
         final VNDetailsElement element = getElement(listPosition);
+
+        if (expandedListPosition >= element.getData().size()) return convertView;
+        final VNDetailsElement.Data elementData = element.getData().get(expandedListPosition);
 
         switch (layout) {
             case R.layout.list_item_text:
@@ -106,22 +108,21 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                         itemRightText.setMovementMethod(LinkMovementMethod.getInstance());
                 }
 
-                if (element.getPrimaryImages() != null && (leftImage = element.getPrimaryImages().get(expandedListPosition)) > 0) {
-                    itemLeftImage.setImageResource(leftImage);
+                if (elementData.image1 > 0) {
+                    itemLeftImage.setImageResource(elementData.image1);
                 } else {
                     itemLeftImage.setVisibility(View.GONE);
                 }
 
-                if (element.getSecondaryImages() != null && (rightImage = element.getSecondaryImages().get(expandedListPosition)) > 0) {
-                    itemRightImage.setImageResource(rightImage);
+                if (elementData.image2 > 0) {
+                    itemRightImage.setImageResource(elementData.image2);
                 } else {
                     itemRightImage.setVisibility(View.GONE);
                 }
 
                 if (getGroup(listPosition).equals(VNDetailsFactory.TITLE_TAGS)) {
-                    int tagId = element.getIds().get(expandedListPosition);
-                    if (tagId > 0) {
-                        Tag tag = Tag.getTags(activity).get(tagId);
+                    if (elementData.id > 0) {
+                        Tag tag = Tag.getTags(activity).get(elementData.id);
                         if (tag != null) {
                             convertView.setOnClickListener(new DoubleListListener(activity, tag.getName(), TagDataFactory.getData(tag), null));
                         }
@@ -143,21 +144,21 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                 TextView subtitle = (TextView) convertView.findViewById(R.id.subtitle);
                 boolean hasLeftImage = false;
 
-                if (element.getUrlImages() != null) {
-                    String url = element.getUrlImages().get(expandedListPosition);
-                    Picasso.with(activity).load(url).transform(new BlurIfDemoTransform(activity)).into(itemLeftImage);
-                    Lightbox.set(activity, itemLeftImage, url);
+                if (elementData.urlImage != null) {
+                    Picasso.with(activity).load(elementData.urlImage).transform(new BlurIfDemoTransform(activity)).into(itemLeftImage);
+                    Lightbox.set(activity, itemLeftImage, elementData.urlImage);
                     hasLeftImage = true;
                 }
 
-                if (element.getPrimaryImages() != null && (leftImage = element.getPrimaryImages().get(expandedListPosition)) > 0) {
-                    itemLeftImage.setImageResource(leftImage);
+                if (elementData.image1 > 0) {
+                    itemLeftImage.setImageResource(elementData.image1);
                     hasLeftImage = true;
                 }
+
                 if (!hasLeftImage) itemLeftImage.setVisibility(View.GONE);
 
-                if (element.getSecondaryImages() != null && (rightImage = element.getSecondaryImages().get(expandedListPosition)) > 0) {
-                    itemRightImage.setImageResource(rightImage);
+                if (elementData.image2 > 0) {
+                    itemRightImage.setImageResource(elementData.image2);
                 } else {
                     itemRightImage.setVisibility(View.GONE);
                 }
@@ -175,20 +176,18 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                 switch (getGroup(listPosition)) {
                     case VNDetailsFactory.TITLE_RELATIONS:
                     case VNDetailsFactory.TITLE_SIMILAR_NOVELS:
-                        final int vnId = element.getIds().get(expandedListPosition);
                         convertView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Cache.openVNDetails(activity, vnId);
+                                Cache.openVNDetails(activity, elementData.id);
                             }
                         });
                         break;
 
                     case VNDetailsFactory.TITLE_CHARACTERS:
-                        int characterId = element.getIds().get(expandedListPosition);
                         // TODO : use Cache.characters for O(1) instead of O(n) loop?
                         for (Item character : activity.getCharacters()) {
-                            if (character.getId() == characterId) {
+                            if (character.getId() == elementData.id) {
                                 convertView.setOnClickListener(new DoubleListListener(activity, character.getName(), CharacterDataFactory.getData(activity, character), null));
                                 break;
                             }
@@ -215,11 +214,10 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                         }
 
                         /* Retrieve the release matching the element */
-                        int releaseId = element.getIds().get(expandedListPosition);
-                        if (releaseId < 0) break;
+                        if (elementData.id < 0) break;
                         Item release = null;
                         for (Item tmp : Cache.releases.get(activity.getVn().getId())) {
-                            if (tmp.getId() == releaseId) {
+                            if (tmp.getId() == elementData.id) {
                                 release = tmp;
                                 break;
                             }
@@ -230,11 +228,10 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                         break;
 
                     case VNDetailsFactory.TITLE_ANIME:
-                        final int id = element.getIds().get(expandedListPosition);
                         convertView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Utils.openURL(activity, Links.ANIDB + id);
+                                Utils.openURL(activity, Links.ANIDB + elementData.id);
                             }
                         });
                         break;
@@ -247,7 +244,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int listPosition) {
-        return vnDetailsElements.get(getGroup(listPosition)).getPrimaryData().size();
+        return vnDetailsElements.get(getGroup(listPosition)).getData().size();
     }
 
     @Override

@@ -13,77 +13,62 @@ public class VNDetailsElement {
     public final static int TYPE_SUBTITLE = 93;
 
     private int type;
-    private List<Integer> primaryImages = new ArrayList<>();
-    private List<Integer> secondaryImages = new ArrayList<>();
-    private List<String> urlImages = new ArrayList<>();
+    private List<Data> data = new ArrayList<>();
 
-    private List<String> primaryData = new ArrayList<>();
-    private List<String> secondaryData = new ArrayList<>();
-    private List<Integer> ids = new ArrayList<>();
+    public static class Data {
+        int id = -1, image1 = -1, image2 = -1;
+        String urlImage, text1, text2;
 
-    public VNDetailsElement(List<Integer> primaryImages, List<String> primaryData, List<String> secondaryData, List<Integer> secondaryImages, List<String> urlImages, List<Integer> ids, int type) {
-        this.primaryImages = primaryImages;
-        this.primaryData = primaryData;
-        this.secondaryData = secondaryData;
-        this.secondaryImages = secondaryImages;
-        this.urlImages = urlImages;
-        this.ids = ids;
+        public Data setId(int id) {
+            this.id = id;
+            return this;
+        }
+
+        public Data setImage1(int image1) {
+            this.image1 = image1;
+            return this;
+        }
+
+        public Data setImage2(int image2) {
+            this.image2 = image2;
+            return this;
+        }
+
+        public Data setUrlImage(String urlImage) {
+            this.urlImage = urlImage;
+            return this;
+        }
+
+        public Data setText1(String text1) {
+            this.text1 = text1;
+            return this;
+        }
+
+        public Data setText2(String text2) {
+            this.text2 = text2;
+            return this;
+        }
+    }
+
+    public VNDetailsElement(List<Data> data, int type) {
+        this.data = data;
         this.type = type;
     }
 
-    public List<String> getPrimaryData() {
-        return primaryData;
+    public List<Data> getData() {
+        return data;
     }
 
-    public void setPrimaryData(List<String> primaryData) {
-        this.primaryData = primaryData;
+    public void setData(List<Data> data) {
+        this.data = data;
     }
 
     public int getType() {
         return type;
     }
 
-    public void setType(int type) {
+    public VNDetailsElement setType(int type) {
         this.type = type;
-    }
-
-    public List<Integer> getPrimaryImages() {
-        return primaryImages;
-    }
-
-    public void setPrimaryImages(List<Integer> primaryImages) {
-        this.primaryImages = primaryImages;
-    }
-
-    public List<String> getSecondaryData() {
-        return secondaryData;
-    }
-
-    public void setSecondaryData(List<String> secondaryData) {
-        this.secondaryData = secondaryData;
-    }
-
-    public List<Integer> getSecondaryImages() {
-        return secondaryImages;
-    }
-
-    public void setSecondaryImages(List<Integer> secondaryImages) {
-        this.secondaryImages = secondaryImages;
-    }
-
-    public List<String> getUrlImages() {
-        return urlImages;
-    }
-
-    public void setUrlImages(List<String> urlImages) {
-        this.urlImages = urlImages;
-    }
-
-    public List<Integer> getIds() {
-        return ids;
-    }
-
-    public void setIds(List<Integer> ids) {
-        this.ids = ids;
+        return this;
     }
 }
