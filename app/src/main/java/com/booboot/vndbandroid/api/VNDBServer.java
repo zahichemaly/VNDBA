@@ -49,7 +49,7 @@ public class VNDBServer {
 
     private final static int PROTOCOL = 1;
     private final static String CLIENT = "VNDB_ANDROID";
-    private final static double CLIENTVER = 2.2;
+    private final static double CLIENTVER = 3.0;
 
     private static Context context;
     private static Callback successCallback, errorCallback;
