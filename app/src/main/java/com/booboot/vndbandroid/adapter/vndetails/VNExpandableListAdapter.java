@@ -154,6 +154,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
 
                 if (elementData.image1 > 0) {
                     itemLeftImage.setImageResource(elementData.image1);
+                    Utils.tintImageFromBackground(activity, itemLeftImage, R.color.black, activity.isNsfw());
                     hasLeftImage = true;
                 }
 

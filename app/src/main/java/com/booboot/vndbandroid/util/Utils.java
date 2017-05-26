@@ -200,6 +200,12 @@ public class Utils {
         return context.getResources().getColor(!nsfw && SettingsManager.getCoverBackground(context) ? lightColor : darkColor);
     }
 
+    public static void tintImageFromBackground(Context context, ImageView imageView, int res, boolean nsfw) {
+        if (nsfw || !SettingsManager.getCoverBackground(context)) {
+            Utils.tintImage(context, imageView, res, false);
+        }
+    }
+
     public static int screenWidth(Activity activity) {
         DisplayMetrics displaymetrics = new DisplayMetrics();
         activity.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);

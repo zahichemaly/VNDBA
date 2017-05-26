@@ -18,6 +18,7 @@ public class VNDetailsElement {
     public static class Data {
         int id = -1, image1 = -1, image2 = -1, button = -1;
         String urlImage, text1, text2;
+        boolean tintImage1;
 
         public Data setId(int id) {
             this.id = id;
@@ -51,6 +52,11 @@ public class VNDetailsElement {
 
         public Data setButton(int button) {
             this.button = button;
+            return this;
+        }
+
+        public Data setTintImage1(boolean tintImage1) {
+            this.tintImage1 = tintImage1;
             return this;
         }
     }

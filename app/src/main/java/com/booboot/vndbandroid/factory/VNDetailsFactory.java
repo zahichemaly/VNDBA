@@ -395,6 +395,7 @@ public class VNDetailsFactory {
                                     .setText2(staffInfo.getNote())
                                     .setImage1(staffInfo.getIcon())
                                     .setId(staffInfo.getSid())
+                                    .setTintImage1(true)
                             );
                         }
                     }
