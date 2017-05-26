@@ -363,6 +363,7 @@ public class VNDetailsFactory {
                         .setText2(Item.ROLES.get(character.getVns().get(0)[Item.ROLE_INDEX].toString()))
                         .setUrlImage(character.getImage())
                         .setId(character.getId())
+                        .setButton(R.drawable.ic_record_voice_over_white_48dp)
                 );
             }
 

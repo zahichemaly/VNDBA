@@ -16,7 +16,7 @@ public class VNDetailsElement {
     private List<Data> data = new ArrayList<>();
 
     public static class Data {
-        int id = -1, image1 = -1, image2 = -1;
+        int id = -1, image1 = -1, image2 = -1, button = -1;
         String urlImage, text1, text2;
 
         public Data setId(int id) {
@@ -46,6 +46,11 @@ public class VNDetailsElement {
 
         public Data setText2(String text2) {
             this.text2 = text2;
+            return this;
+        }
+
+        public Data setButton(int button) {
+            this.button = button;
             return this;
         }
     }

@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -142,6 +143,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                 itemRightImage = (ImageView) convertView.findViewById(R.id.itemRightImage);
                 TextView title = (TextView) convertView.findViewById(R.id.title);
                 TextView subtitle = (TextView) convertView.findViewById(R.id.subtitle);
+                ImageButton itemButton = (ImageButton) convertView.findViewById(R.id.itemButton);
                 boolean hasLeftImage = false;
 
                 if (elementData.urlImage != null) {
@@ -161,6 +163,12 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                     itemRightImage.setImageResource(elementData.image2);
                 } else {
                     itemRightImage.setVisibility(View.GONE);
+                }
+
+                if (elementData.button > 0) {
+                    itemButton.setImageResource(elementData.button);
+                } else {
+                    itemButton.setVisibility(View.GONE);
                 }
 
                 title.setTextColor(Utils.getTextColorFromBackground(activity, R.color.primaryText, R.color.white, activity.isNsfw()));
