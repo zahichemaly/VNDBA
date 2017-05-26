@@ -25,6 +25,7 @@ public class Category extends VNDBCommand {
         CATEGORIES.put("music", "Composer");
         CATEGORIES.put("scenario", "Scenario");
         CATEGORIES.put("art", "Artist");
+        CATEGORIES.put("chardesign", "Character design");
         CATEGORIES.put("staff", "Staff");
 
         CATEGORIES_KEYS = new ArrayList<>(CATEGORIES.keySet());

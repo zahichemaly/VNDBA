@@ -378,8 +378,10 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                 break;
             case VNDetailsFactory.TITLE_STAFF:
                 alreadyInit = vn.getStaff() != null;
-                hasChildren = expandableListAdapter.getChildrenCount(groupPosition) > 0;
-                if (alreadyInit && !hasChildren) VNDetailsFactory.setStaffSubmenu(this);
+                if (alreadyInit) {
+                    groupStaffByRole();
+                    VNDetailsFactory.setStaffSubmenu(this);
+                }
                 break;
             case VNDetailsFactory.TITLE_INFORMATION:
                 alreadyInit = Cache.releases.get(vn.getId()) != null;
@@ -408,6 +410,8 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                 break;
             case VNDetailsFactory.TITLE_TAGS:
                 alreadyInit = vn.getTags() != null;
+                /* There's an interdependence between the TAGS and the GENRES section which both need the tags,
+                so the following condition tells "if the other section has already been init, then init this one" */
                 hasChildren = expandableListAdapter.getChildrenCount(groupPosition) > 0;
                 if (alreadyInit && !hasChildren) VNDetailsFactory.setTagsSubmenu(this);
                 break;
