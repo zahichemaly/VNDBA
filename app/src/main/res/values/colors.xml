@@ -12,6 +12,6 @@
     <color name="green">#388E3C</color>
     <color name="red">#F44336</color>
     <color name="buttonPressed">#E5E5E5</color>
-    <color name="primaryText">#cd141400</color>
-    <color name="secondaryText">#ff888888</color>
+    <color name="primaryText">#de000000</color>
+    <color name="secondaryText">#8a000000</color>
 </resources>

@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -154,7 +153,9 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
 
                 if (elementData.image1 > 0) {
                     itemLeftImage.setImageResource(elementData.image1);
-                    Utils.tintImageFromBackground(activity, itemLeftImage, R.color.black, activity.isNsfw());
+                    if (elementData.tintImage1) {
+                        Utils.tintImageFromBackground(activity, itemLeftImage, R.color.primaryText, activity.isNsfw());
+                    }
                     hasLeftImage = true;
                 }
 
