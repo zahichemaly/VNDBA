@@ -51,7 +51,7 @@ import com.booboot.vndbandroid.factory.VNDetailsFactory;
 import com.booboot.vndbandroid.model.vndb.Item;
 import com.booboot.vndbandroid.model.vndb.Links;
 import com.booboot.vndbandroid.model.vndb.Options;
-import com.booboot.vndbandroid.model.vndb.StaffSummary;
+import com.booboot.vndbandroid.model.vndb.VnStaff;
 import com.booboot.vndbandroid.model.vndbandroid.Category;
 import com.booboot.vndbandroid.model.vndbandroid.Priority;
 import com.booboot.vndbandroid.model.vndbandroid.Status;
@@ -697,9 +697,9 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
 
     private void groupStaffByRole() {
         if (vn == null) return;
-        Collections.sort(vn.getStaff(), new Comparator<StaffSummary>() {
+        Collections.sort(vn.getStaff(), new Comparator<VnStaff>() {
             @Override
-            public int compare(StaffSummary lhs, StaffSummary rhs) {
+            public int compare(VnStaff lhs, VnStaff rhs) {
                 return Integer.valueOf(Category.CATEGORIES_KEYS.indexOf(lhs.getRole())).compareTo(Category.CATEGORIES_KEYS.indexOf(rhs.getRole()));
             }
         });

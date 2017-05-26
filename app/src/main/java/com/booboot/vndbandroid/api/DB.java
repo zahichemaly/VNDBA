@@ -16,7 +16,7 @@ import com.booboot.vndbandroid.model.vndb.Media;
 import com.booboot.vndbandroid.model.vndb.Producer;
 import com.booboot.vndbandroid.model.vndb.Relation;
 import com.booboot.vndbandroid.model.vndb.Screen;
-import com.booboot.vndbandroid.model.vndb.StaffSummary;
+import com.booboot.vndbandroid.model.vndb.VnStaff;
 import com.booboot.vndbandroid.model.vndbandroid.VNlistItem;
 import com.booboot.vndbandroid.model.vndbandroid.VotelistItem;
 import com.booboot.vndbandroid.model.vndbandroid.WishlistItem;
@@ -683,7 +683,7 @@ public class DB extends SQLiteOpenHelper {
                 itemsToInsert[7] = checkInsertLimit(db, queries[7], itemsToInsert[7], TABLE_SCREENS);
             }
 
-            for (StaffSummary staff : item.getStaff()) {
+            for (VnStaff staff : item.getStaff()) {
                 queries[8].append("(")
                         .append(item.getId()).append(",")
                         .append(staff.getSid()).append(",")
@@ -1386,15 +1386,15 @@ public class DB extends SQLiteOpenHelper {
         return res;
     }
 
-    public static List<StaffSummary> loadStaff(Context context, int vnId) {
+    public static List<VnStaff> loadStaff(Context context, int vnId) {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
 
-        List<StaffSummary> res = new ArrayList<>();
+        List<VnStaff> res = new ArrayList<>();
         Cursor cursor = db.rawQuery("select * from " + TABLE_VN_STAFF + " WHERE vid = " + vnId, new String[]{});
 
         while (cursor.moveToNext()) {
-            StaffSummary staff = new StaffSummary();
+            VnStaff staff = new VnStaff();
             staff.setVid(vnId);
             staff.setSid(cursor.getInt(1));
             staff.setAid(cursor.getInt(2));

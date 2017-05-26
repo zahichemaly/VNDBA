@@ -64,7 +64,7 @@ public class VNDBServer {
         errorCallback = ec;
     }
 
-    public static boolean connect(int socketIndex) {
+    private static boolean connect(int socketIndex) {
         try {
             SocketFactory sf = SSLSocketFactory.getDefault();
             SSLSocket socket = (SSLSocket) sf.createSocket(HOST, PORT);

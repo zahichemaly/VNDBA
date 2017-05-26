@@ -11,7 +11,7 @@ import com.booboot.vndbandroid.model.vndb.Links;
 import com.booboot.vndbandroid.model.vndb.Producer;
 import com.booboot.vndbandroid.model.vndb.Relation;
 import com.booboot.vndbandroid.model.vndb.Screen;
-import com.booboot.vndbandroid.model.vndb.StaffSummary;
+import com.booboot.vndbandroid.model.vndb.VnStaff;
 import com.booboot.vndbandroid.model.vndb.Tag;
 import com.booboot.vndbandroid.model.vndbandroid.Category;
 import com.booboot.vndbandroid.model.vndbandroid.Genre;
@@ -331,7 +331,7 @@ public class VNDetailsFactory {
         boolean canBuildMenu = activity.getCharacters() != null && activity.getCharacters().getVoiced() != null;
 
         if (canBuildMenu) {
-            for (StaffSummary staff : activity.getCharacters().getVoiced()) {
+            for (VnStaff staff : activity.getCharacters().getVoiced()) {
                 if (Cache.staff.get(staff.getId()) == null) {
                     canBuildMenu = false;
                     break;
@@ -382,19 +382,19 @@ public class VNDetailsFactory {
             activity.setStaffSubmenu(new VNDetailsElement(data, VNDetailsElement.TYPE_SUBTITLE));
         } else {
             Map<String, Boolean> alreadyProcessedRoles = new HashMap<>();
-            for (StaffSummary staff : activity.getVn().getStaff()) {
+            for (VnStaff staff : activity.getVn().getStaff()) {
                 String role = staff.getRole();
                 if (role != null && alreadyProcessedRoles.get(role) == null) {
                     alreadyProcessedRoles.put(role, true);
                     data.add(new VNDetailsElement.Data().setText1("<b>" + Category.CATEGORIES.get(role) + " :</b>"));
 
-                    for (StaffSummary staffInfo : activity.getVn().getStaff()) {
+                    for (VnStaff staffInfo : activity.getVn().getStaff()) {
                         if (staffInfo != null && staffInfo.getRole().equals(role)) {
                             data.add(new VNDetailsElement.Data()
                                     .setText1(staffInfo.getName())
                                     .setText2(staffInfo.getNote())
                                     .setImage1(staffInfo.getIcon())
-                                    .setId(staffInfo.getId())
+                                    .setId(staffInfo.getSid())
                             );
                         }
                     }
