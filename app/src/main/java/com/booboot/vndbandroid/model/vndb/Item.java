@@ -47,7 +47,7 @@ public class Item extends VNDBCommand {
 
     /* Character-specific properties */
     public final static LinkedHashMap<String, String> ROLES = new LinkedHashMap<>();
-    public static List<String> ROLES_KEY;
+    public static List<String> ROLES_KEYS;
     public final static int ROLE_INDEX = 3;
 
     static {
@@ -57,7 +57,7 @@ public class Item extends VNDBCommand {
         ROLES.put("side", "Side character");
         ROLES.put("appears", "Makes an appearance");
 
-        ROLES_KEY = new ArrayList<>(ROLES.keySet());
+        ROLES_KEYS = new ArrayList<>(ROLES.keySet());
     }
 
     private String name;

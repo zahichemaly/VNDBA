@@ -96,4 +96,18 @@ public class StaffSummary {
                 return R.drawable.ic_assignment_ind_white_48dp;
         }
     }
+
+    @Override
+    public String toString() {
+        return "StaffSummary{" +
+                "id=" + id +
+                ", sid=" + sid +
+                ", aid=" + aid +
+                ", vid=" + vid +
+                ", name='" + name + '\'' +
+                ", original='" + original + '\'' +
+                ", role='" + role + '\'' +
+                ", note='" + note + '\'' +
+                '}';
+    }
 }

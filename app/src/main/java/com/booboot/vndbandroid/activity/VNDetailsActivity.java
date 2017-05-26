@@ -51,6 +51,8 @@ import com.booboot.vndbandroid.factory.VNDetailsFactory;
 import com.booboot.vndbandroid.model.vndb.Item;
 import com.booboot.vndbandroid.model.vndb.Links;
 import com.booboot.vndbandroid.model.vndb.Options;
+import com.booboot.vndbandroid.model.vndb.StaffSummary;
+import com.booboot.vndbandroid.model.vndbandroid.Category;
 import com.booboot.vndbandroid.model.vndbandroid.Priority;
 import com.booboot.vndbandroid.model.vndbandroid.Status;
 import com.booboot.vndbandroid.model.vndbandroid.Theme;
@@ -483,6 +485,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                                         break;
                                     case VNDetailsFactory.TITLE_STAFF:
                                         Cache.vns.put(vn.getId(), vn);
+                                        groupStaffByRole();
                                         VNDetailsFactory.setStaffSubmenu(VNDetailsActivity.this);
                                         break;
                                     case VNDetailsFactory.TITLE_INFORMATION:
@@ -687,7 +690,17 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                     return 0;
                 String leftRole = (String) lhs.getVns().get(0)[Item.ROLE_INDEX];
                 String rightRole = (String) rhs.getVns().get(0)[Item.ROLE_INDEX];
-                return Integer.valueOf(Item.ROLES_KEY.indexOf(leftRole)).compareTo(Item.ROLES_KEY.indexOf(rightRole));
+                return Integer.valueOf(Item.ROLES_KEYS.indexOf(leftRole)).compareTo(Item.ROLES_KEYS.indexOf(rightRole));
+            }
+        });
+    }
+
+    private void groupStaffByRole() {
+        if (vn == null) return;
+        Collections.sort(vn.getStaff(), new Comparator<StaffSummary>() {
+            @Override
+            public int compare(StaffSummary lhs, StaffSummary rhs) {
+                return Integer.valueOf(Category.CATEGORIES_KEYS.indexOf(lhs.getRole())).compareTo(Category.CATEGORIES_KEYS.indexOf(rhs.getRole()));
             }
         });
     }
