@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 import android.util.Log;
@@ -74,7 +75,6 @@ public class DB extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        Log.e("D", "onCreate");
         db.execSQL("CREATE TABLE " + TABLE_VNLIST + " (" +
                 "vn INTEGER PRIMARY KEY, " +
                 "added INTEGER, " +
@@ -295,6 +295,9 @@ public class DB extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.e("D", "onUpgrade : " + oldVersion + " ; " + newVersion);
+        /* For each new upgrade, clear the database so it can be recreated properly */
+        clear(db);
+
         if (oldVersion < 2) {
             db.execSQL("CREATE TABLE " + TABLE_VN_STAFF + " (" +
                     "vid INTEGER, " +
@@ -681,7 +684,6 @@ public class DB extends SQLiteOpenHelper {
             }
 
             for (StaffSummary staff : item.getStaff()) {
-                Log.e("D", item.getId() + " ; " + staff.getSid() + " ; " + staff.getRole());
                 queries[8].append("(")
                         .append(item.getId()).append(",")
                         .append(staff.getSid()).append(",")
@@ -1431,31 +1433,42 @@ public class DB extends SQLiteOpenHelper {
     public static void clear(Context context) {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
+        clear(db);
+    }
 
-        db.execSQL("DELETE FROM " + TABLE_VNLIST);
-        db.execSQL("DELETE FROM " + TABLE_VOTELIST);
-        db.execSQL("DELETE FROM " + TABLE_WISHLIST);
-        db.execSQL("DELETE FROM " + TABLE_VN);
-        db.execSQL("DELETE FROM " + TABLE_LANGUAGES);
-        db.execSQL("DELETE FROM " + TABLE_ORIG_LANG);
-        db.execSQL("DELETE FROM " + TABLE_PLATFORMS);
-        db.execSQL("DELETE FROM " + TABLE_ANIME);
-        db.execSQL("DELETE FROM " + TABLE_RELATION);
-        db.execSQL("DELETE FROM " + TABLE_TAGS);
-        db.execSQL("DELETE FROM " + TABLE_SCREENS);
-        db.execSQL("DELETE FROM " + TABLE_VN_CHARACTER);
-        db.execSQL("DELETE FROM " + TABLE_CHARACTER);
-        db.execSQL("DELETE FROM " + TABLE_VN_STAFF);
-        db.execSQL("DELETE FROM " + TABLE_TRAITS);
-        db.execSQL("DELETE FROM " + TABLE_VN_RELEASE);
-        db.execSQL("DELETE FROM " + TABLE_RELEASE);
-        db.execSQL("DELETE FROM " + TABLE_RELEASE_LANGUAGES);
-        db.execSQL("DELETE FROM " + TABLE_RELEASE_PLATFORMS);
-        db.execSQL("DELETE FROM " + TABLE_RELEASE_MEDIA);
-        db.execSQL("DELETE FROM " + TABLE_RELEASE_PRODUCER);
-        db.execSQL("DELETE FROM " + TABLE_PRODUCER);
-        db.execSQL("DELETE FROM " + TABLE_SIMILAR_NOVELS);
-        db.execSQL("DELETE FROM " + TABLE_RECOMMENDATIONS);
+    private static void clear(SQLiteDatabase db) {
+        clearTable(db, TABLE_VNLIST);
+        clearTable(db, TABLE_VOTELIST);
+        clearTable(db, TABLE_WISHLIST);
+        clearTable(db, TABLE_VN);
+        clearTable(db, TABLE_LANGUAGES);
+        clearTable(db, TABLE_ORIG_LANG);
+        clearTable(db, TABLE_PLATFORMS);
+        clearTable(db, TABLE_ANIME);
+        clearTable(db, TABLE_RELATION);
+        clearTable(db, TABLE_TAGS);
+        clearTable(db, TABLE_SCREENS);
+        clearTable(db, TABLE_VN_CHARACTER);
+        clearTable(db, TABLE_CHARACTER);
+        clearTable(db, TABLE_VN_STAFF);
+        clearTable(db, TABLE_TRAITS);
+        clearTable(db, TABLE_VN_RELEASE);
+        clearTable(db, TABLE_RELEASE);
+        clearTable(db, TABLE_RELEASE_LANGUAGES);
+        clearTable(db, TABLE_RELEASE_PLATFORMS);
+        clearTable(db, TABLE_RELEASE_MEDIA);
+        clearTable(db, TABLE_RELEASE_PRODUCER);
+        clearTable(db, TABLE_PRODUCER);
+        clearTable(db, TABLE_SIMILAR_NOVELS);
+        clearTable(db, TABLE_RECOMMENDATIONS);
+    }
+
+    private static void clearTable(SQLiteDatabase db, String table) {
+        try {
+            db.execSQL("DELETE FROM " + table);
+        } catch (SQLiteException exception) {
+            // The table doesn't exist, it's ok, just ignore it
+        }
     }
 
     private static void exec(SQLiteDatabase db, StringBuilder[] queries, int[] itemsToInsert) {
