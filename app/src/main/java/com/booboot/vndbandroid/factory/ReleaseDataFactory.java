@@ -42,7 +42,7 @@ public class ReleaseDataFactory {
         List<String> full_languages = new ArrayList<>();
         if (release.getLanguages() != null) {
             for (String language : release.getLanguages()) {
-                full_languages.add(Language.FULL_TEXT.get(language));
+                full_languages.add(Language.INSTANCE.getFULL_TEXT().get(language));
             }
         }
         releaseData.add(new DoubleListElement("Languages", TextUtils.join(", ", full_languages), false));
@@ -50,7 +50,7 @@ public class ReleaseDataFactory {
         List<String> full_platforms = new ArrayList<>();
         if (release.getPlatforms() != null) {
             for (String platform : release.getPlatforms()) {
-                full_platforms.add(Platform.FULL_TEXT.get(platform));
+                full_platforms.add(Platform.INSTANCE.getFULL_TEXT().get(platform));
             }
         }
         releaseData.add(new DoubleListElement("Platforms", TextUtils.join(", ", full_platforms), false));

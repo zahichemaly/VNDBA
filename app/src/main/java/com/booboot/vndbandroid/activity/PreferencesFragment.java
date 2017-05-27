@@ -81,7 +81,7 @@ public class PreferencesFragment extends PreferenceFragment implements Preferenc
 
             if (listPreference.getKey().equals(getActivity().getString(R.string.pref_key_theme))) {
                 String oldTheme = SettingsManager.getTheme(getActivity());
-                String newTheme = Theme.THEMES.get(stringValue) != null ? stringValue : "0";
+                String newTheme = Theme.Companion.getTHEMES().get(stringValue) != null ? stringValue : "0";
 
                 if (!oldTheme.equals(newTheme)) {
                     SettingsManager.setTheme(getActivity(), stringValue);

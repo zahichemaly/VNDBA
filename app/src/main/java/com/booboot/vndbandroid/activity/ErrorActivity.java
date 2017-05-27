@@ -42,7 +42,7 @@ public final class ErrorActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTheme(Theme.THEMES.get(SettingsManager.getTheme(this)).getStyle());
+        setTheme(Theme.Companion.getTHEMES().get(SettingsManager.getTheme(this)).getStyle());
         setContentView(R.layout.customactivityoncrash_default_error_activity);
 
         //Close/restart button logic:

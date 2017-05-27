@@ -65,7 +65,7 @@ public class VNDetailsFactory {
                 .setImage2(vn.getPopularityImage()));
         statsData.add(new VNDetailsElement.Data()
                 .setText1("Rating")
-                .setText2(vn.getRating() + " (" + Vote.getName(vn.getRating()) + ")<br>" + vn.getVotecount() + " votes total")
+                .setText2(vn.getRating() + " (" + Vote.INSTANCE.getName(vn.getRating()) + ")<br>" + vn.getVotecount() + " votes total")
                 .setImage2(vn.getRatingImage()));
 
         setInformationSubmenu(activity);
@@ -151,7 +151,7 @@ public class VNDetailsFactory {
             activity.setLanguagesSubmenu(new VNDetailsElement(data, VNDetailsElement.TYPE_TEXT));
         } else {
             for (String language : activity.getVn().getLanguages()) {
-                data.add(new VNDetailsElement.Data().setImage1(Language.FLAGS.get(language)).setText1(Language.FULL_TEXT.get(language)));
+                data.add(new VNDetailsElement.Data().setImage1(Language.INSTANCE.getFLAGS().get(language)).setText1(Language.INSTANCE.getFULL_TEXT().get(language)));
             }
 
             if (activity.getLanguagesSubmenu() == null) {
@@ -169,7 +169,7 @@ public class VNDetailsFactory {
             activity.setPlatformsSubmenu(new VNDetailsElement(data, VNDetailsElement.TYPE_TEXT));
         } else {
             for (String platform : activity.getVn().getPlatforms()) {
-                data.add(new VNDetailsElement.Data().setImage1(Platform.IMAGES.get(platform)).setText1(Platform.FULL_TEXT.get(platform)));
+                data.add(new VNDetailsElement.Data().setImage1(Platform.INSTANCE.getIMAGES().get(platform)).setText1(Platform.INSTANCE.getFULL_TEXT().get(platform)));
             }
 
             if (activity.getPlatformsSubmenu() == null) {
@@ -262,7 +262,7 @@ public class VNDetailsFactory {
                 Tag cat = Tag.getTags(activity).get(catInfo.get(0).intValue());
                 if (cat != null && alreadyProcessedCategories.get(cat.getCat()) == null) {
                     alreadyProcessedCategories.put(cat.getCat(), true);
-                    data.add(new VNDetailsElement.Data().setText1("<b>" + Category.CATEGORIES.get(cat.getCat()) + " :</b>"));
+                    data.add(new VNDetailsElement.Data().setText1("<b>" + Category.INSTANCE.getCATEGORIES().get(cat.getCat()) + " :</b>"));
 
                     for (List<Number> tagInfo : activity.getVn().getTags()) {
                         if (!Tag.checkSpoilerLevel(activity, tagInfo.get(2).intValue())) continue;
@@ -291,7 +291,7 @@ public class VNDetailsFactory {
             for (List<Number> tagInfo : activity.getVn().getTags()) {
                 if (!Tag.checkSpoilerLevel(activity, tagInfo.get(2).intValue())) continue;
                 Tag tag = Tag.getTags(activity).get(tagInfo.get(0).intValue());
-                if (tag != null && Genre.contains(tag.getName())) {
+                if (tag != null && Genre.INSTANCE.contains(tag.getName())) {
                     data.add(new VNDetailsElement.Data().setText1(tag.getName()));
                 }
             }
@@ -386,7 +386,7 @@ public class VNDetailsFactory {
                 String role = staff.getRole();
                 if (role != null && alreadyProcessedRoles.get(role) == null) {
                     alreadyProcessedRoles.put(role, true);
-                    data.add(new VNDetailsElement.Data().setText1("<b>" + Category.CATEGORIES.get(role) + " :</b>"));
+                    data.add(new VNDetailsElement.Data().setText1("<b>" + Category.INSTANCE.getCATEGORIES().get(role) + " :</b>"));
 
                     for (VnStaff staffInfo : activity.getVn().getStaff()) {
                         if (staffInfo != null && staffInfo.getRole().equals(role)) {
@@ -418,8 +418,8 @@ public class VNDetailsFactory {
         } else {
             for (String language : activity.getReleases().keySet()) {
                 data.add(new VNDetailsElement.Data()
-                        .setText1("<b>" + Language.FULL_TEXT.get(language) + " :</b>")
-                        .setImage1(Language.FLAGS.get(language)));
+                        .setText1("<b>" + Language.INSTANCE.getFULL_TEXT().get(language) + " :</b>")
+                        .setImage1(Language.INSTANCE.getFLAGS().get(language)));
 
                 for (Item release : activity.getReleases().get(language)) {
                     data.add(new VNDetailsElement.Data()

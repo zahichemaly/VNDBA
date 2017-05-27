@@ -36,7 +36,7 @@ public class RankingNewlyReleasedFragment extends Fragment {
         progressiveResultLoader.setCallback(new ProgressiveResultLoader.ProgressiveResultLoaderCallback() {
             @Override
             public void onResultsLoaded() {
-                options = ProgressiveResultLoaderOptions.build(progressiveResultLoader);
+                options = ProgressiveResultLoaderOptions.Companion.build(progressiveResultLoader);
             }
         });
 

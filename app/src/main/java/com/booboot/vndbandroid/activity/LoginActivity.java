@@ -31,7 +31,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTheme(Theme.THEMES.get(SettingsManager.getTheme(this)).getNoActionBarStyle());
+        setTheme(Theme.Companion.getTHEMES().get(SettingsManager.getTheme(this)).getNoActionBarStyle());
         setContentView(R.layout.login);
 
         Window window = getWindow();
