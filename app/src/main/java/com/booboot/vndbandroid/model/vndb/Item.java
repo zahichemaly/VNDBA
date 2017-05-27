@@ -362,7 +362,7 @@ public class Item extends VNDBCommand {
             Collections.sort(relations, new Comparator<Relation>() {
                 @Override
                 public int compare(Relation lhs, Relation rhs) {
-                    return Integer.valueOf(Relation.TYPES_KEY.indexOf(lhs.getRelation())).compareTo(Relation.TYPES_KEY.indexOf(rhs.getRelation()));
+                    return Integer.valueOf(Relation.Companion.getTYPES_KEY().indexOf(lhs.getRelation())).compareTo(Relation.Companion.getTYPES_KEY().indexOf(rhs.getRelation()));
                 }
             });
             this.relations = relations;

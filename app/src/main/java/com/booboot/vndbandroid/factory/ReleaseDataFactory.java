@@ -58,7 +58,7 @@ public class ReleaseDataFactory {
         List<String> media = new ArrayList<>();
         if (release.getMedia() != null) {
             for (Media medium : release.getMedia()) {
-                media.add(Media.FULL_TEXT.get(medium.getMedium()) + (medium.getQty() > 0 ? " (" + medium.getQty() + ")" : ""));
+                media.add(Media.Companion.getFULL_TEXT().get(medium.getMedium()) + (medium.getQty() > 0 ? " (" + medium.getQty() + ")" : ""));
             }
         }
         releaseData.add(new DoubleListElement("Medium", TextUtils.join(", ", media), false));
@@ -76,9 +76,9 @@ public class ReleaseDataFactory {
         producers.put("Publisher", new ArrayList<String>());
         if (release.getProducers() != null) {
             for (Producer producer : release.getProducers()) {
-                if (producer.isDeveloper())
+                if (producer.getDeveloper())
                     producers.get("Developer").add(producer.getName());
-                if (producer.isPublisher())
+                if (producer.getPublisher())
                     producers.get("Publisher").add(producer.getName());
             }
         }

@@ -102,7 +102,7 @@ public class VNDBServer {
                 if (!connect(socketIndex)) return;
                 String username = SettingsManager.getUsername(context).toLowerCase().trim();
                 String password = SettingsManager.getPassword(context);
-                VNDBCommand response = sendCommand("login ", Login.create(PROTOCOL, CLIENT, CLIENTVER, username, password), socketIndex);
+                VNDBCommand response = sendCommand("login ", new Login(PROTOCOL, CLIENT, CLIENTVER, username, password), socketIndex);
                 if (!(response instanceof Ok)) {
                     // Closing the socket to avoid subsequent login errors
                     close(socketIndex);
@@ -132,7 +132,7 @@ public class VNDBServer {
                     for (int i = 0; i < options.getNumberOfPages(); i++) {
                         threadManager.execute(new NumberedThread(i) {
                             public void run() {
-                                Options threadOptions = Options.create(options);
+                                Options threadOptions = Options.Companion.create(options);
                                 threadOptions.setPage(num + 1);
                                 plPageResults[num] = sendCommand(command.toString(), threadOptions, num);
                             }
@@ -174,7 +174,7 @@ public class VNDBServer {
 
                         if (options == null || pageResults == null) break;
                         options.setPage(options.getPage() + 1);
-                    } while (options.isFetchAllPages() && pageResults instanceof Results && ((Results) pageResults).isMore());
+                    } while (options.getFetchAllPages() && pageResults instanceof Results && ((Results) pageResults).getMore());
 
                     if (results instanceof Results && pageResults != null) {
                         successCallback.results = (Results) results;
@@ -275,7 +275,7 @@ public class VNDBServer {
                                 /* For some reason we weren't able to sleep, so we can ignore the exception and keep rolling anyway */
                             }
                         } else {
-                            errorCallback.message = error.getFullMessage();
+                            errorCallback.message = error.fullMessage();
                             errorCallback.call();
                         }
                     }
@@ -354,7 +354,7 @@ public class VNDBServer {
         try {
             String command = response.substring(0, delimiterIndex).trim();
             String params = response.substring(delimiterIndex, response.length()).replace(EOM + "", "");
-            return (VNDBCommand) JSON.mapper.readValue(params, VNDBCommand.getClass(command));
+            return JSON.mapper.readValue(params, VNDBCommand.Companion.getClass(command));
         } catch (IOException ioe) {
             Utils.processException(ioe);
             VNDBServer.close(socketIndex);

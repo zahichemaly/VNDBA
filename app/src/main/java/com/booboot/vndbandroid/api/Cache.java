@@ -49,7 +49,7 @@ public class Cache {
     public static LinkedHashMap<Integer, List<SimilarNovel>> similarNovels = new LinkedHashMap<>();
 
     public final static String VN_FLAGS = "basic,details,screens,tags,stats,relations,anime,staff";
-    public final static String CHARACTER_FLAGS = "basic,details,meas,traits,vns";
+    public final static String CHARACTER_FLAGS = "basic,details,meas,traits,vns,voiced";
     public final static String RELEASE_FLAGS = "basic,details,producers";
 
     private final static String DBSTATS_CACHE = "dbstats.data";
@@ -84,7 +84,7 @@ public class Cache {
                 pipeliningError = false;
                 countDownLatch = new CountDownLatch(3);
 
-                VNDBServer.get("vnlist", "basic", "(uid = 0)", Options.create(1, 100, null, false, true, 0), 0, context, new Callback() {
+                VNDBServer.get("vnlist", "basic", "(uid = 0)", Options.Companion.create(1, 100, null, false, true, 0), 0, context, new Callback() {
                     @Override
                     public void config() {
                         for (Item vnlistItem : results.getItems()) {
@@ -94,7 +94,7 @@ public class Cache {
                     }
                 }, errorCallback);
 
-                VNDBServer.get("votelist", "basic", "(uid = 0)", Options.create(1, 100, null, false, true, 0), 1, context, new Callback() {
+                VNDBServer.get("votelist", "basic", "(uid = 0)", Options.Companion.create(1, 100, null, false, true, 0), 1, context, new Callback() {
                     @Override
                     protected void config() {
                         for (Item votelistItem : results.getItems()) {
@@ -104,7 +104,7 @@ public class Cache {
                     }
                 }, errorCallback);
 
-                VNDBServer.get("wishlist", "basic", "(uid = 0)", Options.create(1, 100, null, false, true, 0), 2, context, new Callback() {
+                VNDBServer.get("wishlist", "basic", "(uid = 0)", Options.Companion.create(1, 100, null, false, true, 0), 2, context, new Callback() {
                     @Override
                     protected void config() {
                         for (Item wishlistItem : results.getItems()) {
@@ -140,7 +140,7 @@ public class Cache {
 
                 mergedIdsString = TextUtils.join(",", mergedIds);
                 int numberOfPages = (int) Math.ceil(mergedIds.size() * 1.0 / 25);
-                VNDBServer.get("vn", VN_FLAGS, "(id = [" + mergedIdsString + "])", Options.create(true, numberOfPages), 0, context, new Callback() {
+                VNDBServer.get("vn", VN_FLAGS, "(id = [" + mergedIdsString + "])", Options.Companion.create(true, numberOfPages), 0, context, new Callback() {
                     @Override
                     protected void config() {
                         for (Item vn : results.getItems()) {
@@ -295,7 +295,7 @@ public class Cache {
             return;
         }
 
-        VNDBServer.get("vn", Cache.VN_FLAGS, "(id = " + vnId + ")", Options.create(false, 1), 0, activity, new Callback() {
+        VNDBServer.get("vn", Cache.VN_FLAGS, "(id = " + vnId + ")", Options.Companion.create(false, 1), 0, activity, new Callback() {
             @Override
             protected void config() {
                 if (!results.getItems().isEmpty()) {

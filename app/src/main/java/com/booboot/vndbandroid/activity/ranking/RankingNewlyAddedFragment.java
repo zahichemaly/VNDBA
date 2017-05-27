@@ -24,7 +24,7 @@ public class RankingNewlyAddedFragment extends Fragment {
         progressiveResultLoader = new ProgressiveResultLoader();
         progressiveResultLoader.setActivity(getActivity());
         progressiveResultLoader.setRootView(rootView);
-        progressiveResultLoader.setOptions(Options.create(1, 25, "id", true, false, 1));
+        progressiveResultLoader.setOptions(Options.Companion.create(1, 25, "id", true, false, 1));
         progressiveResultLoader.setShowFullDate(true);
         progressiveResultLoader.setShowRank(true);
         progressiveResultLoader.setFilters("(id > 1)");

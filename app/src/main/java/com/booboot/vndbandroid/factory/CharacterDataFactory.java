@@ -35,7 +35,7 @@ public class CharacterDataFactory {
         final List<DoubleListElement> characterData = new ArrayList<>();
         if (character.getDescription() != null) {
             String descriptionWithoutSpoilers = character.getDescription();
-            if (!Tag.checkSpoilerLevel(activity, 2)) {
+            if (!Tag.Companion.checkSpoilerLevel(activity, 2)) {
                 descriptionWithoutSpoilers = descriptionWithoutSpoilers.replaceAll("\\[spoiler\\][\\s\\S]*\\[/spoiler\\]", "");
             }
             characterData.add(new DoubleListElement("Description", descriptionWithoutSpoilers, true));
@@ -66,15 +66,15 @@ public class CharacterDataFactory {
         TreeMap<Integer, List<Trait>> characterTraits = new TreeMap<>();
         for (int[] ids : character.getTraits()) {
             int id = ids[0];
-            if (!Tag.checkSpoilerLevel(activity, ids[1])) continue;
+            if (!Tag.Companion.checkSpoilerLevel(activity, ids[1])) continue;
 
-            Trait trait = Trait.getTraits(activity).get(id);
+            Trait trait = Trait.Companion.getTraits(activity).get(id);
             if (trait == null) continue;
             Trait rootTrait = trait;
             /* Getting the root element recursively (which will be the name displayed at the left) */
             while (!rootTrait.getParents().isEmpty()) {
                 int rootId = rootTrait.getParents().get(0);
-                Trait parentTrait = Trait.getTraits(activity).get(rootId);
+                Trait parentTrait = Trait.Companion.getTraits(activity).get(rootId);
                 if (parentTrait == null) break;
                 rootTrait = parentTrait;
             }
@@ -85,7 +85,7 @@ public class CharacterDataFactory {
         }
 
         for (Integer parentId : characterTraits.keySet()) {
-            Trait parentTrait = Trait.getTraits(activity).get(parentId);
+            Trait parentTrait = Trait.Companion.getTraits(activity).get(parentId);
             characterData.add(new DoubleListElement(parentTrait.getName(), TextUtils.join(", ", characterTraits.get(parentId)), false));
         }
 
