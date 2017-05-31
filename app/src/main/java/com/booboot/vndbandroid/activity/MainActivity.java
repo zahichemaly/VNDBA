@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public int selectedItem;
     private NavigationView navigationView;
     private ConnectionReceiver connectionReceiver;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setTheme(Theme.Companion.getTHEMES().get(SettingsManager.getTheme(this)).getNoActionBarStyle());
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -333,6 +335,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Crashlytics.setInt("VNLIST SIZE", Cache.vnlist.size());
         Crashlytics.setInt("VOTELIST SIZE", Cache.votelist.size());
         Crashlytics.setInt("WISHLIST SIZE", Cache.wishlist.size());
+    }
+
+    public void enableToolbarScroll(boolean enabled) {
+        if (toolbar == null) return;
+        AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
+        params.setScrollFlags(enabled ? AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS : 0);
     }
 
     @Override

@@ -2,9 +2,11 @@ package com.booboot.vndbandroid.activity;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -85,6 +87,18 @@ public class VNListFragment extends Fragment implements TabLayout.OnTabSelectedL
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        ((MainActivity) getActivity()).enableToolbarScroll(true);
+    }
+
+    @Override
+    public void onStop() {
+        ((MainActivity) getActivity()).enableToolbarScroll(false);
+        super.onStop();
     }
 
     @Override
