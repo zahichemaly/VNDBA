@@ -2,9 +2,11 @@ package com.booboot.vndbandroid.factory;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.booboot.vndbandroid.R;
+import com.booboot.vndbandroid.activity.MainActivity;
 import com.booboot.vndbandroid.adapter.vncards.Card;
 import com.booboot.vndbandroid.adapter.vncards.VNCardsAdapter;
 import com.booboot.vndbandroid.api.Cache;
@@ -13,9 +15,9 @@ import com.booboot.vndbandroid.model.vndbandroid.Priority;
 import com.booboot.vndbandroid.model.vndbandroid.Status;
 import com.booboot.vndbandroid.model.vndbandroid.Vote;
 import com.booboot.vndbandroid.util.GridAutofitLayoutManager;
-import com.booboot.vndbandroid.util.image.Pixels;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
+import com.booboot.vndbandroid.util.image.Pixels;
 
 /**
  * Created by od on 17/04/2016.
@@ -65,8 +67,25 @@ public class VNCardFactory {
         ((VNCardsAdapter) materialListView.getAdapter()).addCard(card);
     }
 
-    public static void setupList(Context context, RecyclerView materialListView) {
+    public static void setupList(final Context context, RecyclerView materialListView) {
         materialListView.setLayoutManager(new GridAutofitLayoutManager(context, Pixels.px(300, context)));
         materialListView.setAdapter(new VNCardsAdapter(context));
+        if (context instanceof MainActivity) {
+            /* Automatically hide the FAB button when reaching the bottom of the RecyclerView (only in MainActivity of course) */
+            materialListView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    if (dy > 0) {
+                        int visibleItemCount = recyclerView.getLayoutManager().getChildCount();
+                        int totalItemCount = recyclerView.getLayoutManager().getItemCount();
+                        int pastVisiblesItems = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+
+                        ((MainActivity) context).toggleFloatingSearchButton(visibleItemCount + pastVisiblesItems < totalItemCount);
+                    } else {
+                        ((MainActivity) context).toggleFloatingSearchButton(true);
+                    }
+                }
+            });
+        }
     }
 }

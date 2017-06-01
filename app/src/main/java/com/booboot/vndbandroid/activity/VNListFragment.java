@@ -90,18 +90,6 @@ public class VNListFragment extends Fragment implements TabLayout.OnTabSelectedL
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        ((MainActivity) getActivity()).enableToolbarScroll(true);
-    }
-
-    @Override
-    public void onStop() {
-        ((MainActivity) getActivity()).enableToolbarScroll(false);
-        super.onStop();
-    }
-
-    @Override
     public void onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.action_filter).setVisible(true);
         menu.findItem(R.id.action_sort).setVisible(true);

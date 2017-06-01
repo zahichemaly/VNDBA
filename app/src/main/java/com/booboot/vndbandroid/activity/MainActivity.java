@@ -48,6 +48,7 @@ import com.crashlytics.android.Crashlytics;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -60,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private NavigationView navigationView;
     private ConnectionReceiver connectionReceiver;
     private Toolbar toolbar;
+    private FloatingActionButton floatingSearchButton;
+    private DrawerLayout drawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         if (drawer != null) {
             drawer.setDrawerListener(toggle);
@@ -98,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ImageView headerBackground = (ImageView) header.findViewById(R.id.headerBackground);
         Picasso.with(this).load(Theme.Companion.getTHEMES().get(SettingsManager.getTheme(this)).getWallpaper()).transform(new BlurIfDemoTransform(this)).into(headerBackground);
 
-        FloatingActionButton floatingSearchButton = (FloatingActionButton) findViewById(R.id.floatingSearchButton);
+        floatingSearchButton = (FloatingActionButton) findViewById(R.id.floatingSearchButton);
         if (floatingSearchButton != null) {
             floatingSearchButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -124,6 +127,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 navigationView.getMenu().getItem(0).setChecked(true);
                 onNavigationItemSelected(navigationView.getMenu().getItem(0));
             }
+        } else {
+            enableToolbarScroll(oldFragment instanceof VNListFragment);
         }
 
         updateMenuCounters();
@@ -137,8 +142,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
+        if (drawer != null && drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else if (searchView != null && !searchView.isIconified()) {
             searchView.setIconified(true);
@@ -270,9 +274,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         directSubfragment.setArguments(args);
         getFragmentManager().beginTransaction().replace(R.id.fragment_container, directSubfragment, "FRAGMENT").addToBackStack(null).commit();
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer != null)
-            drawer.closeDrawer(GravityCompat.START);
+        if (drawer != null) drawer.closeDrawer(GravityCompat.START);
+        toggleFloatingSearchButton(id != R.id.nav_settings);
+        enableToolbarScroll(Arrays.asList(R.id.nav_vnlist, R.id.nav_votelist, R.id.nav_wishlist).contains(id));
+
         return true;
     }
 
@@ -341,6 +346,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (toolbar == null) return;
         AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
         params.setScrollFlags(enabled ? AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS : 0);
+    }
+
+    public void toggleFloatingSearchButton(boolean show) {
+        if (floatingSearchButton == null) return;
+        if (show) floatingSearchButton.show();
+        else floatingSearchButton.hide();
     }
 
     @Override

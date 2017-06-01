@@ -39,9 +39,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-/**
- * Created by od on 13/03/2016.
- */
 public class RecommendationsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
     private View rootView;
     public static List<SimilarNovel> recommendations;

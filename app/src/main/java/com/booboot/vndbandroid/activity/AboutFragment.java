@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.widget.NestedScrollView;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -18,12 +19,10 @@ import com.booboot.vndbandroid.BuildConfig;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.model.vndb.Links;
 import com.booboot.vndbandroid.util.Utils;
+import com.booboot.vndbandroid.util.image.Pixels;
 
 import java.util.Date;
 
-/**
- * Created by od on 11/06/2016.
- */
 public class AboutFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -33,6 +32,7 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
         TextView appVersion = (TextView) rootView.findViewById(R.id.appVersion);
         appVersion.setText(BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ")");
 
+        NestedScrollView scrollView = (NestedScrollView) rootView.findViewById(R.id.scrollView);
         TextView thanksTextView = (TextView) rootView.findViewById(R.id.thanksTextView);
         Button feedbackButton = (Button) rootView.findViewById(R.id.feedbackButton);
         Button githubButton = (Button) rootView.findViewById(R.id.githubButton);
@@ -51,6 +51,14 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
         githubButton.setOnClickListener(this);
         feedbackButton.setOnClickListener(this);
         vnstatButton.setOnClickListener(this);
+        scrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                View view = v.getChildAt(v.getChildCount() - 1);
+                int diff = (view.getBottom() - (v.getHeight() + v.getScrollY()));
+                ((MainActivity) getActivity()).toggleFloatingSearchButton(scrollY <= oldScrollY || diff > Pixels.px(35, v.getContext()));
+            }
+        });
 
         return rootView;
     }

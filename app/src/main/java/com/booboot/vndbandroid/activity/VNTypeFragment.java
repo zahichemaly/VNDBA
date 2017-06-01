@@ -12,19 +12,16 @@ import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.adapter.vncards.RecyclerItemClickListener;
 import com.booboot.vndbandroid.adapter.vncards.VNCardsListView;
 import com.booboot.vndbandroid.api.Cache;
+import com.booboot.vndbandroid.factory.FastScrollerFactory;
+import com.booboot.vndbandroid.factory.VNCardFactory;
 import com.booboot.vndbandroid.model.vndbandroid.VNlistItem;
 import com.booboot.vndbandroid.model.vndbandroid.VotelistItem;
 import com.booboot.vndbandroid.model.vndbandroid.WishlistItem;
-import com.booboot.vndbandroid.factory.FastScrollerFactory;
-import com.booboot.vndbandroid.factory.VNCardFactory;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.Utils;
 
 import java.util.ArrayList;
 
-/**
- * Created by od on 09/03/2016.
- */
 public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     public final static String TAB_VALUE_ARG = "STATUS";
     public final static String VN_ARG = "VN";

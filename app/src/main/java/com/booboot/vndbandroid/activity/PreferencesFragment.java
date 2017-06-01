@@ -24,7 +24,6 @@ public class PreferencesFragment extends PreferenceFragment implements Preferenc
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.pref_general);
         setHasOptionsMenu(true);
-        Utils.setTitle(getActivity(), getActivity().getResources().getString(R.string.preferences));
         bindPreferenceSummaryToValueListener = this;
 
         // Bind the summaries of EditText/List/Dialog/Ringtone preferences to their values. When their values change, their summaries are
@@ -41,6 +40,7 @@ public class PreferencesFragment extends PreferenceFragment implements Preferenc
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
         view.setBackgroundColor(getResources().getColor(android.R.color.white));
+        Utils.setTitle(getActivity(), getActivity().getResources().getString(R.string.preferences));
         return view;
     }
 
