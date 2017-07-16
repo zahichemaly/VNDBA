@@ -14,7 +14,6 @@ import com.booboot.vndbandroid.adapter.vncards.VNCardsListView;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.factory.FastScrollerFactory;
 import com.booboot.vndbandroid.factory.VNCardFactory;
-import com.booboot.vndbandroid.model.vndbandroid.ListType;
 import com.booboot.vndbandroid.model.vndbandroid.VNlistItem;
 import com.booboot.vndbandroid.model.vndbandroid.VotelistItem;
 import com.booboot.vndbandroid.model.vndbandroid.WishlistItem;
@@ -43,7 +42,7 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
         VNCardFactory.setupList(getActivity(), materialListView);
 
         switch (type) {
-            case ListType.VNLIST:
+            case VNListFragment.VNLIST:
                 for (final VNlistItem vn : new ArrayList<>(Cache.vnlist.values())) {
                     if (Cache.vns.get(vn.getVn()) == null) Cache.vnlist.remove(vn.getVn());
                     if (vn.getStatus() != tabValue || Cache.vns.get(vn.getVn()) == null) continue;
@@ -51,7 +50,7 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
                 }
                 break;
 
-            case ListType.VOTELIST:
+            case VNListFragment.VOTELIST:
                 for (final VotelistItem vn : new ArrayList<>(Cache.votelist.values())) {
                     if (Cache.vns.get(vn.getVn()) == null) Cache.votelist.remove(vn.getVn());
                     if (vn.getVote() / 10 != tabValue && vn.getVote() / 10 != tabValue - 1 || Cache.vns.get(vn.getVn()) == null)
@@ -60,7 +59,7 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
                 }
                 break;
 
-            case ListType.WISHLIST:
+            case VNListFragment.WISHLIST:
                 for (final WishlistItem vn : new ArrayList<>(Cache.wishlist.values())) {
                     if (Cache.vns.get(vn.getVn()) == null) Cache.wishlist.remove(vn.getVn());
                     if (vn.getPriority() != tabValue || Cache.vns.get(vn.getVn()) == null) continue;
