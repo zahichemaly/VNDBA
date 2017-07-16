@@ -166,7 +166,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
     }
 
     private void init() {
-        setTheme(Theme.Companion.getTHEMES().get(SettingsManager.getTheme(this)).getStyle());
+        setTheme(Theme.THEMES.get(SettingsManager.getTheme(this)).getStyle());
         setContentView(R.layout.vn_details);
 
         vnlistVn = Cache.vnlist.get(vn.getId());
@@ -262,9 +262,9 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         refreshLayout.setOnRefreshListener(this);
         refreshLayout.setColorSchemeColors(Utils.getThemeColor(this, R.attr.colorAccent));
 
-        statusButton.setText(Status.INSTANCE.toString(vnlistVn != null ? vnlistVn.getStatus() : -1));
-        wishlistButton.setText(Priority.INSTANCE.toString(wishlistVn != null ? wishlistVn.getPriority() : -1));
-        votesButton.setText(Vote.INSTANCE.toString(votelistVn != null ? votelistVn.getVote() : -1));
+        statusButton.setText(Status.toString(vnlistVn != null ? vnlistVn.getStatus() : -1));
+        wishlistButton.setText(Priority.toString(wishlistVn != null ? wishlistVn.getPriority() : -1));
+        votesButton.setText(Vote.toString(votelistVn != null ? votelistVn.getVote() : -1));
         toggleButtons();
 
         Utils.setButtonColor(this, statusButton);
@@ -704,7 +704,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         Collections.sort(vn.getStaff(), new Comparator<VnStaff>() {
             @Override
             public int compare(VnStaff lhs, VnStaff rhs) {
-                return Integer.valueOf(Category.INSTANCE.getCATEGORIES_KEYS().indexOf(lhs.getRole())).compareTo(Category.INSTANCE.getCATEGORIES_KEYS().indexOf(rhs.getRole()));
+                return Integer.valueOf(Category.CATEGORIES_KEYS.indexOf(lhs.getRole())).compareTo(Category.CATEGORIES_KEYS.indexOf(rhs.getRole()));
             }
         });
     }

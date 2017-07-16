@@ -7,6 +7,7 @@ import android.support.v13.app.FragmentStatePagerAdapter;
 
 import com.booboot.vndbandroid.activity.VNListFragment;
 import com.booboot.vndbandroid.activity.VNTypeFragment;
+import com.booboot.vndbandroid.model.vndbandroid.ListType;
 import com.booboot.vndbandroid.model.vndbandroid.Priority;
 import com.booboot.vndbandroid.model.vndbandroid.Status;
 
@@ -52,9 +53,9 @@ public class VNTabsAdapter extends FragmentStatePagerAdapter {
     }
 
     private int getTabValue(int vnlistValue, int votelistValue, int wishlistValue) {
-        if (type == VNListFragment.VNLIST) return vnlistValue;
-        if (type == VNListFragment.VOTELIST) return votelistValue;
-        if (type == VNListFragment.WISHLIST) return wishlistValue;
+        if (type == ListType.VNLIST) return vnlistValue;
+        if (type == ListType.VOTELIST) return votelistValue;
+        if (type == ListType.WISHLIST) return wishlistValue;
         return -1;
     }
 

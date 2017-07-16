@@ -38,6 +38,7 @@ import com.booboot.vndbandroid.activity.ranking.RankingPopularFragment;
 import com.booboot.vndbandroid.activity.ranking.RankingTopFragment;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.VNDBServer;
+import com.booboot.vndbandroid.model.vndbandroid.ListType;
 import com.booboot.vndbandroid.model.vndbandroid.Theme;
 import com.booboot.vndbandroid.util.ConnectionReceiver;
 import com.booboot.vndbandroid.util.SettingsManager;
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Cache.loadFromCache(this);
-        setTheme(Theme.Companion.getTHEMES().get(SettingsManager.getTheme(this)).getNoActionBarStyle());
+        setTheme(Theme.THEMES.get(SettingsManager.getTheme(this)).getNoActionBarStyle());
         setContentView(R.layout.activity_main);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -99,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         View header = navigationView.getHeaderView(0);
 
         ImageView headerBackground = (ImageView) header.findViewById(R.id.headerBackground);
-        Picasso.with(this).load(Theme.Companion.getTHEMES().get(SettingsManager.getTheme(this)).getWallpaper()).transform(new BlurIfDemoTransform(this)).into(headerBackground);
+        Picasso.with(this).load(Theme.THEMES.get(SettingsManager.getTheme(this)).getWallpaper()).transform(new BlurIfDemoTransform(this)).into(headerBackground);
 
         floatingSearchButton = (FloatingActionButton) findViewById(R.id.floatingSearchButton);
         if (floatingSearchButton != null) {
@@ -243,13 +244,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (id == R.id.nav_vnlist) {
             directSubfragment = new VNListFragment();
-            args.putInt(VNListFragment.LIST_TYPE_ARG, VNListFragment.VNLIST);
+            args.putInt(VNListFragment.LIST_TYPE_ARG, ListType.VNLIST);
         } else if (id == R.id.nav_votelist) {
             directSubfragment = new VNListFragment();
-            args.putInt(VNListFragment.LIST_TYPE_ARG, VNListFragment.VOTELIST);
+            args.putInt(VNListFragment.LIST_TYPE_ARG, ListType.VOTELIST);
         } else if (id == R.id.nav_wishlist) {
             directSubfragment = new VNListFragment();
-            args.putInt(VNListFragment.LIST_TYPE_ARG, VNListFragment.WISHLIST);
+            args.putInt(VNListFragment.LIST_TYPE_ARG, ListType.WISHLIST);
         } else if (id == R.id.nav_stats) {
             directSubfragment = new DatabaseStatisticsFragment();
         } else if (id == R.id.nav_top) {

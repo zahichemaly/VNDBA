@@ -467,7 +467,7 @@ public class Item extends VNDBCommand {
     }
 
     public Integer getRatingImage() {
-        return Vote.INSTANCE.getImage(rating);
+        return Vote.getImage(rating);
     }
 
     public List<Object[]> getVns() {

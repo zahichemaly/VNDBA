@@ -34,6 +34,9 @@ import com.booboot.vndbandroid.util.Utils;
 
 import java.util.Date;
 
+/**
+ * Created by od on 12/04/2016.
+ */
 public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, DialogInterface.OnClickListener, View.OnClickListener {
     private VNDetailsActivity activity;
     private Item vn;
@@ -182,11 +185,11 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
 
     private void sendSetRequest(String type, final Fields fields, final MenuItem item) {
         VNDBServer.set(type, vn.getId(), fields, activity, new Callback() {
+            @Override
             /**
              * It is necessary to make another switch here to update our cache, because if there is an error
              * during the request, our cache's state would be different from the actual account state and there would be discrepancies.
              */
-            @Override
             protected void config() {
                 if (popupButton != null)
                     popupButton.setText(item.getTitle());
@@ -377,7 +380,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
                         votelistItem.setVote(fields.getVote());
                         Cache.votelist.put(vn.getId(), votelistItem);
                         if (Cache.vns.get(vn.getId()) == null) Cache.vns.put(vn.getId(), vn);
-                        popupButton.setText(Vote.INSTANCE.toString(fields.getVote()));
+                        popupButton.setText(Vote.toString(fields.getVote()));
 
                         DB.saveVotelist(activity, true, false);
                         DB.saveVNs(activity, false, true);
@@ -449,7 +452,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
                     @Override
                     public void onClick(View v) {
                         String vote = otherVoteInput.getText().toString().trim();
-                        if (Vote.INSTANCE.isValid(vote)) {
+                        if (Vote.isValid(vote)) {
                             fields.setVote(Math.round(Float.valueOf(vote) * 10));
                             sendSetRequest(type, fields, item);
                             dialog.cancel();
@@ -482,7 +485,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
                     vnlistItem.setStatus(Status.UNKNOWN);
                     vnlistItem.setAdded((int) new Date().getTime());
                     if (popupButton != null)
-                        popupButton.setText(Status.INSTANCE.toString(Status.UNKNOWN));
+                        popupButton.setText(Status.toString(Status.UNKNOWN));
                 }
                 vnlistItem.setNotes(fields.getNotes());
                 notesTextView.setText(fields.getNotes());

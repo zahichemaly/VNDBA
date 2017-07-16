@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.adapter.tabs.VNTabsAdapter;
 import com.booboot.vndbandroid.api.Cache;
+import com.booboot.vndbandroid.model.vndbandroid.ListType;
 import com.booboot.vndbandroid.model.vndbandroid.Priority;
 import com.booboot.vndbandroid.model.vndbandroid.Status;
 import com.booboot.vndbandroid.util.Utils;
@@ -24,10 +25,6 @@ import com.booboot.vndbandroid.util.Utils;
  */
 public class VNListFragment extends Fragment implements TabLayout.OnTabSelectedListener {
     public final static String LIST_TYPE_ARG = "LIST_TYPE";
-    public final static int VNLIST = 1;
-    public final static int VOTELIST = 2;
-    public final static int WISHLIST = 3;
-
     private ViewPager viewPager;
     public static int currentPage = -1;
     private TabLayout tabLayout;
@@ -41,7 +38,7 @@ public class VNListFragment extends Fragment implements TabLayout.OnTabSelectedL
         type = getArguments().getInt(LIST_TYPE_ARG);
 
         switch (type) {
-            case VNLIST:
+            case ListType.VNLIST:
                 Utils.setTitle(getActivity(), getActivity().getResources().getString(R.string.my_visual_novel_list));
                 int[] statusCount = Cache.getStatusCount();
                 tabLayout.addTab(tabLayout.newTab().setText("Playing (" + statusCount[Status.PLAYING] + ")"));
@@ -51,7 +48,7 @@ public class VNListFragment extends Fragment implements TabLayout.OnTabSelectedL
                 tabLayout.addTab(tabLayout.newTab().setText("Unknown (" + statusCount[Status.UNKNOWN] + ")"));
                 break;
 
-            case VOTELIST:
+            case ListType.VOTELIST:
                 Utils.setTitle(getActivity(), getActivity().getResources().getString(R.string.my_votes));
                 int[] voteCount = Cache.getVoteCount();
                 tabLayout.addTab(tabLayout.newTab().setText("10 - 9 (" + voteCount[0] + ")"));
@@ -61,7 +58,7 @@ public class VNListFragment extends Fragment implements TabLayout.OnTabSelectedL
                 tabLayout.addTab(tabLayout.newTab().setText("2 - 1 (" + voteCount[4] + ")"));
                 break;
 
-            case WISHLIST:
+            case ListType.WISHLIST:
                 Utils.setTitle(getActivity(), getActivity().getResources().getString(R.string.my_wishlist));
                 int[] wishCount = Cache.getWishCount();
                 tabLayout.addTab(tabLayout.newTab().setText("High (" + wishCount[Priority.HIGH] + ")"));
@@ -114,7 +111,7 @@ public class VNListFragment extends Fragment implements TabLayout.OnTabSelectedL
      */
     public void refreshTitles() {
         switch (type) {
-            case VNLIST:
+            case ListType.VNLIST:
                 if (tabLayout.getTabCount() < 5) return;
                 int[] statusCount = Cache.getStatusCount();
                 tabLayout.getTabAt(0).setText("Playing (" + statusCount[Status.PLAYING] + ")");
@@ -124,7 +121,7 @@ public class VNListFragment extends Fragment implements TabLayout.OnTabSelectedL
                 tabLayout.getTabAt(4).setText("Unknown (" + statusCount[Status.UNKNOWN] + ")");
                 break;
 
-            case VOTELIST:
+            case ListType.VOTELIST:
                 if (tabLayout.getTabCount() < 5) return;
                 int[] voteCount = Cache.getVoteCount();
                 tabLayout.getTabAt(0).setText("10 - 9 (" + voteCount[0] + ")");
@@ -134,7 +131,7 @@ public class VNListFragment extends Fragment implements TabLayout.OnTabSelectedL
                 tabLayout.getTabAt(4).setText("2 - 1 (" + voteCount[4] + ")");
                 break;
 
-            case WISHLIST:
+            case ListType.WISHLIST:
                 if (tabLayout.getTabCount() < 4) return;
                 int[] wishCount = Cache.getWishCount();
                 tabLayout.getTabAt(0).setText("High (" + wishCount[Priority.HIGH] + ")");

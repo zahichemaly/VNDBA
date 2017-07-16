@@ -29,7 +29,7 @@ public class VNCardFactory {
             title.append("#").append(materialListView.getAdapter().getItemCount() + 1).append(activity.getString(R.string.dash));
         title.append(vn.getTitle());
         if (showRating)
-            subtitle.append(vn.getRating()).append(" (").append(Vote.INSTANCE.getName(vn.getRating())).append(")");
+            subtitle.append(vn.getRating()).append(" (").append(Vote.getName(vn.getRating())).append(")");
         else if (showPopularity)
             subtitle.append(vn.getPopularity()).append("%");
         else if (showVoteCount)
@@ -53,15 +53,15 @@ public class VNCardFactory {
             card.setImageUrl(vn.getImage());
 
         if (Cache.vnlist.get(vn.getId()) != null)
-            card.setStatus(Status.INSTANCE.toShortString(Cache.vnlist.get(vn.getId()).getStatus()));
+            card.setStatus(Status.toShortString(Cache.vnlist.get(vn.getId()).getStatus()));
         else card.setStatus(activity.getString(R.string.dash));
 
         if (Cache.wishlist.get(vn.getId()) != null)
-            card.setWish(Priority.INSTANCE.toShortString(Cache.wishlist.get(vn.getId()).getPriority()));
+            card.setWish(Priority.toShortString(Cache.wishlist.get(vn.getId()).getPriority()));
         else card.setWish(activity.getString(R.string.dash));
 
         if (Cache.votelist.get(vn.getId()) != null)
-            card.setVote(Vote.INSTANCE.toShortString(Cache.votelist.get(vn.getId()).getVote()) + "");
+            card.setVote(Vote.toShortString(Cache.votelist.get(vn.getId()).getVote()) + "");
         else card.setVote(activity.getString(R.string.dash));
 
         ((VNCardsAdapter) materialListView.getAdapter()).addCard(card);

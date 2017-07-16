@@ -13,7 +13,7 @@ public class URLActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTheme(Theme.Companion.getTHEMES().get(SettingsManager.getTheme(this)).getStyle());
+        setTheme(Theme.THEMES.get(SettingsManager.getTheme(this)).getStyle());
 
         Uri data = getIntent().getData();
         String url = data.toString().substring(getPackageName().length() + 3);
