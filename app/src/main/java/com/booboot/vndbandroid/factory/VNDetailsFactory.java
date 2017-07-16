@@ -52,7 +52,7 @@ public class VNDetailsFactory {
         List<VNDetailsElement.Data> descriptionData = new ArrayList<>();
         if (vn.getDescription() != null) {
             String descriptionWithoutSpoilers = vn.getDescription();
-            if (!Tag.Companion.checkSpoilerLevel(activity, 2)) {
+            if (!Tag.checkSpoilerLevel(activity, 2)) {
                 descriptionWithoutSpoilers = descriptionWithoutSpoilers.replaceAll("\\[spoiler\\][\\s\\S]*\\[/spoiler\\]", "");
             }
             descriptionData.add(new VNDetailsElement.Data().setText1(descriptionWithoutSpoilers));
@@ -119,7 +119,7 @@ public class VNDetailsFactory {
             for (List<Item> releases : activity.getReleases().values()) {
                 for (Item release : releases) {
                     for (Producer producer : release.getProducers()) {
-                        if (producer.getDeveloper()) {
+                        if (producer.isDeveloper()) {
                             developers.add(producer.getName());
                         }
                     }
@@ -214,7 +214,7 @@ public class VNDetailsFactory {
             for (Relation relation : activity.getVn().getRelations()) {
                 data.add(new VNDetailsElement.Data()
                         .setText1(relation.getTitle())
-                        .setText2(Relation.Companion.getTYPES().get(relation.getRelation()))
+                        .setText2(Relation.TYPES.get(relation.getRelation()))
                         .setId(relation.getId()));
             }
 
@@ -258,17 +258,17 @@ public class VNDetailsFactory {
         } else {
             Map<String, Boolean> alreadyProcessedCategories = new HashMap<>();
             for (List<Number> catInfo : activity.getVn().getTags()) {
-                if (!Tag.Companion.checkSpoilerLevel(activity, catInfo.get(2).intValue())) continue;
-                Tag cat = Tag.Companion.getTags(activity).get(catInfo.get(0).intValue());
+                if (!Tag.checkSpoilerLevel(activity, catInfo.get(2).intValue())) continue;
+                Tag cat = Tag.getTags(activity).get(catInfo.get(0).intValue());
                 if (cat != null && alreadyProcessedCategories.get(cat.getCat()) == null) {
                     alreadyProcessedCategories.put(cat.getCat(), true);
                     data.add(new VNDetailsElement.Data().setText1("<b>" + Category.INSTANCE.getCATEGORIES().get(cat.getCat()) + " :</b>"));
 
                     for (List<Number> tagInfo : activity.getVn().getTags()) {
-                        if (!Tag.Companion.checkSpoilerLevel(activity, tagInfo.get(2).intValue())) continue;
-                        Tag tag = Tag.Companion.getTags(activity).get(tagInfo.get(0).intValue());
+                        if (!Tag.checkSpoilerLevel(activity, tagInfo.get(2).intValue())) continue;
+                        Tag tag = Tag.getTags(activity).get(tagInfo.get(0).intValue());
                         if (tag != null && tag.getCat().equals(cat.getCat())) {
-                            data.add(new VNDetailsElement.Data().setText1(tag.getName()).setImage1(Tag.Companion.getScoreImage(tagInfo)).setId(tag.getId()));
+                            data.add(new VNDetailsElement.Data().setText1(tag.getName()).setImage1(Tag.getScoreImage(tagInfo)).setId(tag.getId()));
                         }
                     }
                 }
@@ -289,8 +289,8 @@ public class VNDetailsFactory {
             activity.setGenresSubmenu(new VNDetailsElement(data, VNDetailsElement.TYPE_TEXT));
         } else {
             for (List<Number> tagInfo : activity.getVn().getTags()) {
-                if (!Tag.Companion.checkSpoilerLevel(activity, tagInfo.get(2).intValue())) continue;
-                Tag tag = Tag.Companion.getTags(activity).get(tagInfo.get(0).intValue());
+                if (!Tag.checkSpoilerLevel(activity, tagInfo.get(2).intValue())) continue;
+                Tag tag = Tag.getTags(activity).get(tagInfo.get(0).intValue());
                 if (tag != null && Genre.INSTANCE.contains(tag.getName())) {
                     data.add(new VNDetailsElement.Data().setText1(tag.getName()));
                 }
@@ -311,7 +311,7 @@ public class VNDetailsFactory {
             activity.setScreensSubmenu(new VNDetailsElement(data, VNDetailsElement.TYPE_IMAGES));
         } else {
             for (Screen screenshot : activity.getVn().getScreens()) {
-                if (screenshot.getNsfw() && activity.nsfwLevel <= 0) continue;
+                if (screenshot.isNsfw() && activity.nsfwLevel <= 0) continue;
                 data.add(new VNDetailsElement.Data().setText1(screenshot.getImage()));
             }
 
@@ -351,7 +351,7 @@ public class VNDetailsFactory {
                     /* Checking only the character for the current VN */
                     if ((int) spoilerInfo[0] != activity.getVn().getId()) continue;
                     /* If at least one release tags the character's spoiler level beyond our desired spoiler level, we totally hide it */
-                    if (!Tag.Companion.checkSpoilerLevel(activity, (int) spoilerInfo[2])) {
+                    if (!Tag.checkSpoilerLevel(activity, (int) spoilerInfo[2])) {
                         spoilerOk = false;
                         break;
                     }

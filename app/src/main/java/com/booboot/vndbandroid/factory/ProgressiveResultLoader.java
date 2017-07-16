@@ -116,7 +116,7 @@ public class ProgressiveResultLoader implements SwipeRefreshLayout.OnRefreshList
         VNDBServer.get("vn", Cache.VN_FLAGS, filters, options, 0, activity, new Callback() {
             @Override
             protected void config() {
-                moreResults = results.getMore();
+                moreResults = results.isMore();
                 if (clearData)
                     materialListView.getAdapter().clearAll();
 

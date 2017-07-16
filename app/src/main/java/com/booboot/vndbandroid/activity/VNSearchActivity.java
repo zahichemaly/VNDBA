@@ -160,7 +160,7 @@ public class VNSearchActivity extends AppCompatActivity {
         tagsInput.allowDuplicates(false);
         tagsInput.performBestGuess(false);
         tagsInput.setThreshold(1);
-        ArrayAdapter<Tag> adapter = new TagFilteredArrayAdapter(this, R.layout.token_autocomplete_list, Tag.Companion.getTagsArray(this), tagsInput);
+        ArrayAdapter<Tag> adapter = new TagFilteredArrayAdapter(this, R.layout.token_autocomplete_list, Tag.getTagsArray(this), tagsInput);
         tagsInput.setAdapter(adapter);
         tagsInput.setTokenClickStyle(TokenCompleteTextView.TokenClickStyle.Delete);
 

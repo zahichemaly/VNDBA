@@ -122,7 +122,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
 
                 if (getGroup(listPosition).equals(VNDetailsFactory.TITLE_TAGS)) {
                     if (elementData.id > 0) {
-                        Tag tag = Tag.Companion.getTags(activity).get(elementData.id);
+                        Tag tag = Tag.getTags(activity).get(elementData.id);
                         if (tag != null) {
                             convertView.setOnClickListener(new DoubleListListener(activity, tag.getName(), TagDataFactory.getData(tag), null));
                         }

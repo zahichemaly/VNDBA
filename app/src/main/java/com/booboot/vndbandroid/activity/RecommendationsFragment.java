@@ -151,7 +151,7 @@ public class RecommendationsFragment extends Fragment implements SwipeRefreshLay
 
         int userId = SettingsManager.getUserId(getActivity());
         if (userId < 0) {
-            VNDBServer.get("user", "basic", "(id = 0)", Options.Companion.create(false, 1), 0, getActivity(), new Callback() {
+            VNDBServer.get("user", "basic", "(id = 0)", Options.create(false, 1), 0, getActivity(), new Callback() {
                 @Override
                 protected void config() {
                     if (results.getItems().size() > 0) {

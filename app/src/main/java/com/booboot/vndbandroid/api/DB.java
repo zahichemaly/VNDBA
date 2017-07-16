@@ -676,7 +676,7 @@ public class DB extends SQLiteOpenHelper {
                         .append(item.getId()).append(",")
                         .append(formatString(screen.getImage())).append(",")
                         .append(screen.getRid()).append(",")
-                        .append(formatBool(screen.getNsfw())).append(",")
+                        .append(formatBool(screen.isNsfw())).append(",")
                         .append(screen.getHeight()).append(",")
                         .append(screen.getWidth())
                         .append("),");
@@ -957,8 +957,8 @@ public class DB extends SQLiteOpenHelper {
                 queries[5].append("(")
                         .append(release.getId()).append(",")
                         .append(producer.getId()).append(",")
-                        .append(formatBool(producer.getDeveloper())).append(",")
-                        .append(formatBool(producer.getPublisher()))
+                        .append(formatBool(producer.isDeveloper())).append(",")
+                        .append(formatBool(producer.isPublisher()))
                         .append("),");
                 itemsToInsert[5] = checkInsertLimit(db, queries[5], itemsToInsert[5], TABLE_RELEASE_PRODUCER);
 
