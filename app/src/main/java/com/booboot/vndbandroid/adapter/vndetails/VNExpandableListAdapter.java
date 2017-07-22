@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -196,9 +197,18 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
 
                     case VNDetailsFactory.TITLE_CHARACTERS:
                         // TODO : use Cache.characters for O(1) instead of O(n) loop?
-                        for (Item character : activity.getCharacters()) {
+                        for (final Item character : activity.getCharacters()) {
                             if (character.getId() == elementData.id) {
                                 convertView.setOnClickListener(new DoubleListListener(activity, character.getName(), CharacterDataFactory.getData(activity, character), null));
+
+                                itemButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        // TODO: filter for vid = activity.getVn().getId()
+                                        // TODO: hide voiced icon if the filtered list is empty
+                                        Log.e("D", "STAFF ASSOCIATED : " + character.getVoiced());
+                                    }
+                                });
                                 break;
                             }
                         }

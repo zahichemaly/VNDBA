@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.booboot.vndbandroid.model.vndb.Anime;
+import com.booboot.vndbandroid.model.vndb.CharacterVoiced;
 import com.booboot.vndbandroid.model.vndb.Item;
 import com.booboot.vndbandroid.model.vndb.Links;
 import com.booboot.vndbandroid.model.vndb.Media;
@@ -56,6 +57,7 @@ public class DB extends SQLiteOpenHelper {
     private final static String TABLE_SCREENS = "screens";
     private final static String TABLE_VN_CHARACTER = "vn_character";
     private final static String TABLE_CHARACTER = "character";
+    private final static String TABLE_CHARACTER_VOICED = "character_voiced";
     private final static String TABLE_VN_STAFF = "vn_staff";
     private final static String TABLE_STAFF = "staff";
     private final static String TABLE_TRAITS = "traits";
@@ -309,7 +311,19 @@ public class DB extends SQLiteOpenHelper {
                     "note TEXT" +
                     ")");
 
+            db.execSQL("CREATE TABLE " + TABLE_CHARACTER_VOICED + " (" +
+                    "id INTEGER, " +
+                    "cid INTEGER, " +
+                    "vid INTEGER, " +
+                    "aid INTEGER, " +
+                    "note TEXT, " +
+                    "PRIMARY KEY (id, cid, vid) " +
+                    ")");
+
             db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_VN_STAFF + "_vn ON " + TABLE_VN_STAFF + "(vid)");
+            db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_CHARACTER_VOICED + "_id ON " + TABLE_CHARACTER_VOICED + "(id)");
+            db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_CHARACTER_VOICED + "_cid ON " + TABLE_CHARACTER_VOICED + "(cid)");
+            db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_CHARACTER_VOICED + "_vid ON " + TABLE_CHARACTER_VOICED + "(vid)");
         }
 
 //        if (oldVersion < 3) {
@@ -709,11 +723,12 @@ public class DB extends SQLiteOpenHelper {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
 
-        StringBuilder[] queries = new StringBuilder[3];
+        StringBuilder[] queries = new StringBuilder[4];
         queries[0] = new StringBuilder("INSERT INTO ").append(TABLE_VN_CHARACTER).append(" VALUES ");
         queries[1] = new StringBuilder("INSERT INTO ").append(TABLE_CHARACTER).append(" VALUES ");
         queries[2] = new StringBuilder("INSERT INTO ").append(TABLE_TRAITS).append(" VALUES ");
-        int[] itemsToInsert = new int[3];
+        queries[3] = new StringBuilder("INSERT INTO ").append(TABLE_CHARACTER_VOICED).append(" VALUES ");
+        int[] itemsToInsert = new int[4];
 
         /* Retrieving all items to check if we have TO INSERT or UPDATE */
         LinkedHashMap<Integer, Boolean> alreadyInsertedCharacters = new LinkedHashMap<>();
@@ -742,8 +757,10 @@ public class DB extends SQLiteOpenHelper {
             if (newlyInsertedCharacters.get(character.getId()) != null) continue;
 
             if (alreadyInsertedCharacters.get(character.getId()) != null) {
+                /* The character's was already present BEFORE this method: deleting all for update */
                 db.delete(TABLE_CHARACTER, "id=?", new String[]{character.getId() + ""});
                 db.delete(TABLE_TRAITS, "character=?", new String[]{character.getId() + ""});
+                db.delete(TABLE_CHARACTER_VOICED, "cid=?", new String[]{character.getId() + ""});
             }
 
             String vns = null;
@@ -781,6 +798,17 @@ public class DB extends SQLiteOpenHelper {
                 itemsToInsert[2] = checkInsertLimit(db, queries[2], itemsToInsert[2], TABLE_TRAITS);
             }
 
+            for (CharacterVoiced voiced : character.getVoiced()) {
+                queries[3].append("(")
+                        .append(voiced.getId()).append(",")
+                        .append(character.getId()).append(",")
+                        .append(voiced.getVid()).append(",")
+                        .append(voiced.getAid()).append(",")
+                        .append(formatString(voiced.getNote()))
+                        .append("),");
+                itemsToInsert[3] = checkInsertLimit(db, queries[3], itemsToInsert[3], TABLE_CHARACTER_VOICED);
+            }
+
             if (alreadyLinkedCharacters.get(character.getId()) == null) {
                 queries[0].append("(")
                         .append(vnId).append(",")
@@ -803,7 +831,7 @@ public class DB extends SQLiteOpenHelper {
 
         LinkedHashMap<Integer, Item> res = new LinkedHashMap<>(); // vn -> character
 
-        Cursor[] cursor = new Cursor[2];
+        Cursor[] cursor = new Cursor[3];
         cursor[0] = db.rawQuery("SELECT c.* FROM  " + TABLE_VN_CHARACTER + " vnc INNER JOIN " + TABLE_CHARACTER + " c ON vnc.character = c.id WHERE vnc.vn = " + vnId, new String[]{});
 
         while (cursor[0].moveToNext()) {
@@ -839,6 +867,20 @@ public class DB extends SQLiteOpenHelper {
             if (character.getTraits() == null)
                 character.setTraits(new ArrayList<int[]>());
             character.getTraits().add(new int[]{cursor[1].getInt(1), cursor[1].getInt(2)});
+        }
+
+        cursor[2] = db.rawQuery("SELECT * FROM " + TABLE_CHARACTER_VOICED + " WHERE cid IN (" + TextUtils.join(",", res.keySet()) + ")", new String[]{});
+        while (cursor[2].moveToNext()) {
+            Item character = res.get(cursor[2].getInt(1));
+            if (character == null) continue;
+            if (character.getVoiced() == null)
+                character.setVoiced(new ArrayList<CharacterVoiced>());
+            CharacterVoiced voiced = new CharacterVoiced();
+            voiced.setId(cursor[2].getInt(0));
+            voiced.setVid(cursor[2].getInt(2));
+            voiced.setAid(cursor[2].getInt(3));
+            voiced.setNote(cursor[2].getString(4));
+            character.getVoiced().add(voiced);
         }
 
         for (Cursor c : cursor) c.close();
@@ -1395,7 +1437,6 @@ public class DB extends SQLiteOpenHelper {
 
         while (cursor.moveToNext()) {
             VnStaff staff = new VnStaff();
-            staff.setVid(vnId);
             staff.setSid(cursor.getInt(1));
             staff.setAid(cursor.getInt(2));
             staff.setName(cursor.getString(3));

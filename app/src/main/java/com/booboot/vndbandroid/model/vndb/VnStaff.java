@@ -7,19 +7,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class VnStaff {
     private int sid;
     private int aid;
-    private int vid;
     private String name;
     private String original;
     private String role;
     private String note;
-
-    public int getVid() {
-        return vid;
-    }
-
-    public void setVid(int vid) {
-        this.vid = vid;
-    }
 
     public int getSid() {
         return sid;

@@ -43,7 +43,7 @@ public class Item extends VNDBCommand {
     private int vote;
     private int priority;
     private List<VnStaff> staff;
-    private List<VnStaff> voiced;
+    private List<CharacterVoiced> voiced;
 
     /* Character-specific properties */
     public final static LinkedHashMap<String, String> ROLES = new LinkedHashMap<>();
@@ -586,11 +586,11 @@ public class Item extends VNDBCommand {
         this.staff = staff;
     }
 
-    public List<VnStaff> getVoiced() {
+    public List<CharacterVoiced> getVoiced() {
         return voiced;
     }
 
-    public void setVoiced(List<VnStaff> voiced) {
+    public void setVoiced(List<CharacterVoiced> voiced) {
         this.voiced = voiced;
     }
 }
