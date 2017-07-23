@@ -19,7 +19,7 @@ public class Item extends VNDBCommand {
     private String title;
     private String original;
     private String released;
-    /* WARNING: don't initialize these lists because there are important null checks on them */
+    /* WARNING: don't initialize these lists because there are important null checks on them (checking whether they're already init in VNDetailsActivity.initSubmenu() */
     private List<String> languages;
     private List<String> orig_lang;
     private List<String> platforms;
@@ -43,7 +43,7 @@ public class Item extends VNDBCommand {
     private int vote;
     private int priority;
     private List<VnStaff> staff;
-    private List<CharacterVoiced> voiced;
+    private List<CharacterVoiced> voiced = new ArrayList<>();
 
     /* Character-specific properties */
     public final static LinkedHashMap<String, String> ROLES = new LinkedHashMap<>();
@@ -271,7 +271,6 @@ public class Item extends VNDBCommand {
     }
 
     public void setOrig_lang(List<String> orig_lang) {
-
         if (orig_lang == null) {
             this.orig_lang = new ArrayList<>();
         } else {

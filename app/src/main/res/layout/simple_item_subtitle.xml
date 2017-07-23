@@ -9,24 +9,14 @@
     android:clickable="true"
     android:orientation="horizontal">
 
-    <ImageView
-        android:id="@+id/iconView"
-        android:layout_width="80dp"
-        android:layout_height="100dp"
-        android:layout_gravity="center_vertical"
-        android:layout_marginStart="10dp"
-        android:background="@null"
-        android:contentDescription="@null"
-        android:scaleType="fitCenter"/>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="5dp"
         android:layout_marginEnd="10dp"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:orientation="horizontal">
 
         <LinearLayout
@@ -53,16 +43,6 @@
                 android:textSize="12sp"
                 tools:text="Role role"/>
         </LinearLayout>
-
-        <ImageView
-            android:id="@+id/itemRightImage"
-            android:layout_width="35dp"
-            android:layout_height="40dp"
-            android:layout_gravity="center_vertical|end"
-            android:layout_marginStart="10dp"
-            android:background="@null"
-            android:contentDescription="@null"
-            android:scaleType="fitCenter"/>
 
         <android.support.v7.widget.AppCompatImageButton
             android:id="@+id/itemButton"

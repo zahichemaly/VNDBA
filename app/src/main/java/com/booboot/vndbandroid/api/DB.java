@@ -873,8 +873,6 @@ public class DB extends SQLiteOpenHelper {
         while (cursor[2].moveToNext()) {
             Item character = res.get(cursor[2].getInt(1));
             if (character == null) continue;
-            if (character.getVoiced() == null)
-                character.setVoiced(new ArrayList<CharacterVoiced>());
             CharacterVoiced voiced = new CharacterVoiced();
             voiced.setId(cursor[2].getInt(0));
             voiced.setVid(cursor[2].getInt(2));

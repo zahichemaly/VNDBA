@@ -8,6 +8,7 @@ import android.os.Build;
 import android.support.v4.view.ViewCompat;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.booboot.vndbandroid.R;
@@ -32,6 +33,10 @@ public class DoubleListListener implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
+        createInfoDialog(context, title, new DoubleListAdapter(context, elements), onDismissCallback);
+    }
+
+    public static void createInfoDialog(Context context, String title, ListAdapter adapter, final Callback onDismissCallback) {
         final LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.vn_info_dialog, null);
 
@@ -43,7 +48,7 @@ public class DoubleListListener implements View.OnClickListener {
         }
 
         ListView listView = (ListView) view.findViewById(R.id.listView);
-        listView.setAdapter(new DoubleListAdapter(context, elements));
+        listView.setAdapter(adapter);
 
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
         dialogBuilder.setView(view);
