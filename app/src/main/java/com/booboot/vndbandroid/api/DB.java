@@ -10,13 +10,15 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.booboot.vndbandroid.model.vndb.Anime;
+import com.booboot.vndbandroid.model.vndb.Character;
 import com.booboot.vndbandroid.model.vndb.CharacterVoiced;
-import com.booboot.vndbandroid.model.vndb.Item;
 import com.booboot.vndbandroid.model.vndb.Links;
 import com.booboot.vndbandroid.model.vndb.Media;
 import com.booboot.vndbandroid.model.vndb.Producer;
 import com.booboot.vndbandroid.model.vndb.Relation;
+import com.booboot.vndbandroid.model.vndb.Release;
 import com.booboot.vndbandroid.model.vndb.Screen;
+import com.booboot.vndbandroid.model.vndb.VN;
 import com.booboot.vndbandroid.model.vndb.VnStaff;
 import com.booboot.vndbandroid.model.vndbandroid.VNlistItem;
 import com.booboot.vndbandroid.model.vndbandroid.VotelistItem;
@@ -587,9 +589,9 @@ public class DB extends SQLiteOpenHelper {
 
         /* Retrieving all items to check if we have TO INSERT or UPDATE */
         Cursor cursor = db.rawQuery("select id from " + TABLE_VN, new String[]{});
-        Map<Integer, Item> alreadyInsertedItems = new HashMap<>();
+        Map<Integer, VN> alreadyInsertedItems = new HashMap<>();
         while (cursor.moveToNext()) {
-            alreadyInsertedItems.put(cursor.getInt(0), new Item(cursor.getInt(0)));
+            alreadyInsertedItems.put(cursor.getInt(0), new VN(cursor.getInt(0)));
         }
         cursor.close();
 
@@ -599,7 +601,7 @@ public class DB extends SQLiteOpenHelper {
                 continue;
             }
 
-            Item item = Cache.vns.get(vn);
+            VN item = Cache.vns.get(vn);
 
             if (item.getLanguages() == null || item.getOrig_lang() == null || item.getPlatforms() == null || item.getAnime() == null || item.getRelations() == null || item.getScreens() == null || item.getTags() == null || item.getStaff() == null) {
                 /* A list attribute of the VN is null: that shouldn't be possible because the API NEVER returns null for these attributes (at least []).
@@ -719,7 +721,7 @@ public class DB extends SQLiteOpenHelper {
         }
     }
 
-    public static void saveCharacters(Context context, List<Item> characters, int vnId) {
+    public static void saveCharacters(Context context, List<Character> characters, int vnId) {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
 
@@ -735,7 +737,7 @@ public class DB extends SQLiteOpenHelper {
         LinkedHashMap<Integer, Boolean> alreadyLinkedCharacters = new LinkedHashMap<>();
         LinkedHashMap<Integer, Boolean> newlyInsertedCharacters = new LinkedHashMap<>();
         Set<Integer> characterIds = new HashSet<>();
-        for (Item character : characters) {
+        for (Character character : characters) {
             characterIds.add(character.getId());
         }
 
@@ -752,7 +754,7 @@ public class DB extends SQLiteOpenHelper {
 
         db.beginTransaction();
 
-        for (Item character : characters) {
+        for (Character character : characters) {
             /* We've just inserted this character now so it is up to date : go to next */
             if (newlyInsertedCharacters.get(character.getId()) != null) continue;
 
@@ -825,17 +827,17 @@ public class DB extends SQLiteOpenHelper {
         db.endTransaction();
     }
 
-    public static List<Item> loadCharacters(Context context, int vnId) {
+    public static List<Character> loadCharacters(Context context, int vnId) {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
 
-        LinkedHashMap<Integer, Item> res = new LinkedHashMap<>(); // vn -> character
+        LinkedHashMap<Integer, Character> res = new LinkedHashMap<>(); // vn -> character
 
         Cursor[] cursor = new Cursor[3];
         cursor[0] = db.rawQuery("SELECT c.* FROM  " + TABLE_VN_CHARACTER + " vnc INNER JOIN " + TABLE_CHARACTER + " c ON vnc.character = c.id WHERE vnc.vn = " + vnId, new String[]{});
 
         while (cursor[0].moveToNext()) {
-            Item character = new Item(cursor[0].getInt(0));
+            Character character = new Character(cursor[0].getInt(0));
             character.setName(cursor[0].getString(1));
             character.setOriginal(cursor[0].getString(2));
             character.setGender(cursor[0].getString(3));
@@ -862,7 +864,7 @@ public class DB extends SQLiteOpenHelper {
 
         cursor[1] = db.rawQuery("SELECT * FROM " + TABLE_TRAITS + " WHERE character IN (" + TextUtils.join(",", res.keySet()) + ")", new String[]{});
         while (cursor[1].moveToNext()) {
-            Item character = res.get(cursor[1].getInt(0));
+            Character character = res.get(cursor[1].getInt(0));
             if (character == null) continue;
             if (character.getTraits() == null)
                 character.setTraits(new ArrayList<int[]>());
@@ -871,7 +873,7 @@ public class DB extends SQLiteOpenHelper {
 
         cursor[2] = db.rawQuery("SELECT * FROM " + TABLE_CHARACTER_VOICED + " WHERE cid IN (" + TextUtils.join(",", res.keySet()) + ")", new String[]{});
         while (cursor[2].moveToNext()) {
-            Item character = res.get(cursor[2].getInt(1));
+            Character character = res.get(cursor[2].getInt(1));
             if (character == null) continue;
             CharacterVoiced voiced = new CharacterVoiced();
             voiced.setId(cursor[2].getInt(0));
@@ -886,7 +888,7 @@ public class DB extends SQLiteOpenHelper {
         return new ArrayList<>(res.values());
     }
 
-    public static void saveReleases(Context context, List<Item> releases, int vnId) {
+    public static void saveReleases(Context context, List<Release> releases, int vnId) {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
 
@@ -908,7 +910,7 @@ public class DB extends SQLiteOpenHelper {
         LinkedHashMap<Integer, Boolean> newlyInsertedReleases = new LinkedHashMap<>();
         Set<Integer> releasesIds = new HashSet<>();
         Set<Integer> producersIds = new HashSet<>();
-        for (Item release : releases) {
+        for (Release release : releases) {
             releasesIds.add(release.getId());
             for (Producer producer : release.getProducers()) {
                 producersIds.add(producer.getId());
@@ -932,7 +934,7 @@ public class DB extends SQLiteOpenHelper {
         cursor.close();
         db.beginTransaction();
 
-        for (Item release : releases) {
+        for (Release release : releases) {
             /* We've just inserted this release now so it is up to date : go to next */
             if (newlyInsertedReleases.get(release.getId()) != null) continue;
 
@@ -1036,17 +1038,17 @@ public class DB extends SQLiteOpenHelper {
         db.endTransaction();
     }
 
-    public static List<Item> loadReleases(Context context, int vnId) {
+    public static List<Release> loadReleases(Context context, int vnId) {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
 
-        LinkedHashMap<Integer, Item> res = new LinkedHashMap<>(); // release_id -> release
+        LinkedHashMap<Integer, Release> res = new LinkedHashMap<>(); // release_id -> release
 
         Cursor[] cursor = new Cursor[5];
 
         cursor[0] = db.rawQuery("SELECT r.* FROM  " + TABLE_VN_RELEASE + " vnr INNER JOIN " + TABLE_RELEASE + " r ON vnr.release = r.id WHERE vnr.vn = " + vnId, new String[]{});
         while (cursor[0].moveToNext()) {
-            Item release = new Item(cursor[0].getInt(0));
+            Release release = new Release(cursor[0].getInt(0));
             release.setTitle(cursor[0].getString(1));
             release.setOriginal(cursor[0].getString(2));
             release.setReleased(cursor[0].getString(3));
@@ -1070,28 +1072,28 @@ public class DB extends SQLiteOpenHelper {
         String releasesIds = TextUtils.join(",", res.keySet());
         cursor[1] = db.rawQuery("SELECT * FROM " + TABLE_RELEASE_LANGUAGES + " WHERE release IN (" + releasesIds + ")", new String[]{});
         while (cursor[1].moveToNext()) {
-            Item release = res.get(cursor[1].getInt(0));
+            Release release = res.get(cursor[1].getInt(0));
             if (release == null) continue;
             release.getLanguages().add(cursor[1].getString(1));
         }
 
         cursor[2] = db.rawQuery("SELECT * FROM " + TABLE_RELEASE_PLATFORMS + " WHERE release IN (" + releasesIds + ")", new String[]{});
         while (cursor[2].moveToNext()) {
-            Item release = res.get(cursor[2].getInt(0));
+            Release release = res.get(cursor[2].getInt(0));
             if (release == null) continue;
             release.getPlatforms().add(cursor[2].getString(1));
         }
 
         cursor[3] = db.rawQuery("SELECT * FROM " + TABLE_RELEASE_MEDIA + " WHERE release IN (" + releasesIds + ")", new String[]{});
         while (cursor[3].moveToNext()) {
-            Item release = res.get(cursor[3].getInt(0));
+            Release release = res.get(cursor[3].getInt(0));
             if (release == null) continue;
             release.getMedia().add(new Media(cursor[3].getString(1), cursor[3].getInt(2)));
         }
 
         cursor[4] = db.rawQuery("SELECT * FROM  " + TABLE_RELEASE_PRODUCER + " rp INNER JOIN " + TABLE_PRODUCER + " p ON rp.producer = p.id WHERE rp.release IN (" + releasesIds + ")", new String[]{});
         while (cursor[4].moveToNext()) {
-            Item release = res.get(cursor[4].getInt(0));
+            Release release = res.get(cursor[4].getInt(0));
             if (release == null) continue;
 
             /* Since we've made a join between 2 tables, it's quite hard to determine the column indexes for what we want, and SQLite may change
@@ -1301,15 +1303,15 @@ public class DB extends SQLiteOpenHelper {
         return res;
     }
 
-    public static LinkedHashMap<Integer, Item> loadVns(Context context) {
+    public static LinkedHashMap<Integer, VN> loadVns(Context context) {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
 
-        LinkedHashMap<Integer, Item> res = new LinkedHashMap<>();
+        LinkedHashMap<Integer, VN> res = new LinkedHashMap<>();
         Cursor cursor = db.rawQuery("select * from " + TABLE_VN, new String[]{});
 
         while (cursor.moveToNext()) {
-            Item vn = new Item(cursor.getInt(0));
+            VN vn = new VN(cursor.getInt(0));
             vn.setTitle(cursor.getString(1));
             vn.setOriginal(cursor.getString(2));
             vn.setReleased(cursor.getString(3));

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * Created by od on 12/03/2016.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Options extends VNDBCommand {
+public class Options {
     private int page = 1;
     private int results = 25;
     private String sort;

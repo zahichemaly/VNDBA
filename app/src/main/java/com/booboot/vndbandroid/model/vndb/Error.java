@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * Created by od on 12/03/2016.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Error extends VNDBCommand {
+public class Error {
     private String id;
     private String msg;
     private String type;

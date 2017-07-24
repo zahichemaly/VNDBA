@@ -6,13 +6,15 @@ import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.VNDetailsActivity;
 import com.booboot.vndbandroid.adapter.vndetails.VNDetailsElement;
 import com.booboot.vndbandroid.model.vndb.Anime;
-import com.booboot.vndbandroid.model.vndb.Item;
+import com.booboot.vndbandroid.model.vndb.Character;
 import com.booboot.vndbandroid.model.vndb.Links;
 import com.booboot.vndbandroid.model.vndb.Producer;
 import com.booboot.vndbandroid.model.vndb.Relation;
+import com.booboot.vndbandroid.model.vndb.Release;
 import com.booboot.vndbandroid.model.vndb.Screen;
-import com.booboot.vndbandroid.model.vndb.VnStaff;
 import com.booboot.vndbandroid.model.vndb.Tag;
+import com.booboot.vndbandroid.model.vndb.VN;
+import com.booboot.vndbandroid.model.vndb.VnStaff;
 import com.booboot.vndbandroid.model.vndbandroid.Category;
 import com.booboot.vndbandroid.model.vndbandroid.Genre;
 import com.booboot.vndbandroid.model.vndbandroid.Language;
@@ -47,7 +49,7 @@ public class VNDetailsFactory {
 
     public static LinkedHashMap<String, VNDetailsElement> getData(VNDetailsActivity activity) {
         LinkedHashMap<String, VNDetailsElement> expandableListDetail = new LinkedHashMap<>();
-        Item vn = activity.getVn();
+        VN vn = activity.getVn();
 
         List<VNDetailsElement.Data> descriptionData = new ArrayList<>();
         if (vn.getDescription() != null) {
@@ -116,8 +118,8 @@ public class VNDetailsFactory {
             }
 
             Set<String> developers = new HashSet<>();
-            for (List<Item> releases : activity.getReleases().values()) {
-                for (Item release : releases) {
+            for (List<Release> releases : activity.getReleases().values()) {
+                for (Release release : releases) {
                     for (Producer producer : release.getProducers()) {
                         if (producer.isDeveloper()) {
                             developers.add(producer.getName());
@@ -343,7 +345,7 @@ public class VNDetailsFactory {
         if (!canBuildMenu) {
             activity.setCharactersSubmenu(new VNDetailsElement(data, VNDetailsElement.TYPE_SUBTITLE));
         } else {
-            for (Item character : activity.getCharacters()) {
+            for (Character character : activity.getCharacters()) {
                 /* Checking the spoiler level of the whole character */
                 boolean spoilerOk = true;
                 /* Looping through the "vns" attribute because the spoiler lever is stored for each vn */
@@ -360,7 +362,7 @@ public class VNDetailsFactory {
 
                 data.add(new VNDetailsElement.Data()
                         .setText1(character.getName())
-                        .setText2(Item.ROLES.get(character.getVns().get(0)[Item.ROLE_INDEX].toString()))
+                        .setText2(Character.ROLES.get(character.getVns().get(0)[Character.ROLE_INDEX].toString()))
                         .setUrlImage(character.getImage())
                         .setId(character.getId())
                         .setButton(R.drawable.ic_record_voice_over_white_48dp)
@@ -421,7 +423,7 @@ public class VNDetailsFactory {
                         .setText1("<b>" + Language.FULL_TEXT.get(language) + " :</b>")
                         .setImage1(Language.FLAGS.get(language)));
 
-                for (Item release : activity.getReleases().get(language)) {
+                for (Release release : activity.getReleases().get(language)) {
                     data.add(new VNDetailsElement.Data()
                             .setText1(release.getTitle())
                             .setText2(Utils.getDate(release.getReleased(), true) + activity.getString(R.string.bullet) + Utils.capitalize(release.getType()))

@@ -20,7 +20,7 @@ import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.DB;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.model.vndb.Fields;
-import com.booboot.vndbandroid.model.vndb.Item;
+import com.booboot.vndbandroid.model.vndb.VN;
 import com.booboot.vndbandroid.model.vndbandroid.Priority;
 import com.booboot.vndbandroid.model.vndbandroid.Status;
 import com.booboot.vndbandroid.model.vndbandroid.VNlistItem;
@@ -39,12 +39,12 @@ import java.util.Date;
  */
 public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, DialogInterface.OnClickListener, View.OnClickListener {
     private VNDetailsActivity activity;
-    private Item vn;
+    private VN vn;
     private Button popupButton;
     private TextView notesTextView;
     private EditText notesInput;
 
-    public VNDetailsListener(VNDetailsActivity activity, Item vn) {
+    public VNDetailsListener(VNDetailsActivity activity, VN vn) {
         this.activity = activity;
         this.vn = vn;
     }

@@ -4,7 +4,8 @@ import android.text.TextUtils;
 
 import com.booboot.vndbandroid.activity.VNDetailsActivity;
 import com.booboot.vndbandroid.adapter.doublelist.DoubleListElement;
-import com.booboot.vndbandroid.model.vndb.Item;
+import com.booboot.vndbandroid.model.vndb.Character;
+import com.booboot.vndbandroid.model.vndb.VN;
 import com.booboot.vndbandroid.model.vndb.Tag;
 import com.booboot.vndbandroid.model.vndb.Trait;
 
@@ -31,7 +32,7 @@ public class CharacterDataFactory {
      * @param character character we want to display the info and traits
      * @return DoubleListElement[] array to be given to a DoubleListAdapter
      */
-    public static DoubleListElement[] getData(VNDetailsActivity activity, Item character) {
+    public static DoubleListElement[] getData(VNDetailsActivity activity, Character character) {
         final List<DoubleListElement> characterData = new ArrayList<>();
         if (character.getDescription() != null) {
             String descriptionWithoutSpoilers = character.getDescription();

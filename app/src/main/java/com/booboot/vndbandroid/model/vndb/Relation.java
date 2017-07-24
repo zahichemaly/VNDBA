@@ -10,7 +10,7 @@ import java.util.List;
  * Created by od on 12/03/2016.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Relation extends VNDBCommand {
+public class Relation {
     public final static LinkedHashMap<String, String> TYPES = new LinkedHashMap<>();
     public static List<String> TYPES_KEY;
 

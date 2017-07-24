@@ -21,7 +21,7 @@ import java.util.Map;
  * Created by od on 12/03/2016.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Tag extends VNDBCommand implements Serializable {
+public class Tag implements Serializable {
     private transient static Map<Integer, Tag> tags;
 
     private List<Integer> parents;

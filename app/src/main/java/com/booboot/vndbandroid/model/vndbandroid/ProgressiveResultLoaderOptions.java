@@ -3,7 +3,7 @@ package com.booboot.vndbandroid.model.vndbandroid;
 import com.booboot.vndbandroid.adapter.vncards.Card;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.factory.ProgressiveResultLoader;
-import com.booboot.vndbandroid.model.vndb.Item;
+import com.booboot.vndbandroid.model.vndb.VN;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ public class ProgressiveResultLoaderOptions {
         for (Card card : cards) {
             if (card == null) continue;
             int vnId = card.getVnId();
-            Item vn = Cache.vns.get(vnId);
+            VN vn = Cache.vns.get(vnId);
             if (vn == null) return false;
         }
         return true;

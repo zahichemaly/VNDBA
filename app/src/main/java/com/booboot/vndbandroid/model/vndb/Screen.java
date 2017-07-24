@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * Created by od on 12/03/2016.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Screen extends VNDBCommand {
+public class Screen {
     private String image;
     private int rid;
     private boolean nsfw;

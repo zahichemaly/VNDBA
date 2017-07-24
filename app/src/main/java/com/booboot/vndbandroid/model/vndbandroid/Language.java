@@ -1,7 +1,6 @@
 package com.booboot.vndbandroid.model.vndbandroid;
 
 import com.booboot.vndbandroid.R;
-import com.booboot.vndbandroid.model.vndb.VNDBCommand;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +8,7 @@ import java.util.Map;
 /**
  * Created by od on 12/03/2016.
  */
-public class Language extends VNDBCommand {
+public class Language {
     public final static Map<String, String> FULL_TEXT = new HashMap<>();
     public final static Map<String, Integer> FLAGS = new HashMap<>();
 

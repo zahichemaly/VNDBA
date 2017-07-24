@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * Created by od on 06/04/2016.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DbStats extends VNDBCommand {
+public class DbStats {
     private int users;
     private int threads;
     private int tags;

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * Created by od on 25/04/2016.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Producer extends VNDBCommand {
+public class Producer {
     private int id;
     private boolean developer;
     private boolean publisher;

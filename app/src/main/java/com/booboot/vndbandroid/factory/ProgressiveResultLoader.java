@@ -2,6 +2,7 @@ package com.booboot.vndbandroid.factory;
 
 import android.app.Activity;
 import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,11 +17,13 @@ import com.booboot.vndbandroid.adapter.vncards.RecyclerItemClickListener;
 import com.booboot.vndbandroid.adapter.vncards.VNCardsListView;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.VNDBServer;
-import com.booboot.vndbandroid.model.vndb.Item;
 import com.booboot.vndbandroid.model.vndb.Options;
+import com.booboot.vndbandroid.model.vndb.Results;
+import com.booboot.vndbandroid.model.vndb.VN;
 import com.booboot.vndbandroid.model.vndbandroid.ProgressiveResultLoaderOptions;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.Utils;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,17 +61,9 @@ public class ProgressiveResultLoader implements SwipeRefreshLayout.OnRefreshList
 
         /* [Fix] Set the background color to match the default one (not the case by default) */
         if (rootView == null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                materialListView.getRootView().setBackgroundColor(activity.getResources().getColor(R.color.windowBackground, activity.getTheme()));
-            } else {
-                materialListView.getRootView().setBackgroundColor(activity.getResources().getColor(R.color.windowBackground));
-            }
+            materialListView.getRootView().setBackgroundColor(ContextCompat.getColor(activity, R.color.windowBackground));
         } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                materialListView.getRootView().setBackgroundColor(rootView.getResources().getColor(R.color.windowBackground, rootView.getContext().getTheme()));
-            } else {
-                materialListView.getRootView().setBackgroundColor(rootView.getResources().getColor(R.color.windowBackground));
-            }
+            materialListView.getRootView().setBackgroundColor(ContextCompat.getColor(rootView.getContext(), R.color.windowBackground));
         }
 
         materialListView.addOnItemTouchListener(new RecyclerItemClickListener(activity, new RecyclerItemClickListener.OnItemClickListener() {
@@ -113,14 +108,15 @@ public class ProgressiveResultLoader implements SwipeRefreshLayout.OnRefreshList
     public void loadResults(final boolean clearData) {
         options.setPage(currentPage);
         progressBar.setVisibility(View.VISIBLE);
-        VNDBServer.get("vn", Cache.VN_FLAGS, filters, options, 0, activity, new Callback() {
+        VNDBServer.get("vn", Cache.VN_FLAGS, filters, options, 0, activity, new TypeReference<Results<VN>>() {
+        }, new Callback<Results<VN>>() {
             @Override
             protected void config() {
                 moreResults = results.isMore();
                 if (clearData)
                     materialListView.getAdapter().clearAll();
 
-                for (final Item vn : results.getItems()) {
+                for (final VN vn : results.getItems()) {
                     VNCardFactory.buildCard(activity, vn, materialListView, showFullDate, showRank, showRating, showPopularity, showVoteCount);
                     if (!Cache.vns.containsKey(vn.getId())) Cache.vns.put(vn.getId(), vn);
                 }
@@ -150,7 +146,7 @@ public class ProgressiveResultLoader implements SwipeRefreshLayout.OnRefreshList
         for (Card card : options.getCards()) {
             if (card == null) continue;
             int vnId = card.getVnId();
-            Item vn = Cache.vns.get(vnId);
+            VN vn = Cache.vns.get(vnId);
             VNCardFactory.buildCard(activity, vn, materialListView, showFullDate, showRank, showRating, showPopularity, showVoteCount);
         }
     }

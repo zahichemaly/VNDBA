@@ -9,7 +9,7 @@ import java.util.Map;
  * Created by od on 25/04/2016.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Media extends VNDBCommand {
+public class Media {
     public final static Map<String, String> FULL_TEXT = new HashMap<>();
     private String medium;
     private int qty;

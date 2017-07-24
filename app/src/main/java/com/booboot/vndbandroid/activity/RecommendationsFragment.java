@@ -1,8 +1,8 @@
 package com.booboot.vndbandroid.activity;
 
 import android.app.Fragment;
-import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
@@ -24,16 +24,19 @@ import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.DB;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.VNStatServer;
-import com.booboot.vndbandroid.model.vndb.Item;
-import com.booboot.vndbandroid.model.vndb.Options;
-import com.booboot.vndbandroid.model.vnstat.SimilarNovel;
-import com.booboot.vndbandroid.model.vnstat.VNStatItem;
 import com.booboot.vndbandroid.factory.FastScrollerFactory;
 import com.booboot.vndbandroid.factory.PopupMenuFactory;
 import com.booboot.vndbandroid.factory.VNCardFactory;
+import com.booboot.vndbandroid.model.vndb.Options;
+import com.booboot.vndbandroid.model.vndb.Results;
+import com.booboot.vndbandroid.model.vndb.User;
+import com.booboot.vndbandroid.model.vndb.VN;
+import com.booboot.vndbandroid.model.vnstat.SimilarNovel;
+import com.booboot.vndbandroid.model.vnstat.VNStatItem;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -56,12 +59,7 @@ public class RecommendationsFragment extends Fragment implements SwipeRefreshLay
         materialListView = (VNCardsListView) rootView.findViewById(R.id.materialListView);
         VNCardFactory.setupList(getActivity(), materialListView);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            materialListView.getRootView().setBackgroundColor(rootView.getResources().getColor(R.color.windowBackground, rootView.getContext().getTheme()));
-        } else {
-            materialListView.getRootView().setBackgroundColor(rootView.getResources().getColor(R.color.windowBackground));
-        }
-
+        materialListView.getRootView().setBackgroundColor(ContextCompat.getColor(rootView.getContext(), R.color.windowBackground));
         materialListView.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(CardView cardView, int position) {
@@ -151,7 +149,8 @@ public class RecommendationsFragment extends Fragment implements SwipeRefreshLay
 
         int userId = SettingsManager.getUserId(getActivity());
         if (userId < 0) {
-            VNDBServer.get("user", "basic", "(id = 0)", Options.create(false, 1), 0, getActivity(), new Callback() {
+            VNDBServer.get("user", "basic", "(id = 0)", Options.create(false, 1), 0, getActivity(), new TypeReference<Results<User>>() {
+            }, new Callback<Results<User>>() {
                 @Override
                 protected void config() {
                     if (results.getItems().size() > 0) {
@@ -221,7 +220,7 @@ public class RecommendationsFragment extends Fragment implements SwipeRefreshLay
             if (Cache.wishlist != null && Cache.wishlist.containsKey(recommendation.getNovelId()) && SettingsManager.getHideRecommendationsInWishlist(getActivity()))
                 continue; // Recommendation already in wishlist: don't show it
 
-            Item vn = new Item(recommendation.getNovelId());
+            VN vn = new VN(recommendation.getNovelId());
             vn.setPopularity(recommendation.getPredictedRatingPercentage());
             vn.setTitle(recommendation.getTitle());
             vn.setLength(-1);
