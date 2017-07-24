@@ -28,6 +28,7 @@ import com.booboot.vndbandroid.model.vndb.CharacterVoiced;
 import com.booboot.vndbandroid.model.vndb.Item;
 import com.booboot.vndbandroid.model.vndb.Links;
 import com.booboot.vndbandroid.model.vndb.Tag;
+import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.Lightbox;
 import com.booboot.vndbandroid.util.Utils;
 import com.booboot.vndbandroid.util.image.BlurIfDemoTransform;
@@ -210,19 +211,26 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                                     itemButton.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
-                                            List<CharacterVoiced> filteredVoiced = new ArrayList<>();
+                                            final List<CharacterVoiced> filteredVoiced = new ArrayList<>();
                                             for (CharacterVoiced voiced : character.getVoiced())
                                                 if (voiced.getVid() == activity.getVn().getId())
                                                     filteredVoiced.add(voiced);
 
-                                            List<DoubleListElement> voicedElements = new ArrayList<>(filteredVoiced.size());
-                                            for (CharacterVoiced voiced : filteredVoiced)
-                                                voicedElements.add(new DoubleListElement(voiced.getId() + "", voiced.getNote(), false));
-
                                             Log.e("D", "STAFF ASSOCIATED : " + filteredVoiced);
 
                                             // TODO show the voiced list in a modal
-                                            DoubleListListener.createInfoDialog(activity, character.getName() + " is voiced by...", new SubtitleAdapter(activity, voicedElements), null);
+                                            Cache.getStaff(activity, activity.getVn().getId(), activity.getCharacters(), filteredVoiced, new Callback() {
+                                                @Override
+                                                protected void config() {
+                                                    List<DoubleListElement> voicedElements = new ArrayList<>(filteredVoiced.size());
+                                                    for (CharacterVoiced voiced : filteredVoiced) {
+                                                        Item staff = Cache.staff.get(voiced.getId());
+                                                        voicedElements.add(new DoubleListElement(staff.getName() + "", voiced.getNote(), false));
+                                                    }
+
+                                                    DoubleListListener.createInfoDialog(activity, character.getName() + " is voiced by...", new SubtitleAdapter(activity, voicedElements), null);
+                                                }
+                                            });
                                         }
                                     });
 

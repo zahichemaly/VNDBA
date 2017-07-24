@@ -4,11 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.booboot.vndbandroid.R;
+import com.booboot.vndbandroid.activity.StaffActivity;
 import com.booboot.vndbandroid.activity.VNDetailsActivity;
 import com.booboot.vndbandroid.activity.VNTypeFragment;
+import com.booboot.vndbandroid.model.vndb.CharacterVoiced;
 import com.booboot.vndbandroid.model.vndb.DbStats;
 import com.booboot.vndbandroid.model.vndb.Item;
 import com.booboot.vndbandroid.model.vndb.Options;
@@ -30,6 +31,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,13 +46,14 @@ public class Cache {
     public static LinkedHashMap<Integer, WishlistItem> wishlist = new LinkedHashMap<>();
     public static LinkedHashMap<Integer, Item> vns = new LinkedHashMap<>();
     public static LinkedHashMap<Integer, List<Item>> characters = new LinkedHashMap<>();
-    public static LinkedHashMap<Integer, List<Item>> staff = new LinkedHashMap<>();
+    public static LinkedHashMap<Integer, Item> staff = new LinkedHashMap<>();
     public static LinkedHashMap<Integer, List<Item>> releases = new LinkedHashMap<>();
     public static LinkedHashMap<Integer, List<SimilarNovel>> similarNovels = new LinkedHashMap<>();
 
     public final static String VN_FLAGS = "basic,details,screens,tags,stats,relations,anime,staff";
     public final static String CHARACTER_FLAGS = "basic,details,meas,traits,vns,voiced";
     public final static String RELEASE_FLAGS = "basic,details,producers";
+    public final static String STAFF_FLAGS = "basic,details,vns,voiced";
 
     private final static String DBSTATS_CACHE = "dbstats.data";
     public static boolean loadedFromCache = false;
@@ -308,6 +311,78 @@ public class Cache {
                 }
             }
         }, errorCallback != null ? errorCallback : Callback.errorCallback(activity));
+    }
+
+    /**
+     * Getting the staff details from a VNDetailsActivity: we want the details of voiced (the voice actors of the character we're interested in).
+     * To optimize the number of requests, we ask for all the staffs who voice any character of the VN. That's why we need more info than just our character's VA.
+     *
+     * @param activity
+     * @param vnId       VN's id currently being viewed.
+     * @param characters list of all the characters of the VN.
+     * @param voiced     list of voice actors ID of our character (the character we just clicked, the one we want).
+     */
+
+    public static void getStaff(final Activity activity, final int vnId, List<Item> characters, List<CharacterVoiced> voiced, final Callback successCallback) {
+        // 1 - Looking for the staff details in memory
+        boolean shouldFetch = false;
+        for (CharacterVoiced va : voiced) {
+            if (Cache.staff.get(va.getId()) == null) {
+                shouldFetch = true;
+                break;
+            }
+        }
+
+        if (!shouldFetch) {
+            if (successCallback != null) successCallback.call();
+            return;
+        }
+
+        // 2 - Looking for the staff details in the DB (for our character only)
+
+        // TODO: look for the staff OF OUR CHARACTER ONLY in the DB before sending a request
+
+        if (!shouldFetch) {
+            if (successCallback != null) successCallback.call();
+            return;
+        }
+
+        // 3 - Sending a request to get the staff details
+
+        /* LinkedHashSet because we need a Set (staff ids present only once) which keeps the order (there MAY exceptionnally be more
+        than one page of results, if it's the case we just fetch the first one but make sure that our staff id was in it) */
+        Set<Integer> filteredVoiced = new LinkedHashSet<>();
+        for (CharacterVoiced va : voiced) filteredVoiced.add(va.getId()); // Important: adding our staff IDs first
+        for (Item character : characters) {
+            for (CharacterVoiced va : character.getVoiced()) {
+                if (va.getVid() == vnId) {
+                    filteredVoiced.add(va.getId());
+                }
+            }
+        }
+
+        VNDBServer.get("staff", Cache.STAFF_FLAGS, "(id = [" + TextUtils.join(",", filteredVoiced) + "])", Options.create(false, 1), 0, activity, new Callback() {
+            @Override
+            protected void config() {
+                if (!results.getItems().isEmpty()) {
+                    for (Item staff : results.getItems()) {
+                        Cache.staff.put(staff.getId(), staff);
+                    }
+                    // TODO: save ALL the staff in the DB in the request callback
+
+                    if (successCallback != null) successCallback.call();
+                }
+            }
+        }, Callback.errorCallback(activity));
+    }
+
+    public static void openStaff(final Activity activity, final int staffId) {
+        /* At this point we are sure that the staff details are in memory (and even if something goes terribly wrong and it's
+        somehow not the case, there is still a check that fetch everything we need in StaffActivity) */
+        Intent intent = new Intent(activity, StaffActivity.class);
+        intent.putExtra(StaffActivity.STAFF_ID, staffId);
+        activity.startActivity(intent);
+        activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
     }
 
     public static void saveToCache(Context context, String filename, Object object) {
