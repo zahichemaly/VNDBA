@@ -62,7 +62,7 @@ dependencies {
     compile 'com.github.pluscubed:recycler-fast-scroll:0.3.2'
     compile 'cat.ereza:customactivityoncrash:1.5.0'
     compile 'com.splitwise:tokenautocomplete:2.0.7'
-    compile('com.crashlytics.sdk.android:crashlytics:2.6.7@aar') {
+    compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
         transitive = true;
     }
 }
