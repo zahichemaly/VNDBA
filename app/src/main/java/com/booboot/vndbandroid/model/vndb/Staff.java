@@ -2,6 +2,8 @@ package com.booboot.vndbandroid.model.vndb;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.List;
+
 /**
  * Created by od on 12/03/2016.
  */
@@ -14,10 +16,10 @@ public class Staff {
     private String language;
     private Links links;
     private String description;
-    private String aliases;
-    private String main_alias;
-    private StaffVns vns;
-    private StaffVoiced voiced;
+    private List<Object[]> aliases;
+    private int main_alias;
+    private List<StaffVns> vns;
+    private List<StaffVoiced> voiced;
 
     public Staff() {
     }
@@ -58,11 +60,11 @@ public class Staff {
         this.original = original;
     }
 
-    public String getAliases() {
+    public List<Object[]> getAliases() {
         return aliases;
     }
 
-    public void setAliases(String aliases) {
+    public void setAliases(List<Object[]> aliases) {
         this.aliases = aliases;
     }
 
@@ -90,27 +92,27 @@ public class Staff {
         this.language = language;
     }
 
-    public String getMain_alias() {
+    public int getMain_alias() {
         return main_alias;
     }
 
-    public void setMain_alias(String main_alias) {
+    public void setMain_alias(int main_alias) {
         this.main_alias = main_alias;
     }
 
-    public StaffVns getVns() {
+    public List<StaffVns> getVns() {
         return vns;
     }
 
-    public void setVns(StaffVns vns) {
+    public void setVns(List<StaffVns> vns) {
         this.vns = vns;
     }
 
-    public StaffVoiced getVoiced() {
+    public List<StaffVoiced> getVoiced() {
         return voiced;
     }
 
-    public void setVoiced(StaffVoiced voiced) {
+    public void setVoiced(List<StaffVoiced> voiced) {
         this.voiced = voiced;
     }
 }
