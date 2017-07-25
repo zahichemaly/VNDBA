@@ -11,6 +11,7 @@ import com.booboot.vndbandroid.model.vndb.Fields;
 import com.booboot.vndbandroid.model.vndb.Login;
 import com.booboot.vndbandroid.model.vndb.Options;
 import com.booboot.vndbandroid.model.vndb.Results;
+import com.booboot.vndbandroid.model.vndbandroid.VotelistItem;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.ConnectionReceiver;
 import com.booboot.vndbandroid.util.JSON;
@@ -116,7 +117,6 @@ public class VNDBServer {
                 command.append(' ');
 
                 Response<T> results = null;
-
                 if (options != null && options.getNumberOfPages() > 1) {
                     final List<Response<T>> plPageResults = new ArrayList<>(options.getNumberOfPages());
                     threadManager = Executors.newCachedThreadPool();
@@ -344,6 +344,7 @@ public class VNDBServer {
         if (delimiterIndex < 0) {
             if (response.toString().trim().equals("ok")) {
                 responseWrapper.ok = true;
+                return responseWrapper;
             } else {
                 /* Undocumented error : the server returned an empty response (""), which means absolutely nothing but "leave the ship because something undebuggable happened!" */
                 VNDBServer.close(socketIndex);

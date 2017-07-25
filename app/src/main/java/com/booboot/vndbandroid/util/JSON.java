@@ -13,6 +13,5 @@ public class JSON {
     static {
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        mapper.enableDefaultTyping();
     }
 }
