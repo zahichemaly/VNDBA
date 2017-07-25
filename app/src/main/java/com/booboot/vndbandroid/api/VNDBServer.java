@@ -1,6 +1,7 @@
 package com.booboot.vndbandroid.api;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.booboot.vndbandroid.BuildConfig;
@@ -11,7 +12,6 @@ import com.booboot.vndbandroid.model.vndb.Fields;
 import com.booboot.vndbandroid.model.vndb.Login;
 import com.booboot.vndbandroid.model.vndb.Options;
 import com.booboot.vndbandroid.model.vndb.Results;
-import com.booboot.vndbandroid.model.vndbandroid.VotelistItem;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.ConnectionReceiver;
 import com.booboot.vndbandroid.util.JSON;
@@ -204,7 +204,7 @@ public class VNDBServer {
             public void run() {
                 Response<DbStats> response = sendCommand("dbstats", null, 0, context, errorCallback, new TypeReference<DbStats>() {
                 });
-                if (response != null && response.error != null) {
+                if (response != null && response.error == null) {
                     successCallback.results = response.results;
                     successCallback.call();
                 } else {
@@ -214,10 +214,12 @@ public class VNDBServer {
         }.start();
     }
 
+    @Nullable
     private static <T> Response<T> sendCommand(String command, Object params, int socketIndex, Context context, Callback errorCallback, TypeReference<T> resultClass) {
         return sendCommand(command, params, socketIndex, context, errorCallback, resultClass, false);
     }
 
+    @Nullable
     private static <T> Response<T> sendCommand(String command, Object params, int socketIndex, Context context, Callback errorCallback, TypeReference<T> resultClass, boolean retry) {
         synchronized (SocketPool.getLock(socketIndex)) {
             StringBuilder query = new StringBuilder();
@@ -319,6 +321,7 @@ public class VNDBServer {
         boolean ok;
     }
 
+    @Nullable
     private static <T> Response<T> getResponse(int socketIndex, InputStreamReader in, Callback errorCallback, TypeReference<T> resultClass) {
         Response<T> responseWrapper = new Response<>();
         StringBuilder response = new StringBuilder();
