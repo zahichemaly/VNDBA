@@ -8,10 +8,10 @@ import java.util.List;
  * Created by od on 12/03/2016.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Results extends VNDBCommand {
+public class Results<T> {
     private int num;
     private boolean more;
-    private List<Item> items;
+    private List<T> items;
 
     public int getNum() {
         return num;
@@ -29,12 +29,11 @@ public class Results extends VNDBCommand {
         this.more = more;
     }
 
-    public List<Item> getItems() {
+    public List<T> getItems() {
         return items;
     }
 
-    public void setItems(List<Item> items) {
+    public void setItems(List<T> items) {
         this.items = items;
     }
-
 }

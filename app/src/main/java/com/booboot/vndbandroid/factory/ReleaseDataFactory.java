@@ -3,9 +3,9 @@ package com.booboot.vndbandroid.factory;
 import android.text.TextUtils;
 
 import com.booboot.vndbandroid.adapter.doublelist.DoubleListElement;
-import com.booboot.vndbandroid.model.vndb.Item;
 import com.booboot.vndbandroid.model.vndb.Media;
 import com.booboot.vndbandroid.model.vndb.Producer;
+import com.booboot.vndbandroid.model.vndb.Release;
 import com.booboot.vndbandroid.model.vndbandroid.Language;
 import com.booboot.vndbandroid.model.vndbandroid.Platform;
 import com.booboot.vndbandroid.util.Utils;
@@ -22,7 +22,7 @@ public class ReleaseDataFactory {
      * @param release release we want to display the info
      * @return DoubleListElement[] array to be given to a DoubleListAdapter
      */
-    public static DoubleListElement[] getData(Item release) {
+    public static DoubleListElement[] getData(Release release) {
         final List<DoubleListElement> releaseData = new ArrayList<>();
         if (release.getNotes() != null)
             releaseData.add(new DoubleListElement("Notes", release.getNotes(), true));

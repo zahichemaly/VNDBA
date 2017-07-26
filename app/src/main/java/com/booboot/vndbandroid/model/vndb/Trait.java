@@ -18,7 +18,7 @@ import java.util.Map;
  * Created by od on 12/03/2016.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Trait extends VNDBCommand {
+public class Trait {
     private static Map<Integer, Trait> traits;
 
     private List<Integer> parents;

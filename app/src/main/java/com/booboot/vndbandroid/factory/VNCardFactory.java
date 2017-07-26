@@ -10,7 +10,7 @@ import com.booboot.vndbandroid.activity.MainActivity;
 import com.booboot.vndbandroid.adapter.vncards.Card;
 import com.booboot.vndbandroid.adapter.vncards.VNCardsAdapter;
 import com.booboot.vndbandroid.api.Cache;
-import com.booboot.vndbandroid.model.vndb.Item;
+import com.booboot.vndbandroid.model.vndb.VN;
 import com.booboot.vndbandroid.model.vndbandroid.Priority;
 import com.booboot.vndbandroid.model.vndbandroid.Status;
 import com.booboot.vndbandroid.model.vndbandroid.Vote;
@@ -23,7 +23,7 @@ import com.booboot.vndbandroid.util.image.Pixels;
  * Created by od on 17/04/2016.
  */
 public class VNCardFactory {
-    public static void buildCard(Activity activity, Item vn, RecyclerView materialListView, boolean showFullDate, boolean showRank, boolean showRating, boolean showPopularity, boolean showVoteCount) {
+    public static void buildCard(Activity activity, VN vn, RecyclerView materialListView, boolean showFullDate, boolean showRank, boolean showRating, boolean showPopularity, boolean showVoteCount) {
         StringBuilder title = new StringBuilder(), subtitle = new StringBuilder();
         if (showRank)
             title.append("#").append(materialListView.getAdapter().getItemCount() + 1).append(activity.getString(R.string.dash));

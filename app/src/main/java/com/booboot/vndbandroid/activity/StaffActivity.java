@@ -7,16 +7,18 @@ import android.support.v7.app.AppCompatActivity;
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.VNDBServer;
-import com.booboot.vndbandroid.model.vndb.Item;
 import com.booboot.vndbandroid.model.vndb.Options;
+import com.booboot.vndbandroid.model.vndb.Results;
+import com.booboot.vndbandroid.model.vndb.Staff;
 import com.booboot.vndbandroid.model.vndbandroid.Theme;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.crashlytics.android.Crashlytics;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 public class StaffActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
     public final static String STAFF_ID = "STAFF_ID";
-    private Item staff;
+    private Staff staff;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +37,8 @@ public class StaffActivity extends AppCompatActivity implements SwipeRefreshLayo
         }
 
         if (staff == null) { // #97
-            VNDBServer.get("staff", Cache.STAFF_FLAGS, "(id = " + id + ")", Options.create(false, 1), 0, this, new Callback() {
+            VNDBServer.get("staff", Cache.STAFF_FLAGS, "(id = " + id + ")", Options.create(false, 1), 0, this, new TypeReference<Results<Staff>>() {
+            }, new Callback<Results<Staff>>() {
                 @Override
                 protected void config() {
                     if (!results.getItems().isEmpty()) {

@@ -13,10 +13,9 @@ import com.booboot.vndbandroid.model.vnstat.VNStatItem;
 /**
  * Created by od on 12/03/2016.
  */
-public abstract class Callback {
+public abstract class Callback<T> {
     public String message;
-    public Results results;
-    public DbStats dbstats;
+    public T results;
     public VNStatItem vnStatResults;
     private static Toast toast;
     private static CountDownTimer toastTimer;

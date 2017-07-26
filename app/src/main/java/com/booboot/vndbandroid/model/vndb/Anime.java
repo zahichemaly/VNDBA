@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * Created by od on 12/03/2016.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Anime extends VNDBCommand {
+public class Anime {
     private int id;
     private int ann_id;
     private String nfo_id;

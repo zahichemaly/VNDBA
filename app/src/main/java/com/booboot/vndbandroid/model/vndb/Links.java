@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * Created by od on 12/03/2016.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Links extends VNDBCommand {
+public class Links {
     public final static String WIKIPEDIA = "https://en.wikipedia.org/wiki/";
     public final static String ENCUBED = "http://novelnews.net/tag/";
     public final static String RENAI = "http://renai.us/game/";
@@ -22,6 +22,9 @@ public class Links extends VNDBCommand {
     private String wikipedia;
     private String encubed;
     private String renai;
+    private String homepage;
+    private String twitter;
+    private String anidb;
 
     public String getWikipedia() {
         return wikipedia;
@@ -45,5 +48,29 @@ public class Links extends VNDBCommand {
 
     public void setRenai(String renai) {
         this.renai = renai;
+    }
+
+    public String getHomepage() {
+        return homepage;
+    }
+
+    public void setHomepage(String homepage) {
+        this.homepage = homepage;
+    }
+
+    public String getTwitter() {
+        return twitter;
+    }
+
+    public void setTwitter(String twitter) {
+        this.twitter = twitter;
+    }
+
+    public String getAnidb() {
+        return anidb;
+    }
+
+    public void setAnidb(String anidb) {
+        this.anidb = anidb;
     }
 }

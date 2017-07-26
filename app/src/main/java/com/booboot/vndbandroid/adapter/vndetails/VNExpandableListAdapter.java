@@ -24,9 +24,11 @@ import com.booboot.vndbandroid.factory.CharacterDataFactory;
 import com.booboot.vndbandroid.factory.ReleaseDataFactory;
 import com.booboot.vndbandroid.factory.TagDataFactory;
 import com.booboot.vndbandroid.factory.VNDetailsFactory;
+import com.booboot.vndbandroid.model.vndb.Character;
 import com.booboot.vndbandroid.model.vndb.CharacterVoiced;
-import com.booboot.vndbandroid.model.vndb.Item;
 import com.booboot.vndbandroid.model.vndb.Links;
+import com.booboot.vndbandroid.model.vndb.Release;
+import com.booboot.vndbandroid.model.vndb.Staff;
 import com.booboot.vndbandroid.model.vndb.Tag;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.Lightbox;
@@ -201,7 +203,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                         break;
 
                     case VNDetailsFactory.TITLE_CHARACTERS:
-                        for (final Item character : activity.getCharacters()) {
+                        for (final Character character : activity.getCharacters()) {
                             if (character.getId() == elementData.id) {
                                 convertView.setOnClickListener(new DoubleListListener(activity, character.getName(), CharacterDataFactory.getData(activity, character), null));
 
@@ -224,7 +226,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                                                 protected void config() {
                                                     List<DoubleListElement> voicedElements = new ArrayList<>(filteredVoiced.size());
                                                     for (CharacterVoiced voiced : filteredVoiced) {
-                                                        Item staff = Cache.staff.get(voiced.getId());
+                                                        Staff staff = Cache.staff.get(voiced.getId());
                                                         voicedElements.add(new DoubleListElement(staff.getName() + "", voiced.getNote(), false));
                                                     }
 
@@ -262,8 +264,8 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
 
                         /* Retrieve the release matching the element */
                         if (elementData.id < 0) break;
-                        Item release = null;
-                        for (Item tmp : Cache.releases.get(activity.getVn().getId())) {
+                        Release release = null;
+                        for (Release tmp : Cache.releases.get(activity.getVn().getId())) {
                             if (tmp.getId() == elementData.id) {
                                 release = tmp;
                                 break;

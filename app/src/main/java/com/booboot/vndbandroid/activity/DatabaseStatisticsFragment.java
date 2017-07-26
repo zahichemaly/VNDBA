@@ -68,7 +68,6 @@ public class DatabaseStatisticsFragment extends Fragment implements SwipeRefresh
             protected void config() {
                 Cache.loadStatsFromCache(getActivity());
                 if (Cache.dbstats != null) {
-                    successCallback.dbstats = Cache.dbstats;
                     successCallback.call();
                 }
                 if (Cache.dbstats == null || forceRefresh) {

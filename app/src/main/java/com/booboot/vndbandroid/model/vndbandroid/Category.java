@@ -1,6 +1,5 @@
 package com.booboot.vndbandroid.model.vndbandroid;
 
-import com.booboot.vndbandroid.model.vndb.VNDBCommand;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.ArrayList;
@@ -11,7 +10,7 @@ import java.util.List;
  * Created by od on 12/03/2016.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Category extends VNDBCommand {
+public class Category {
     public final static LinkedHashMap<String, String> CATEGORIES = new LinkedHashMap<>();
     public static List<String> CATEGORIES_KEYS;
 

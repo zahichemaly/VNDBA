@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -48,9 +49,12 @@ import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.api.VNStatServer;
 import com.booboot.vndbandroid.factory.PopupMenuFactory;
 import com.booboot.vndbandroid.factory.VNDetailsFactory;
-import com.booboot.vndbandroid.model.vndb.Item;
+import com.booboot.vndbandroid.model.vndb.Character;
 import com.booboot.vndbandroid.model.vndb.Links;
 import com.booboot.vndbandroid.model.vndb.Options;
+import com.booboot.vndbandroid.model.vndb.Release;
+import com.booboot.vndbandroid.model.vndb.Results;
+import com.booboot.vndbandroid.model.vndb.VN;
 import com.booboot.vndbandroid.model.vndb.VnStaff;
 import com.booboot.vndbandroid.model.vndbandroid.Category;
 import com.booboot.vndbandroid.model.vndbandroid.Priority;
@@ -69,6 +73,7 @@ import com.booboot.vndbandroid.util.image.BitmapTransformation;
 import com.booboot.vndbandroid.util.image.BlurIfDemoTransform;
 import com.booboot.vndbandroid.util.image.Pixels;
 import com.crashlytics.android.Crashlytics;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -85,18 +90,17 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
 
     /* If true, the activity must finish() on resume, so the user can go back to their VN list */
     public static boolean goBackToVnlist;
-    private ActionBar actionBar;
     private SwipeRefreshLayout refreshLayout;
     private PopupWindow spoilerPopup;
 
-    private Item vn;
+    private VN vn;
     private VNlistItem vnlistVn;
     private WishlistItem wishlistVn;
     private VotelistItem votelistVn;
 
-    private List<Item> characters;
-    private LinkedHashMap<String, List<Item>> releases;
-    private List<Item> releasesList;
+    private List<Character> characters;
+    private LinkedHashMap<String, List<Release>> releases;
+    private List<Release> releasesList;
     private List<SimilarNovel> similarNovels;
 
     private ImageView image;
@@ -141,7 +145,8 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         }
 
         if (vn == null) { // #97
-            VNDBServer.get("vn", Cache.VN_FLAGS, "(id = " + id + ")", Options.create(false, 1), 0, this, new Callback() {
+            VNDBServer.get("vn", Cache.VN_FLAGS, "(id = " + id + ")", Options.create(false, 1), 0, this, new TypeReference<Results<VN>>() {
+            }, new Callback<Results<VN>>() {
                 @Override
                 protected void config() {
                     if (!results.getItems().isEmpty()) {
@@ -206,12 +211,12 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
             public boolean onTouch(View arg0, MotionEvent arg1) {
                 switch (arg1.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        notesEditButton.setBackgroundColor(getResources().getColor(R.color.buttonPressed));
+                        notesEditButton.setBackgroundColor(ContextCompat.getColor(VNDetailsActivity.this, R.color.buttonPressed));
                         notesEditButton.setAlpha(0.4f);
                         break;
 
                     case MotionEvent.ACTION_UP:
-                        notesEditButton.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+                        notesEditButton.setBackgroundColor(ContextCompat.getColor(VNDetailsActivity.this, android.R.color.transparent));
                         notesEditButton.setAlpha(1.0f);
                         AlertDialog.Builder builder = new AlertDialog.Builder(VNDetailsActivity.this);
                         builder.setTitle("Notes");
@@ -246,7 +251,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                         break;
 
                     case MotionEvent.ACTION_CANCEL:
-                        notesEditButton.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+                        notesEditButton.setBackgroundColor(ContextCompat.getColor(VNDetailsActivity.this, android.R.color.transparent));
                         notesEditButton.setAlpha(1.0f);
                         break;
                 }
@@ -254,7 +259,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
             }
         });
 
-        actionBar = getSupportActionBar();
+        ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle(vn.getTitle());
         actionBar.setDisplayHomeAsUpEnabled(true);
 
@@ -543,11 +548,12 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                         /* Database tables not init yet: going to send the API query */
                         switch (groupName) {
                             case VNDetailsFactory.TITLE_CHARACTERS:
-                                VNDBServer.get("character", Cache.CHARACTER_FLAGS, "(vn = " + vn.getId() + ")", Options.create(true, 0), 0, VNDetailsActivity.this, new Callback() {
+                                VNDBServer.get("character", Cache.CHARACTER_FLAGS, "(vn = " + vn.getId() + ")", Options.create(true, 0), 0, VNDetailsActivity.this, new TypeReference<Results<Character>>() {
+                                }, new Callback<Results<Character>>() {
                                     @Override
                                     protected void config() {
                                         if (results.getItems().isEmpty()) {
-                                            Cache.characters.put(vn.getId(), new ArrayList<Item>());
+                                            Cache.characters.put(vn.getId(), new ArrayList<Character>());
                                             characters = Cache.characters.get(vn.getId());
                                         } else {
                                             characters = results.getItems();
@@ -569,12 +575,13 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
 
                             case VNDetailsFactory.TITLE_INFORMATION:
                             case VNDetailsFactory.TITLE_RELEASES:
-                                VNDBServer.get("release", Cache.RELEASE_FLAGS, "(vn = " + vn.getId() + ")", Options.create(1, 25, "released", false, true, 0), 1, VNDetailsActivity.this, new Callback() {
+                                VNDBServer.get("release", Cache.RELEASE_FLAGS, "(vn = " + vn.getId() + ")", Options.create(1, 25, "released", false, true, 0), 1, VNDetailsActivity.this, new TypeReference<Results<Release>>() {
+                                }, new Callback<Results<Release>>() {
                                     @Override
                                     protected void config() {
-                                        List<Item> releasesList;
+                                        List<Release> releasesList;
                                         if (results.getItems().isEmpty()) {
-                                            Cache.releases.put(vn.getId(), new ArrayList<Item>());
+                                            Cache.releases.put(vn.getId(), new ArrayList<Release>());
                                             releasesList = Cache.releases.get(vn.getId());
                                         } else {
                                             releasesList = results.getItems();
@@ -671,13 +678,13 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
      *
      * @param releasesList the releases list for the VN, where each release appear a single time.
      */
-    private void groupReleasesByLanguage(List<Item> releasesList) {
+    private void groupReleasesByLanguage(List<Release> releasesList) {
         releases = new LinkedHashMap<>();
-        for (Item release : releasesList) {
+        for (Release release : releasesList) {
             if (release.getLanguages() == null) continue;
             for (String language : release.getLanguages()) {
                 if (releases.get(language) == null)
-                    releases.put(language, new ArrayList<Item>());
+                    releases.put(language, new ArrayList<Release>());
                 releases.get(language).add(release);
             }
         }
@@ -687,14 +694,14 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
      * Sorting the characters with their role (Protagonist then main characters etc.)
      */
     private void groupCharactersByRole() {
-        Collections.sort(characters, new Comparator<Item>() {
+        Collections.sort(characters, new Comparator<Character>() {
             @Override
-            public int compare(Item lhs, Item rhs) {
+            public int compare(Character lhs, Character rhs) {
                 if (lhs.getVns() == null || lhs.getVns().size() < 1 || lhs.getVns().get(0).length < 1 || rhs.getVns() == null || rhs.getVns().size() < 1 || rhs.getVns().get(0).length < 1)
                     return 0;
-                String leftRole = (String) lhs.getVns().get(0)[Item.ROLE_INDEX];
-                String rightRole = (String) rhs.getVns().get(0)[Item.ROLE_INDEX];
-                return Integer.valueOf(Item.ROLES_KEYS.indexOf(leftRole)).compareTo(Item.ROLES_KEYS.indexOf(rightRole));
+                String leftRole = (String) lhs.getVns().get(0)[Character.ROLE_INDEX];
+                String rightRole = (String) rhs.getVns().get(0)[Character.ROLE_INDEX];
+                return Integer.valueOf(Character.ROLES_KEYS.indexOf(leftRole)).compareTo(Character.ROLES_KEYS.indexOf(rightRole));
             }
         });
     }
@@ -829,7 +836,8 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
 
     @Override
     public void onRefresh() {
-        VNDBServer.get("vn", Cache.VN_FLAGS, "(id = " + vn.getId() + ")", Options.create(false, 1), 0, this, new Callback() {
+        VNDBServer.get("vn", Cache.VN_FLAGS, "(id = " + vn.getId() + ")", Options.create(false, 1), 0, this, new TypeReference<Results<VN>>() {
+        }, new Callback<Results<VN>>() {
             @Override
             protected void config() {
                 if (results.getItems().size() > 0) {
@@ -918,15 +926,15 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         return charactersSubmenu;
     }
 
-    public Item getVn() {
+    public VN getVn() {
         return vn;
     }
 
-    public List<Item> getCharacters() {
+    public List<Character> getCharacters() {
         return characters;
     }
 
-    public LinkedHashMap<String, List<Item>> getReleases() {
+    public LinkedHashMap<String, List<Release>> getReleases() {
         return releases;
     }
 

@@ -9,10 +9,14 @@ import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.StaffActivity;
 import com.booboot.vndbandroid.activity.VNDetailsActivity;
 import com.booboot.vndbandroid.activity.VNTypeFragment;
+import com.booboot.vndbandroid.model.vndb.Character;
 import com.booboot.vndbandroid.model.vndb.CharacterVoiced;
 import com.booboot.vndbandroid.model.vndb.DbStats;
-import com.booboot.vndbandroid.model.vndb.Item;
 import com.booboot.vndbandroid.model.vndb.Options;
+import com.booboot.vndbandroid.model.vndb.Release;
+import com.booboot.vndbandroid.model.vndb.Results;
+import com.booboot.vndbandroid.model.vndb.Staff;
+import com.booboot.vndbandroid.model.vndb.VN;
 import com.booboot.vndbandroid.model.vndbandroid.CacheItem;
 import com.booboot.vndbandroid.model.vndbandroid.VNlistItem;
 import com.booboot.vndbandroid.model.vndbandroid.VotelistItem;
@@ -22,6 +26,7 @@ import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.JSON;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,16 +49,16 @@ public class Cache {
     public static LinkedHashMap<Integer, VNlistItem> vnlist = new LinkedHashMap<>();
     public static LinkedHashMap<Integer, VotelistItem> votelist = new LinkedHashMap<>();
     public static LinkedHashMap<Integer, WishlistItem> wishlist = new LinkedHashMap<>();
-    public static LinkedHashMap<Integer, Item> vns = new LinkedHashMap<>();
-    public static LinkedHashMap<Integer, List<Item>> characters = new LinkedHashMap<>();
-    public static LinkedHashMap<Integer, Item> staff = new LinkedHashMap<>();
-    public static LinkedHashMap<Integer, List<Item>> releases = new LinkedHashMap<>();
+    public static LinkedHashMap<Integer, VN> vns = new LinkedHashMap<>();
+    public static LinkedHashMap<Integer, List<Character>> characters = new LinkedHashMap<>();
+    public static LinkedHashMap<Integer, Staff> staff = new LinkedHashMap<>();
+    public static LinkedHashMap<Integer, List<Release>> releases = new LinkedHashMap<>();
     public static LinkedHashMap<Integer, List<SimilarNovel>> similarNovels = new LinkedHashMap<>();
 
     public final static String VN_FLAGS = "basic,details,screens,tags,stats,relations,anime,staff";
     public final static String CHARACTER_FLAGS = "basic,details,meas,traits,vns,voiced";
     public final static String RELEASE_FLAGS = "basic,details,producers";
-    public final static String STAFF_FLAGS = "basic,details,vns,voiced";
+    public final static String STAFF_FLAGS = "basic,details,aliases,vns,voiced";
 
     private final static String DBSTATS_CACHE = "dbstats.data";
     public static boolean loadedFromCache = false;
@@ -81,36 +86,41 @@ public class Cache {
         new Thread() {
             public void run() {
                 shouldRefreshView = false;
-                final Map<Integer, Item> vnlistIds = new HashMap<>(), votelistIds = new HashMap<>(), wishlistIds = new HashMap<>();
+                final Map<Integer, VNlistItem> vnlistIds = new HashMap<>();
+                final Map<Integer, VotelistItem> votelistIds = new HashMap<>();
+                final Map<Integer, WishlistItem> wishlistIds = new HashMap<>();
 
                 /* Initializing multi-threading variables */
                 pipeliningError = false;
                 countDownLatch = new CountDownLatch(3);
 
-                VNDBServer.get("vnlist", "basic", "(uid = 0)", Options.create(1, 100, null, false, true, 0), 0, context, new Callback() {
+                VNDBServer.get("vnlist", "basic", "(uid = 0)", Options.create(1, 100, null, false, true, 0), 0, context, new TypeReference<Results<VNlistItem>>() {
+                }, new Callback<Results<VNlistItem>>() {
                     @Override
                     public void config() {
-                        for (Item vnlistItem : results.getItems()) {
+                        for (VNlistItem vnlistItem : results.getItems()) {
                             vnlistIds.put(vnlistItem.getVn(), vnlistItem);
                         }
                         if (countDownLatch != null) countDownLatch.countDown();
                     }
                 }, errorCallback);
 
-                VNDBServer.get("votelist", "basic", "(uid = 0)", Options.create(1, 100, null, false, true, 0), 1, context, new Callback() {
+                VNDBServer.get("votelist", "basic", "(uid = 0)", Options.create(1, 100, null, false, true, 0), 1, context, new TypeReference<Results<VotelistItem>>() {
+                }, new Callback<Results<VotelistItem>>() {
                     @Override
                     protected void config() {
-                        for (Item votelistItem : results.getItems()) {
+                        for (VotelistItem votelistItem : results.getItems()) {
                             votelistIds.put(votelistItem.getVn(), votelistItem);
                         }
                         if (countDownLatch != null) countDownLatch.countDown();
                     }
                 }, errorCallback);
 
-                VNDBServer.get("wishlist", "basic", "(uid = 0)", Options.create(1, 100, null, false, true, 0), 2, context, new Callback() {
+                VNDBServer.get("wishlist", "basic", "(uid = 0)", Options.create(1, 100, null, false, true, 0), 2, context, new TypeReference<Results<WishlistItem>>() {
+                }, new Callback<Results<WishlistItem>>() {
                     @Override
                     protected void config() {
-                        for (Item wishlistItem : results.getItems()) {
+                        for (WishlistItem wishlistItem : results.getItems()) {
                             wishlistIds.put(wishlistItem.getVn(), wishlistItem);
                         }
                         if (countDownLatch != null) countDownLatch.countDown();
@@ -143,35 +153,23 @@ public class Cache {
 
                 mergedIdsString = TextUtils.join(",", mergedIds);
                 int numberOfPages = (int) Math.ceil(mergedIds.size() * 1.0 / 25);
-                VNDBServer.get("vn", VN_FLAGS, "(id = [" + mergedIdsString + "])", Options.create(true, numberOfPages), 0, context, new Callback() {
+                VNDBServer.get("vn", VN_FLAGS, "(id = [" + mergedIdsString + "])", Options.create(true, numberOfPages), 0, context, new TypeReference<Results<VN>>() {
+                }, new Callback<Results<VN>>() {
                     @Override
                     protected void config() {
-                        for (Item vn : results.getItems()) {
-                            Item vnlistItem = vnlistIds.get(vn.getId());
-                            Item votelistItem = votelistIds.get(vn.getId());
-                            Item wishlistItem = wishlistIds.get(vn.getId());
+                        for (VN vn : results.getItems()) {
+                            VNlistItem vnlistItem = vnlistIds.get(vn.getId());
+                            VotelistItem votelistItem = votelistIds.get(vn.getId());
+                            WishlistItem wishlistItem = wishlistIds.get(vn.getId());
 
                             if (vnlistItem != null) {
-                                VNlistItem item = new VNlistItem();
-                                item.setVn(vn.getId());
-                                item.setStatus(vnlistItem.getStatus());
-                                item.setNotes(vnlistItem.getNotes());
-                                item.setAdded(vnlistItem.getAdded());
-                                Cache.vnlist.put(vn.getId(), item);
+                                Cache.vnlist.put(vn.getId(), vnlistItem);
                             }
                             if (votelistItem != null) {
-                                VotelistItem item = new VotelistItem();
-                                item.setVn(vn.getId());
-                                item.setVote(votelistItem.getVote());
-                                item.setAdded(votelistItem.getAdded());
-                                Cache.votelist.put(vn.getId(), item);
+                                Cache.votelist.put(vn.getId(), votelistItem);
                             }
                             if (wishlistItem != null) {
-                                WishlistItem item = new WishlistItem();
-                                item.setVn(vn.getId());
-                                item.setPriority(wishlistItem.getPriority());
-                                item.setAdded(wishlistItem.getAdded());
-                                Cache.wishlist.put(vn.getId(), item);
+                                Cache.wishlist.put(vn.getId(), wishlistItem);
                             }
 
                             Cache.vns.put(vn.getId(), vn);
@@ -195,11 +193,11 @@ public class Cache {
     /**
      * @return true if the up-to-date lists (directly fetched from the API) are different from the cache content.
      */
-    private static boolean shouldSendGetVn(Context context, Map<Integer, Item> vnlistIds, Map<Integer, Item> votelistIds, Map<Integer, Item> wishlistIds, Set<Integer> mergedIds) {
+    private static boolean shouldSendGetVn(Context context, Map<Integer, VNlistItem> vnlistIds, Map<Integer, VotelistItem> votelistIds, Map<Integer, WishlistItem> wishlistIds, Set<Integer> mergedIds) {
         /* 1 - Checking for VNs that have been removed or modified overtime */
         boolean vnlistHasChanged = false;
         for (int id : new HashSet<>(vnlist.keySet())) {
-            Item vnlistItem = vnlistIds.get(id);
+            VNlistItem vnlistItem = vnlistIds.get(id);
             if (vnlistItem == null) {
                 vnlist.remove(id);
                 vnlistHasChanged = true;
@@ -213,7 +211,7 @@ public class Cache {
         }
         boolean votelistHasChanged = false;
         for (int id : new HashSet<>(votelist.keySet())) {
-            Item votelistItem = votelistIds.get(id);
+            VotelistItem votelistItem = votelistIds.get(id);
             if (votelistItem == null) {
                 votelist.remove(id);
                 votelistHasChanged = true;
@@ -224,7 +222,7 @@ public class Cache {
         }
         boolean wishlistHasChanged = false;
         for (int id : new HashSet<>(wishlist.keySet())) {
-            Item wishlistItem = wishlistIds.get(id);
+            WishlistItem wishlistItem = wishlistIds.get(id);
             if (wishlistItem == null) {
                 wishlist.remove(id);
                 wishlistHasChanged = true;
@@ -236,9 +234,9 @@ public class Cache {
 
         Set<Integer> filteredMergedIds = new HashSet<>();
         for (Integer id : mergedIds) {
-            Item vnlistItem = vnlistIds.get(id);
-            Item votelistItem = votelistIds.get(id);
-            Item wishlistItem = wishlistIds.get(id);
+            VNlistItem vnlistItem = vnlistIds.get(id);
+            VotelistItem votelistItem = votelistIds.get(id);
+            WishlistItem wishlistItem = wishlistIds.get(id);
 
             /* 2 - Checking for VNs that have been added overtime */
             if (vnlistItem != null && vnlist.get(id) == null) {
@@ -298,7 +296,8 @@ public class Cache {
             return;
         }
 
-        VNDBServer.get("vn", Cache.VN_FLAGS, "(id = " + vnId + ")", Options.create(false, 1), 0, activity, new Callback() {
+        VNDBServer.get("vn", Cache.VN_FLAGS, "(id = " + vnId + ")", Options.create(false, 1), 0, activity, new TypeReference<Results<VN>>() {
+        }, new Callback<Results<VN>>() {
             @Override
             protected void config() {
                 if (!results.getItems().isEmpty()) {
@@ -323,7 +322,7 @@ public class Cache {
      * @param voiced     list of voice actors ID of our character (the character we just clicked, the one we want).
      */
 
-    public static void getStaff(final Activity activity, final int vnId, List<Item> characters, List<CharacterVoiced> voiced, final Callback successCallback) {
+    public static void getStaff(final Activity activity, final int vnId, List<Character> characters, List<CharacterVoiced> voiced, final Callback successCallback) {
         // 1 - Looking for the staff details in memory
         boolean shouldFetch = false;
         for (CharacterVoiced va : voiced) {
@@ -353,7 +352,7 @@ public class Cache {
         than one page of results, if it's the case we just fetch the first one but make sure that our staff id was in it) */
         Set<Integer> filteredVoiced = new LinkedHashSet<>();
         for (CharacterVoiced va : voiced) filteredVoiced.add(va.getId()); // Important: adding our staff IDs first
-        for (Item character : characters) {
+        for (Character character : characters) {
             for (CharacterVoiced va : character.getVoiced()) {
                 if (va.getVid() == vnId) {
                     filteredVoiced.add(va.getId());
@@ -361,11 +360,12 @@ public class Cache {
             }
         }
 
-        VNDBServer.get("staff", Cache.STAFF_FLAGS, "(id = [" + TextUtils.join(",", filteredVoiced) + "])", Options.create(false, 1), 0, activity, new Callback() {
+        VNDBServer.get("staff", Cache.STAFF_FLAGS, "(id = [" + TextUtils.join(",", filteredVoiced) + "])", Options.create(false, 1), 0, activity, new TypeReference<Results<Staff>>() {
+        }, new Callback<Results<Staff>>() {
             @Override
             protected void config() {
                 if (!results.getItems().isEmpty()) {
-                    for (Item staff : results.getItems()) {
+                    for (Staff staff : results.getItems()) {
                         Cache.staff.put(staff.getId(), staff);
                     }
                     // TODO: save ALL the staff in the DB in the request callback
@@ -434,10 +434,10 @@ public class Cache {
             return;
         }
 
-        VNDBServer.dbstats(new Callback() {
+        VNDBServer.dbstats(context, new Callback<DbStats>() {
             @Override
             protected void config() {
-                Cache.dbstats = dbstats;
+                Cache.dbstats = results;
                 saveToCache(context, DBSTATS_CACHE, dbstats);
                 successCallback.call();
             }
@@ -460,8 +460,8 @@ public class Cache {
                     first = b;
                     second = a;
                 }
-                Item firstValue;
-                Item secondValue;
+                VN firstValue;
+                VN secondValue;
 
                 switch (SettingsManager.getSort(context)) {
                     case 1:
