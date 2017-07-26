@@ -27,8 +27,6 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -53,7 +51,9 @@ public class VNDBServer {
     private final static String CLIENT = "VNDB_ANDROID";
     private final static double CLIENTVER = 3.0;
 
+    /* Pipelining variables */
     private static ExecutorService threadManager;
+    private static Response[] plPageResults;
 
     private static boolean connect(int socketIndex, Callback errorCallback) {
         try {
@@ -106,6 +106,7 @@ public class VNDBServer {
 
     public static <T> void get(final String type, final String flags, final String filters, final Options options, final int socketIndex, final Context context, final TypeReference<T> resultClass, final Callback<T> successCallback, final Callback errorCallback) {
         new Thread() {
+            @SuppressWarnings("unchecked")
             public void run() {
                 final StringBuilder command = new StringBuilder();
                 command.append("get ");
@@ -118,14 +119,15 @@ public class VNDBServer {
 
                 Response<T> results = null;
                 if (options != null && options.getNumberOfPages() > 1) {
-                    final List<Response<T>> plPageResults = new ArrayList<>(options.getNumberOfPages());
+                    plPageResults = new Response[options.getNumberOfPages()];
                     threadManager = Executors.newCachedThreadPool();
+
                     for (int i = 0; i < options.getNumberOfPages(); i++) {
                         threadManager.execute(new NumberedThread(i) {
                             public void run() {
                                 Options threadOptions = Options.create(options);
                                 threadOptions.setPage(num + 1);
-                                plPageResults.set(num, sendCommand(command.toString(), threadOptions, num, context, errorCallback, resultClass));
+                                plPageResults[num] = sendCommand(command.toString(), threadOptions, num, context, errorCallback, resultClass);
                             }
                         });
                     }
@@ -134,7 +136,7 @@ public class VNDBServer {
                     try {
                         threadManager.awaitTermination(30, TimeUnit.MINUTES);
                         threadManager = null;
-                        for (Response<T> plPageResult : plPageResults) {
+                        for (Response plPageResult : plPageResults) {
                             /* Error case: plPageResult is null, which means there was an exception in one thread and the results are incomplete.
                             To avoid data corruption and/or bad behavior, we stop immediately: the error callback has already been called internally */
                             if (plPageResult == null || plPageResult.error != null) return;
@@ -142,7 +144,6 @@ public class VNDBServer {
                             if (results == null) {
                                 results = plPageResult;
                             } else if (results.results instanceof Results && plPageResult.results instanceof Results) {
-                                //noinspection unchecked
                                 ((Results) results.results).getItems().addAll(((Results) plPageResult.results).getItems());
                             }
                         }
@@ -164,7 +165,6 @@ public class VNDBServer {
                             results = pageResults;
                         } else if (results.results instanceof Results && pageResults.results instanceof Results) {
                             /* If there's more than 1 page, we add the current page items to the overall results, to avoid overwriting the results of the previous pages */
-                            //noinspection unchecked
                             ((Results) results.results).getItems().addAll(((Results) pageResults.results).getItems());
                         }
 
