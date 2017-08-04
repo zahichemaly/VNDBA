@@ -1,4 +1,4 @@
-package com.booboot.vndbandroid.adapter.doublelist;
+package com.booboot.vndbandroid.adapter.staff;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,24 +9,26 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
+import com.booboot.vndbandroid.api.Cache;
+import com.booboot.vndbandroid.model.vndb.Staff;
 
 import java.util.List;
 
 /**
  * Created by od on 06/04/2016.
  */
-public class SubtitleAdapter extends BaseAdapter {
+public class StaffAdapter extends BaseAdapter implements View.OnClickListener {
     private Context context;
-    private List<DoubleListElement> elements;
+    private List<Staff> staffs;
 
-    public SubtitleAdapter(Context context, List<DoubleListElement> elements) {
+    public StaffAdapter(Context context, List<Staff> staffs) {
         this.context = context;
-        this.elements = elements;
+        this.staffs = staffs;
     }
 
     @Override
     public int getCount() {
-        return elements.size();
+        return staffs.size();
     }
 
     @Override
@@ -43,22 +45,37 @@ public class SubtitleAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
             final LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = layoutInflater.inflate(R.layout.simple_item_subtitle, null);
+            convertView = layoutInflater.inflate(R.layout.staff_item, null);
         }
 
         TextView title = (TextView) convertView.findViewById(R.id.title);
         TextView subtitle = (TextView) convertView.findViewById(R.id.subtitle);
         ImageButton itemButton = (ImageButton) convertView.findViewById(R.id.itemButton);
 
-        DoubleListElement element = elements.get(position);
+        final Staff staff = staffs.get(position);
 
-        title.setText(element.getLeftText());
-        if (element.getRightText() != null && !element.getRightText().isEmpty()) {
-            subtitle.setText(element.getRightText());
+        title.setText(staff.getName());
+        if (staff.getNote() != null && !staff.getNote().isEmpty()) {
+            subtitle.setText(staff.getNote());
         } else {
-            subtitle.setVisibility(View.GONE);
+            subtitle.setText(R.string.voice_actor);
         }
 
+        convertView.setTag(staff.getId());
+        itemButton.setTag(staff.getId());
+        convertView.setOnClickListener(this);
+        itemButton.setOnClickListener(this);
+
         return convertView;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.staffItem:
+            case R.id.itemButton:
+                Cache.openStaff(context, (int) v.getTag());
+                break;
+        }
     }
 }

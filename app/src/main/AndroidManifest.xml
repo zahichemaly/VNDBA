@@ -18,6 +18,8 @@
 
         <activity android:name=".activity.VNDetailsActivity" android:theme="@style/SplashScreen"/>
 
+        <activity android:name=".activity.StaffActivity" android:theme="@style/SplashScreen"/>
+
         <activity android:name=".activity.VNSearchActivity"/>
 
         <activity android:name=".activity.EmptyActivity"/>
@@ -63,6 +65,6 @@
 
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="2b584146031147fff282f2ac30752adf504cfafc" />
+            android:value="2b584146031147fff282f2ac30752adf504cfafc"/>
     </application>
 </manifest>

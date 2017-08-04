@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/staffItem"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
@@ -44,12 +44,15 @@
                 tools:text="Role role"/>
         </LinearLayout>
 
-        <android.support.v7.widget.AppCompatImageButton
+        <ImageButton
             android:id="@+id/itemButton"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:elevation="5dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@null"
+            android:padding="8dp"
             android:scaleType="fitCenter"
-            app:backgroundTint="@color/colorAccent"/>
+            android:src="@drawable/ic_arrow_forward_black_48dp"/>
     </LinearLayout>
 </LinearLayout>

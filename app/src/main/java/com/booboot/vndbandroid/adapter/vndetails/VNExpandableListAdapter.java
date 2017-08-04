@@ -16,9 +16,8 @@ import android.widget.TextView;
 
 import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.activity.VNDetailsActivity;
-import com.booboot.vndbandroid.adapter.doublelist.DoubleListElement;
 import com.booboot.vndbandroid.adapter.doublelist.DoubleListListener;
-import com.booboot.vndbandroid.adapter.doublelist.SubtitleAdapter;
+import com.booboot.vndbandroid.adapter.staff.StaffAdapter;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.factory.CharacterDataFactory;
 import com.booboot.vndbandroid.factory.ReleaseDataFactory;
@@ -224,13 +223,14 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                                             Cache.getStaff(activity, activity.getVn().getId(), activity.getCharacters(), filteredVoiced, new Callback() {
                                                 @Override
                                                 protected void config() {
-                                                    List<DoubleListElement> voicedElements = new ArrayList<>(filteredVoiced.size());
+                                                    List<Staff> staffs = new ArrayList<>(filteredVoiced.size());
                                                     for (CharacterVoiced voiced : filteredVoiced) {
                                                         Staff staff = Cache.staff.get(voiced.getId());
-                                                        voicedElements.add(new DoubleListElement(staff.getName() + "", voiced.getNote(), false));
+                                                        staff.setNote(voiced.getNote());
+                                                        staffs.add(staff);
                                                     }
 
-                                                    DoubleListListener.createInfoDialog(activity, character.getName() + " is voiced by...", new SubtitleAdapter(activity, voicedElements), null);
+                                                    DoubleListListener.createInfoDialog(activity, character.getName() + " is voiced by...", new StaffAdapter(activity, staffs), null);
                                                 }
                                             });
                                         }

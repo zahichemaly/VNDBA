@@ -20,6 +20,7 @@ public class Staff {
     private int main_alias;
     private List<StaffVns> vns;
     private List<StaffVoiced> voiced;
+    private String note;
 
     public Staff() {
     }
@@ -114,5 +115,13 @@ public class Staff {
 
     public void setVoiced(List<StaffVoiced> voiced) {
         this.voiced = voiced;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 }

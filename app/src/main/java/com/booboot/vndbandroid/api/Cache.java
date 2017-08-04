@@ -376,13 +376,12 @@ public class Cache {
         }, Callback.errorCallback(activity));
     }
 
-    public static void openStaff(final Activity activity, final int staffId) {
+    public static void openStaff(Context context, int staffId) {
         /* At this point we are sure that the staff details are in memory (and even if something goes terribly wrong and it's
         somehow not the case, there is still a check that fetch everything we need in StaffActivity) */
-        Intent intent = new Intent(activity, StaffActivity.class);
+        Intent intent = new Intent(context, StaffActivity.class);
         intent.putExtra(StaffActivity.STAFF_ID, staffId);
-        activity.startActivity(intent);
-        activity.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+        context.startActivity(intent);
     }
 
     public static void saveToCache(Context context, String filename, Object object) {
