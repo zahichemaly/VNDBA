@@ -321,7 +321,6 @@ public class Cache {
      * @param characters list of all the characters of the VN.
      * @param voiced     list of voice actors ID of our character (the character we just clicked, the one we want).
      */
-
     public static void getStaff(final Activity activity, final int vnId, List<Character> characters, List<CharacterVoiced> voiced, final Callback successCallback) {
         // 1 - Looking for the staff details in memory
         boolean shouldFetch = false;
@@ -338,8 +337,18 @@ public class Cache {
         }
 
         // 2 - Looking for the staff details in the DB (for our character only)
+        Set<Integer> staffIds = new HashSet<>();
+        for (CharacterVoiced va : voiced) {
+            staffIds.add(va.getId());
+        }
+        LinkedHashMap<Integer, Staff> staff = DB.loadStaff(activity, staffIds);
 
-        // TODO: look for the staff OF OUR CHARACTER ONLY in the DB before sending a request
+        if (staff.size() != staffIds.size()) {
+            shouldFetch = true;
+        } else {
+            Cache.staff.putAll(staff);
+            shouldFetch = false;
+        }
 
         if (!shouldFetch) {
             if (successCallback != null) successCallback.call();
@@ -368,7 +377,7 @@ public class Cache {
                     for (Staff staff : results.getItems()) {
                         Cache.staff.put(staff.getId(), staff);
                     }
-                    // TODO: save ALL the staff in the DB in the request callback
+                    DB.saveStaff(activity, results.getItems());
 
                     if (successCallback != null) successCallback.call();
                 }

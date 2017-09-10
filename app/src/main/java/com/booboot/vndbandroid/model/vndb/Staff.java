@@ -2,6 +2,7 @@ package com.booboot.vndbandroid.model.vndb;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,8 +19,8 @@ public class Staff {
     private String description;
     private List<Object[]> aliases;
     private int main_alias;
-    private List<StaffVns> vns;
-    private List<StaffVoiced> voiced;
+    private List<StaffVns> vns = new ArrayList<>();
+    private List<StaffVoiced> voiced = new ArrayList<>();
     private String note;
 
     public Staff() {

@@ -18,6 +18,9 @@ import com.booboot.vndbandroid.model.vndb.Producer;
 import com.booboot.vndbandroid.model.vndb.Relation;
 import com.booboot.vndbandroid.model.vndb.Release;
 import com.booboot.vndbandroid.model.vndb.Screen;
+import com.booboot.vndbandroid.model.vndb.Staff;
+import com.booboot.vndbandroid.model.vndb.StaffVns;
+import com.booboot.vndbandroid.model.vndb.StaffVoiced;
 import com.booboot.vndbandroid.model.vndb.VN;
 import com.booboot.vndbandroid.model.vndb.VnStaff;
 import com.booboot.vndbandroid.model.vndbandroid.VNlistItem;
@@ -62,6 +65,9 @@ public class DB extends SQLiteOpenHelper {
     private final static String TABLE_CHARACTER_VOICED = "character_voiced";
     private final static String TABLE_VN_STAFF = "vn_staff";
     private final static String TABLE_STAFF = "staff";
+    private final static String TABLE_STAFF_ALIAS = "staff_alias";
+    private final static String TABLE_STAFF_VNS = "staff_vns";
+    private final static String TABLE_STAFF_VOICED = "staff_voiced";
     private final static String TABLE_TRAITS = "traits";
     private final static String TABLE_VN_RELEASE = "vn_release";
     private final static String TABLE_RELEASE = "release";
@@ -322,10 +328,55 @@ public class DB extends SQLiteOpenHelper {
                     "PRIMARY KEY (id, cid, vid) " +
                     ")");
 
+            db.execSQL("CREATE TABLE " + TABLE_STAFF + " (" +
+                    "id INTEGER, " +
+                    "name TEXT, " +
+                    "original TEXT, " +
+                    "gender TEXT, " +
+                    "language TEXT, " +
+                    "homepage TEXT, " +
+                    "wikipedia TEXT, " +
+                    "twitter TEXT, " +
+                    "anidb TEXT, " +
+                    "description TEXT, " +
+                    "main_alias INTEGER, " +
+                    "PRIMARY KEY (id) " +
+                    ")");
+
+            db.execSQL("CREATE TABLE " + TABLE_STAFF_ALIAS + " (" +
+                    "id INTEGER, " +
+                    "name TEXT, " +
+                    "original TEXT, " +
+                    "staff_id INTEGER, " +
+                    "PRIMARY KEY (id, staff_id) " +
+                    ")");
+
+            db.execSQL("CREATE TABLE " + TABLE_STAFF_VNS + " (" +
+                    "id INTEGER, " +
+                    "aid INTEGER, " +
+                    "role TEXT, " +
+                    "note TEXT, " +
+                    "staff_id INTEGER, " +
+                    "PRIMARY KEY (id, staff_id, role) " +
+                    ")");
+
+            db.execSQL("CREATE TABLE " + TABLE_STAFF_VOICED + " (" +
+                    "id INTEGER, " +
+                    "aid INTEGER, " +
+                    "cid INTEGER, " +
+                    "note TEXT, " +
+                    "staff_id INTEGER, " +
+                    "PRIMARY KEY (id, staff_id, cid) " +
+                    ")");
+
             db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_VN_STAFF + "_vn ON " + TABLE_VN_STAFF + "(vid)");
             db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_CHARACTER_VOICED + "_id ON " + TABLE_CHARACTER_VOICED + "(id)");
             db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_CHARACTER_VOICED + "_cid ON " + TABLE_CHARACTER_VOICED + "(cid)");
             db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_CHARACTER_VOICED + "_vid ON " + TABLE_CHARACTER_VOICED + "(vid)");
+            db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_STAFF + "_id ON " + TABLE_STAFF + "(id)");
+            db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_STAFF_ALIAS + "_staff_id ON " + TABLE_STAFF_ALIAS + "(staff_id)");
+            db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_STAFF_VNS + "_staff_id ON " + TABLE_STAFF_VNS + "(staff_id)");
+            db.execSQL("CREATE INDEX IF NOT EXISTS " + TABLE_STAFF_VOICED + "_staff_id ON " + TABLE_STAFF_VOICED + "(staff_id)");
         }
 
 //        if (oldVersion < 3) {
@@ -1428,7 +1479,7 @@ public class DB extends SQLiteOpenHelper {
         return res;
     }
 
-    public static List<VnStaff> loadStaff(Context context, int vnId) {
+    public static List<VnStaff> loadVnStaff(Context context, int vnId) {
         if (instance == null) instance = new DB(context);
         SQLiteDatabase db = instance.getWritableDatabase();
 
@@ -1448,6 +1499,161 @@ public class DB extends SQLiteOpenHelper {
 
         cursor.close();
         return res;
+    }
+
+    public static LinkedHashMap<Integer, Staff> loadStaff(Context context, Set<Integer> staffIds) {
+        if (instance == null) instance = new DB(context);
+        SQLiteDatabase db = instance.getWritableDatabase();
+
+        LinkedHashMap<Integer, Staff> res = new LinkedHashMap<>(); // vn -> character
+
+        Cursor[] cursor = new Cursor[3];
+        cursor[0] = db.rawQuery("SELECT * FROM " + TABLE_STAFF + " WHERE id IN (" + TextUtils.join(",", staffIds) + ")", new String[]{});
+
+        while (cursor[0].moveToNext()) {
+            Staff staff = new Staff(cursor[0].getInt(0));
+            staff.setName(cursor[0].getString(1));
+            staff.setOriginal(cursor[0].getString(2));
+            staff.setGender(cursor[0].getString(3));
+            staff.setLanguage(cursor[0].getString(4));
+            Links links = new Links();
+            links.setHomepage(cursor[0].getString(5));
+            links.setWikipedia(cursor[0].getString(6));
+            links.setTwitter(cursor[0].getString(7));
+            links.setAnidb(cursor[0].getString(8));
+            staff.setLinks(links);
+            staff.setDescription(cursor[0].getString(9));
+            staff.setMain_alias(cursor[0].getInt(10));
+
+            res.put(staff.getId(), staff);
+        }
+
+        cursor[1] = db.rawQuery("SELECT * FROM " + TABLE_STAFF_ALIAS + " WHERE staff_id IN (" + TextUtils.join(",", staffIds) + ")", new String[]{});
+        while (cursor[1].moveToNext()) {
+            Staff staff = res.get(cursor[1].getInt(3));
+            if (staff == null) continue;
+            if (staff.getAliases() == null)
+                staff.setAliases(new ArrayList<Object[]>());
+            staff.getAliases().add(new Object[]{cursor[1].getInt(0), cursor[1].getString(1), cursor[1].getString(2)});
+        }
+
+        cursor[2] = db.rawQuery("SELECT * FROM " + TABLE_STAFF_VNS + " WHERE staff_id IN (" + TextUtils.join(",", staffIds) + ")", new String[]{});
+        while (cursor[2].moveToNext()) {
+            Staff staff = res.get(cursor[1].getInt(4));
+            if (staff == null) continue;
+            StaffVns staffVns = new StaffVns();
+            staffVns.setId(cursor[2].getInt(0));
+            staffVns.setAid(cursor[2].getInt(1));
+            staffVns.setRole(cursor[2].getString(2));
+            staffVns.setNote(cursor[2].getString(3));
+            staff.getVns().add(staffVns);
+        }
+
+        cursor[3] = db.rawQuery("SELECT * FROM " + TABLE_STAFF_VOICED + " WHERE staff_id IN (" + TextUtils.join(",", staffIds) + ")", new String[]{});
+        while (cursor[3].moveToNext()) {
+            Staff staff = res.get(cursor[3].getInt(4));
+            if (staff == null) continue;
+            StaffVoiced staffVoiced = new StaffVoiced();
+            staffVoiced.setId(cursor[3].getInt(0));
+            staffVoiced.setAid(cursor[3].getInt(1));
+            staffVoiced.setCid(cursor[3].getInt(2));
+            staffVoiced.setNote(cursor[3].getString(3));
+            staff.getVoiced().add(staffVoiced);
+        }
+
+        for (Cursor c : cursor) c.close();
+
+        return res;
+    }
+
+    public static void saveStaff(Context context, List<Staff> staff) {
+        if (instance == null) instance = new DB(context);
+        SQLiteDatabase db = instance.getWritableDatabase();
+
+        StringBuilder[] queries = new StringBuilder[4];
+        queries[0] = new StringBuilder("INSERT INTO ").append(TABLE_STAFF).append(" VALUES ");
+        queries[1] = new StringBuilder("INSERT INTO ").append(TABLE_STAFF_ALIAS).append(" VALUES ");
+        queries[2] = new StringBuilder("INSERT INTO ").append(TABLE_STAFF_VNS).append(" VALUES ");
+        queries[3] = new StringBuilder("INSERT INTO ").append(TABLE_STAFF_VOICED).append(" VALUES ");
+        int[] itemsToInsert = new int[4];
+
+        /* Retrieving all items to check if we have TO INSERT or UPDATE */
+        LinkedHashMap<Integer, Boolean> alreadyInsertedStaff = new LinkedHashMap<>();
+        LinkedHashMap<Integer, Boolean> newlyInsertedStaff = new LinkedHashMap<>();
+        Set<Integer> staffIds = new HashSet<>();
+        for (Staff staff1 : staff) {
+            staffIds.add(staff1.getId());
+        }
+
+        Cursor cursor = db.rawQuery("SELECT id FROM " + TABLE_STAFF + " WHERE id IN (" + TextUtils.join(",", staffIds) + ")", new String[]{});
+        while (cursor.moveToNext()) {
+            alreadyInsertedStaff.put(cursor.getInt(0), true);
+        }
+        cursor.close();
+        db.beginTransaction();
+
+        for (Staff staff1 : staff) {
+            /* We've just inserted this staff now so it is up to date : go to next */
+            if (newlyInsertedStaff.get(staff1.getId()) != null) continue;
+
+            if (alreadyInsertedStaff.get(staff1.getId()) != null) {
+                /* The staff's was already present BEFORE this method: deleting all for update */
+                db.delete(TABLE_STAFF, "id=?", new String[]{staff1.getId() + ""});
+                db.delete(TABLE_STAFF_ALIAS, "staff_id=?", new String[]{staff1.getId() + ""});
+                db.delete(TABLE_STAFF_VNS, "staff_id=?", new String[]{staff1.getId() + ""});
+                db.delete(TABLE_STAFF_VOICED, "staff_id=?", new String[]{staff1.getId() + ""});
+            }
+
+            queries[0].append("(")
+                    .append(staff1.getId()).append(",")
+                    .append(formatString(staff1.getName())).append(",")
+                    .append(formatString(staff1.getOriginal())).append(",")
+                    .append(formatString(staff1.getGender())).append(",")
+                    .append(formatString(staff1.getLanguage())).append(",")
+                    .append(formatString(staff1.getLinks().getHomepage())).append(",")
+                    .append(formatString(staff1.getLinks().getWikipedia())).append(",")
+                    .append(formatString(staff1.getLinks().getTwitter())).append(",")
+                    .append(formatString(staff1.getLinks().getAnidb())).append(",")
+                    .append(formatString(staff1.getDescription())).append(",")
+                    .append(staff1.getMain_alias())
+                    .append("),");
+            itemsToInsert[0] = checkInsertLimit(db, queries[0], itemsToInsert[0], TABLE_STAFF);
+            newlyInsertedStaff.put(staff1.getId(), true);
+
+            for (Object[] alias : staff1.getAliases()) {
+                queries[1].append("(")
+                        .append(alias[0]).append(",")
+                        .append(formatString(String.valueOf(alias[1]))).append(",")
+                        .append(formatString(String.valueOf(alias[2])))
+                        .append("),");
+                itemsToInsert[1] = checkInsertLimit(db, queries[1], itemsToInsert[1], TABLE_STAFF_ALIAS);
+            }
+
+            for (StaffVns vns : staff1.getVns()) {
+                queries[2].append("(")
+                        .append(vns.getId()).append(",")
+                        .append(vns.getAid()).append(",")
+                        .append(formatString(vns.getRole())).append(",")
+                        .append(formatString(vns.getNote()))
+                        .append("),");
+                itemsToInsert[2] = checkInsertLimit(db, queries[2], itemsToInsert[2], TABLE_STAFF_VNS);
+            }
+
+            for (StaffVoiced voiced : staff1.getVoiced()) {
+                queries[3].append("(")
+                        .append(voiced.getId()).append(",")
+                        .append(voiced.getAid()).append(",")
+                        .append(voiced.getCid()).append(",")
+                        .append(formatString(voiced.getNote()))
+                        .append("),");
+                itemsToInsert[3] = checkInsertLimit(db, queries[3], itemsToInsert[3], TABLE_STAFF_VOICED);
+            }
+        }
+
+        exec(db, queries, itemsToInsert);
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
     }
 
     public static List<Screen> loadScreens(Context context, int vnId) {
@@ -1491,7 +1697,12 @@ public class DB extends SQLiteOpenHelper {
         clearTable(db, TABLE_SCREENS);
         clearTable(db, TABLE_VN_CHARACTER);
         clearTable(db, TABLE_CHARACTER);
+        clearTable(db, TABLE_CHARACTER_VOICED);
         clearTable(db, TABLE_VN_STAFF);
+        clearTable(db, TABLE_STAFF);
+        clearTable(db, TABLE_STAFF_ALIAS);
+        clearTable(db, TABLE_STAFF_VNS);
+        clearTable(db, TABLE_STAFF_VOICED);
         clearTable(db, TABLE_TRAITS);
         clearTable(db, TABLE_VN_RELEASE);
         clearTable(db, TABLE_RELEASE);
@@ -1534,10 +1745,12 @@ public class DB extends SQLiteOpenHelper {
         SQLiteDatabase db = instance.getWritableDatabase();
         db.beginTransaction();
 
+        /* 1 - Removing from VN lists */
         db.execSQL("DELETE FROM " + TABLE_VNLIST + " WHERE vn NOT IN (" + TextUtils.join(",", vnlistIds) + ")");
         db.execSQL("DELETE FROM " + TABLE_VOTELIST + " WHERE vn NOT IN (" + TextUtils.join(",", votelistIds) + ")");
         db.execSQL("DELETE FROM " + TABLE_WISHLIST + " WHERE vn NOT IN (" + TextUtils.join(",", wishlistIds) + ")");
 
+        /* 2 - Removing from tables directly containing  the VN ids */
         String notInListVnIds = "NOT IN (" + listVnIds + ")";
         db.execSQL("DELETE FROM " + TABLE_VN + " WHERE id " + notInListVnIds);
         db.execSQL("DELETE FROM " + TABLE_LANGUAGES + " WHERE vn " + notInListVnIds);
@@ -1552,7 +1765,8 @@ public class DB extends SQLiteOpenHelper {
         db.execSQL("DELETE FROM " + TABLE_VN_RELEASE + " WHERE vn " + notInListVnIds);
         db.execSQL("DELETE FROM " + TABLE_SIMILAR_NOVELS + " WHERE vn " + notInListVnIds);
 
-        List<Integer> tmp = new ArrayList<>();
+        /* 3 - If the Characters are no longer referenced for any VN : removing Characters */
+        Set<Integer> tmp = new HashSet<>();
         Cursor cursor = db.rawQuery("SELECT character FROM " + TABLE_VN_CHARACTER, new String[]{});
         while (cursor.moveToNext()) {
             tmp.add(cursor.getInt(0));
@@ -1563,7 +1777,8 @@ public class DB extends SQLiteOpenHelper {
         db.execSQL("DELETE FROM " + TABLE_CHARACTER + " WHERE id NOT IN (" + existingCharacters + ")");
         db.execSQL("DELETE FROM " + TABLE_TRAITS + " WHERE character NOT IN (" + existingCharacters + ")");
 
-        tmp = new ArrayList<>();
+        /* 4 - If the Releases are no longer referenced for any VN : removing Releases */
+        tmp = new HashSet<>();
         cursor = db.rawQuery("SELECT release FROM " + TABLE_VN_RELEASE, new String[]{});
         while (cursor.moveToNext()) {
             tmp.add(cursor.getInt(0));
@@ -1577,6 +1792,25 @@ public class DB extends SQLiteOpenHelper {
         db.execSQL("DELETE FROM " + TABLE_RELEASE_MEDIA + " WHERE release NOT IN (" + existingReleases + ")");
         db.execSQL("DELETE FROM " + TABLE_RELEASE_PRODUCER + " WHERE release NOT IN (" + existingReleases + ")");
         db.execSQL("DELETE FROM " + TABLE_PRODUCER + " WHERE id NOT IN (SELECT producer FROM " + TABLE_RELEASE_PRODUCER + ")");
+
+        /* 5 - If the Staff are no longer referenced for any VN OR any character : removing Staff */
+        tmp = new HashSet<>();
+        cursor = db.rawQuery("SELECT sid FROM " + TABLE_VN_STAFF, new String[]{});
+        while (cursor.moveToNext()) {
+            tmp.add(cursor.getInt(0));
+        }
+        cursor.close();
+        cursor = db.rawQuery("SELECT id FROM " + TABLE_CHARACTER_VOICED, new String[]{});
+        while (cursor.moveToNext()) {
+            tmp.add(cursor.getInt(0));
+        }
+        cursor.close();
+        String existingStaff = TextUtils.join(",", tmp);
+
+        db.execSQL("DELETE FROM " + TABLE_STAFF + " WHERE id NOT IN (" + existingStaff + ")");
+        db.execSQL("DELETE FROM " + TABLE_STAFF_ALIAS + " WHERE staff_id NOT IN (" + existingStaff + ")");
+        db.execSQL("DELETE FROM " + TABLE_STAFF_VNS + " WHERE staff_id NOT IN (" + existingStaff + ")");
+        db.execSQL("DELETE FROM " + TABLE_STAFF_VOICED + " WHERE staff_id NOT IN (" + existingStaff + ")");
 
         db.setTransactionSuccessful();
         db.endTransaction();

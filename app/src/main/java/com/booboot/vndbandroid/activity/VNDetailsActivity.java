@@ -443,7 +443,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                             alreadyInDatabase = characters.size() > 0;
                             break;
                         case VNDetailsFactory.TITLE_STAFF:
-                            vn.setStaff(DB.loadStaff(VNDetailsActivity.this, vn.getId()));
+                            vn.setStaff(DB.loadVnStaff(VNDetailsActivity.this, vn.getId()));
                             alreadyInDatabase = true;
                             break;
                         case VNDetailsFactory.TITLE_INFORMATION:
