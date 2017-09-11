@@ -1507,7 +1507,7 @@ public class DB extends SQLiteOpenHelper {
 
         LinkedHashMap<Integer, Staff> res = new LinkedHashMap<>(); // vn -> character
 
-        Cursor[] cursor = new Cursor[3];
+        Cursor[] cursor = new Cursor[4];
         cursor[0] = db.rawQuery("SELECT * FROM " + TABLE_STAFF + " WHERE id IN (" + TextUtils.join(",", staffIds) + ")", new String[]{});
 
         while (cursor[0].moveToNext()) {
@@ -1539,7 +1539,7 @@ public class DB extends SQLiteOpenHelper {
 
         cursor[2] = db.rawQuery("SELECT * FROM " + TABLE_STAFF_VNS + " WHERE staff_id IN (" + TextUtils.join(",", staffIds) + ")", new String[]{});
         while (cursor[2].moveToNext()) {
-            Staff staff = res.get(cursor[1].getInt(4));
+            Staff staff = res.get(cursor[2].getInt(4));
             if (staff == null) continue;
             StaffVns staffVns = new StaffVns();
             staffVns.setId(cursor[2].getInt(0));
@@ -1624,7 +1624,8 @@ public class DB extends SQLiteOpenHelper {
                 queries[1].append("(")
                         .append(alias[0]).append(",")
                         .append(formatString(String.valueOf(alias[1]))).append(",")
-                        .append(formatString(String.valueOf(alias[2])))
+                        .append(formatString(String.valueOf(alias[2]))).append(",")
+                        .append(staff1.getId())
                         .append("),");
                 itemsToInsert[1] = checkInsertLimit(db, queries[1], itemsToInsert[1], TABLE_STAFF_ALIAS);
             }
@@ -1634,7 +1635,8 @@ public class DB extends SQLiteOpenHelper {
                         .append(vns.getId()).append(",")
                         .append(vns.getAid()).append(",")
                         .append(formatString(vns.getRole())).append(",")
-                        .append(formatString(vns.getNote()))
+                        .append(formatString(vns.getNote())).append(",")
+                        .append(staff1.getId())
                         .append("),");
                 itemsToInsert[2] = checkInsertLimit(db, queries[2], itemsToInsert[2], TABLE_STAFF_VNS);
             }
@@ -1644,7 +1646,8 @@ public class DB extends SQLiteOpenHelper {
                         .append(voiced.getId()).append(",")
                         .append(voiced.getAid()).append(",")
                         .append(voiced.getCid()).append(",")
-                        .append(formatString(voiced.getNote()))
+                        .append(formatString(voiced.getNote())).append(",")
+                        .append(staff1.getId())
                         .append("),");
                 itemsToInsert[3] = checkInsertLimit(db, queries[3], itemsToInsert[3], TABLE_STAFF_VOICED);
             }
