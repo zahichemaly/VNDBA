@@ -56,7 +56,9 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
             public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
                 View view = v.getChildAt(v.getChildCount() - 1);
                 int diff = (view.getBottom() - (v.getHeight() + v.getScrollY()));
-                ((MainActivity) getActivity()).toggleFloatingSearchButton(scrollY <= oldScrollY || diff > Pixels.px(35, v.getContext()));
+                if (getActivity() instanceof  MainActivity) {
+                    ((MainActivity) getActivity()).toggleFloatingSearchButton(scrollY <= oldScrollY || diff > Pixels.px(35, v.getContext()));
+                }
             }
         });
 

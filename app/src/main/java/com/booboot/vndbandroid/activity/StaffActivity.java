@@ -1,10 +1,16 @@
 package com.booboot.vndbandroid.activity;
 
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 
 import com.booboot.vndbandroid.R;
+import com.booboot.vndbandroid.adapter.staff.StaffTabsAdapter;
 import com.booboot.vndbandroid.api.Cache;
 import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.model.vndb.Options;
@@ -16,9 +22,13 @@ import com.booboot.vndbandroid.util.SettingsManager;
 import com.crashlytics.android.Crashlytics;
 import com.fasterxml.jackson.core.type.TypeReference;
 
-public class StaffActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
+public class StaffActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, TabLayout.OnTabSelectedListener {
     public final static String STAFF_ID = "STAFF_ID";
     private Staff staff;
+
+    private Toolbar toolbar;
+    private ViewPager viewPager;
+    private TabLayout tabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,14 +70,40 @@ public class StaffActivity extends AppCompatActivity implements SwipeRefreshLayo
     }
 
     private void init() {
-        setTheme(Theme.THEMES.get(SettingsManager.getTheme(this)).getStyle());
+        setTheme(Theme.THEMES.get(SettingsManager.getTheme(this)).getNoActionBarStyle());
         setContentView(R.layout.staff_activity);
 
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
+        tabLayout = (TabLayout) findViewById(R.id.tabLayout);
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
+
+        tabLayout.addTab(tabLayout.newTab().setText("Credits"));
+        tabLayout.addTab(tabLayout.newTab().setText("Voiced"));
+
+        viewPager.setAdapter(new StaffTabsAdapter(getFragmentManager(), tabLayout.getTabCount()));
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(this);
     }
 
     @Override
     public void onRefresh() {
         // TODO: allow the user the refresh the info like VNDetailsActivity.onRefresh()
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -80,5 +116,18 @@ public class StaffActivity extends AppCompatActivity implements SwipeRefreshLayo
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(R.anim.slide_back_in, R.anim.slide_back_out);
+    }
+
+    @Override
+    public void onTabSelected(TabLayout.Tab tab) {
+        viewPager.setCurrentItem(tab.getPosition());
+    }
+
+    @Override
+    public void onTabUnselected(TabLayout.Tab tab) {
+    }
+
+    @Override
+    public void onTabReselected(TabLayout.Tab tab) {
     }
 }
