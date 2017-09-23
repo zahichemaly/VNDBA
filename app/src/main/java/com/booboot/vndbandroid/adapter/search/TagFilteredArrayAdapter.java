@@ -48,8 +48,8 @@ public class TagFilteredArrayAdapter extends FilteredArrayAdapter<Tag> {
 
         Tag tag = getItem(position);
         if (tag != null) {
-            TextView text = (TextView) view.findViewById(R.id.tokenAutoCompleteText);
-            ImageView tokenAutoCompleteInfo = (ImageView) view.findViewById(R.id.tokenAutoCompleteInfo);
+            TextView text = view.findViewById(R.id.tokenAutoCompleteText);
+            ImageView tokenAutoCompleteInfo = view.findViewById(R.id.tokenAutoCompleteInfo);
             text.setText(tag.getName());
             tokenAutoCompleteInfo.setOnClickListener(new DoubleListListener(getContext(), tag.getName(), TagDataFactory.getData(tag), new Callback() {
                 @Override

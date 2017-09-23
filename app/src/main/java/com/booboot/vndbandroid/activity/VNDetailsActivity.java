@@ -83,15 +83,32 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class VNDetailsActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
     /* Attributes that need to be retrieved when this activity is recreated */
     public int spoilerLevel = -1;
     public int nsfwLevel = -1;
-
     /* If true, the activity must finish() on resume, so the user can go back to their VN list */
     public static boolean goBackToVnlist;
-    private SwipeRefreshLayout refreshLayout;
+
+    @BindView(R.id.refreshLayout)
+    protected SwipeRefreshLayout refreshLayout;
+
+    @BindView(R.id.expandableListView)
+    protected ExpandableListView expandableListView;
+
+    @BindView(R.id.blurBackground)
+    protected ImageView blurBackground;
+
     private PopupWindow spoilerPopup;
+    private ImageView image;
+    private Button statusButton;
+    private Button wishlistButton;
+    private Button votesButton;
+    private TextView notesTextView;
+    private ImageButton notesEditButton;
 
     private VN vn;
     private VNlistItem vnlistVn;
@@ -103,14 +120,6 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
     private List<Release> releasesList;
     private List<SimilarNovel> similarNovels;
 
-    private ImageView image;
-    private Button statusButton;
-    private Button wishlistButton;
-    private Button votesButton;
-    private TextView notesTextView;
-    private ImageButton notesEditButton;
-
-    private ExpandableListView expandableListView;
     private ExpandableListAdapter expandableListAdapter;
 
     private VNDetailsElement informationSubmenu;
@@ -173,6 +182,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
     private void init() {
         setTheme(Theme.THEMES.get(SettingsManager.getTheme(this)).getStyle());
         setContentView(R.layout.vn_details);
+        ButterKnife.bind(this);
 
         vnlistVn = Cache.vnlist.get(vn.getId());
         wishlistVn = Cache.wishlist.get(vn.getId());
@@ -204,7 +214,6 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         notesTextView.setTextColor(Utils.getTextColorFromBackground(this, R.color.primaryText, R.color.white, isNsfw()));
         notesTextView.setText(vnlistVn != null ? vnlistVn.getNotes() : "");
 
-        notesEditButton = (ImageButton) findViewById(R.id.notesEditButton);
         notesEditButton.setColorFilter(Utils.getThemeColor(this, R.attr.colorPrimary), PorterDuff.Mode.SRC_ATOP);
         notesEditButton.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -263,7 +272,6 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
         actionBar.setTitle(vn.getTitle());
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        refreshLayout = (SwipeRefreshLayout) findViewById(R.id.refreshLayout);
         refreshLayout.setOnRefreshListener(this);
         refreshLayout.setColorSchemeColors(Utils.getThemeColor(this, R.attr.colorAccent));
 
@@ -278,21 +286,20 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
     }
 
     private void initExpandableListView() {
-        expandableListView = (ExpandableListView) findViewById(R.id.expandableListView);
         LinkedHashMap<String, VNDetailsElement> expandableListDetail = VNDetailsFactory.getData(this);
         List<String> expandableListTitle = new ArrayList<>(expandableListDetail.keySet());
         expandableListAdapter = new VNExpandableListAdapter(this, expandableListTitle, expandableListDetail);
 
         final View header = getLayoutInflater().inflate(R.layout.vn_details_header, null);
-        image = (ImageView) header.findViewById(R.id.image);
-        statusButton = (Button) header.findViewById(R.id.statusButton);
-        wishlistButton = (Button) header.findViewById(R.id.wishlistButton);
-        votesButton = (Button) header.findViewById(R.id.votesButton);
-        notesTextView = (TextView) header.findViewById(R.id.notesTextView);
+        image = header.findViewById(R.id.image);
+        statusButton = header.findViewById(R.id.statusButton);
+        wishlistButton = header.findViewById(R.id.wishlistButton);
+        votesButton = header.findViewById(R.id.votesButton);
+        notesTextView = header.findViewById(R.id.notesTextView);
+        notesEditButton = header.findViewById(R.id.notesEditButton);
 
         /* Setting the header and the background image according to the preferences */
-        final ImageView blurBackground = ((ImageView) VNDetailsActivity.this.findViewById(R.id.blurBackground));
-        final boolean coverBackground = SettingsManager.getCoverBackground(this);
+        boolean coverBackground = SettingsManager.getCoverBackground(this);
         if (isNsfw()) {
             image.setImageResource(R.drawable.ic_nsfw);
             blurBackground.setImageResource(0);
@@ -329,8 +336,8 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 if (view.getId() == R.id.list_item_text_layout) {
-                    TextView itemLeftText = (TextView) view.findViewById(R.id.itemLeftText);
-                    TextView itemRightText = (TextView) view.findViewById(R.id.itemRightText);
+                    TextView itemLeftText = view.findViewById(R.id.itemLeftText);
+                    TextView itemRightText = view.findViewById(R.id.itemRightText);
                     String copiedText = "";
 
                     if (itemLeftText != null && itemLeftText.getText() != null) {
@@ -651,7 +658,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
 
     private void hideGroupLoader(final View groupView, final int groupPosition) {
         expandableListView.expandGroup(groupPosition, true);
-        ImageView groupLoader = (ImageView) groupView.findViewById(R.id.groupLoader);
+        ImageView groupLoader = groupView.findViewById(R.id.groupLoader);
         groupLoader.clearAnimation();
         groupLoader.setVisibility(View.INVISIBLE);
         groupView.setEnabled(true);
@@ -664,7 +671,7 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
 
     private void showGroupLoader(View groupView) {
         groupView.setEnabled(false);
-        ImageView groupLoader = (ImageView) groupView.findViewById(R.id.groupLoader);
+        ImageView groupLoader = groupView.findViewById(R.id.groupLoader);
         Utils.tintImage(this, groupLoader, R.attr.colorPrimaryDark, true);
         groupLoader.startAnimation(AnimationUtils.loadAnimation(VNDetailsActivity.this, R.anim.infinite_rotation));
         groupLoader.setVisibility(View.VISIBLE);
@@ -796,10 +803,10 @@ public class VNDetailsActivity extends AppCompatActivity implements SwipeRefresh
                 spoilerPopup = PopupMenuFactory.get(this, R.layout.spoiler_menu, findViewById(R.id.action_spoiler), spoilerPopup, new PopupMenuFactory.Callback() {
                     @Override
                     public void create(View content) {
-                        RadioButton itemSpoil0 = (RadioButton) content.findViewById(R.id.item_spoil_0);
-                        RadioButton itemSpoil1 = (RadioButton) content.findViewById(R.id.item_spoil_1);
-                        RadioButton itemSpoil2 = (RadioButton) content.findViewById(R.id.item_spoil_2);
-                        CheckBox checkNsfw = (CheckBox) content.findViewById(R.id.check_nsfw);
+                        RadioButton itemSpoil0 = content.findViewById(R.id.item_spoil_0);
+                        RadioButton itemSpoil1 = content.findViewById(R.id.item_spoil_1);
+                        RadioButton itemSpoil2 = content.findViewById(R.id.item_spoil_2);
+                        CheckBox checkNsfw = content.findViewById(R.id.check_nsfw);
 
                         VNDetailsListener listener = new VNDetailsListener(VNDetailsActivity.this, vn);
                         itemSpoil0.setOnClickListener(listener);

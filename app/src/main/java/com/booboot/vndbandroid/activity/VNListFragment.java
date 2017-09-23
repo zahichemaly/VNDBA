@@ -17,25 +17,35 @@ import com.booboot.vndbandroid.model.vndbandroid.Priority;
 import com.booboot.vndbandroid.model.vndbandroid.Status;
 import com.booboot.vndbandroid.util.Utils;
 
+import java.util.Collections;
+import java.util.Map;
+
+import butterknife.BindView;
+
 /**
  * Created by od on 13/03/2016.
  */
-public class VNListFragment extends Fragment implements TabLayout.OnTabSelectedListener {
+public class VNListFragment extends VNDBFragment implements TabLayout.OnTabSelectedListener {
     public final static String LIST_TYPE_ARG = "LIST_TYPE";
     public final static int VNLIST = 1;
     public final static int VOTELIST = 2;
     public final static int WISHLIST = 3;
 
-    private ViewPager viewPager;
+    @BindView(R.id.viewpager)
+    protected ViewPager viewPager;
+
+    @BindView(R.id.tabLayout)
+    protected TabLayout tabLayout;
+
     public static int currentPage = -1;
-    private TabLayout tabLayout;
     private int type;
+    private VNTabsAdapter adapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View inflatedView = inflater.inflate(R.layout.vn_list, container, false);
+        layout = R.layout.vn_list;
+        super.onCreateView(inflater, container, savedInstanceState);
 
-        tabLayout = (TabLayout) inflatedView.findViewById(R.id.tabLayout);
         type = getArguments().getInt(LIST_TYPE_ARG);
 
         switch (type) {
@@ -69,16 +79,15 @@ public class VNListFragment extends Fragment implements TabLayout.OnTabSelectedL
                 break;
         }
 
-        viewPager = (ViewPager) inflatedView.findViewById(R.id.viewpager);
-
-        viewPager.setAdapter(new VNTabsAdapter(getFragmentManager(), tabLayout.getTabCount(), type));
+        adapter = new VNTabsAdapter(getFragmentManager(), tabLayout.getTabCount(), type);
+        viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.setOnTabSelectedListener(this);
+        tabLayout.addOnTabSelectedListener(this);
 
         if (currentPage >= 0) viewPager.setCurrentItem(currentPage);
         else currentPage = 0;
 
-        return inflatedView;
+        return rootView;
     }
 
     @Override
@@ -155,5 +164,10 @@ public class VNListFragment extends Fragment implements TabLayout.OnTabSelectedL
 
     @Override
     public void onTabReselected(TabLayout.Tab tab) {
+    }
+
+    public Map<Integer, Fragment> getRegisteredFragments() {
+        if (adapter == null) return Collections.emptyMap();
+        return adapter.getRegisteredFragments();
     }
 }

@@ -47,15 +47,15 @@ import com.booboot.vndbandroid.util.image.Pixels;
 import com.crashlytics.android.Crashlytics;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    private final static String SELECTED_ITEM = "SELECTED_ITEM";
+    private final static String SAVED_FILTER_STATE = "SAVED_FILTER_STATE";
     public static boolean mainActivityExists = false;
     public static boolean shouldRefresh = false;
 
@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected FloatingActionButton floatingSearchButton;
 
     private SearchView searchView;
-    private List<VNTypeFragment> activeFragments = new ArrayList<>();
+    private String savedFilter;
     public int selectedItem;
     private ConnectionReceiver connectionReceiver;
 
@@ -112,7 +112,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Picasso.with(this).load(Theme.THEMES.get(SettingsManager.getTheme(this)).getWallpaper()).transform(new BlurIfDemoTransform(this)).into(headerBackground);
 
         if (savedInstanceState != null) {
-            selectedItem = savedInstanceState.getInt("SELECTED_ITEM");
+            selectedItem = savedInstanceState.getInt(SELECTED_ITEM);
+            savedFilter = savedInstanceState.getString(SAVED_FILTER_STATE);
         }
 
         Fragment oldFragment = getFragmentManager().findFragmentByTag("FRAGMENT");
@@ -172,12 +173,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             @Override
             public boolean onQueryTextChange(String search) {
-                for (VNTypeFragment activeFragment : activeFragments) {
-                    activeFragment.filter(search);
+                savedFilter = search;
+                Fragment currentFragment = getFragmentManager().findFragmentByTag("FRAGMENT");
+                VNListFragment fragment = currentFragment instanceof VNListFragment ? (VNListFragment) currentFragment : null;
+                if (fragment == null) return true;
+
+                for (Fragment activeFragment : fragment.getRegisteredFragments().values()) {
+                    if (activeFragment instanceof VNTypeFragment) {
+                        ((VNTypeFragment) activeFragment).filter(search);
+                    }
                 }
                 return true;
             }
         });
+
+        if (savedFilter != null && !savedFilter.isEmpty()) {
+            searchView.setIconified(false);
+            searchView.setQuery(savedFilter, true);
+        }
+        searchView.clearFocus();
 
         int searchIconId = searchView.getContext().getResources().getIdentifier("android:id/search_button", null, null);
         ImageView searchIcon = searchView.findViewById(searchIconId);
@@ -307,14 +321,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    public void addActiveFragment(VNTypeFragment fragment) {
-        this.activeFragments.add(fragment);
-    }
-
-    public void removeActiveFragment(VNTypeFragment fragment) {
-        this.activeFragments.remove(fragment);
-    }
-
     public void refreshVnlistFragment() {
         Fragment currentFragment = getFragmentManager().findFragmentByTag("FRAGMENT");
         VNListFragment fragment = currentFragment instanceof VNListFragment ? (VNListFragment) currentFragment : null;
@@ -372,7 +378,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putInt("SELECTED_ITEM", selectedItem);
+        outState.putInt(SELECTED_ITEM, selectedItem);
+        if (searchView != null)
+            outState.putString(SAVED_FILTER_STATE, searchView.getQuery().toString());
         super.onSaveInstanceState(outState);
     }
 

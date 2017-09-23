@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:id="@+id/searchOptionsLayout"
+<LinearLayout
+    android:id="@+id/searchOptionsLayout"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/rounded_white_background"
@@ -20,35 +22,38 @@
             android:id="@+id/includeTagsLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical">
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="5dp"
+            android:layout_marginTop="5dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true">
 
-            <ImageView
+            <android.support.v7.widget.AppCompatImageView
                 android:id="@+id/includeTagsIcon"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_marginEnd="-5dp"
-                android:layout_marginTop="10dp"
                 android:alpha="0.4"
                 android:background="@null"
-                android:src="@drawable/ic_tag"/>
+                android:src="@drawable/ic_tag"
+                app:tint="@color/green"/>
 
-            <ImageView
+            <android.support.v7.widget.AppCompatImageView
                 android:id="@+id/includeTagsDropdown"
                 android:layout_width="26dp"
                 android:layout_height="26dp"
                 android:layout_gravity="center_vertical"
-                android:layout_marginEnd="5dp"
-                android:layout_marginTop="5dp"
                 android:alpha="0.4"
                 android:background="@null"
-                android:src="@drawable/ic_keyboard_arrow_down"/>
+                android:src="@drawable/ic_keyboard_arrow_down"
+                app:tint="@color/green"/>
         </LinearLayout>
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/includeTagsFloatingLabel"
-            android:hint="@string/include_all_tags"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:hint="@string/include_all_tags">
 
             <com.booboot.vndbandroid.adapter.search.TagAutoCompleteView
                 android:id="@+id/includeTagsInput"
@@ -65,16 +70,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ImageView
+        <android.support.v7.widget.AppCompatImageView
             android:id="@+id/excludeTagsIcon"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_gravity="center_vertical"
             android:layout_marginEnd="5dp"
             android:layout_marginTop="5dp"
             android:alpha="0.4"
             android:background="@null"
-            android:src="@drawable/ic_tag"/>
+            android:src="@drawable/ic_tag"
+            app:tint="@color/red"/>
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"

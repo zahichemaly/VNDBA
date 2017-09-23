@@ -12,8 +12,6 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
@@ -24,15 +22,15 @@ import com.booboot.vndbandroid.R;
 import com.booboot.vndbandroid.adapter.search.SearchOptionsAdapter;
 import com.booboot.vndbandroid.adapter.search.TagAutoCompleteView;
 import com.booboot.vndbandroid.adapter.search.TagFilteredArrayAdapter;
+import com.booboot.vndbandroid.factory.ProgressiveResultLoader;
 import com.booboot.vndbandroid.model.vndb.Options;
 import com.booboot.vndbandroid.model.vndb.Tag;
 import com.booboot.vndbandroid.model.vndbandroid.Theme;
-import com.booboot.vndbandroid.factory.ProgressiveResultLoader;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.JSON;
-import com.booboot.vndbandroid.util.image.Pixels;
 import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
+import com.booboot.vndbandroid.util.image.Pixels;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.tokenautocomplete.TokenCompleteTextView;
 
@@ -40,6 +38,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class VNSearchActivity extends AppCompatActivity {
     public final static String SAVED_QUERY_STATE = "SAVED_QUERY_STATE";
@@ -50,26 +52,48 @@ public class VNSearchActivity extends AppCompatActivity {
     public final static String INCLUDE_TAGS = "INCLUDE_TAGS";
     public final static String EXCLUDE_TAGS = "EXCLUDE_TAGS";
 
+    @BindView(R.id.expandableListView)
+    protected ExpandableListView expandableListView;
+
+    @BindView(R.id.searchOptionsLayout)
+    public LinearLayout searchOptionsLayout;
+
+    @BindView(R.id.includeTagsInput)
+    protected TagAutoCompleteView includeTagsInput;
+
+    @BindView(R.id.excludeTagsInput)
+    protected TagAutoCompleteView excludeTagsInput;
+
+    @BindView(R.id.includeTagsFloatingLabel)
+    protected TextInputLayout includeTagsFloatingLabel;
+
+    @BindView(R.id.includeTagsIcon)
+    protected ImageView includeTagsIcon;
+
+    @BindView(R.id.includeTagsDropdown)
+    protected ImageView includeTagsDropdown;
+
+    @BindView(R.id.excludeTagsIcon)
+    protected ImageView excludeTagsIcon;
+
+    @BindView(R.id.includeTagsLayout)
+    protected LinearLayout includeTagsLayout;
+
     private Bundle savedInstanceState;
     private ProgressiveResultLoader progressiveResultLoader;
     private SearchView searchView;
     private String savedQuery;
-
     private SearchOptionsAdapter expandableListAdapter;
-    private ExpandableListView expandableListView;
-    public LinearLayout searchOptionsLayout;
 
-    private TagAutoCompleteView includeTagsInput;
-    private TagAutoCompleteView excludeTagsInput;
     private Set<Integer> includeTags = new HashSet<>();
     private Set<Integer> excludeTags = new HashSet<>();
-    private TextInputLayout includeTagsFloatingLabel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTheme(Theme.THEMES.get(SettingsManager.getTheme(this)).getStyle());
         setContentView(R.layout.vn_search);
+        ButterKnife.bind(this);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled(false);
@@ -80,10 +104,8 @@ public class VNSearchActivity extends AppCompatActivity {
         progressiveResultLoader.setOptions(new Options());
         progressiveResultLoader.init();
 
-        expandableListView = (ExpandableListView) findViewById(R.id.expandableListView);
         expandableListAdapter = new SearchOptionsAdapter(this);
         expandableListView.setAdapter(expandableListAdapter);
-        searchOptionsLayout = (LinearLayout) findViewById(R.id.searchOptionsLayout);
 
         if (savedInstanceState != null) {
             this.savedInstanceState = savedInstanceState;
@@ -96,63 +118,27 @@ public class VNSearchActivity extends AppCompatActivity {
             if (savedTags != null) excludeTags = new HashSet<>(savedTags);
         }
 
-        initSearchOptions();
-    }
-
-    private void initSearchOptions() {
-        includeTagsInput = (TagAutoCompleteView) findViewById(R.id.includeTagsInput);
-        excludeTagsInput = (TagAutoCompleteView) findViewById(R.id.excludeTagsInput);
-        includeTagsFloatingLabel = (TextInputLayout) findViewById(R.id.includeTagsFloatingLabel);
-        final ImageView includeTagsIcon = (ImageView) findViewById(R.id.includeTagsIcon);
-        final ImageView includeTagsDropdown = (ImageView) findViewById(R.id.includeTagsDropdown);
-        ImageView excludeTagsIcon = (ImageView) findViewById(R.id.excludeTagsIcon);
-
         initCompletionView(includeTagsInput, VNSearchActivity.INCLUDE_TAGS_STATE, includeTags);
         initCompletionView(excludeTagsInput, VNSearchActivity.EXCLUDE_TAGS_STATE, excludeTags);
+    }
 
-        Utils.tintImage(this, includeTagsIcon, R.color.green, false);
-        Utils.tintImage(this, includeTagsDropdown, R.color.green, false);
-        Utils.tintImage(this, excludeTagsIcon, R.color.red, false);
-
-        LinearLayout includeTagsLayout = (LinearLayout) findViewById(R.id.includeTagsLayout);
-        assert includeTagsLayout != null;
-        includeTagsLayout.setOnTouchListener(new View.OnTouchListener() {
+    @OnClick(R.id.includeTagsLayout)
+    protected void includeTagsLayoutClicked() {
+        PopupMenu popup = new PopupMenu(VNSearchActivity.this, includeTagsDropdown);
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.include_tags, popup.getMenu());
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
-            public boolean onTouch(View arg0, MotionEvent arg1) {
-                switch (arg1.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        includeTagsIcon.setAlpha(0.9f);
-                        includeTagsDropdown.setAlpha(0.9f);
-                        break;
-
-                    case MotionEvent.ACTION_UP:
-                        includeTagsIcon.setAlpha(0.4f);
-                        includeTagsDropdown.setAlpha(0.4f);
-                        PopupMenu popup = new PopupMenu(VNSearchActivity.this, includeTagsDropdown);
-                        MenuInflater inflater = popup.getMenuInflater();
-                        inflater.inflate(R.menu.include_tags, popup.getMenu());
-                        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                            @Override
-                            public boolean onMenuItemClick(MenuItem item) {
-                                if (item.getItemId() == R.id.item_include_all) {
-                                    includeTagsFloatingLabel.setHint(getResources().getString(R.string.include_all_tags));
-                                } else if (item.getItemId() == R.id.item_include_one) {
-                                    includeTagsFloatingLabel.setHint(getResources().getString(R.string.include_one_tags));
-                                }
-                                return false;
-                            }
-                        });
-                        popup.show();
-                        break;
-
-                    case MotionEvent.ACTION_CANCEL:
-                        includeTagsIcon.setAlpha(0.4f);
-                        includeTagsDropdown.setAlpha(0.4f);
-                        break;
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == R.id.item_include_all) {
+                    includeTagsFloatingLabel.setHint(getResources().getString(R.string.include_all_tags));
+                } else if (item.getItemId() == R.id.item_include_one) {
+                    includeTagsFloatingLabel.setHint(getResources().getString(R.string.include_one_tags));
                 }
-                return true;
+                return false;
             }
         });
+        popup.show();
     }
 
     private void initCompletionView(final TagAutoCompleteView tagsInput, final String tagsState, final Set<Integer> ids) {

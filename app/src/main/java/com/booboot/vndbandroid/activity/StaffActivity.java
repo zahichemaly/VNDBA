@@ -22,13 +22,21 @@ import com.booboot.vndbandroid.util.SettingsManager;
 import com.crashlytics.android.Crashlytics;
 import com.fasterxml.jackson.core.type.TypeReference;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class StaffActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, TabLayout.OnTabSelectedListener {
     public final static String STAFF_ID = "STAFF_ID";
     private Staff staff;
 
-    private Toolbar toolbar;
-    private ViewPager viewPager;
-    private TabLayout tabLayout;
+    @BindView(R.id.toolbar)
+    protected Toolbar toolbar;
+
+    @BindView(R.id.viewpager)
+    protected ViewPager viewPager;
+
+    @BindView(R.id.tabLayout)
+    protected TabLayout tabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,15 +80,11 @@ public class StaffActivity extends AppCompatActivity implements SwipeRefreshLayo
     private void init() {
         setTheme(Theme.THEMES.get(SettingsManager.getTheme(this)).getNoActionBarStyle());
         setContentView(R.layout.staff_activity);
+        ButterKnife.bind(this);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-
-        tabLayout = (TabLayout) findViewById(R.id.tabLayout);
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
 
         tabLayout.addTab(tabLayout.newTab().setText("Credits"));
         tabLayout.addTab(tabLayout.newTab().setText("Voiced"));

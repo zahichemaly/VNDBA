@@ -185,11 +185,11 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
 
     private void sendSetRequest(String type, final Fields fields, final MenuItem item) {
         VNDBServer.set(type, vn.getId(), fields, activity, new Callback() {
-            @Override
             /**
              * It is necessary to make another switch here to update our cache, because if there is an error
              * during the request, our cache's state would be different from the actual account state and there would be discrepancies.
              */
+            @Override
             protected void config() {
                 if (popupButton != null)
                     popupButton.setText(item.getTitle());
@@ -434,7 +434,7 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
         LayoutInflater layoutInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialogView = layoutInflater.inflate(R.layout.other_vote_dialog, null);
         builder.setView(dialogView);
-        final EditText otherVoteInput = (EditText) dialogView.findViewById(R.id.otherVoteInput);
+        final EditText otherVoteInput = dialogView.findViewById(R.id.otherVoteInput);
 
         builder.setPositiveButton("OK", null);
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -523,7 +523,6 @@ public class VNDetailsListener implements PopupMenu.OnMenuItemClickListener, Dia
                 fields.setNotes("");
                 sendNotesRequest("vnlist", fields);
                 break;
-
         }
     }
 

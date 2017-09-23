@@ -1,6 +1,5 @@
 package com.booboot.vndbandroid.activity;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
@@ -22,23 +21,27 @@ import com.booboot.vndbandroid.util.Utils;
 
 import java.util.ArrayList;
 
-public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+import butterknife.BindView;
+
+public class VNTypeFragment extends VNDBFragment implements SwipeRefreshLayout.OnRefreshListener {
     public final static String TAB_VALUE_ARG = "STATUS";
     public final static String VN_ARG = "VN";
 
+    @BindView(R.id.materialListView)
+    protected VNCardsListView materialListView;
+
+    @BindView(R.id.refreshLayout)
+    protected SwipeRefreshLayout refreshLayout;
+
     public static boolean refreshOnInit;
-    private VNCardsListView materialListView;
-    private SwipeRefreshLayout refreshLayout;
-    private MainActivity activity;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.vn_card_list, container, false);
+        layout = R.layout.vn_card_list;
+        super.onCreateView(inflater, container, savedInstanceState);
 
         int tabValue = getArguments().getInt(TAB_VALUE_ARG);
         int type = getArguments().getInt(VNListFragment.LIST_TYPE_ARG);
-
-        materialListView = (VNCardsListView) rootView.findViewById(R.id.materialListView);
         VNCardFactory.setupList(getActivity(), materialListView);
 
         switch (type) {
@@ -77,9 +80,8 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
         initFilter();
 
-        refreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refreshLayout);
         refreshLayout.setOnRefreshListener(this);
-        refreshLayout.setColorSchemeColors(Utils.getThemeColor(activity, R.attr.colorAccent));
+        refreshLayout.setColorSchemeColors(Utils.getThemeColor(getActivity(), R.attr.colorAccent));
         refreshLayout.post(new Runnable() {
             @Override
             public void run() {
@@ -97,21 +99,14 @@ public class VNTypeFragment extends Fragment implements SwipeRefreshLayout.OnRef
     }
 
     private void initFilter() {
-        activity = ((MainActivity) getActivity());
+        MainActivity activity = ((MainActivity) getActivity());
 
-        activity.addActiveFragment(this);
         if (activity.getSearchView() != null)
             filter(activity.getSearchView().getQuery());
     }
 
     public void filter(CharSequence search) {
         materialListView.getAdapter().getFilter().filter(search);
-    }
-
-    @Override
-    public void onDestroy() {
-        activity.removeActiveFragment(this);
-        super.onDestroy();
     }
 
     @Override

@@ -25,6 +25,8 @@ public class VNDBFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        unbinder.unbind();
+        // [DEV] Causes crashes everywhere in async callbacks when views are set to null. Too much work to check everything so don't unbind in this project (like before).
+        // Works best with RxJava.
+ //       unbinder.unbind();
     }
 }

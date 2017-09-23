@@ -47,7 +47,7 @@ public class DoubleListListener implements View.OnClickListener {
             ViewCompat.setBackgroundTintList(view.findViewById(R.id.closeButton), buttonBackgroundColor);
         }
 
-        ListView listView = (ListView) view.findViewById(R.id.listView);
+        ListView listView = view.findViewById(R.id.listView);
         listView.setAdapter(adapter);
 
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);

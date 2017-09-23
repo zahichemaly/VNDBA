@@ -86,7 +86,9 @@ public class AboutFragment extends VNDBFragment {
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.action_filter).setVisible(false);
+        MenuItem actionFilter = menu.findItem(R.id.action_filter);
+        if (actionFilter == null) return;
+        actionFilter.setVisible(false);
         menu.findItem(R.id.action_sort).setVisible(false);
         menu.findItem(R.id.action_rate).setVisible(true);
         menu.findItem(R.id.action_share).setVisible(true);

@@ -4,16 +4,21 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v13.app.FragmentStatePagerAdapter;
+import android.view.ViewGroup;
 
 import com.booboot.vndbandroid.activity.VNListFragment;
 import com.booboot.vndbandroid.activity.VNTypeFragment;
 import com.booboot.vndbandroid.model.vndbandroid.Priority;
 import com.booboot.vndbandroid.model.vndbandroid.Status;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by od on 13/03/2016.
  */
 public class VNTabsAdapter extends FragmentStatePagerAdapter {
+    private Map<Integer, Fragment> registeredFragments = new HashMap<>();
     private int numOfTabs;
     private int type;
 
@@ -61,5 +66,22 @@ public class VNTabsAdapter extends FragmentStatePagerAdapter {
     @Override
     public int getCount() {
         return numOfTabs;
+    }
+
+    @Override
+    public Object instantiateItem(ViewGroup container, int position) {
+        Fragment fragment = (Fragment) super.instantiateItem(container, position);
+        registeredFragments.put(position, fragment);
+        return fragment;
+    }
+
+    @Override
+    public void destroyItem(ViewGroup container, int position, Object object) {
+        registeredFragments.remove(position);
+        super.destroyItem(container, position, object);
+    }
+
+    public Map<Integer, Fragment> getRegisteredFragments() {
+        return registeredFragments;
     }
 }
