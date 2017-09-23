@@ -1,6 +1,5 @@
 package com.booboot.vndbandroid.activity;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
@@ -16,20 +15,24 @@ import com.booboot.vndbandroid.api.VNDBServer;
 import com.booboot.vndbandroid.util.Callback;
 import com.booboot.vndbandroid.util.Utils;
 
+import butterknife.BindView;
+
 /**
  * Created by od on 13/03/2016.
  */
-public class DatabaseStatisticsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
-    private ListView listView;
-    private SwipeRefreshLayout refreshLayout;
+public class DatabaseStatisticsFragment extends VNDBFragment implements SwipeRefreshLayout.OnRefreshListener {
+    @BindView(R.id.listView)
+    protected ListView listView;
+
+    @BindView(R.id.refreshLayout)
+    protected SwipeRefreshLayout refreshLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.db_stats, container, false);
+        layout = R.layout.db_stats;
+        View rootView = super.onCreateView(inflater, container, savedInstanceState);
         Utils.setTitle(getActivity(), getActivity().getResources().getString(R.string.database_statistics));
 
-        listView = (ListView) rootView.findViewById(R.id.listView);
-        refreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refreshLayout);
         refreshLayout.setOnRefreshListener(this);
         refreshLayout.setColorSchemeResources(R.color.colorAccent);
 

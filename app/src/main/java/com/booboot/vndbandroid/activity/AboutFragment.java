@@ -1,6 +1,5 @@
 package com.booboot.vndbandroid.activity;
 
-import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,21 +22,38 @@ import com.booboot.vndbandroid.util.image.Pixels;
 
 import java.util.Date;
 
-public class AboutFragment extends Fragment implements View.OnClickListener {
+import butterknife.BindView;
+import butterknife.OnClick;
+
+public class AboutFragment extends VNDBFragment {
+    @BindView(R.id.scrollView)
+    protected NestedScrollView scrollView;
+
+    @BindView(R.id.thanksTextView)
+    protected TextView thanksTextView;
+
+    @BindView(R.id.appVersion)
+    protected TextView appVersion;
+
+    @BindView(R.id.feedbackButton)
+    protected Button feedbackButton;
+
+    @BindView(R.id.githubButton)
+    protected Button githubButton;
+
+    @BindView(R.id.aboutDescription)
+    protected TextView aboutDescription;
+
+    @BindView(R.id.vnstatButton)
+    protected Button vnstatButton;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.about, container, false);
+        layout = R.layout.about;
+        View rootView = super.onCreateView(inflater, container, savedInstanceState);
 
         Utils.setTitle(getActivity(), "About");
-        TextView appVersion = (TextView) rootView.findViewById(R.id.appVersion);
         appVersion.setText(BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ")");
-
-        NestedScrollView scrollView = (NestedScrollView) rootView.findViewById(R.id.scrollView);
-        TextView thanksTextView = (TextView) rootView.findViewById(R.id.thanksTextView);
-        Button feedbackButton = (Button) rootView.findViewById(R.id.feedbackButton);
-        Button githubButton = (Button) rootView.findViewById(R.id.githubButton);
-        Button vnstatButton = (Button) rootView.findViewById(R.id.vnstatButton);
-        TextView aboutDescription = (TextView) rootView.findViewById(R.id.aboutDescription);
 
         Utils.setButtonColor(getActivity(), feedbackButton);
         Utils.setButtonColor(getActivity(), githubButton);
@@ -48,15 +64,12 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
         thanksTextView.setText(Html.fromHtml(Utils.convertLink(getActivity(), thanksTextView.getText().toString())));
         thanksTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
-        githubButton.setOnClickListener(this);
-        feedbackButton.setOnClickListener(this);
-        vnstatButton.setOnClickListener(this);
         scrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
             public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
                 View view = v.getChildAt(v.getChildCount() - 1);
                 int diff = (view.getBottom() - (v.getHeight() + v.getScrollY()));
-                if (getActivity() instanceof  MainActivity) {
+                if (getActivity() instanceof MainActivity) {
                     ((MainActivity) getActivity()).toggleFloatingSearchButton(scrollY <= oldScrollY || diff > Pixels.px(35, v.getContext()));
                 }
             }
@@ -98,25 +111,23 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.feedbackButton:
-                Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", Links.EMAIL, null));
-                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "[VNDB Android] Feedback @ " + new Date().toString());
-                emailIntent.putExtra(Intent.EXTRA_TEXT, "\n\n\n\n" + Utils.getDeviceInfo(getActivity()));
-                emailIntent.putExtra(Intent.EXTRA_EMAIL, Links.EMAIL); // Android 4.3 fix
-                startActivity(Intent.createChooser(emailIntent, "Send a feedback with..."));
-                getActivity().overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
-                break;
+    @OnClick(R.id.feedbackButton)
+    protected void feedbackButtonClicked() {
+        Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", Links.EMAIL, null));
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "[VNDB Android] Feedback @ " + new Date().toString());
+        emailIntent.putExtra(Intent.EXTRA_TEXT, "\n\n\n\n" + Utils.getDeviceInfo(getActivity()));
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, Links.EMAIL); // Android 4.3 fix
+        startActivity(Intent.createChooser(emailIntent, "Send a feedback with..."));
+        getActivity().overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+    }
 
-            case R.id.githubButton:
-                Utils.openURL(getActivity(), Links.GITHUB);
-                break;
+    @OnClick(R.id.githubButton)
+    protected void githubButtonClicked() {
+        Utils.openURL(getActivity(), Links.GITHUB);
+    }
 
-            case R.id.vnstatButton:
-                Utils.openURL(getActivity(), Links.VNSTAT);
-                break;
-        }
+    @OnClick(R.id.vnstatButton)
+    protected void vnstatButtonClicked() {
+        Utils.openURL(getActivity(), Links.VNSTAT);
     }
 }
