@@ -51,18 +51,30 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static boolean mainActivityExists = false;
     public static boolean shouldRefresh = false;
+
+    @BindView(R.id.drawer_layout)
+    protected DrawerLayout drawer;
+
+    @BindView(R.id.toolbar)
+    protected Toolbar toolbar;
+
+    @BindView(R.id.nav_view)
+    protected NavigationView navigationView;
+
+    @BindView(R.id.floatingSearchButton)
+    protected FloatingActionButton floatingSearchButton;
+
     private SearchView searchView;
     private List<VNTypeFragment> activeFragments = new ArrayList<>();
-    private Fragment directSubfragment;
     public int selectedItem;
-    private NavigationView navigationView;
     private ConnectionReceiver connectionReceiver;
-    private Toolbar toolbar;
-    private FloatingActionButton floatingSearchButton;
-    private DrawerLayout drawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,18 +82,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Cache.loadFromCache(this);
         setTheme(Theme.THEMES.get(SettingsManager.getTheme(this)).getNoActionBarStyle());
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         if (drawer != null) {
-            drawer.setDrawerListener(toggle);
+            drawer.addDrawerListener(toggle);
         }
         toggle.syncState();
 
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         int[][] states = new int[][]{
                 new int[]{android.R.attr.state_checked}, // selected
@@ -96,20 +106,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setItemIconTintList(new ColorStateList(states, colors));
 
         navigationView.getMenu().findItem(R.id.accountTitle).setTitle(SettingsManager.getUsername(this));
+
         View header = navigationView.getHeaderView(0);
-
-        ImageView headerBackground = (ImageView) header.findViewById(R.id.headerBackground);
+        ImageView headerBackground = header.findViewById(R.id.headerBackground);
         Picasso.with(this).load(Theme.THEMES.get(SettingsManager.getTheme(this)).getWallpaper()).transform(new BlurIfDemoTransform(this)).into(headerBackground);
-
-        floatingSearchButton = (FloatingActionButton) findViewById(R.id.floatingSearchButton);
-        if (floatingSearchButton != null) {
-            floatingSearchButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    startActivity(new Intent(MainActivity.this, VNSearchActivity.class));
-                }
-            });
-        }
 
         if (savedInstanceState != null) {
             selectedItem = savedInstanceState.getInt("SELECTED_ITEM");
@@ -180,10 +180,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
 
         int searchIconId = searchView.getContext().getResources().getIdentifier("android:id/search_button", null, null);
-        ImageView searchIcon = (ImageView) searchView.findViewById(searchIconId);
+        ImageView searchIcon = searchView.findViewById(searchIconId);
         searchIcon.setImageResource(R.drawable.ic_filter_list_white_24dp);
 
         return true;
+    }
+
+    @OnClick(R.id.floatingSearchButton)
+    protected void floatingSearchButtonClicked() {
+        startActivity(new Intent(MainActivity.this, VNSearchActivity.class));
     }
 
     public void onCreateSortMenu(MenuItem item) {
@@ -240,40 +245,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean goToFragment(int id) {
         Bundle args = new Bundle();
         selectedItem = id;
+        Fragment fragment = null;
 
         if (id == R.id.nav_vnlist) {
-            directSubfragment = new VNListFragment();
+            fragment = new VNListFragment();
             args.putInt(VNListFragment.LIST_TYPE_ARG, VNListFragment.VNLIST);
         } else if (id == R.id.nav_votelist) {
-            directSubfragment = new VNListFragment();
+            fragment = new VNListFragment();
             args.putInt(VNListFragment.LIST_TYPE_ARG, VNListFragment.VOTELIST);
         } else if (id == R.id.nav_wishlist) {
-            directSubfragment = new VNListFragment();
+            fragment = new VNListFragment();
             args.putInt(VNListFragment.LIST_TYPE_ARG, VNListFragment.WISHLIST);
         } else if (id == R.id.nav_stats) {
-            directSubfragment = new DatabaseStatisticsFragment();
+            fragment = new DatabaseStatisticsFragment();
         } else if (id == R.id.nav_top) {
-            directSubfragment = new RankingTopFragment();
+            fragment = new RankingTopFragment();
         } else if (id == R.id.nav_popular) {
-            directSubfragment = new RankingPopularFragment();
+            fragment = new RankingPopularFragment();
         } else if (id == R.id.nav_most_voted) {
-            directSubfragment = new RankingMostVotedFragment();
+            fragment = new RankingMostVotedFragment();
         } else if (id == R.id.nav_newly_released) {
-            directSubfragment = new RankingNewlyReleasedFragment();
+            fragment = new RankingNewlyReleasedFragment();
         } else if (id == R.id.nav_newly_added) {
-            directSubfragment = new RankingNewlyAddedFragment();
+            fragment = new RankingNewlyAddedFragment();
         } else if (id == R.id.nav_recommendations) {
-            directSubfragment = new RecommendationsFragment();
+            fragment = new RecommendationsFragment();
         } else if (id == R.id.nav_settings) {
-            directSubfragment = new PreferencesFragment();
+            fragment = new PreferencesFragment();
         } else if (id == R.id.nav_about) {
-            directSubfragment = new AboutFragment();
+            fragment = new AboutFragment();
         } else if (id == R.id.nav_logout) {
             return logout();
         }
 
-        directSubfragment.setArguments(args);
-        getFragmentManager().beginTransaction().replace(R.id.fragment_container, directSubfragment, "FRAGMENT").addToBackStack(null).commit();
+        fragment.setArguments(args);
+        getFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment, "FRAGMENT").addToBackStack(null).commit();
         if (drawer != null) drawer.closeDrawer(GravityCompat.START);
         toggleFloatingSearchButton(id != R.id.nav_settings);
         enableToolbarScroll(Arrays.asList(R.id.nav_vnlist, R.id.nav_votelist, R.id.nav_wishlist).contains(id));
@@ -310,7 +316,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void refreshVnlistFragment() {
-        VNListFragment fragment = directSubfragment instanceof VNListFragment ? (VNListFragment) directSubfragment : null;
+        Fragment currentFragment = getFragmentManager().findFragmentByTag("FRAGMENT");
+        VNListFragment fragment = currentFragment instanceof VNListFragment ? (VNListFragment) currentFragment : null;
         Cache.sortAll(this);
         if (fragment != null) {
             fragment.refresh();

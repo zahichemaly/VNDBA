@@ -8,6 +8,7 @@ import com.booboot.vndbandroid.activity.ErrorActivity;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
 
+import butterknife.ButterKnife;
 import cat.ereza.customactivityoncrash.CustomActivityOnCrash;
 import io.fabric.sdk.android.Fabric;
 
@@ -25,5 +26,7 @@ public class VNDBApplication extends Application {
 
         CrashlyticsCore core = new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build();
         Fabric.with(this, new Crashlytics.Builder().core(core).build());
+
+        ButterKnife.setDebug(BuildConfig.DEBUG);
     }
 }
