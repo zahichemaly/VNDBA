@@ -20,19 +20,34 @@ import com.booboot.vndbandroid.util.SettingsManager;
 import com.booboot.vndbandroid.util.Utils;
 import com.crashlytics.android.Crashlytics;
 
-public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
+public class LoginActivity extends AppCompatActivity {
     public static boolean autologin = true;
-    private Button loginButton;
-    private EditText loginUsername;
-    private EditText loginPassword;
-    private ProgressBar progressBar;
-    private TextView signupTextView;
+
+    @BindView(R.id.signupTextView)
+    protected TextView signupTextView;
+
+    @BindView(R.id.loginButton)
+    protected Button loginButton;
+
+    @BindView(R.id.loginUsername)
+    protected EditText loginUsername;
+
+    @BindView(R.id.loginPassword)
+    protected EditText loginPassword;
+
+    @BindView(R.id.progressBar)
+    protected ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTheme(Theme.THEMES.get(SettingsManager.getTheme(this)).getNoActionBarStyle());
         setContentView(R.layout.login);
+        ButterKnife.bind(this);
 
         Window window = getWindow();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -45,13 +60,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
         window.getDecorView().setVisibility(View.GONE);
 
-        signupTextView = (TextView) findViewById(R.id.signupTextView);
         Utils.setTextViewLink(this, signupTextView, Links.VNDB_REGISTER, signupTextView.getText().toString().indexOf("Sign up here"), signupTextView.getText().toString().length());
-        loginButton = (Button) findViewById(R.id.loginButton);
-        loginButton.setOnClickListener(this);
-        loginUsername = (EditText) findViewById(R.id.loginUsername);
-        loginPassword = (EditText) findViewById(R.id.loginPassword);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         String savedUsername = SettingsManager.getUsername(this);
         String savedPassword = SettingsManager.getPassword(this);
@@ -76,14 +85,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         autologin = false;
     }
 
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.loginButton) {
-            SettingsManager.setUsername(this, loginUsername.getText().toString());
-            SettingsManager.setPassword(this, loginPassword.getText().toString());
-            disableAll();
-            login();
-        }
+    @OnClick(R.id.loginButton)
+    protected void loginButtonClicked() {
+        SettingsManager.setUsername(this, loginUsername.getText().toString());
+        SettingsManager.setPassword(this, loginPassword.getText().toString());
+        disableAll();
+        login();
     }
 
     private void login() {

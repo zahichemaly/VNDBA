@@ -30,7 +30,7 @@ public class DatabaseStatisticsFragment extends VNDBFragment implements SwipeRef
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         layout = R.layout.db_stats;
-        View rootView = super.onCreateView(inflater, container, savedInstanceState);
+        super.onCreateView(inflater, container, savedInstanceState);
         Utils.setTitle(getActivity(), getActivity().getResources().getString(R.string.database_statistics));
 
         refreshLayout.setOnRefreshListener(this);

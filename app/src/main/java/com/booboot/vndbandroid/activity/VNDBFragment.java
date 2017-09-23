@@ -11,11 +11,12 @@ import butterknife.Unbinder;
 
 public class VNDBFragment extends Fragment {
     protected int layout;
+    protected View rootView;
     private Unbinder unbinder;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(layout, container, false);
+        rootView = inflater.inflate(layout, container, false);
         unbinder = ButterKnife.bind(this, rootView);
 
         return rootView;

@@ -1,6 +1,5 @@
 package com.booboot.vndbandroid.activity;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -42,21 +41,36 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class RecommendationsFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
-    private View rootView;
+import butterknife.BindView;
+
+public class RecommendationsFragment extends VNDBFragment implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
     public static List<SimilarNovel> recommendations;
     private PopupWindow optionsPopup;
-    private VNCardsListView materialListView;
-    private ProgressBar progressBar;
-    private SwipeRefreshLayout refreshLayout;
+
+    @BindView(R.id.materialListView)
+    protected VNCardsListView materialListView;
+
+    @BindView(R.id.progressBar)
+    protected ProgressBar progressBar;
+
+    @BindView(R.id.refreshLayout)
+    protected SwipeRefreshLayout refreshLayout;
+
+    @BindView(R.id.backgroundInfo)
+    protected View backgroundInfo;
+
+    @BindView(R.id.backgroundInfoImage)
+    protected ImageView backgroundInfoImage;
+
+    @BindView(R.id.backgroundInfoText)
+    protected TextView backgroundInfoText;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.vn_card_list, container, false);
+        layout = R.layout.vn_card_list;
+        super.onCreateView(inflater, container, savedInstanceState);
         Utils.setTitle(getActivity(), getActivity().getResources().getString(R.string.my_recommendations));
 
-        progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
-        materialListView = (VNCardsListView) rootView.findViewById(R.id.materialListView);
         VNCardFactory.setupList(getActivity(), materialListView);
 
         materialListView.getRootView().setBackgroundColor(ContextCompat.getColor(rootView.getContext(), R.color.windowBackground));
@@ -67,7 +81,6 @@ public class RecommendationsFragment extends Fragment implements SwipeRefreshLay
             }
         }));
 
-        refreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refreshLayout);
         refreshLayout.setOnRefreshListener(this);
         refreshLayout.setColorSchemeColors(Utils.getThemeColor(getActivity(), R.attr.colorAccent));
         FastScrollerFactory.get(getActivity(), rootView, materialListView, refreshLayout);
@@ -94,7 +107,7 @@ public class RecommendationsFragment extends Fragment implements SwipeRefreshLay
                 optionsPopup = PopupMenuFactory.get(getActivity(), R.layout.recommendations_menu, getActivity().findViewById(R.id.action_recommendations_options), optionsPopup, new PopupMenuFactory.Callback() {
                     @Override
                     public void create(View content) {
-                        CheckBox checkHideInWishlist = (CheckBox) content.findViewById(R.id.check_hide_in_wishlist);
+                        CheckBox checkHideInWishlist = content.findViewById(R.id.check_hide_in_wishlist);
                         checkHideInWishlist.setOnClickListener(RecommendationsFragment.this);
                         checkHideInWishlist.setChecked(SettingsManager.getHideRecommendationsInWishlist(getActivity()));
 
@@ -200,15 +213,13 @@ public class RecommendationsFragment extends Fragment implements SwipeRefreshLay
 
     private void showBackgroundInfo(String text, boolean showToast) {
         if (recommendations.size() > 0) {
-            rootView.findViewById(R.id.backgroundInfo).setVisibility(View.GONE);
+            backgroundInfo.setVisibility(View.GONE);
             /* If the lists were public, but the user made them private in the meantime, we can show recommendations BUT have to tell the user "these recommendations cannot be updated" */
             if (showToast) Callback.showToast(getActivity(), text);
         } else {
-            final ImageView backgroundInfoImage = (ImageView) rootView.findViewById(R.id.backgroundInfoImage);
             Utils.tintImage(getActivity(), backgroundInfoImage, android.R.color.darker_gray, false);
-            final TextView backgroundInfoText = (TextView) rootView.findViewById(R.id.backgroundInfoText);
             backgroundInfoText.setText(text);
-            rootView.findViewById(R.id.backgroundInfo).setVisibility(View.VISIBLE);
+            backgroundInfo.setVisibility(View.VISIBLE);
         }
     }
 
