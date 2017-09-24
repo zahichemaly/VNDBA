@@ -48,9 +48,9 @@ public class StaffAdapter extends BaseAdapter implements View.OnClickListener {
             convertView = layoutInflater.inflate(R.layout.staff_item, null);
         }
 
-        TextView title = (TextView) convertView.findViewById(R.id.title);
-        TextView subtitle = (TextView) convertView.findViewById(R.id.subtitle);
-        ImageButton itemButton = (ImageButton) convertView.findViewById(R.id.itemButton);
+        TextView title = convertView.findViewById(R.id.title);
+        TextView subtitle = convertView.findViewById(R.id.subtitle);
+        ImageButton itemButton = convertView.findViewById(R.id.itemButton);
 
         final Staff staff = staffs.get(position);
 

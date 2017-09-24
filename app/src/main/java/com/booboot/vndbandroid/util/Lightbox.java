@@ -41,7 +41,7 @@ public class Lightbox implements Target {
                 dialog.setContentView(R.layout.act_lightbox);
                 dialog.setCancelable(true);
 
-                final ImageView lightbox = (ImageView) dialog.findViewById(R.id.lightboxView);
+                final ImageView lightbox = dialog.findViewById(R.id.lightboxView);
                 Picasso.with(context).load(url).transform(new BlurIfDemoTransform(context)).into(new Lightbox(context, lightbox, dialog));
             }
         });

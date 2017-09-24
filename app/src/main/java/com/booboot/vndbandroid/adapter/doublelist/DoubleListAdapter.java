@@ -49,8 +49,8 @@ public class DoubleListAdapter extends BaseAdapter {
         }
         convertView.findViewById(R.id.itemLeftImage).setVisibility(View.GONE);
         convertView.findViewById(R.id.itemRightImage).setVisibility(View.GONE);
-        TextView itemLeftText = (TextView) convertView.findViewById(R.id.itemLeftText);
-        TextView itemRightText = (TextView) convertView.findViewById(R.id.itemRightText);
+        TextView itemLeftText = convertView.findViewById(R.id.itemLeftText);
+        TextView itemRightText = convertView.findViewById(R.id.itemRightText);
 
         DoubleListElement element = elements[position];
 

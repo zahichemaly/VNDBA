@@ -42,20 +42,20 @@ public class VNCardsAdapter extends RecyclerView.Adapter<CardHolder> implements 
         Card card = getCard(position);
 
         if (card.getImageId() > 0)
-            holder.getImage().setImageResource(card.getImageId());
+            holder.image.setImageResource(card.getImageId());
         else
-            Picasso.with(context).load(card.getImageUrl()).transform(new BlurIfDemoTransform(context)).into(holder.getImage());
+            Picasso.with(context).load(card.getImageUrl()).transform(new BlurIfDemoTransform(context)).into(holder.image);
 
-        holder.getTitle().setText(card.getTitle());
-        holder.getSubtitle().setText(card.getSubtitle());
-        holder.getStatusButton().setText(card.getStatus());
-        holder.getWishlistButton().setText(card.getWish());
-        holder.getVotesButton().setText(card.getVote());
-        holder.getCardView().setTag(card.getVnId());
+        holder.title.setText(card.getTitle());
+        holder.subtitle.setText(card.getSubtitle());
+        holder.statusButton.setText(card.getStatus());
+        holder.wishlistButton.setText(card.getWish());
+        holder.votesButton.setText(card.getVote());
+        holder.cardView.setTag(card.getVnId());
 
-        Utils.setElevation(context, holder.getStatusButton(), 8);
-        Utils.setElevation(context, holder.getWishlistButton(), 8);
-        Utils.setElevation(context, holder.getVotesButton(), 8);
+        Utils.setElevation(context, holder.statusButton, 8);
+        Utils.setElevation(context, holder.wishlistButton, 8);
+        Utils.setElevation(context, holder.votesButton, 8);
     }
 
     @Override

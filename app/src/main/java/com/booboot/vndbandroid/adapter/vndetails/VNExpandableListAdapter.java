@@ -95,10 +95,10 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
 
         switch (layout) {
             case R.layout.list_item_text:
-                itemLeftImage = (ImageView) convertView.findViewById(R.id.itemLeftImage);
-                TextView itemLeftText = (TextView) convertView.findViewById(R.id.itemLeftText);
-                TextView itemRightText = (TextView) convertView.findViewById(R.id.itemRightText);
-                itemRightImage = (ImageView) convertView.findViewById(R.id.itemRightImage);
+                itemLeftImage = convertView.findViewById(R.id.itemLeftImage);
+                TextView itemLeftText = convertView.findViewById(R.id.itemLeftText);
+                TextView itemRightText = convertView.findViewById(R.id.itemRightText);
+                itemRightImage = convertView.findViewById(R.id.itemRightImage);
 
                 itemLeftText.setTextColor(Utils.getTextColorFromBackground(activity, R.color.primaryText, R.color.white, activity.isNsfw()));
                 primaryText = Utils.convertLink(activity, primaryText);
@@ -138,18 +138,18 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
                 break;
 
             case R.layout.list_item_images:
-                final ImageButton expandedListImage = (ImageButton) convertView.findViewById(R.id.expandedListImage);
+                final ImageButton expandedListImage = convertView.findViewById(R.id.expandedListImage);
                 Picasso.with(activity).load(primaryText).transform(new BlurIfDemoTransform(activity)).into(expandedListImage);
                 convertView.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, Pixels.px(100, activity)));
                 Lightbox.set(activity, expandedListImage, primaryText);
                 break;
 
             case R.layout.list_item_subtitle:
-                itemLeftImage = (ImageView) convertView.findViewById(R.id.iconView);
-                itemRightImage = (ImageView) convertView.findViewById(R.id.itemRightImage);
-                TextView title = (TextView) convertView.findViewById(R.id.title);
-                TextView subtitle = (TextView) convertView.findViewById(R.id.subtitle);
-                ImageButton itemButton = (ImageButton) convertView.findViewById(R.id.itemButton);
+                itemLeftImage = convertView.findViewById(R.id.iconView);
+                itemRightImage = convertView.findViewById(R.id.itemRightImage);
+                TextView title = convertView.findViewById(R.id.title);
+                TextView subtitle = convertView.findViewById(R.id.subtitle);
+                ImageButton itemButton = convertView.findViewById(R.id.itemButton);
                 boolean hasLeftImage = false;
 
                 if (elementData.urlImage != null) {
@@ -318,7 +318,7 @@ public class VNExpandableListAdapter extends BaseExpandableListAdapter {
             LayoutInflater layoutInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = layoutInflater.inflate(R.layout.list_group, null);
         }
-        TextView listTitleTextView = (TextView) convertView.findViewById(R.id.listTitle);
+        TextView listTitleTextView = convertView.findViewById(R.id.listTitle);
         listTitleTextView.setTypeface(null, Typeface.BOLD);
         listTitleTextView.setText(listTitle);
         listTitleTextView.setTextColor(Utils.getTextColorFromBackground(activity, R.color.primaryText, R.color.white, activity.isNsfw()));
