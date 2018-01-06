@@ -13,3 +13,4 @@ images/
 *.xml___jb_tmp___
 app/fabric.properties
 app/release/output.json
+gradle.properties
