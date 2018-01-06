@@ -8,5 +8,8 @@
 /captures
 .idea
 images/
-app/src/main/res/raw/mail.json
+.externalNativeBuild
+*.apk
+*.xml___jb_tmp___
 app/fabric.properties
+app/release/output.json

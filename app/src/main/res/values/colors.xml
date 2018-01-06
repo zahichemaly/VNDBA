@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#FFC107</color>
-    <color name="colorPrimaryDark">#FFB300</color>
-    <color name="colorAccent">#BF360C</color>
-    <color name="windowBackground">#E5E5E5</color>
-    <color name="white">#FFFFFF</color>
-    <color name="transparentWhite">#f5ffffff</color>
+    <color name="colorPrimary">#589442</color>
+    <color name="colorPrimaryDark">#5b893d</color>
+    <color name="colorAccent">#FFFFFF</color>
+
+    <color name="grey">#aaaaaa</color>
+    <color name="lightGrey">#eeeeee</color>
     <color name="black">#000000</color>
-    <color name="light_gray">#CCCCCC</color>
-    <color name="dark_blue">#000055</color>
-    <color name="green">#388E3C</color>
-    <color name="red">#F44336</color>
-    <color name="buttonPressed">#E5E5E5</color>
+    <color name="white">#ffffff</color>
     <color name="primaryText">#de000000</color>
     <color name="secondaryText">#8a000000</color>
 </resources>

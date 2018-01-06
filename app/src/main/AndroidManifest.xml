@@ -1,68 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.booboot.vndbandroid" xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest package="com.booboot.vndbandroid"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
-    <application android:name=".util.VNDBApplication" android:allowBackup="true" android:icon="@mipmap/vndb_logo" android:label="@string/app_name" android:largeHeap="true" android:supportsRtl="true"
+    <application
+        android:name=".App"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".activity.LoginActivity" android:label="@string/app_name" android:theme="@style/SplashScreen">
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="${FABRIC_API_KEY}"/>
+
+        <activity
+            android:name=".ui.restaurantdetail.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-
-        <activity android:name=".activity.MainActivity" android:label="@string/app_name" android:theme="@style/SplashScreen"/>
-
-        <activity android:name=".activity.VNDetailsActivity" android:theme="@style/SplashScreen"/>
-
-        <activity android:name=".activity.StaffActivity" android:theme="@style/SplashScreen"/>
-
-        <activity android:name=".activity.VNSearchActivity"/>
-
-        <activity android:name=".activity.EmptyActivity"/>
-
-        <activity android:name=".activity.URLActivity">
-            <intent-filter>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <action android:name="android.intent.action.VIEW"/>
-                <data android:scheme="com.booboot.vndbandroid"/>
-            </intent-filter>
-        </activity>
-
-        <activity android:name=".activity.VNDBURLActivity" android:theme="@style/SplashScreen">
-            <intent-filter android:label="@string/app_name">
-                <action android:name="android.intent.action.VIEW"/>
-
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
-                <!-- Accepts URIs that begin with "https://vndb.org/v[0-9]"
-                Regexes in manifests cannot identify a number, and we absolutely have to avoid matching /v/rand,
-                so we have to repeat the pattern for each digit -->
-                <data android:host="vndb.org" android:pathPrefix="/v0" android:scheme="https"/>
-                <data android:host="vndb.org" android:pathPrefix="/v1" android:scheme="https"/>
-                <data android:host="vndb.org" android:pathPrefix="/v2" android:scheme="https"/>
-                <data android:host="vndb.org" android:pathPrefix="/v3" android:scheme="https"/>
-                <data android:host="vndb.org" android:pathPrefix="/v4" android:scheme="https"/>
-                <data android:host="vndb.org" android:pathPrefix="/v5" android:scheme="https"/>
-                <data android:host="vndb.org" android:pathPrefix="/v6" android:scheme="https"/>
-                <data android:host="vndb.org" android:pathPrefix="/v7" android:scheme="https"/>
-                <data android:host="vndb.org" android:pathPrefix="/v8" android:scheme="https"/>
-                <data android:host="vndb.org" android:pathPrefix="/v9" android:scheme="https"/>
-            </intent-filter>
-        </activity>
-
-        <!-- Receive Wi-Fi connection state changes -->
-        <receiver android:name=".util.ConnectionReceiver">
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
-            </intent-filter>
-        </receiver>
-
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="2b584146031147fff282f2ac30752adf504cfafc"/>
     </application>
 </manifest>

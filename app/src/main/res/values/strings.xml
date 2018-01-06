@@ -1,9 +1,5 @@
 <resources>
-    <string name="app_name">VNDB Android</string>
-
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-
+    <string name="app_name">VNDBA</string>
     <string name="action_settings">Settings</string>
     <string name="action_search">Search</string>
     <string name="action_filter">Filter</string>
@@ -47,68 +43,10 @@
     <string name="include_one_tags">Include at least one of these tags</string>
     <string name="exclude_all_tags">Exclude all these tags</string>
     <string name="my_recommendations">My recommendations</string>
-    <string name="recommendations_private_warning">We haven\'t found your recommendations... Don\'t forget to make your lists public (by unchecking \"Don\'t allow other people to see my visual novel list\" in your VNDB.org\'s preferences), then refresh this page (it can take up to 48 hours to get effective so don\'t worry)!</string>
+    <string name="recommendations_private_warning">We haven\'t found your recommendations… Don\'t forget to make your lists public (by unchecking \"Don\'t allow other people to see my visual novel list\" in your VNDB.org\'s preferences), then refresh this page (it can take up to 48 hours to get effective so don\'t worry)!</string>
     <string name="bullet">" • "</string>
     <string name="dash">" - "</string>
     <string name="pref_key_cover_background">cover_background</string>
     <string name="action_options">Options</string>
     <string name="voice_actor">Voice Actor</string>
-
-    <string-array name="background_pref_titles">
-        <item>Default (orange)</item>
-        <item>AIR (sky blue)</item>
-        <item>Angelic Serenade (dark blue)</item>
-        <item>Eien no Aselia (falu red)</item>
-        <item>Ever17 (bondi blue)</item>
-        <item>Fate/stay night (pale carmine)</item>
-        <item>Fate/stay night (seal brown)</item>
-        <item>Gekkou no Carnevale (black)</item>
-        <item>Higanbana no Saku Yoru Ni (maroon)</item>
-        <item>Higurashi no Naku Koro ni (orange)</item>
-        <item>Jingai Makyo (peach-orange)</item>
-        <item>Little Busters! (lemon chiffon)</item>
-        <item>Little Busters! (pink)</item>
-        <item>Neon (black)</item>
-        <item>Primitive Link (pale chestnut)</item>
-        <item>Saya no Uta (dark scarlet)</item>
-        <item>Seinarukana (white)</item>
-        <item>Sora no Iro, Mizu no Iro (turquoise)</item>
-        <item>Touhou (grey)</item>
-        <item>Tsukihime (black)</item>
-        <item>Tsukihime (midnight blue)</item>
-    </string-array>
-    <string-array name="background_pref_values">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-        <item>6</item>
-        <item>7</item>
-        <item>8</item>
-        <item>9</item>
-        <item>10</item>
-        <item>11</item>
-        <item>12</item>
-        <item>13</item>
-        <item>14</item>
-        <item>15</item>
-        <item>16</item>
-        <item>17</item>
-        <item>18</item>
-        <item>19</item>
-        <item>20</item>
-    </string-array>
-
-    <string-array name="spoiler_pref_titles">
-        <item>Hide spoilers</item>
-        <item>Show minor spoilers</item>
-        <item>Spoil me!</item>
-    </string-array>
-    <string-array name="spoiler_pref_values">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-    </string-array>
 </resources>
