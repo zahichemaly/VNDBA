@@ -12,11 +12,6 @@ import android.widget.SearchView
 import android.widget.Toast
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.R
-import com.booboot.vndbandroid.ui.slideshow.SlideshowActivity
-import com.booboot.vndbandroid.util.disallowVerticalScrollIntercepts
-import com.booboot.vndbandroid.util.format
-import com.booboot.vndbandroid.util.roundToNearest5
-import kotlinx.android.synthetic.main.content_scrolling.*
 import kotlinx.android.synthetic.main.main_activity.*
 import kotlinx.android.synthetic.main.progress_bar.*
 import javax.inject.Inject

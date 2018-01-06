@@ -18,7 +18,7 @@ class App : Application() {
         Realm.init(this)
 
         CaocConfig.Builder.create()
-                .errorDrawable(R.drawable.vndb_logo_80)
+                .errorDrawable(R.mipmap.ic_launcher)
                 .apply()
 
         val core = CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build()
