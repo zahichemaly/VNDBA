@@ -54,6 +54,7 @@ dependencies {
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
     compile "io.reactivex.rxjava2:rxjava:$rxjava_version"
     compile "io.reactivex.rxjava2:rxandroid:$rxandroid_version"
+    compile 'com.google.code.gson:gson:2.8.2'
     compile 'com.squareup.picasso:picasso:2.5.2'
 
     compile 'cat.ereza:customactivityoncrash:2.2.0'
