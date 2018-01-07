@@ -7,7 +7,7 @@ import android.view.View.VISIBLE
 import android.widget.Toast
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.R
-import com.booboot.vndbandroid.model.api.Links
+import com.booboot.vndbandroid.model.vndb.Links
 import com.booboot.vndbandroid.util.PreferencesManager
 import kotlinx.android.synthetic.main.login_activity.*
 import kotlinx.android.synthetic.main.progress_bar.*

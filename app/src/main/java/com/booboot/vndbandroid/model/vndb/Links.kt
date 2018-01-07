@@ -1,4 +1,4 @@
-package com.booboot.vndbandroid.model.api
+package com.booboot.vndbandroid.model.vndb
 
 import android.app.Activity
 import android.graphics.Color

@@ -8,7 +8,9 @@ import android.net.Uri
 import android.support.customtabs.CustomTabsIntent
 import android.support.v7.app.AppCompatActivity
 import android.util.TypedValue
+import com.booboot.vndbandroid.BuildConfig
 import com.booboot.vndbandroid.R
+import com.crashlytics.android.Crashlytics
 
 object Utils {
     fun setTitle(activity: Activity, title: String) {
@@ -37,5 +39,10 @@ object Utils {
         val colorAttribute = TypedValue()
         context.theme.resolveAttribute(resid, colorAttribute, true)
         return colorAttribute.data
+    }
+
+    fun processException(exception: Exception) {
+        if (BuildConfig.DEBUG) exception.printStackTrace()
+        else Crashlytics.logException(exception)
     }
 }
