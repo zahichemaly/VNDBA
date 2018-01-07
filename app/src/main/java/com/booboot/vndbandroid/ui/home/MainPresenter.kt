@@ -1,4 +1,4 @@
-package com.booboot.vndbandroid.ui.restaurantdetail
+package com.booboot.vndbandroid.ui.home
 
 import com.booboot.vndbandroid.BuildConfig
 import com.booboot.vndbandroid.di.Schedulers
@@ -9,7 +9,7 @@ import javax.inject.Inject
 open class MainPresenter @Inject constructor(
         private val schedulers: Schedulers) : Presenter<MainView>() {
 
-    fun loadRestaurant(restaurantId: Int) {
+    fun loadRestaurant() {
         val observable = Observable.just("")
                 .subscribeOn(schedulers.io())
                 .observeOn(schedulers.ui())

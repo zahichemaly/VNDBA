@@ -3,10 +3,10 @@ package com.booboot.vndbandroid
 import android.app.Application
 import cat.ereza.customactivityoncrash.config.CaocConfig
 import com.booboot.vndbandroid.di.AppComponent
+import com.booboot.vndbandroid.di.DaggerAppComponent
 import com.crashlytics.android.Crashlytics
 import com.crashlytics.android.core.CrashlyticsCore
 import io.fabric.sdk.android.Fabric
-import com.booboot.vndbandroid.di.DaggerAppComponent
 import io.realm.Realm
 
 class App : Application() {
@@ -14,6 +14,8 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        instance = this
+
         appComponent = DaggerAppComponent.create()
         Realm.init(this)
 
@@ -23,5 +25,9 @@ class App : Application() {
 
         val core = CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build()
         Fabric.with(this, Crashlytics.Builder().core(core).build())
+    }
+
+    companion object {
+        lateinit var instance: App
     }
 }

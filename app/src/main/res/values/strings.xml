@@ -49,4 +49,6 @@
     <string name="pref_key_cover_background">cover_background</string>
     <string name="action_options">Options</string>
     <string name="voice_actor">Voice Actor</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
 </resources>

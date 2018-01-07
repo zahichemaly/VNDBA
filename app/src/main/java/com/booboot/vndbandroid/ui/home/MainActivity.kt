@@ -1,17 +1,21 @@
-package com.booboot.vndbandroid.ui.restaurantdetail
+package com.booboot.vndbandroid.ui.home
 
 import android.app.SearchManager
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View.*
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.widget.ImageView
 import android.widget.SearchView
 import android.widget.Toast
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.ui.login.LoginActivity
+import com.booboot.vndbandroid.util.PreferencesManager
 import kotlinx.android.synthetic.main.main_activity.*
 import kotlinx.android.synthetic.main.progress_bar.*
 import javax.inject.Inject
@@ -28,6 +32,11 @@ class MainActivity : AppCompatActivity(), MainView {
 
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        if (!PreferencesManager.credentialsSet()) {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+        }
 
         presenter.attachView(this)
     }
@@ -51,7 +60,7 @@ class MainActivity : AppCompatActivity(), MainView {
             override fun onQueryTextSubmit(query: String): Boolean {
                 val restaurantId = query.trim().toIntOrNull()
                 if (restaurantId != null) {
-                    presenter.loadRestaurant(restaurantId)
+                    presenter.loadRestaurant()
                     searchView.isIconified = true
                     searchView.isIconified = true
                 }

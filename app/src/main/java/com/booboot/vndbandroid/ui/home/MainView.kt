@@ -1,4 +1,4 @@
-package com.booboot.vndbandroid.ui.restaurantdetail
+package com.booboot.vndbandroid.ui.home
 
 interface MainView {
     fun showError(message: String?)
