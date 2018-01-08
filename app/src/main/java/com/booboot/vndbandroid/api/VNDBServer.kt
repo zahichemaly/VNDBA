@@ -4,6 +4,7 @@ import android.util.Log
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.BuildConfig
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.di.Schedulers
 import com.booboot.vndbandroid.model.vndb.*
 import com.booboot.vndbandroid.util.ErrorHandler
 import com.booboot.vndbandroid.util.PreferencesManager
@@ -25,7 +26,10 @@ import javax.net.ssl.SSLException
 import javax.net.ssl.SSLSocket
 import javax.net.ssl.SSLSocketFactory
 
-class VNDBServer @Inject constructor(private val gson: Gson) {
+class VNDBServer @Inject constructor(
+        private val gson: Gson,
+        private val schedulers: Schedulers
+) {
     private fun <T> connect(socketIndex: Int, emitter: SingleEmitter<Response<T>>): Boolean {
         try {
             val sf = SSLSocketFactory.getDefault()
@@ -79,7 +83,7 @@ class VNDBServer @Inject constructor(private val gson: Gson) {
                 val threadOptions = options.copy()
                 threadOptions.page = it + 1
                 sendCommand(command.toString(), threadOptions, it, emitter, resultClass)
-            }
+            }.subscribeOn(schedulers.newThread())
         }
 
         return Single.merge(observables)
@@ -259,13 +263,12 @@ class VNDBServer @Inject constructor(private val gson: Gson) {
 
         fun close(socketIndex: Int) {
             try {
-                val socket = SocketPool.getSocket(socketIndex)
-                if (socket != null && !socket.isClosed) {
-                    socket.inputStream.close()
-                    socket.outputStream.close()
-                    socket.close()
+                SocketPool.getSocket(socketIndex)?.let {
+                    it.inputStream.close()
+                    it.outputStream.close()
+                    it.close()
+                    SocketPool.setSocket(socketIndex, null)
                 }
-                SocketPool.setSocket(socketIndex, null)
             } catch (ioe: IOException) {
                 Utils.processException(ioe)
             }
@@ -275,13 +278,12 @@ class VNDBServer @Inject constructor(private val gson: Gson) {
             Completable.create {
                 try {
                     for (i in 0 until SocketPool.MAX_SOCKETS) {
-                        val socket = SocketPool.getSocket(i)
-                        if (socket != null && !socket.isClosed) {
-                            socket.inputStream.close()
-                            socket.outputStream.close()
-                            socket.close()
+                        SocketPool.getSocket(i)?.let {
+                            it.inputStream.close()
+                            it.outputStream.close()
+                            it.close()
+                            SocketPool.setSocket(i, null)
                         }
-                        SocketPool.setSocket(i, null)
                     }
                 } catch (ioe: IOException) {
                     Utils.processException(ioe)
