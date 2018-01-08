@@ -6,5 +6,5 @@ data class Options(
         var sort: String? = null,
         var reverse: Boolean = false,
         var fetchAllPages: Boolean = false,
-        var numberOfPages: Int = 0
+        var numberOfPages: Int = 1
 )

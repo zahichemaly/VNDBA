@@ -6,4 +6,5 @@ interface Schedulers {
     fun io(): Scheduler
     fun ui(): Scheduler
     fun newThread(): Scheduler
+    fun current(): Scheduler
 }

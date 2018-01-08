@@ -26,7 +26,12 @@ class LoginActivity : AppCompatActivity(), LoginView {
 
         loginUsername.setText(PreferencesManager.username())
         loginPassword.setText(PreferencesManager.password())
-        loginButton.setOnClickListener { presenter.login() }
+
+        loginButton.setOnClickListener {
+            PreferencesManager.username(loginUsername.text.toString())
+            PreferencesManager.password(loginPassword.text.toString())
+            presenter.login()
+        }
 
         presenter.attachView(this)
     }
