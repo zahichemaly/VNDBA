@@ -14,5 +14,6 @@ class RxModule {
         override fun io(): Scheduler = io.reactivex.schedulers.Schedulers.io()
         override fun ui(): Scheduler = AndroidSchedulers.mainThread()
         override fun newThread(): Scheduler = io.reactivex.schedulers.Schedulers.newThread()
+        override fun current(): Scheduler = io.reactivex.schedulers.Schedulers.trampoline()
     }
 }

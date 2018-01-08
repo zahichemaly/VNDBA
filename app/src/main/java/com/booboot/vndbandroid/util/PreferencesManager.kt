@@ -11,8 +11,6 @@ class PreferencesManager {
 
         private val prefs: SharedPreferences = App.instance.getSharedPreferences(PREFS_NAME, 0)
 
-        fun credentialsSet(): Boolean = username() != null && password() != null
-
         fun username(): String? {
             return prefs.getString("USERNAME", null)
         }
@@ -31,6 +29,17 @@ class PreferencesManager {
         fun password(value: String) {
             with(prefs.edit()) {
                 putString("PASSWORD", value)
+                commit()
+            }
+        }
+
+        fun credentialsSet(): Boolean {
+            return prefs.getBoolean("CREDENTIALS_SET", false)
+        }
+
+        fun credentialsSet(value: Boolean) {
+            with(prefs.edit()) {
+                putBoolean("CREDENTIALS_SET", value)
                 commit()
             }
         }
