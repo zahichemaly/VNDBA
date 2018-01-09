@@ -58,6 +58,11 @@ class VNDBServer @Inject constructor(
         }
     }
 
+    /**
+     * Logs the user with its credentials to VNDB.org. Connects the SSL socket then send a login request.
+     * So it can be automatic, this is never called manually, but always internally by SocketPool, on behalf of another request.
+     * This is why we pass the Emitter of the original request as a parameter.
+     */
     fun <T> login(socketIndex: Int, originalEmitter: SingleEmitter<Response<T>>) {
         synchronized(SocketPool.getLock(socketIndex)) {
             if (SocketPool.getSocket(socketIndex) == null) {
@@ -69,27 +74,46 @@ class VNDBServer @Inject constructor(
                     })
                 }
                         .doOnError { t: Throwable -> originalEmitter.onError(t) }
-                        .subscribe()
+                        .subscribe() // no need for subscribeOn(): we need to be on the same thread as the original emitter
             }
         }
     }
 
-    fun <T> get(type: String, flags: String, filters: String, options: Options, resultClass: TypeToken<Results<T>>): Single<Results<T>> {
+    fun <T> get(type: String, flags: String, filters: String, options: Options, socketIndex: Int, resultClass: TypeToken<Results<T>>): Single<Results<T>> {
         val command = StringBuilder().append("get ").append(type).append(' ').append(flags).append(' ').append(filters).append(' ')
 
-        val observables = mutableListOf<Single<Response<Results<T>>>>()
-        (0 until options.numberOfPages).mapTo(observables) {
-            Single.create<Response<Results<T>>> { emitter ->
-                val threadOptions = options.copy()
-                threadOptions.page = it + 1
-                sendCommand(command.toString(), threadOptions, it, emitter, resultClass)
-            }.subscribeOn(schedulers.newThread())
-        }
+        return if (options.numberOfPages > 1) {
+            /* We know in advance how many pages we must fetch: we can parallelize them with Single.merge */
+            val observables = mutableListOf<Single<Response<Results<T>>>>()
+            (0 until options.numberOfPages).mapTo(observables) {
+                Single.create<Response<Results<T>>> { emitter ->
+                    val threadOptions = options.copy()
+                    threadOptions.page = it + 1
+                    sendCommand(command.toString(), threadOptions, it, emitter, resultClass)
+                }.subscribeOn(schedulers.newThread())
+            }
 
-        return Single.merge(observables)
-                .collect({ Results<T>() }, { results, response ->
+            Single.merge(observables)
+                    .collect({ Results<T>() }, { results, response ->
+                        results.items.addAll(response.results?.items ?: emptyList())
+                    })
+        } else {
+            /* We don't know how many pages we must fetch (hence how many requests we have to send): creating Singles sequentially until done */
+            Single.create<Results<T>> { originalEmitter ->
+                val results = Results<T>()
+                do {
+                    val response = Single.create<Response<Results<T>>> { emitter ->
+                        sendCommand(command.toString(), options, socketIndex, emitter, resultClass)
+                    }
+                            .doOnError { t: Throwable -> originalEmitter.onError(t) } // any error in a child Single will trigger the parent error
+                            .blockingGet() // blocking get is ok because we're in a bounding Single
+
                     results.items.addAll(response.results?.items ?: emptyList())
-                })
+                } while (options.fetchAllPages && response.results?.more == true)
+
+                originalEmitter.onSuccess(results)
+            }
+        }
     }
 
     fun set(type: String, id: Int, fields: Fields): Completable {
@@ -101,6 +125,7 @@ class VNDBServer @Inject constructor(
         }.flatMapCompletable { Completable.complete() }
     }
 
+    @Suppress("unused")
     fun dbstats(): Single<DbStats> {
         return Single.create<Response<DbStats>> { emitter ->
             sendCommand("dbstats", null, 0, emitter, object : TypeToken<DbStats>() {

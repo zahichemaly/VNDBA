@@ -5,6 +5,6 @@ data class Options(
         var results: Int = 25,
         var sort: String? = null,
         var reverse: Boolean = false,
-        var fetchAllPages: Boolean = false,
-        var numberOfPages: Int = 1
+        @Transient var fetchAllPages: Boolean = false,
+        @Transient var numberOfPages: Int = 1
 )
