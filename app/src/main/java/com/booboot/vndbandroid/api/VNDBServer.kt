@@ -288,7 +288,7 @@ class VNDBServer @Inject constructor(
         private val EOM: Char = 0x04.toChar()
 
         private val PROTOCOL = 1
-        private val CLIENT = "VNDB_ANDROID"
+        val CLIENT = "VNDB_ANDROID"
         private val CLIENTVER = 3.0
 
         fun close(socketIndex: Int) {
@@ -305,39 +305,9 @@ class VNDBServer @Inject constructor(
         }
 
         fun closeAll() {
-            Completable.create {
-                try {
-                    for (i in 0 until SocketPool.MAX_SOCKETS) {
-                        SocketPool.getSocket(i)?.let {
-                            it.inputStream.close()
-                            it.outputStream.close()
-                            it.close()
-                            SocketPool.setSocket(i, null)
-                        }
-                    }
-                } catch (ioe: IOException) {
-                    Utils.processException(ioe)
-                }
-            }
+            Completable.create { for (i in 0 until SocketPool.MAX_SOCKETS) close(i) }
                     .subscribeOn(io.reactivex.schedulers.Schedulers.io())
                     .subscribe()
-        }
-
-        @Suppress("unused")
-        fun log(sb: String) {
-            if (sb.length > 4000) {
-                val chunkCount = sb.length / 4000     // integer division
-                for (i in 0..chunkCount) {
-                    val max = 4000 * (i + 1)
-                    if (max >= sb.length) {
-                        Log.e("D", sb.substring(4000 * i))
-                    } else {
-                        Log.e("D", sb.substring(4000 * i, max))
-                    }
-                }
-            } else {
-                Log.e("D", sb)
-            }
         }
     }
 }
