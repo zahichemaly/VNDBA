@@ -109,6 +109,7 @@ class VNDBServer @Inject constructor(
                             .blockingGet() // blocking get is ok because we're in a bounding Single
 
                     results.items.addAll(response.results?.items ?: emptyList())
+                    options.page++
                 } while (options.fetchAllPages && response.results?.more == true)
 
                 originalEmitter.onSuccess(results)
