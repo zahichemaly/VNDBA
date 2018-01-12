@@ -1,5 +1,7 @@
 package com.booboot.vndbandroid.di
 
+import com.booboot.vndbandroid.api.VNDBServer
+import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Scheduler
@@ -16,4 +18,8 @@ class RxModule {
         override fun newThread(): Scheduler = io.reactivex.schedulers.Schedulers.newThread()
         override fun current(): Scheduler = io.reactivex.schedulers.Schedulers.trampoline()
     }
+
+    @Provides
+    @Singleton
+    fun vndbServer(gson: Gson, schedulers: Schedulers): VNDBServer = VNDBServer(gson, schedulers)
 }
