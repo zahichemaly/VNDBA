@@ -186,8 +186,7 @@ class VNDBServer @Inject constructor(
                                 /* For some reason we weren't able to sleep, so we can ignore the exception and keep rolling anyway */
                             }
                         } else {
-                            emitter.onError(Throwable(error.fullMessage()))
-                            return
+                            throw Throwable(error.fullMessage())
                         }
                     }
                 } while (isThrottled)
@@ -214,6 +213,11 @@ class VNDBServer @Inject constructor(
                 Utils.processException(ioe)
                 VNDBServer.close(socketIndex)
                 emitter.onError(Throwable("An error occurred while sending a query to the API. Please try again later."))
+                return
+            } catch (t: Throwable) {
+                Utils.processException(t)
+                VNDBServer.close(socketIndex)
+                emitter.onError(t)
                 return
             } finally {
                 if (SocketPool.throttleHandlingSocket > -1 && SocketPool.throttleHandlingSocket == socketIndex)

@@ -1,6 +1,5 @@
 package com.booboot.vndbandroid.ui.login
 
-import com.booboot.vndbandroid.BuildConfig
 import com.booboot.vndbandroid.api.VNDBServer
 import com.booboot.vndbandroid.di.Schedulers
 import com.booboot.vndbandroid.model.vndb.Options
@@ -29,7 +28,6 @@ open class LoginPresenter @Inject constructor(
     }
 
     private fun onError(throwable: Throwable) {
-        if (BuildConfig.DEBUG) throwable.printStackTrace()
         view?.showError(throwable.localizedMessage)
     }
 }

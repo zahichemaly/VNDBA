@@ -41,7 +41,7 @@ object Utils {
         return colorAttribute.data
     }
 
-    fun processException(exception: Exception) {
+    fun processException(exception: Throwable) {
         if (BuildConfig.DEBUG) exception.printStackTrace()
         else Crashlytics.logException(exception)
     }

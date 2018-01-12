@@ -7,6 +7,7 @@ import com.booboot.vndbandroid.di.DaggerAppComponent
 import com.crashlytics.android.Crashlytics
 import com.crashlytics.android.core.CrashlyticsCore
 import io.fabric.sdk.android.Fabric
+import io.reactivex.plugins.RxJavaPlugins
 import io.realm.Realm
 
 class App : Application() {
@@ -25,6 +26,9 @@ class App : Application() {
 
         val core = CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build()
         Fabric.with(this, Crashlytics.Builder().core(core).build())
+
+        /* Prevents RxJava from crashing the app when there is an exception and let all onError() handle them */
+        RxJavaPlugins.setErrorHandler { }
     }
 
     companion object {
