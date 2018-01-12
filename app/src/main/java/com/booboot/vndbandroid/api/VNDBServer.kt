@@ -1,12 +1,12 @@
 package com.booboot.vndbandroid.api
 
-import android.util.Log
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.BuildConfig
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.di.Schedulers
 import com.booboot.vndbandroid.model.vndb.*
 import com.booboot.vndbandroid.util.ErrorHandler
+import com.booboot.vndbandroid.util.Logger
 import com.booboot.vndbandroid.util.PreferencesManager
 import com.booboot.vndbandroid.util.Utils
 import com.google.gson.Gson
@@ -41,18 +41,16 @@ class VNDBServer @Inject constructor(
             val s = socket.session
 
             if (!hv.verify(HOST, s)) {
-                emitter.onError(Throwable("The API's certificate is not valid. Expected " + HOST))
+                emitter.onError(Throwable("The API's certificate is not valid. Expected $HOST"))
                 return false
             }
 
             SocketPool.setSocket(socketIndex, socket)
             return true
         } catch (uhe: UnknownHostException) {
-            Utils.processException(uhe)
             emitter.onError(Throwable("Unable to reach the server $HOST. Please try again later."))
             return false
         } catch (ioe: IOException) {
-            Utils.processException(ioe)
             emitter.onError(Throwable("An error occurred during the connection to the server. Please try again later."))
             return false
         }
@@ -85,12 +83,12 @@ class VNDBServer @Inject constructor(
         return if (options.numberOfPages > 1) {
             /* We know in advance how many pages we must fetch: we can parallelize them with Single.merge */
             val observables = mutableListOf<Single<Response<Results<T>>>>()
-            (0 until options.numberOfPages).mapTo(observables) {
+            (0 until options.numberOfPages).mapTo(observables) { index ->
                 Single.create<Response<Results<T>>> { emitter ->
                     val threadOptions = options.copy()
-                    threadOptions.page = it + 1
-                    sendCommand(command.toString(), threadOptions, it, emitter, resultClass)
-                }.subscribeOn(schedulers.newThread())
+                    threadOptions.page = index + 1
+                    sendCommand(command.toString(), threadOptions, index, emitter, resultClass)
+                }.doOnError { processError(it, index) }.subscribeOn(schedulers.newThread())
             }
 
             Single.merge(observables)
@@ -113,7 +111,7 @@ class VNDBServer @Inject constructor(
                 } while (options.fetchAllPages && response.results?.more == true)
 
                 originalEmitter.onSuccess(results)
-            }
+            }.doOnError { processError(it, socketIndex) }
         }
     }
 
@@ -161,15 +159,13 @@ class VNDBServer @Inject constructor(
                 input = InputStreamReader(socket.inputStream)
 
                 do {
-                    if (BuildConfig.DEBUG) {
-                        Log.e("D", query.toString())
-                    }
+                    if (BuildConfig.DEBUG) Logger.log(query.toString())
                     if (input.ready()) while (input.read() > -1);
                     output.flush()
                     output.write(query.toString().toByteArray(charset("UTF-8")))
 
                     isThrottled = false
-                    response = getResponse(socketIndex, input, emitter, resultClass)
+                    response = getResponse(input, emitter, resultClass)
                     if (response != null && response.error != null) {
                         val error = response.error!!
                         isThrottled = error.id == "throttled"
@@ -192,34 +188,20 @@ class VNDBServer @Inject constructor(
                     }
                 } while (isThrottled)
             } catch (uee: UnsupportedEncodingException) {
-                Utils.processException(uee)
-                VNDBServer.close(socketIndex)
-                emitter.onError(Throwable("Tried to send a query to the API with a wrong encoding. Aborting operation."))
-                return
+                return emitter.onError(Throwable("Tried to send a query to the API with a wrong encoding. Aborting operation."))
             } catch (se: SocketException) {
-                Utils.processException(se)
-                VNDBServer.close(socketIndex)
-                emitter.onError(Throwable("A connection error occurred. Please check your connection or try again later."))
-                return
+                return emitter.onError(Throwable("A connection error occurred. Please check your connection or try again later."))
             } catch (ssle: SSLException) {
                 VNDBServer.close(socketIndex)
-                if (retry) {
-                    Utils.processException(ssle)
+                return if (retry || command.contains("login", true)) {
                     emitter.onError(Throwable("An error occurred while writing a query to the API. Please try again later."))
-                    return
                 } else {
-                    return sendCommand(command, params, socketIndex, emitter, resultClass, true)
+                    sendCommand(command, params, socketIndex, emitter, resultClass, true)
                 }
             } catch (ioe: IOException) {
-                Utils.processException(ioe)
-                VNDBServer.close(socketIndex)
-                emitter.onError(Throwable("An error occurred while sending a query to the API. Please try again later."))
-                return
+                return emitter.onError(Throwable("An error occurred while sending a query to the API. Please try again later."))
             } catch (t: Throwable) {
-                Utils.processException(t)
-                VNDBServer.close(socketIndex)
-                emitter.onError(t)
-                return
+                return emitter.onError(t)
             } finally {
                 if (SocketPool.throttleHandlingSocket > -1 && SocketPool.throttleHandlingSocket == socketIndex)
                     SocketPool.throttleHandlingSocket = -1
@@ -229,7 +211,7 @@ class VNDBServer @Inject constructor(
         }
     }
 
-    private fun <T> getResponse(socketIndex: Int, input: InputStreamReader, emitter: SingleEmitter<Response<T>>, resultClass: TypeToken<T>): Response<T>? {
+    private fun <T> getResponse(input: InputStreamReader, emitter: SingleEmitter<Response<T>>, resultClass: TypeToken<T>): Response<T>? {
         val responseWrapper = Response<T>()
         val response = StringBuilder()
         try {
@@ -237,18 +219,13 @@ class VNDBServer @Inject constructor(
             while (read != 4 && read > -1) {
                 response.append(read.toChar())
                 read = input.read()
-                // Log.e("D", response.toString());
             }
         } catch (exception: Exception) {
-            Utils.processException(exception)
-            VNDBServer.close(socketIndex)
             emitter.onError(Throwable("An error occurred while receiving the response from the API. Please try again later."))
             return null
         }
 
-        if (BuildConfig.DEBUG) {
-            //    log(response.toString());
-        }
+//        if (BuildConfig.DEBUG) Logger.log(response.toString())
 
         val delimiterIndex = response.indexOf("{")
         if (delimiterIndex < 0) {
@@ -257,10 +234,7 @@ class VNDBServer @Inject constructor(
                 responseWrapper
             } else {
                 /* Undocumented error : the server returned an empty response (""), which means absolutely nothing but "leave the ship because something undebuggable happened!" */
-                VNDBServer.close(socketIndex)
-                val message = "VNDB.org returned an unexpected error. Please try again later."
-                emitter.onError(Throwable(message))
-                Utils.processException(Exception(message))
+                emitter.onError(Throwable("VNDB.org returned an unexpected error. Please try again later."))
                 null
             }
         }
@@ -275,8 +249,6 @@ class VNDBServer @Inject constructor(
             }
             responseWrapper
         } catch (ioe: IOException) {
-            Utils.processException(ioe)
-            VNDBServer.close(socketIndex)
             emitter.onError(Throwable("An error occurred while decoding the response from the API. Aborting operation."))
             null
         }
@@ -308,6 +280,11 @@ class VNDBServer @Inject constructor(
             Completable.create { for (i in 0 until SocketPool.MAX_SOCKETS) close(i) }
                     .subscribeOn(io.reactivex.schedulers.Schedulers.io())
                     .subscribe()
+        }
+
+        fun processError(t: Throwable, socketIndex: Int) {
+            Utils.processException(t)
+            VNDBServer.close(socketIndex)
         }
     }
 }
