@@ -2,15 +2,14 @@ package com.booboot.vndbandroid.ui.login
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.Toast
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.model.vndb.Links
-import com.booboot.vndbandroid.model.vndb.Results
-import com.booboot.vndbandroid.model.vndbandroid.VNlistItem
+import com.booboot.vndbandroid.model.vndbandroid.AccountItems
+import com.booboot.vndbandroid.util.Logger
 import com.booboot.vndbandroid.util.PreferencesManager
 import kotlinx.android.synthetic.main.login_activity.*
 import kotlinx.android.synthetic.main.progress_bar.*
@@ -44,8 +43,8 @@ class LoginActivity : AppCompatActivity(), LoginView {
         super.onDestroy()
     }
 
-    override fun showResult(result: Results<VNlistItem>) {
-        Log.e("D", result.toString())
+    override fun showResult(result: AccountItems) {
+        Logger.log(result.toString())
     }
 
     override fun showError(message: String?) {
