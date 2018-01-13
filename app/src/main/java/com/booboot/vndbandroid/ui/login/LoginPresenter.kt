@@ -1,5 +1,7 @@
 package com.booboot.vndbandroid.ui.login
 
+import android.text.TextUtils
+import com.booboot.vndbandroid.BuildConfig
 import com.booboot.vndbandroid.api.VNDBServer
 import com.booboot.vndbandroid.di.Schedulers
 import com.booboot.vndbandroid.model.vndb.Options
@@ -9,6 +11,7 @@ import com.booboot.vndbandroid.model.vndbandroid.VNlistItem
 import com.booboot.vndbandroid.model.vndbandroid.VotelistItem
 import com.booboot.vndbandroid.model.vndbandroid.WishlistItem
 import com.booboot.vndbandroid.ui.Presenter
+import com.booboot.vndbandroid.util.type
 import io.reactivex.Single
 import io.reactivex.functions.Function3
 import javax.inject.Inject
@@ -19,11 +22,11 @@ open class LoginPresenter @Inject constructor(
 
     fun login() {
         val vnlistIds = vndbServer.get<VNlistItem>("vnlist", "basic", "(uid = 0)",
-                Options(results = 100, fetchAllPages = true)).subscribeOn(schedulers.newThread())
+                Options(results = 100, fetchAllPages = true), type()).subscribeOn(schedulers.newThread())
         val votelistIds = vndbServer.get<VotelistItem>("votelist", "basic", "(uid = 0)",
-                Options(results = 100, fetchAllPages = true), 1).subscribeOn(schedulers.newThread())
+                Options(results = 100, fetchAllPages = true), type(), 1).subscribeOn(schedulers.newThread())
         val wishlistIds = vndbServer.get<WishlistItem>("wishlist", "basic", "(uid = 0)",
-                Options(results = 100, fetchAllPages = true), 2).subscribeOn(schedulers.newThread())
+                Options(results = 100, fetchAllPages = true), type(), 2).subscribeOn(schedulers.newThread())
 
         val observable = Single.zip(vnlistIds, votelistIds, wishlistIds,
                 Function3<Results<VNlistItem>, Results<VotelistItem>, Results<WishlistItem>, AccountItems> { vni, vti, wsi ->
@@ -31,16 +34,26 @@ open class LoginPresenter @Inject constructor(
                 })
                 .observeOn(schedulers.ui())
                 .doOnSubscribe { view?.showLoading(true) }
+                .observeOn(schedulers.io())
+                .flatMap { items: AccountItems ->
+                    val mergedIds = items.vnlist.map { it.vn }.toMutableSet()
+                    mergedIds.addAll(items.votelist.map { it.vn })
+                    mergedIds.addAll(items.wishlist.map { it.vn })
+                    val mergedIdsString = TextUtils.join(",", mergedIds)
+                    Single.just(mergedIds)
+                }
+                .observeOn(schedulers.ui())
                 .doFinally { view?.showLoading(false) }
-                .subscribe(this::onNext, this::onError)
+                .subscribe(::onNext, ::onError)
         composite.add(observable)
     }
 
-    private fun onNext(result: AccountItems) {
+    private fun onNext(result: MutableSet<Int>) {
         view?.showResult(result)
     }
 
     private fun onError(throwable: Throwable) {
+        if (BuildConfig.DEBUG) throwable.printStackTrace()
         view?.showError(throwable.localizedMessage)
     }
 }
