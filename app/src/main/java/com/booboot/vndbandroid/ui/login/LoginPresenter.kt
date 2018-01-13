@@ -6,7 +6,6 @@ import com.booboot.vndbandroid.model.vndb.Options
 import com.booboot.vndbandroid.model.vndb.Results
 import com.booboot.vndbandroid.model.vndbandroid.VNlistItem
 import com.booboot.vndbandroid.ui.Presenter
-import com.google.gson.reflect.TypeToken
 import javax.inject.Inject
 
 open class LoginPresenter @Inject constructor(
@@ -14,7 +13,7 @@ open class LoginPresenter @Inject constructor(
         private val schedulers: Schedulers) : Presenter<LoginView>() {
 
     fun login() {
-        val observable = vndbServer.get("vnlist", "basic", "(uid = 0)", Options(results = 100, fetchAllPages = true), 0, object : TypeToken<Results<VNlistItem>>() {})
+        val observable = vndbServer.get<VNlistItem>("vnlist", "basic", "(uid = 0)", Options(results = 100, fetchAllPages = true))
                 .subscribeOn(schedulers.io())
                 .observeOn(schedulers.ui())
                 .doOnSubscribe { view?.showLoading(true) }

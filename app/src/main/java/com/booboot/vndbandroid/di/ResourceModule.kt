@@ -4,8 +4,8 @@ import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.model.vndb.Tag
 import com.booboot.vndbandroid.model.vndb.Trait
+import com.booboot.vndbandroid.util.fromJson
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
 import dagger.Module
 import dagger.Provides
@@ -21,8 +21,7 @@ internal class ResourceModule {
         val raw = App.instance.resources.openRawResource(R.raw.tags)
         val reader = JsonReader(BufferedReader(InputStreamReader(raw)))
 
-        return gson.fromJson<List<Tag>>(reader, object : TypeToken<List<Tag>>() {
-        }.type).map { it.id to it }.toMap()
+        return gson.fromJson<List<Tag>>(reader).map { it.id to it }.toMap()
     }
 
     @Provides
@@ -31,7 +30,6 @@ internal class ResourceModule {
         val raw = App.instance.resources.openRawResource(R.raw.traits)
         val reader = JsonReader(BufferedReader(InputStreamReader(raw)))
 
-        return gson.fromJson<List<Trait>>(reader, object : TypeToken<List<Trait>>() {
-        }.type).map { it.id to it }.toMap()
+        return gson.fromJson<List<Trait>>(reader).map { it.id to it }.toMap()
     }
 }
