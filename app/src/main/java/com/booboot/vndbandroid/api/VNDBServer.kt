@@ -58,14 +58,15 @@ class VNDBServer @Inject constructor(
      * So it can be automatic, this is never called manually, but always internally by SocketPool, on behalf of another request.
      * This is why we pass the Emitter of the original request as a parameter.
      */
-    fun <T> login(socketIndex: Int, originalEmitter: SingleEmitter<Response<T>>) {
-        synchronized(SocketPool.getLock(socketIndex)) {
-            if (SocketPool.getSocket(socketIndex) == null) {
-                if (!connect(socketIndex, originalEmitter)) return
+    fun <T> login(options: Options, originalEmitter: SingleEmitter<Response<T>>) {
+        synchronized(SocketPool.getLock(options.socketIndex)) {
+            if (SocketPool.getSocket(options.socketIndex) == null) {
+                if (!connect(options.socketIndex, originalEmitter)) return
                 val username = PreferencesManager.username()?.toLowerCase()?.trim() ?: ""
                 val password = PreferencesManager.password() ?: ""
                 Single.create<Response<Void>> { emitter ->
-                    sendCommand("login ", Login(PROTOCOL, CLIENT, CLIENTVER, username, password), emitter, type(), socketIndex)
+                    val login = Login(PROTOCOL, CLIENT, CLIENTVER, username, password)
+                    sendCommand("login " + gson.toJson(login), options, emitter, type())
                 }
                         .doOnError { t: Throwable -> originalEmitter.onError(t) }
                         .subscribe() // no need for subscribeOn(): we need to be on the same thread as the original emitter
@@ -73,17 +74,16 @@ class VNDBServer @Inject constructor(
         }
     }
 
-    fun <T> get(type: String, flags: String, filters: String, options: Options, resultClass: TypeToken<Results<T>>, socketIndex: Int = 0): Single<Results<T>> {
-        val command = StringBuilder().append("get ").append(type).append(' ').append(flags).append(' ').append(filters).append(' ')
+    fun <T> get(type: String, flags: String, filters: String, options: Options = Options(), resultClass: TypeToken<Results<T>>): Single<Results<T>> {
+        val command = "get $type $flags $filters "
 
         return if (options.numberOfPages > 1) {
             /* We know in advance how many pages we must fetch: we can parallelize them with Single.merge */
             val observables = mutableListOf<Single<Response<Results<T>>>>()
             (0 until options.numberOfPages).mapTo(observables) { index ->
                 Single.create<Response<Results<T>>> { emitter ->
-                    val threadOptions = options.copy()
-                    threadOptions.page = index + 1
-                    sendCommand(command.toString(), threadOptions, emitter, resultClass, index)
+                    val threadOptions = options.copy(page = index + 1)
+                    sendCommand(command + gson.toJson(threadOptions), threadOptions, emitter, resultClass)
                 }.doOnError { processError(it, index) }.subscribeOn(schedulers.newThread())
             }
 
@@ -97,7 +97,7 @@ class VNDBServer @Inject constructor(
                 val results = Results<T>()
                 do {
                     val response = Single.create<Response<Results<T>>> { emitter ->
-                        sendCommand(command.toString(), options, emitter, resultClass, socketIndex)
+                        sendCommand(command + gson.toJson(options), options, emitter, resultClass)
                     }
                             .doOnError { t: Throwable -> originalEmitter.onError(t) } // any error in a child Single will trigger the parent error
                             .blockingGet() // blocking get is ok because we're in a bounding Single
@@ -107,39 +107,35 @@ class VNDBServer @Inject constructor(
                 } while (options.fetchAllPages && response.results?.more == true)
 
                 originalEmitter.onSuccess(results)
-            }.doOnError { processError(it, socketIndex) }
+            }.doOnError { processError(it, options.socketIndex) }
         }
     }
 
     fun set(type: String, id: Int, fields: Fields): Completable {
-        val command = StringBuilder().append("set ").append(type).append(' ').append(id).append(' ')
+        val command = "set $type $id " + gson.toJson(fields)
 
         return Single.create<Response<Void>> { emitter ->
-            sendCommand(command.toString(), fields, emitter, type(), 0)
+            sendCommand(command, emitter = emitter, resultClass = type())
         }.flatMapCompletable { Completable.complete() }
     }
 
     @Suppress("unused")
     fun dbstats(): Single<DbStats> {
         return Single.create<Response<DbStats>> { emitter ->
-            sendCommand("dbstats", null, emitter, type(), 0)
+            sendCommand("dbstats", emitter = emitter, resultClass = type())
         }.map { response: Response<DbStats> -> response.results!! }
     }
 
-    private fun <T> sendCommand(command: String, params: Any?, emitter: SingleEmitter<Response<T>>, resultClass: TypeToken<T>, socketIndex: Int, retry: Boolean = false) {
-        synchronized(SocketPool.getLock(socketIndex)) {
-            val query = StringBuilder()
-            query.append(command)
-            if (params != null)
-                query.append(gson.toJson(params))
-            query.append(EOM)
+    private fun <T> sendCommand(command: String, options: Options = Options(), emitter: SingleEmitter<Response<T>>, resultClass: TypeToken<T>, retry: Boolean = false) {
+        synchronized(SocketPool.getLock(options.socketIndex)) {
+            val query = command + EOM
 
             val input: InputStreamReader
             val output: OutputStream
             var response: Response<T>?
             var isThrottled: Boolean
             try {
-                val socket = SocketPool.getSocket(this, socketIndex, emitter)
+                val socket = SocketPool.getSocket(this, options, emitter)
                 if (socket == null) {
                     emitter.onError(Throwable("Unable to connect. Please try again later."))
                     return
@@ -149,10 +145,10 @@ class VNDBServer @Inject constructor(
                 input = InputStreamReader(socket.inputStream)
 
                 do {
-                    if (BuildConfig.DEBUG) Logger.log(query.toString())
+                    if (BuildConfig.DEBUG) Logger.log(query)
                     if (input.ready()) while (input.read() > -1);
                     output.flush()
-                    output.write(query.toString().toByteArray(charset("UTF-8")))
+                    output.write(query.toByteArray(charset("UTF-8")))
 
                     isThrottled = false
                     response = getResponse(input, emitter, resultClass)
@@ -160,14 +156,14 @@ class VNDBServer @Inject constructor(
                         val error = response.error!!
                         isThrottled = error.id == "throttled"
                         if (isThrottled) {
-                            if (SocketPool.throttleHandlingSocket < 0) SocketPool.throttleHandlingSocket = socketIndex
+                            if (SocketPool.throttleHandlingSocket < 0) SocketPool.throttleHandlingSocket = options.socketIndex
 
                             /* We got throttled by the server. Displaying a warning message */
                             val fullwait = Math.round(error.fullwait / 60)
                             ErrorHandler.showToast(String.format(App.instance.getString(R.string.throttle_warning), fullwait))
                             try {
                                 /* Waiting ~minwait if the we are in the thread that handles the throttle, 5+ minwaits otherwise */
-                                val waitingFactor = (if (SocketPool.throttleHandlingSocket == socketIndex) 1050 else 5000 + 500 * socketIndex).toLong()
+                                val waitingFactor = (if (SocketPool.throttleHandlingSocket == options.socketIndex) 1050 else 5000 + 500 * options.socketIndex).toLong()
                                 Thread.sleep(Math.round(error.minwait * waitingFactor))
                             } catch (e: InterruptedException) {
                                 /* For some reason we weren't able to sleep, so we can ignore the exception and keep rolling anyway */
@@ -182,18 +178,18 @@ class VNDBServer @Inject constructor(
             } catch (se: SocketException) {
                 return emitter.onError(Throwable("A connection error occurred. Please check your connection or try again later."))
             } catch (ssle: SSLException) {
-                VNDBServer.close(socketIndex)
+                VNDBServer.close(options.socketIndex)
                 return if (retry || command.contains("login", true)) {
                     emitter.onError(Throwable("An error occurred while writing a query to the API. Please try again later."))
                 } else {
-                    sendCommand(command, params, emitter, resultClass, socketIndex, true)
+                    sendCommand(command, options, emitter, resultClass, true)
                 }
             } catch (ioe: IOException) {
                 return emitter.onError(Throwable("An error occurred while sending a query to the API. Please try again later."))
             } catch (t: Throwable) {
                 return emitter.onError(t)
             } finally {
-                if (SocketPool.throttleHandlingSocket > -1 && SocketPool.throttleHandlingSocket == socketIndex)
+                if (SocketPool.throttleHandlingSocket > -1 && SocketPool.throttleHandlingSocket == options.socketIndex)
                     SocketPool.throttleHandlingSocket = -1
             }
 

@@ -24,9 +24,9 @@ open class LoginPresenter @Inject constructor(
         val vnlistIds = vndbServer.get<VNlistItem>("vnlist", "basic", "(uid = 0)",
                 Options(results = 100, fetchAllPages = true), type()).subscribeOn(schedulers.newThread())
         val votelistIds = vndbServer.get<VotelistItem>("votelist", "basic", "(uid = 0)",
-                Options(results = 100, fetchAllPages = true), type(), 1).subscribeOn(schedulers.newThread())
+                Options(results = 100, fetchAllPages = true, socketIndex = 1), type()).subscribeOn(schedulers.newThread())
         val wishlistIds = vndbServer.get<WishlistItem>("wishlist", "basic", "(uid = 0)",
-                Options(results = 100, fetchAllPages = true), type(), 2).subscribeOn(schedulers.newThread())
+                Options(results = 100, fetchAllPages = true, socketIndex = 2), type()).subscribeOn(schedulers.newThread())
 
         val observable = Single.zip(vnlistIds, votelistIds, wishlistIds,
                 Function3<Results<VNlistItem>, Results<VotelistItem>, Results<WishlistItem>, AccountItems> { vni, vti, wsi ->

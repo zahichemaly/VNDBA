@@ -6,5 +6,6 @@ data class Options(
         var sort: String? = null,
         var reverse: Boolean = false,
         @Transient var fetchAllPages: Boolean = false,
-        @Transient var numberOfPages: Int = 1
+        @Transient var numberOfPages: Int = 1,
+        @Transient var socketIndex: Int = 0
 )
