@@ -13,7 +13,6 @@ import io.reactivex.Single
 import io.reactivex.SingleEmitter
 import java.io.IOException
 import java.io.InputStreamReader
-import java.io.OutputStream
 import java.io.UnsupportedEncodingException
 import java.net.SocketException
 import java.net.UnknownHostException
@@ -129,11 +128,8 @@ class VNDBServer @Inject constructor(
     private fun <T> sendCommand(command: String, options: Options = Options(), emitter: SingleEmitter<Response<T>>, resultClass: TypeToken<T>, retry: Boolean = false) {
         synchronized(SocketPool.getLock(options.socketIndex)) {
             val query = command + EOM
-
-            val input: InputStreamReader
-            val output: OutputStream
             var response: Response<T>?
-            var isThrottled: Boolean
+
             try {
                 val socket = SocketPool.getSocket(this, options, emitter)
                 if (socket == null) {
@@ -141,8 +137,8 @@ class VNDBServer @Inject constructor(
                     return
                 }
 
-                output = socket.outputStream
-                input = InputStreamReader(socket.inputStream)
+                val output = socket.outputStream
+                val input = InputStreamReader(socket.inputStream)
 
                 do {
                     if (BuildConfig.DEBUG) Logger.log(query)
@@ -150,9 +146,9 @@ class VNDBServer @Inject constructor(
                     output.flush()
                     output.write(query.toByteArray(charset("UTF-8")))
 
-                    isThrottled = false
+                    var isThrottled = false
                     response = getResponse(input, emitter, resultClass)
-                    if (response != null && response.error != null) {
+                    if (response?.error != null) {
                         val error = response.error!!
                         isThrottled = error.id == "throttled"
                         if (isThrottled) {
@@ -179,7 +175,7 @@ class VNDBServer @Inject constructor(
                 return emitter.onError(Throwable("A connection error occurred. Please check your connection or try again later."))
             } catch (ssle: SSLException) {
                 VNDBServer.close(options.socketIndex)
-                return if (retry || command.contains("login", true)) {
+                return if (retry || command.startsWith("login", true)) {
                     emitter.onError(Throwable("An error occurred while writing a query to the API. Please try again later."))
                 } else {
                     sendCommand(command, options, emitter, resultClass, true)
