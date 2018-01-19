@@ -10,16 +10,21 @@ import com.booboot.vndbandroid.model.vndbandroid.AccountItems
 import com.booboot.vndbandroid.model.vndbandroid.VNlistItem
 import com.booboot.vndbandroid.model.vndbandroid.VotelistItem
 import com.booboot.vndbandroid.model.vndbandroid.WishlistItem
+import com.booboot.vndbandroid.store.ListRepository
 import com.booboot.vndbandroid.ui.Presenter
 import com.booboot.vndbandroid.util.type
+import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.functions.Function3
 import javax.inject.Inject
 
 open class LoginPresenter @Inject constructor(
         private val vndbServer: VNDBServer,
-        private val schedulers: Schedulers) : Presenter<LoginView>() {
-
+        private val schedulers: Schedulers,
+        private val vnlistRepository: ListRepository<VNlistItem>,
+        private val votelistRepository: ListRepository<VotelistItem>,
+        private val wishlistRepository: ListRepository<WishlistItem>
+) : Presenter<LoginView>() {
     fun login() {
         val vnlistIds = vndbServer.get<VNlistItem>("vnlist", "basic", "(uid = 0)",
                 Options(results = 100, fetchAllPages = true), type()).subscribeOn(schedulers.newThread())
@@ -35,12 +40,29 @@ open class LoginPresenter @Inject constructor(
                 .observeOn(schedulers.ui())
                 .doOnSubscribe { view?.showLoading(true) }
                 .observeOn(schedulers.io())
-                .flatMap { items: AccountItems ->
-                    val mergedIds = items.vnlist.map { it.vn }.toMutableSet()
-                    mergedIds.addAll(items.votelist.map { it.vn })
-                    mergedIds.addAll(items.wishlist.map { it.vn })
-                    val mergedIdsString = TextUtils.join(",", mergedIds)
-                    Single.just(mergedIds)
+                .flatMapMaybe { items: AccountItems ->
+                    val allIds = items.vnlist.map { it.vn }
+                            .union(items.votelist.map { it.vn })
+                            .union(items.wishlist.map { it.vn })
+
+                    val newIds = allIds.minus(vnlistRepository.getItems().blockingGet().map { it.vn })
+                            .minus(votelistRepository.getItems().blockingGet().map { it.vn })
+                            .minus(wishlistRepository.getItems().blockingGet().map { it.vn })
+
+                    vnlistRepository.setItems(items.vnlist)
+                    votelistRepository.setItems(items.votelist)
+                    wishlistRepository.setItems(items.wishlist)
+
+                    if (allIds.isEmpty()) { // empty account
+                        Maybe.just(allIds)
+                    }
+
+                    if (newIds.isNotEmpty()) { // should send get vn
+                        val mergedIdsString = TextUtils.join(",", newIds)
+                        Maybe.just(newIds)
+                    }
+
+                    Maybe.empty<Set<Int>>()
                 }
                 .observeOn(schedulers.ui())
                 .doFinally { view?.showLoading(false) }
@@ -48,7 +70,7 @@ open class LoginPresenter @Inject constructor(
         composite.add(observable)
     }
 
-    private fun onNext(result: MutableSet<Int>) {
+    private fun onNext(result: Set<Int>) {
         view?.showResult(result)
     }
 

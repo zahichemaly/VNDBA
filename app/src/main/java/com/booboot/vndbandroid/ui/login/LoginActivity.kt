@@ -42,7 +42,7 @@ class LoginActivity : AppCompatActivity(), LoginView {
         super.onDestroy()
     }
 
-    override fun showResult(result: MutableSet<Int>) {
+    override fun showResult(result: Set<Int>) {
         Logger.log(result.toString())
     }
 

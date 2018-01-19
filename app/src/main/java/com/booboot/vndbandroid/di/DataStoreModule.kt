@@ -1,8 +1,11 @@
 package com.booboot.vndbandroid.di
 
+import com.booboot.vndbandroid.model.vndbandroid.VNlistItem
+import com.booboot.vndbandroid.model.vndbandroid.VotelistItem
+import com.booboot.vndbandroid.model.vndbandroid.WishlistItem
+import com.booboot.vndbandroid.store.*
 import dagger.Module
 import dagger.Provides
-import com.booboot.vndbandroid.store.Store
 import javax.inject.Singleton
 
 /**
@@ -13,4 +16,21 @@ import javax.inject.Singleton
  */
 @Module
 internal class DataStoreModule {
+    @Provides
+    @Singleton
+    fun vnlistRepository(): ListRepository<VNlistItem> {
+        return VnlistRepository()
+    }
+
+    @Provides
+    @Singleton
+    fun votelistRepository(): ListRepository<VotelistItem> {
+        return VotelistRepository()
+    }
+
+    @Provides
+    @Singleton
+    fun wishlistRepository(): ListRepository<WishlistItem> {
+        return WishlistRepository()
+    }
 }
