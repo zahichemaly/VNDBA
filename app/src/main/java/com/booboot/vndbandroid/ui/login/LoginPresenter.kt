@@ -55,14 +55,12 @@ open class LoginPresenter @Inject constructor(
 
                     if (allIds.isEmpty()) { // empty account
                         Maybe.just(allIds)
-                    }
-
-                    if (newIds.isNotEmpty()) { // should send get vn
+                    } else if (newIds.isNotEmpty()) { // should send get vn
                         val mergedIdsString = TextUtils.join(",", newIds)
                         Maybe.just(newIds)
+                    } else {
+                        Maybe.empty<Set<Int>>()
                     }
-
-                    Maybe.empty<Set<Int>>()
                 }
                 .observeOn(schedulers.ui())
                 .doFinally { view?.showLoading(false) }
