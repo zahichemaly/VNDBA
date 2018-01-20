@@ -21,6 +21,8 @@ import javax.net.ssl.HttpsURLConnection
 import javax.net.ssl.SSLException
 import javax.net.ssl.SSLSocket
 import javax.net.ssl.SSLSocketFactory
+import kotlin.math.max
+import kotlin.math.min
 
 class VNDBServer @Inject constructor(
         private val gson: Gson,
@@ -77,11 +79,13 @@ class VNDBServer @Inject constructor(
         val command = "get $type $flags $filters "
 
         return if (options.numberOfPages > 1) {
+            options.numberOfSockets = max(min(options.numberOfPages / 2, SocketPool.MAX_SOCKETS), 3)
+
             /* We know in advance how many pages we must fetch: we can parallelize them with Single.merge */
             val observables = mutableListOf<Single<Response<Results<T>>>>()
             (0 until options.numberOfPages).mapTo(observables) { index ->
                 Single.create<Response<Results<T>>> { emitter ->
-                    val threadOptions = options.copy(page = index + 1, socketIndex = index)
+                    val threadOptions = options.copy(page = index + 1, socketIndex = index % options.numberOfSockets)
                     sendCommand(command + gson.toJson(threadOptions), threadOptions, emitter, resultClass)
                 }.doOnError { processError(it, index) }.subscribeOn(schedulers.newThread())
             }
@@ -96,6 +100,7 @@ class VNDBServer @Inject constructor(
                 val results = Results<T>()
                 do {
                     val response = Single.create<Response<Results<T>>> { emitter ->
+                        options.socketIndex %= options.numberOfSockets
                         sendCommand(command + gson.toJson(options), options, emitter, resultClass)
                     }
                             .doOnError { t: Throwable -> originalEmitter.onError(t) } // any error in a child Single will trigger the parent error

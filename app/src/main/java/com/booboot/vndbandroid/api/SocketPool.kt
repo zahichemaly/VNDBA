@@ -9,28 +9,26 @@ import java.util.concurrent.ConcurrentMap
 import javax.net.ssl.SSLSocket
 
 object SocketPool {
-    val MAX_SOCKETS = 5
+    const val MAX_SOCKETS = 10
     private val SOCKETS = arrayOfNulls<SSLSocket>(MAX_SOCKETS)
     private val LOCKS: ConcurrentMap<Int, Int> = ConcurrentHashMap()
     var throttleHandlingSocket = -1
 
     fun <T> getSocket(server: VNDBServer, options: Options, emitter: SingleEmitter<Response<T>>): SSLSocket? {
-        options.socketIndex %= SOCKETS.size
         server.login(options, emitter)
         return SOCKETS[options.socketIndex]
     }
 
     fun setSocket(socketIndex: Int, socket: SSLSocket?) {
-        SOCKETS[socketIndex % SOCKETS.size] = socket
+        SOCKETS[socketIndex] = socket
     }
 
     fun getSocket(socketIndex: Int): SSLSocket? {
-        return SOCKETS[socketIndex % SOCKETS.size]
+        return SOCKETS[socketIndex]
     }
 
     fun getLock(id: Int): Int {
-        val mid = id % SOCKETS.size
-        LOCKS.putIfAbsent(mid, mid)
-        return LOCKS[mid] ?: 0
+        LOCKS.putIfAbsent(id, id)
+        return LOCKS[id] ?: 0
     }
 }

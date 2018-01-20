@@ -1,5 +1,7 @@
 package com.booboot.vndbandroid.model.vndb
 
+import com.booboot.vndbandroid.api.SocketPool
+
 data class Options(
         var page: Int = 1,
         var results: Int = 25,
@@ -7,5 +9,6 @@ data class Options(
         var reverse: Boolean = false,
         @Transient var fetchAllPages: Boolean = false,
         @Transient var numberOfPages: Int = 1,
-        @Transient var socketIndex: Int = 0
+        @Transient var socketIndex: Int = 0,
+        @Transient var numberOfSockets: Int = SocketPool.MAX_SOCKETS
 )
