@@ -6,6 +6,7 @@ import com.booboot.vndbandroid.api.VNDBServer
 import com.booboot.vndbandroid.di.Schedulers
 import com.booboot.vndbandroid.model.vndb.Options
 import com.booboot.vndbandroid.model.vndb.Results
+import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndbandroid.AccountItems
 import com.booboot.vndbandroid.model.vndbandroid.VNlistItem
 import com.booboot.vndbandroid.model.vndbandroid.VotelistItem
@@ -40,7 +41,7 @@ open class LoginPresenter @Inject constructor(
                 .observeOn(schedulers.ui())
                 .doOnSubscribe { view?.showLoading(true) }
                 .observeOn(schedulers.io())
-                .flatMapMaybe { items: AccountItems ->
+                .flatMapMaybe<Results<VN>> { items: AccountItems ->
                     val allIds = items.vnlist.map { it.vn }
                             .union(items.votelist.map { it.vn })
                             .union(items.wishlist.map { it.vn })
@@ -53,13 +54,16 @@ open class LoginPresenter @Inject constructor(
                     votelistRepository.setItems(items.votelist)
                     wishlistRepository.setItems(items.wishlist)
 
-                    if (allIds.isEmpty()) { // empty account
-                        Maybe.just(allIds)
-                    } else if (newIds.isNotEmpty()) { // should send get vn
-                        val mergedIdsString = TextUtils.join(",", newIds)
-                        Maybe.just(newIds)
-                    } else {
-                        Maybe.empty<Set<Int>>()
+                    when {
+                        allIds.isEmpty() -> Maybe.just(Results()) // empty account
+                        newIds.isNotEmpty() -> { // should send get vn
+                            val mergedIdsString = TextUtils.join(",", newIds)
+                            val numberOfPages = Math.ceil(newIds.size * 1.0 / 25).toInt()
+
+                            vndbServer.get<VN>("vn", "basic,details", "(id = [$mergedIdsString])",
+                                    Options(fetchAllPages = true, numberOfPages = numberOfPages), type()).toMaybe()
+                        }
+                        else -> Maybe.empty()
                     }
                 }
                 .observeOn(schedulers.ui())
@@ -68,7 +72,7 @@ open class LoginPresenter @Inject constructor(
         composite.add(observable)
     }
 
-    private fun onNext(result: Set<Int>) {
+    private fun onNext(result: Results<VN>) {
         view?.showResult(result)
     }
 

@@ -8,6 +8,8 @@ import android.widget.Toast
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.model.vndb.Links
+import com.booboot.vndbandroid.model.vndb.Results
+import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.util.Logger
 import com.booboot.vndbandroid.util.PreferencesManager
 import kotlinx.android.synthetic.main.login_activity.*
@@ -42,7 +44,7 @@ class LoginActivity : AppCompatActivity(), LoginView {
         super.onDestroy()
     }
 
-    override fun showResult(result: Set<Int>) {
+    override fun showResult(result: Results<VN>) {
         Logger.log(result.toString())
     }
 

@@ -81,7 +81,7 @@ class VNDBServer @Inject constructor(
             val observables = mutableListOf<Single<Response<Results<T>>>>()
             (0 until options.numberOfPages).mapTo(observables) { index ->
                 Single.create<Response<Results<T>>> { emitter ->
-                    val threadOptions = options.copy(page = index + 1)
+                    val threadOptions = options.copy(page = index + 1, socketIndex = index)
                     sendCommand(command + gson.toJson(threadOptions), threadOptions, emitter, resultClass)
                 }.doOnError { processError(it, index) }.subscribeOn(schedulers.newThread())
             }
