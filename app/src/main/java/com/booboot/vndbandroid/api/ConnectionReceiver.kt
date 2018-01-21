@@ -10,7 +10,7 @@ class ConnectionReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         if (isInitialStickyBroadcast) return
         /* Resetting the sockets everytime the connection changes, to avoid dead sockets */
-        VNDBServer.closeAll()
+        VNDBServer.closeAll().subscribe()
     }
 
     companion object {

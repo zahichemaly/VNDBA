@@ -7,10 +7,7 @@ import com.booboot.vndbandroid.di.Schedulers
 import com.booboot.vndbandroid.model.vndb.Options
 import com.booboot.vndbandroid.model.vndb.Results
 import com.booboot.vndbandroid.model.vndb.VN
-import com.booboot.vndbandroid.model.vndbandroid.AccountItems
-import com.booboot.vndbandroid.model.vndbandroid.VNlistItem
-import com.booboot.vndbandroid.model.vndbandroid.VotelistItem
-import com.booboot.vndbandroid.model.vndbandroid.WishlistItem
+import com.booboot.vndbandroid.model.vndbandroid.*
 import com.booboot.vndbandroid.store.ListRepository
 import com.booboot.vndbandroid.ui.Presenter
 import com.booboot.vndbandroid.util.type
@@ -28,19 +25,21 @@ open class LoginPresenter @Inject constructor(
 ) : Presenter<LoginView>() {
     fun login() {
         val vnlistIds = vndbServer.get<VNlistItem>("vnlist", "basic", "(uid = 0)",
-                Options(results = 100, fetchAllPages = true), type()).subscribeOn(schedulers.newThread())
+                Options(results = 100, fetchAllPages = true), type())
         val votelistIds = vndbServer.get<VotelistItem>("votelist", "basic", "(uid = 0)",
-                Options(results = 100, fetchAllPages = true, socketIndex = 1), type()).subscribeOn(schedulers.newThread())
+                Options(results = 100, fetchAllPages = true, socketIndex = 1), type())
         val wishlistIds = vndbServer.get<WishlistItem>("wishlist", "basic", "(uid = 0)",
-                Options(results = 100, fetchAllPages = true, socketIndex = 2), type()).subscribeOn(schedulers.newThread())
+                Options(results = 100, fetchAllPages = true, socketIndex = 2), type())
 
-        val observable = Single.zip(vnlistIds, votelistIds, wishlistIds,
-                Function3<Results<VNlistItem>, Results<VotelistItem>, Results<WishlistItem>, AccountItems> { vni, vti, wsi ->
-                    AccountItems(vni.items, vti.items, wsi.items)
-                })
+        val observable = VNDBServer.closeAll()
                 .observeOn(schedulers.ui())
                 .doOnSubscribe { view?.showLoading(true) }
                 .observeOn(schedulers.io())
+                .andThen(Single.zip(vnlistIds, votelistIds, wishlistIds,
+                        Function3<Results<VNlistItem>, Results<VotelistItem>, Results<WishlistItem>, AccountItems> { vni, vti, wsi ->
+                            AccountItems(vni.items, vti.items, wsi.items)
+                        }))
+                .observeOn(schedulers.computation())
                 .flatMapMaybe<Results<VN>> { items: AccountItems ->
                     val allIds = items.vnlist.map { it.vn }
                             .union(items.votelist.map { it.vn })

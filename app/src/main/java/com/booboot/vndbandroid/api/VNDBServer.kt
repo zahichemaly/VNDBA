@@ -5,7 +5,11 @@ import com.booboot.vndbandroid.BuildConfig
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.di.Schedulers
 import com.booboot.vndbandroid.model.vndb.*
-import com.booboot.vndbandroid.util.*
+import com.booboot.vndbandroid.model.vndbandroid.Preferences
+import com.booboot.vndbandroid.util.ErrorHandler
+import com.booboot.vndbandroid.util.Logger
+import com.booboot.vndbandroid.util.Utils
+import com.booboot.vndbandroid.util.type
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.reactivex.Completable
@@ -63,8 +67,8 @@ class VNDBServer @Inject constructor(
         synchronized(SocketPool.getLock(options.socketIndex)) {
             if (SocketPool.getSocket(options.socketIndex) == null) {
                 if (!connect(options.socketIndex, originalEmitter)) return
-                val username = PreferencesManager.username()?.toLowerCase()?.trim() ?: ""
-                val password = PreferencesManager.password() ?: ""
+                val username = Preferences.username?.toLowerCase()?.trim() ?: ""
+                val password = Preferences.password ?: ""
                 Single.create<Response<Void>> { emitter ->
                     val login = Login(PROTOCOL, CLIENT, CLIENTVER, username, password)
                     sendCommand("login " + gson.toJson(login), options, emitter, type())
@@ -111,7 +115,9 @@ class VNDBServer @Inject constructor(
                 } while (options.fetchAllPages && response.results?.more == true)
 
                 originalEmitter.onSuccess(results)
-            }.doOnError { processError(it, options.socketIndex) }
+            }
+                    .doOnError { processError(it, options.socketIndex) }
+                    .subscribeOn(schedulers.newThread())
         }
     }
 
@@ -242,13 +248,13 @@ class VNDBServer @Inject constructor(
     }
 
     companion object {
-        private val HOST = "api.vndb.org"
-        private val PORT = 19535
-        private val EOM: Char = 0x04.toChar()
+        private const val HOST = "api.vndb.org"
+        private const val PORT = 19535
+        private const val EOM: Char = 0x04.toChar()
 
-        private val PROTOCOL = 1
-        val CLIENT = "VNDB_ANDROID"
-        private val CLIENTVER = 3.0
+        private const val PROTOCOL = 1
+        const val CLIENT = "VNDB_ANDROID"
+        private const val CLIENTVER = 3.0
 
         fun close(socketIndex: Int) {
             try {
@@ -263,11 +269,8 @@ class VNDBServer @Inject constructor(
             }
         }
 
-        fun closeAll() {
-            Completable.create { for (i in 0 until SocketPool.MAX_SOCKETS) close(i) }
-                    .subscribeOn(io.reactivex.schedulers.Schedulers.io())
-                    .subscribe()
-        }
+        fun closeAll(): Completable = Completable.fromAction { for (i in 0 until SocketPool.MAX_SOCKETS) close(i) }
+                .subscribeOn(io.reactivex.schedulers.Schedulers.io())
 
         fun processError(t: Throwable, socketIndex: Int) {
             Utils.processException(t)
