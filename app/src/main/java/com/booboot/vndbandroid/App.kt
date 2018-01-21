@@ -4,6 +4,7 @@ import android.app.Application
 import cat.ereza.customactivityoncrash.config.CaocConfig
 import com.booboot.vndbandroid.di.AppComponent
 import com.booboot.vndbandroid.di.DaggerAppComponent
+import com.chibatching.kotpref.Kotpref
 import com.crashlytics.android.Crashlytics
 import com.crashlytics.android.core.CrashlyticsCore
 import io.fabric.sdk.android.Fabric
@@ -18,6 +19,7 @@ class App : Application() {
         instance = this
 
         appComponent = DaggerAppComponent.create()
+        Kotpref.init(this)
         Realm.init(this)
 
         CaocConfig.Builder.create()

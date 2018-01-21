@@ -14,8 +14,8 @@ import android.widget.SearchView
 import android.widget.Toast
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.ui.login.LoginActivity
-import com.booboot.vndbandroid.util.PreferencesManager
 import kotlinx.android.synthetic.main.main_activity.*
 import kotlinx.android.synthetic.main.progress_bar.*
 import javax.inject.Inject
@@ -33,10 +33,10 @@ class MainActivity : AppCompatActivity(), MainView {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        if (!PreferencesManager.credentialsSet()) {
+//        if (!Preferences.loggedIn) {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
-        }
+//        }
 
         presenter.attachView(this)
     }

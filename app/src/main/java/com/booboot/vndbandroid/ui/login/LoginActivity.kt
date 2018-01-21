@@ -10,8 +10,8 @@ import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.model.vndb.Links
 import com.booboot.vndbandroid.model.vndb.Results
 import com.booboot.vndbandroid.model.vndb.VN
+import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.util.Logger
-import com.booboot.vndbandroid.util.PreferencesManager
 import kotlinx.android.synthetic.main.login_activity.*
 import kotlinx.android.synthetic.main.progress_bar.*
 import javax.inject.Inject
@@ -27,12 +27,12 @@ class LoginActivity : AppCompatActivity(), LoginView {
 
         Links.setTextViewLink(this, signupTextView, Links.VNDB_REGISTER, signupTextView.text.toString().indexOf("Sign up here"), signupTextView.text.toString().length)
 
-        loginUsername.setText(PreferencesManager.username())
-        loginPassword.setText(PreferencesManager.password())
+        loginUsername.setText(Preferences.username)
+        loginPassword.setText(Preferences.password)
 
         loginButton.setOnClickListener {
-            PreferencesManager.username(loginUsername.text.toString())
-            PreferencesManager.password(loginPassword.text.toString())
+            Preferences.username = loginUsername.text.toString()
+            Preferences.password = loginPassword.text.toString()
             presenter.login()
         }
 
@@ -45,7 +45,7 @@ class LoginActivity : AppCompatActivity(), LoginView {
     }
 
     override fun showResult(result: Results<VN>) {
-        Logger.log(result.toString())
+//        Logger.log(result.toString())
     }
 
     override fun showError(message: String?) {

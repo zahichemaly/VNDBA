@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity
 import android.util.TypedValue
 import com.booboot.vndbandroid.BuildConfig
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.crashlytics.android.Crashlytics
 
 object Utils {
@@ -21,7 +22,7 @@ object Utils {
 
     fun openURL(context: Activity?, url: String) {
         if (context == null) return
-        if (PreferencesManager.useCustomTabs()) {
+        if (Preferences.useCustomTabs) {
             val builder = CustomTabsIntent.Builder()
             builder.setToolbarColor(getThemeColor(context, R.attr.colorPrimary))
             builder.setCloseButtonIcon(BitmapFactory.decodeResource(context.resources, R.drawable.ic_arrow_back_white_24dp))

@@ -73,6 +73,7 @@ open class LoginPresenter @Inject constructor(
     }
 
     private fun onNext(result: Results<VN>) {
+        Preferences.loggedIn = true
         view?.showResult(result)
     }
 
