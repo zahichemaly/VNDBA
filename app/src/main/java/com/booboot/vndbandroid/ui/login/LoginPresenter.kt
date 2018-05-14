@@ -39,7 +39,7 @@ open class LoginPresenter @Inject constructor(
                         Function3<Results<VNlistItem>, Results<VotelistItem>, Results<WishlistItem>, AccountItems> { vni, vti, wsi ->
                             AccountItems(vni.items, vti.items, wsi.items)
                         }))
-                .observeOn(schedulers.computation())
+                .observeOn(schedulers.io())
                 .flatMapMaybe<Results<VN>> { items: AccountItems ->
                     val allIds = items.vnlist.map { it.vn }
                             .union(items.votelist.map { it.vn })
