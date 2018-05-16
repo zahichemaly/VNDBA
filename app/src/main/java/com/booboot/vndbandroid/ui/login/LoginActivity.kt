@@ -45,6 +45,7 @@ class LoginActivity : AppCompatActivity(), LoginView {
     }
 
     override fun showResult(result: Results<VN>) {
+        Logger.log("SUCCESS")
 //        Logger.log(result.toString())
     }
 

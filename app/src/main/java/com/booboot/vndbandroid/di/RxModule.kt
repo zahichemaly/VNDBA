@@ -1,7 +1,7 @@
 package com.booboot.vndbandroid.di
 
 import com.booboot.vndbandroid.api.VNDBServer
-import com.google.gson.Gson
+import com.fasterxml.jackson.databind.ObjectMapper
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Scheduler
@@ -22,5 +22,5 @@ class RxModule {
 
     @Provides
     @Singleton
-    fun vndbServer(gson: Gson, schedulers: Schedulers): VNDBServer = VNDBServer(gson, schedulers)
+    fun vndbServer(json: ObjectMapper, schedulers: Schedulers): VNDBServer = VNDBServer(json, schedulers)
 }

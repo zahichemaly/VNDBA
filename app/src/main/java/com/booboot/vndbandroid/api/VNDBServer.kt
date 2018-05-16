@@ -10,8 +10,8 @@ import com.booboot.vndbandroid.util.ErrorHandler
 import com.booboot.vndbandroid.util.Logger
 import com.booboot.vndbandroid.util.Utils
 import com.booboot.vndbandroid.util.type
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.SingleEmitter
@@ -29,7 +29,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 class VNDBServer @Inject constructor(
-        private val gson: Gson,
+        private val json: ObjectMapper,
         private val schedulers: Schedulers
 ) {
     private fun <T> connect(socketIndex: Int, emitter: SingleEmitter<Response<T>>): Boolean {
@@ -71,7 +71,7 @@ class VNDBServer @Inject constructor(
                 val password = Preferences.password ?: ""
                 Single.create<Response<Void>> { emitter ->
                     val login = Login(PROTOCOL, CLIENT, CLIENTVER, username, password)
-                    sendCommand("login " + gson.toJson(login), options, emitter, type())
+                    sendCommand("login " + json.writeValueAsString(login), options, emitter, type())
                 }
                         .doOnError { t: Throwable -> originalEmitter.onError(t) }
                         .subscribe() // no need for subscribeOn(): we need to be on the same thread as the original emitter
@@ -79,7 +79,7 @@ class VNDBServer @Inject constructor(
         }
     }
 
-    fun <T> get(type: String, flags: String, filters: String, options: Options = Options(), resultClass: TypeToken<Results<T>>): Single<Results<T>> {
+    fun <T> get(type: String, flags: String, filters: String, options: Options = Options(), resultClass: TypeReference<Results<T>>): Single<Results<T>> {
         val command = "get $type $flags $filters "
 
         return if (options.numberOfPages > 1) {
@@ -90,7 +90,7 @@ class VNDBServer @Inject constructor(
             (0 until options.numberOfPages).mapTo(observables) { index ->
                 Single.create<Response<Results<T>>> { emitter ->
                     val threadOptions = options.copy(page = index + 1, socketIndex = index % options.numberOfSockets)
-                    sendCommand(command + gson.toJson(threadOptions), threadOptions, emitter, resultClass)
+                    sendCommand(command + json.writeValueAsString(threadOptions), threadOptions, emitter, resultClass)
                 }.doOnError { processError(it, index) }.subscribeOn(schedulers.newThread())
             }
 
@@ -105,7 +105,7 @@ class VNDBServer @Inject constructor(
                 do {
                     val response = Single.create<Response<Results<T>>> { emitter ->
                         options.socketIndex %= options.numberOfSockets
-                        sendCommand(command + gson.toJson(options), options, emitter, resultClass)
+                        sendCommand(command + json.writeValueAsString(options), options, emitter, resultClass)
                     }
                             .doOnError { t: Throwable -> originalEmitter.onError(t) } // any error in a child Single will trigger the parent error
                             .blockingGet() // blocking get is ok because we're in a bounding Single
@@ -122,7 +122,7 @@ class VNDBServer @Inject constructor(
     }
 
     fun set(type: String, id: Int, fields: Fields): Completable {
-        val command = "set $type $id " + gson.toJson(fields)
+        val command = "set $type $id " + json.writeValueAsString(fields)
 
         return Single.create<Response<Void>> { emitter ->
             sendCommand(command, emitter = emitter, resultClass = type())
@@ -136,7 +136,7 @@ class VNDBServer @Inject constructor(
         }.map { response: Response<DbStats> -> response.results!! }
     }
 
-    private fun <T> sendCommand(command: String, options: Options = Options(), emitter: SingleEmitter<Response<T>>, resultClass: TypeToken<T>, retry: Boolean = false) {
+    private fun <T> sendCommand(command: String, options: Options = Options(), emitter: SingleEmitter<Response<T>>, resultClass: TypeReference<T>, retry: Boolean = false) {
         synchronized(SocketPool.getLock(options.socketIndex)) {
             val query = command + EOM
             var response: Response<T>?
@@ -204,7 +204,7 @@ class VNDBServer @Inject constructor(
         }
     }
 
-    private fun <T> getResponse(input: InputStreamReader, emitter: SingleEmitter<Response<T>>, resultClass: TypeToken<T>): Response<T>? {
+    private fun <T> getResponse(input: InputStreamReader, emitter: SingleEmitter<Response<T>>, resultClass: TypeReference<T>): Response<T>? {
         val responseWrapper = Response<T>()
         val response = StringBuilder()
         try {
@@ -236,9 +236,9 @@ class VNDBServer @Inject constructor(
             val command = response.substring(0, delimiterIndex).trim()
             val params = response.substring(delimiterIndex, response.length).replace(EOM + "", "")
             if (command == "error") {
-                responseWrapper.error = gson.fromJson(params, Error::class.java)
+                responseWrapper.error = json.readValue(params, Error::class.java)
             } else {
-                responseWrapper.results = gson.fromJson(params, resultClass.type)
+                responseWrapper.results = json.readValue(params, resultClass)
             }
             responseWrapper
         } catch (ioe: IOException) {

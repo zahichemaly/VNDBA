@@ -4,32 +4,27 @@ import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.model.vndb.Tag
 import com.booboot.vndbandroid.model.vndb.Trait
-import com.booboot.vndbandroid.util.fromJson
-import com.google.gson.Gson
-import com.google.gson.stream.JsonReader
+import com.booboot.vndbandroid.util.type
+import com.fasterxml.jackson.databind.ObjectMapper
 import dagger.Module
 import dagger.Provides
-import java.io.BufferedReader
-import java.io.InputStreamReader
 import javax.inject.Singleton
 
 @Module
 internal class ResourceModule {
     @Provides
     @Singleton
-    fun tags(gson: Gson): Map<Int, Tag> {
+    fun tags(json: ObjectMapper): Map<Int, Tag> {
         val raw = App.instance.resources.openRawResource(R.raw.tags)
-        val reader = JsonReader(BufferedReader(InputStreamReader(raw)))
 
-        return gson.fromJson<List<Tag>>(reader).map { it.id to it }.toMap()
+        return json.readValue<List<Tag>>(raw, type<List<Tag>>()).map { it.id to it }.toMap()
     }
 
     @Provides
     @Singleton
-    fun traits(gson: Gson): Map<Int, Trait> {
+    fun traits(json: ObjectMapper): Map<Int, Trait> {
         val raw = App.instance.resources.openRawResource(R.raw.traits)
-        val reader = JsonReader(BufferedReader(InputStreamReader(raw)))
 
-        return gson.fromJson<List<Trait>>(reader).map { it.id to it }.toMap()
+        return json.readValue<List<Trait>>(raw, type<List<Trait>>()).map { it.id to it }.toMap()
     }
 }

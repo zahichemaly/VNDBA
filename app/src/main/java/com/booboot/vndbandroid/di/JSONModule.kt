@@ -1,6 +1,9 @@
 package com.booboot.vndbandroid.di
 
-import com.google.gson.Gson
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -9,7 +12,9 @@ import javax.inject.Singleton
 internal class JSONModule {
     @Provides
     @Singleton
-    fun gson(): Gson {
-        return Gson()
+    fun json(): ObjectMapper = ObjectMapper().apply {
+        configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
+        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        setSerializationInclusion(JsonInclude.Include.NON_NULL)
     }
 }
