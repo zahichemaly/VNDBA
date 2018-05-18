@@ -1,11 +1,12 @@
 package com.booboot.vndbandroid.ui.login
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.Toast
-import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.model.vndb.Links
 import com.booboot.vndbandroid.model.vndb.Results
@@ -14,16 +15,13 @@ import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.util.Logger
 import kotlinx.android.synthetic.main.login_activity.*
 import kotlinx.android.synthetic.main.progress_bar.*
-import javax.inject.Inject
 
-class LoginActivity : AppCompatActivity(), LoginView {
-    @Inject
-    lateinit var presenter: LoginPresenter
+class LoginActivity : AppCompatActivity() {
+    private lateinit var loginViewModel: LoginViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.login_activity)
-        (application as App).appComponent.inject(this)
 
         Links.setTextViewLink(this, signupTextView, Links.VNDB_REGISTER, signupTextView.text.toString().indexOf("Sign up here"), signupTextView.text.toString().length)
 
@@ -33,27 +31,27 @@ class LoginActivity : AppCompatActivity(), LoginView {
         loginButton.setOnClickListener {
             Preferences.username = loginUsername.text.toString()
             Preferences.password = loginPassword.text.toString()
-            presenter.login()
+            loginViewModel.login()
         }
 
-        presenter.attachView(this)
+        loginViewModel = ViewModelProviders.of(this).get(LoginViewModel::class.java)
+        loginViewModel.loadingData.observe(this, Observer { showLoading(it) })
+        loginViewModel.vnData.observe(this, Observer { showResult(it) })
+        loginViewModel.errorData.observe(this, Observer { showError(it) })
     }
 
-    override fun onDestroy() {
-        presenter.detachView()
-        super.onDestroy()
+    private fun showResult(result: Results<VN>?) {
+        if (result == null) return
+        Logger.log(result.toString())
     }
 
-    override fun showResult(result: Results<VN>) {
-        Logger.log("SUCCESS")
-//        Logger.log(result.toString())
-    }
-
-    override fun showError(message: String?) {
+    private fun showError(message: String?) {
+        if (message == null) return
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 
-    override fun showLoading(show: Boolean) {
+    private fun showLoading(show: Boolean?) {
+        if (show == null) return
         progressBar.visibility = if (show) VISIBLE else GONE
     }
 }

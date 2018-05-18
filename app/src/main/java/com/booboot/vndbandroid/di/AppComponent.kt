@@ -2,6 +2,7 @@ package com.booboot.vndbandroid.di
 
 import com.booboot.vndbandroid.ui.home.MainActivity
 import com.booboot.vndbandroid.ui.login.LoginActivity
+import com.booboot.vndbandroid.ui.login.LoginViewModel
 import dagger.Component
 import javax.inject.Singleton
 
@@ -14,5 +15,5 @@ import javax.inject.Singleton
 ])
 interface AppComponent {
     fun inject(mainActivity: MainActivity)
-    fun inject(loginActivity: LoginActivity)
+    fun inject(loginViewModel: LoginViewModel)
 }

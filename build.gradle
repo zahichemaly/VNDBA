@@ -26,6 +26,7 @@ allprojects {
 
 ext {
     support_version = '27.1.1'
+    arch_components_version = '1.1.0'
     retrofit_version = '2.2.0'
     rxjava_version = '2.0.7'
     rxandroid_version = '2.0.1'

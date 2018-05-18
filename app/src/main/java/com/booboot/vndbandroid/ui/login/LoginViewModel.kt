@@ -1,6 +1,10 @@
 package com.booboot.vndbandroid.ui.login
 
+import android.app.Application
+import android.arch.lifecycle.AndroidViewModel
+import android.arch.lifecycle.MutableLiveData
 import android.text.TextUtils
+import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.BuildConfig
 import com.booboot.vndbandroid.api.VNDBServer
 import com.booboot.vndbandroid.di.Schedulers
@@ -9,21 +13,31 @@ import com.booboot.vndbandroid.model.vndb.Results
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndbandroid.*
 import com.booboot.vndbandroid.store.ListRepository
-import com.booboot.vndbandroid.ui.Presenter
 import com.booboot.vndbandroid.util.type
 import io.reactivex.Maybe
 import io.reactivex.Single
+import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Function3
 import javax.inject.Inject
 
-open class LoginPresenter @Inject constructor(
-        private val vndbServer: VNDBServer,
-        private val schedulers: Schedulers,
-        private val vnlistRepository: ListRepository<VNlistItem>,
-        private val votelistRepository: ListRepository<VotelistItem>,
-        private val wishlistRepository: ListRepository<WishlistItem>
-) : Presenter<LoginView>() {
+class LoginViewModel constructor(application: Application) : AndroidViewModel(application) {
+    @Inject lateinit var vndbServer: VNDBServer
+    @Inject lateinit var schedulers: Schedulers
+    @Inject lateinit var vnlistRepository: ListRepository<VNlistItem>
+    @Inject lateinit var votelistRepository: ListRepository<VotelistItem>
+    @Inject lateinit var wishlistRepository: ListRepository<WishlistItem>
+    val vnData: MutableLiveData<Results<VN>> = MutableLiveData()
+    val loadingData: MutableLiveData<Boolean> = MutableLiveData()
+    val errorData: MutableLiveData<String> = MutableLiveData()
+    private val disposables: MutableMap<String, Disposable> = mutableMapOf()
+
+    init {
+        (application as App).appComponent.inject(this)
+    }
+
     fun login() {
+        if (disposables.contains(DISPOSABLE_LOGIN)) return
+
         val vnlistIds = vndbServer.get<VNlistItem>("vnlist", "basic", "(uid = 0)",
                 Options(results = 100, fetchAllPages = true), type())
         val votelistIds = vndbServer.get<VotelistItem>("votelist", "basic", "(uid = 0)",
@@ -31,9 +45,9 @@ open class LoginPresenter @Inject constructor(
         val wishlistIds = vndbServer.get<WishlistItem>("wishlist", "basic", "(uid = 0)",
                 Options(results = 100, fetchAllPages = true, socketIndex = 2), type())
 
-        val observable = VNDBServer.closeAll()
+        disposables[DISPOSABLE_LOGIN] = VNDBServer.closeAll()
                 .observeOn(schedulers.ui())
-                .doOnSubscribe { view?.showLoading(true) }
+                .doOnSubscribe { loadingData.value = true }
                 .observeOn(schedulers.io())
                 .andThen(Single.zip(vnlistIds, votelistIds, wishlistIds,
                         Function3<Results<VNlistItem>, Results<VotelistItem>, Results<WishlistItem>, AccountItems> { vni, vti, wsi ->
@@ -66,18 +80,25 @@ open class LoginPresenter @Inject constructor(
                     }
                 }
                 .observeOn(schedulers.ui())
-                .doFinally { view?.showLoading(false) }
+                .doFinally {
+                    loadingData.value = false
+                    disposables.remove(DISPOSABLE_LOGIN)
+                }
                 .subscribe(::onNext, ::onError)
-        composite.add(observable)
     }
 
     private fun onNext(result: Results<VN>) {
         Preferences.loggedIn = true
-        view?.showResult(result)
+        vnData.value = result
     }
 
     private fun onError(throwable: Throwable) {
         if (BuildConfig.DEBUG) throwable.printStackTrace()
-        view?.showError(throwable.localizedMessage)
+        errorData.value = throwable.localizedMessage
+        errorData.value = null
+    }
+
+    companion object {
+        private const val DISPOSABLE_LOGIN = "DISPOSABLE_LOGIN"
     }
 }
