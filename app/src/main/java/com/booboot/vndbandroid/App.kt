@@ -3,13 +3,13 @@ package com.booboot.vndbandroid
 import android.app.Application
 import cat.ereza.customactivityoncrash.config.CaocConfig
 import com.booboot.vndbandroid.di.AppComponent
+import com.booboot.vndbandroid.di.AppModule
 import com.booboot.vndbandroid.di.DaggerAppComponent
 import com.chibatching.kotpref.Kotpref
 import com.crashlytics.android.Crashlytics
 import com.crashlytics.android.core.CrashlyticsCore
 import io.fabric.sdk.android.Fabric
 import io.reactivex.plugins.RxJavaPlugins
-import io.realm.Realm
 
 class App : Application() {
     lateinit var appComponent: AppComponent
@@ -18,9 +18,8 @@ class App : Application() {
         super.onCreate()
         instance = this
 
-        appComponent = DaggerAppComponent.create()
+        appComponent = DaggerAppComponent.builder().appModule(AppModule(this)).build()
         Kotpref.init(this)
-        Realm.init(this)
 
         CaocConfig.Builder.create()
                 .errorDrawable(R.mipmap.ic_launcher)

@@ -1,9 +1,13 @@
 package com.booboot.vndbandroid.store
 
-import com.booboot.vndbandroid.model.vndbandroid.VotelistItem
-import io.reactivex.Completable
-import io.reactivex.Maybe
-import io.reactivex.Single
-import io.realm.Realm
+import com.booboot.vndbandroid.dao.DB
+import com.booboot.vndbandroid.model.vndbandroid.Votelist
+import javax.inject.Inject
+import javax.inject.Singleton
 
-open class VotelistRepository : ListRepository<VotelistItem>()
+@Singleton
+class VotelistRepository @Inject constructor(var db: DB) : ListRepository<Votelist>() {
+    override fun getItemsFromDB(): List<Votelist> = db.votelistDao().findAll()
+
+    override fun addItemsToDB(items: List<Votelist>) = db.votelistDao().insertAll(items)
+}

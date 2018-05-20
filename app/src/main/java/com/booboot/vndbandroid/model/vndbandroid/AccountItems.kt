@@ -1,7 +1,7 @@
 package com.booboot.vndbandroid.model.vndbandroid
 
 data class AccountItems(
-        var vnlist: List<VNlistItem> = emptyList(),
-        var votelist: List<VotelistItem> = emptyList(),
-        var wishlist: List<WishlistItem> = emptyList()
+        var vnlist: List<Vnlist> = emptyList(),
+        var votelist: List<Votelist> = emptyList(),
+        var wishlist: List<Wishlist> = emptyList()
 )
