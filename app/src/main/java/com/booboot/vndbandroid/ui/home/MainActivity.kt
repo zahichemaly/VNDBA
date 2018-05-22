@@ -33,10 +33,10 @@ class MainActivity : AppCompatActivity(), MainView {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-//        if (!Preferences.loggedIn) {
+        if (!Preferences.loggedIn) {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
-//        }
+        }
 
         presenter.attachView(this)
     }

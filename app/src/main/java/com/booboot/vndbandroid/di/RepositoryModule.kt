@@ -1,6 +1,7 @@
 package com.booboot.vndbandroid.di
 
 import com.booboot.vndbandroid.dao.DB
+import com.booboot.vndbandroid.store.VNRepository
 import com.booboot.vndbandroid.store.VnlistRepository
 import com.booboot.vndbandroid.store.VotelistRepository
 import com.booboot.vndbandroid.store.WishlistRepository
@@ -27,4 +28,8 @@ internal class RepositoryModule {
     @Provides
     @Singleton
     fun wishlistRepository(db: DB) = WishlistRepository(db)
+
+    @Provides
+    @Singleton
+    fun vnRepository(db: DB) = VNRepository(db)
 }
