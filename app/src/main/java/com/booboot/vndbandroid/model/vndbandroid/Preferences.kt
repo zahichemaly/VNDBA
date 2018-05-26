@@ -8,4 +8,5 @@ object Preferences : KotprefModel() {
     var password by nullableStringPref(key = "PASSWORD")
     var loggedIn by booleanPref(key = "LOGGED_IN")
     var useCustomTabs by booleanPref(true, key = "IN_APP_BROWSER")
+    var nsfw by booleanPref(false, key = "NSFW")
 }

@@ -9,13 +9,13 @@ object ErrorHandler {
     private var toast: Toast? = null
 
     fun showToast(stringId: Int) {
-        showToast(App.instance.getString(stringId))
+        showToast(App.context.getString(stringId))
     }
 
     fun showToast(message: String) {
         Handler(Looper.getMainLooper()).post {
             toast?.cancel()
-            toast = Toast.makeText(App.instance, message, if (message.length > 40) Toast.LENGTH_LONG else Toast.LENGTH_SHORT)
+            toast = Toast.makeText(App.context, message, if (message.length > 40) Toast.LENGTH_LONG else Toast.LENGTH_SHORT)
             toast?.show()
         }
     }

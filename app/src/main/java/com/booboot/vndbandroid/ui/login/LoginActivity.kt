@@ -4,21 +4,20 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import android.widget.Toast
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.model.vndb.Links
 import com.booboot.vndbandroid.model.vndb.Results
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
+import com.booboot.vndbandroid.ui.base.BaseActivity
 import com.booboot.vndbandroid.ui.home.MainActivity
 import com.booboot.vndbandroid.util.Logger
 import kotlinx.android.synthetic.main.login_activity.*
 import kotlinx.android.synthetic.main.progress_bar.*
 
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : BaseActivity() {
     private lateinit var loginViewModel: LoginViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,11 +44,6 @@ class LoginActivity : AppCompatActivity() {
     private fun showResult(result: Results<VN>?) {
         Logger.log(result.toString())
         startActivity(Intent(this, MainActivity::class.java))
-    }
-
-    private fun showError(message: String?) {
-        if (message == null) return
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 
     private fun showLoading(show: Boolean?) {

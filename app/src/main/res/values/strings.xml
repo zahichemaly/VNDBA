@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">VNDBA</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_settings">Settings</string>
     <string name="action_search">Search</string>
     <string name="action_filter">Filter</string>
@@ -51,4 +53,5 @@
     <string name="voice_actor">Voice Actor</string>
     <string name="password">Password</string>
     <string name="login">Login</string>
+    <string name="action_filter_hint">Filter your VN list…</string>
 </resources>

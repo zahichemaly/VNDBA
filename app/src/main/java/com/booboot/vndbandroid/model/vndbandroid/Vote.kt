@@ -1,12 +1,13 @@
 package com.booboot.vndbandroid.model.vndbandroid
 
+import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.R
 
 import java.text.DecimalFormat
 import java.util.regex.Pattern
 
 object Vote {
-    val DEFAULT = "Add a vote"
+    const val DEFAULT = "Add a vote"
     private val VOTE_FORMAT = DecimalFormat("#.#")
 
     fun outOf10(vote: Int) = vote / 10.0
@@ -14,7 +15,7 @@ object Vote {
     fun toString(vote: Int) =
             if (vote < 1) DEFAULT else toShortString(vote) + " (" + getName(outOf10(vote)) + ")"
 
-    fun toShortString(vote: Int) = VOTE_FORMAT.format(outOf10(vote))
+    fun toShortString(vote: Int?): String = if (vote != null) VOTE_FORMAT.format(outOf10(vote)) else App.context.getString(R.string.dash)
 
     fun isValid(vote: String?): Boolean {
         if (vote == null) return false

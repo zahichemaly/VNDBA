@@ -11,7 +11,6 @@
         <item name="windowNoTitle">true</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBar">false</item>
-        <item name="android:windowTranslucentStatus" tools:targetApi="kitkat">true</item>
     </style>
 
     <!--<style name="SplashScreen" parent="AppTheme.NoActionBar">-->

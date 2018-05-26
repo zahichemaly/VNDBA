@@ -16,7 +16,7 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        instance = this
+        context = this
 
         appComponent = DaggerAppComponent.builder().appModule(AppModule(this)).build()
         Kotpref.init(this)
@@ -29,10 +29,10 @@ class App : Application() {
         Fabric.with(this, Crashlytics.Builder().core(core).build())
 
         /* Prevents RxJava from crashing the app when there is an exception and let all onError() handle them */
-        RxJavaPlugins.setErrorHandler { }
+        RxJavaPlugins.setErrorHandler { it.printStackTrace() }
     }
 
     companion object {
-        lateinit var instance: App
+        lateinit var context: App
     }
 }

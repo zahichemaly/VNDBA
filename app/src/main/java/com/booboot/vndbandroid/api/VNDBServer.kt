@@ -73,7 +73,7 @@ class VNDBServer @Inject constructor(
                     val login = Login(PROTOCOL, CLIENT, CLIENTVER, username, password)
                     sendCommand("login " + json.writeValueAsString(login), options, emitter, type())
                 }
-                        .doOnError { t: Throwable -> originalEmitter.onError(t) }
+                        .doOnError { originalEmitter.onError(it) }
                         .subscribe() // no need for subscribeOn(): we need to be on the same thread as the original emitter
             }
         }
@@ -167,7 +167,7 @@ class VNDBServer @Inject constructor(
 
                             /* We got throttled by the server. Displaying a warning message */
                             val fullwait = Math.round(error.fullwait / 60)
-                            ErrorHandler.showToast(String.format(App.instance.getString(R.string.throttle_warning), fullwait))
+                            ErrorHandler.showToast(String.format(App.context.getString(R.string.throttle_warning), fullwait))
                             try {
                                 /* Waiting ~minwait if the we are in the thread that handles the throttle, 5+ minwaits otherwise */
                                 val waitingFactor = (if (SocketPool.throttleHandlingSocket == options.socketIndex) 1050 else 5000 + 500 * options.socketIndex).toLong()

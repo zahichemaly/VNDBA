@@ -15,11 +15,14 @@ android {
 
     defaultConfig {
         applicationId "com.booboot.vndbandroid"
-        minSdkVersion 15
+        minSdkVersion 17
         targetSdkVersion 27
         versionCode 34
         versionName "3.0.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        renderscriptTargetApi 19
+        renderscriptSupportModeEnabled true
 
         manifestPlaceholders = [
                 FABRIC_API_KEY: project.findProperty("FABRIC_API_KEY") ?: ""

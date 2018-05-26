@@ -1,11 +1,15 @@
 package com.booboot.vndbandroid.model.vndbandroid
 
+import com.booboot.vndbandroid.App
+import com.booboot.vndbandroid.R
+
 object Priority {
-    val HIGH = 0
-    val MEDIUM = 1
-    val LOW = 2
-    val BLACKLIST = 3
-    val DEFAULT = "Add to my wishlist"
+    const val HIGH = 0
+    const val MEDIUM = 1
+    const val LOW = 2
+    const val BLACKLIST = 3
+    const val DEFAULT = "Add to my wishlist"
+    val ALL = listOf(HIGH, MEDIUM, LOW, BLACKLIST)
 
     fun toString(priority: Int) = when (priority) {
         0 -> "High"
@@ -15,11 +19,11 @@ object Priority {
         else -> DEFAULT
     }
 
-    fun toShortString(priority: Int) = when (priority) {
+    fun toShortString(priority: Int?): String = when (priority) {
         0 -> "H"
         1 -> "M"
         2 -> "L"
         3 -> "B"
-        else -> "-"
+        else -> App.context.getString(R.string.dash)
     }
 }

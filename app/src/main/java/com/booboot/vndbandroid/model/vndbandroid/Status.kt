@@ -1,12 +1,16 @@
 package com.booboot.vndbandroid.model.vndbandroid
 
+import com.booboot.vndbandroid.App
+import com.booboot.vndbandroid.R
+
 object Status {
-    val UNKNOWN = 0
-    val PLAYING = 1
-    val FINISHED = 2
-    val STALLED = 3
-    val DROPPED = 4
-    val DEFAULT = "Add to my VN list"
+    const val UNKNOWN = 0
+    const val PLAYING = 1
+    const val FINISHED = 2
+    const val STALLED = 3
+    const val DROPPED = 4
+    const val DEFAULT = "Add to my VN list"
+    val ALL = listOf(PLAYING, FINISHED, STALLED, DROPPED, UNKNOWN)
 
     fun toString(status: Int) = when (status) {
         0 -> "Unknown"
@@ -17,12 +21,12 @@ object Status {
         else -> DEFAULT
     }
 
-    fun toShortString(status: Int) = when (status) {
+    fun toShortString(status: Int?): String = when (status) {
         0 -> "?"
         1 -> "P"
         2 -> "F"
         3 -> "S"
         4 -> "D"
-        else -> "-"
+        else -> App.context.getString(R.string.dash)
     }
 }

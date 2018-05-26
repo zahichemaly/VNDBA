@@ -1,6 +1,8 @@
 package com.booboot.vndbandroid.di
 
 import com.booboot.vndbandroid.ui.home.MainActivity
+import com.booboot.vndbandroid.ui.vnlist.VNListViewModel
+import com.booboot.vndbandroid.ui.hometabs.HomeTabsViewModel
 import com.booboot.vndbandroid.ui.login.LoginViewModel
 import dagger.Component
 import javax.inject.Singleton
@@ -15,6 +17,8 @@ import javax.inject.Singleton
     JSONModule::class
 ])
 interface AppComponent {
-    fun inject(mainActivity: MainActivity)
     fun inject(loginViewModel: LoginViewModel)
+    fun inject(mainActivity: MainActivity)
+    fun inject(homeTabsViewModel: HomeTabsViewModel)
+    fun inject(vnListViewModel: VNListViewModel)
 }

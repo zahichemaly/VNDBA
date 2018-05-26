@@ -1,19 +1,14 @@
 package com.booboot.vndbandroid.di
 
 import com.booboot.vndbandroid.dao.DB
-import com.booboot.vndbandroid.store.VNRepository
-import com.booboot.vndbandroid.store.VnlistRepository
-import com.booboot.vndbandroid.store.VotelistRepository
-import com.booboot.vndbandroid.store.WishlistRepository
+import com.booboot.vndbandroid.repository.*
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
 
 /**
- * Module that provides application-scoped data stores, i.e. stores that can cache data as long as the app lives.
- * Especially useful to replace static fields, or to retain data when the configuration changes: in a Presenter,
- *
- * @Inject a store, set its data when it is fetched, and get it after configuration changes to retrieve it.
+ * Module that provides application-scoped repository-pattern classes, i.e. classes that can cache
+ * and transparently retrieve data from either memory, DB or network when needed.
  */
 @Module
 internal class RepositoryModule {
@@ -32,4 +27,15 @@ internal class RepositoryModule {
     @Provides
     @Singleton
     fun vnRepository(db: DB) = VNRepository(db)
+
+    @Provides
+    @Singleton
+    fun accountRepository(
+            db: DB,
+            vnRepository: VNRepository,
+            vnlistRepository: VnlistRepository,
+            votelistRepository: VotelistRepository,
+            wishlistRepository: WishlistRepository,
+            schedulers: Schedulers
+    ) = AccountRepository(db, vnRepository, vnlistRepository, votelistRepository, wishlistRepository, schedulers)
 }

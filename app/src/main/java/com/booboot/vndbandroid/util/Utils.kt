@@ -12,12 +12,14 @@ import com.booboot.vndbandroid.BuildConfig
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.crashlytics.android.Crashlytics
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.*
 
 object Utils {
-    fun setTitle(activity: Activity, title: String) {
-        val actionBar = (activity as AppCompatActivity).supportActionBar
-        if (actionBar != null)
-            actionBar.title = title
+    fun setTitle(activity: Activity?, title: String) {
+        val actionBar = (activity as? AppCompatActivity)?.supportActionBar
+        actionBar?.title = title
     }
 
     fun openURL(context: Activity?, url: String) {
@@ -36,14 +38,23 @@ object Utils {
         }
     }
 
-    fun getThemeColor(context: Context, resid: Int): Int {
+    fun getThemeColor(context: Context?, resid: Int): Int {
         val colorAttribute = TypedValue()
-        context.theme.resolveAttribute(resid, colorAttribute, true)
+        context?.theme?.resolveAttribute(resid, colorAttribute, true)
         return colorAttribute.data
     }
 
     fun processException(exception: Throwable) {
         if (BuildConfig.DEBUG) exception.printStackTrace()
         else Crashlytics.logException(exception)
+    }
+
+    fun getDate(date: String?, showFullDate: Boolean): String? = if (date == null) {
+        "Unknown"
+    } else try {
+        val released = SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(date)
+        SimpleDateFormat(if (showFullDate) "d MMMM yyyy" else "yyyy", Locale.US).format(released)
+    } catch (e: ParseException) {
+        date
     }
 }

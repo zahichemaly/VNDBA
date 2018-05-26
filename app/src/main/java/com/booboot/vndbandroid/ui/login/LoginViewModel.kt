@@ -10,14 +10,13 @@ import com.booboot.vndbandroid.api.VNDBServer
 import com.booboot.vndbandroid.dao.DB
 import com.booboot.vndbandroid.di.Schedulers
 import com.booboot.vndbandroid.extensions.completableTransaction
-import com.booboot.vndbandroid.model.vndb.Options
-import com.booboot.vndbandroid.model.vndb.Results
-import com.booboot.vndbandroid.model.vndb.VN
+import com.booboot.vndbandroid.model.vndb.*
 import com.booboot.vndbandroid.model.vndbandroid.*
-import com.booboot.vndbandroid.store.VNRepository
-import com.booboot.vndbandroid.store.VnlistRepository
-import com.booboot.vndbandroid.store.VotelistRepository
-import com.booboot.vndbandroid.store.WishlistRepository
+import com.booboot.vndbandroid.repository.VNRepository
+import com.booboot.vndbandroid.repository.VnlistRepository
+import com.booboot.vndbandroid.repository.VotelistRepository
+import com.booboot.vndbandroid.repository.WishlistRepository
+import com.booboot.vndbandroid.ui.base.BaseViewModel
 import com.booboot.vndbandroid.util.type
 import io.reactivex.Maybe
 import io.reactivex.Single
@@ -25,7 +24,7 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Function3
 import javax.inject.Inject
 
-class LoginViewModel constructor(application: Application) : AndroidViewModel(application) {
+class LoginViewModel constructor(application: Application) : BaseViewModel(application) {
     @Inject lateinit var vndbServer: VNDBServer
     @Inject lateinit var schedulers: Schedulers
     @Inject lateinit var vnlistRepository: VnlistRepository
@@ -34,9 +33,6 @@ class LoginViewModel constructor(application: Application) : AndroidViewModel(ap
     @Inject lateinit var vnRepository: VNRepository
     @Inject lateinit var db: DB
     val vnData: MutableLiveData<Results<VN>> = MutableLiveData()
-    val loadingData: MutableLiveData<Boolean> = MutableLiveData()
-    val errorData: MutableLiveData<String> = MutableLiveData()
-    private val disposables: MutableMap<String, Disposable> = mutableMapOf()
 
     private lateinit var items: AccountItems
     private var vns: Results<VN>? = null
@@ -108,12 +104,6 @@ class LoginViewModel constructor(application: Application) : AndroidViewModel(ap
     private fun onNext() {
         Preferences.loggedIn = true
         vnData.value = vns
-    }
-
-    private fun onError(throwable: Throwable) {
-        if (BuildConfig.DEBUG) throwable.printStackTrace()
-        errorData.value = throwable.localizedMessage
-        errorData.value = null
     }
 
     companion object {

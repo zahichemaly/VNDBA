@@ -4,7 +4,7 @@ import android.arch.persistence.room.Dao
 import android.arch.persistence.room.Insert
 import android.arch.persistence.room.OnConflictStrategy.REPLACE
 import android.arch.persistence.room.Query
-import com.booboot.vndbandroid.model.vndbandroid.Wishlist
+import com.booboot.vndbandroid.model.vndb.Wishlist
 
 @Dao
 interface WishlistDao {
