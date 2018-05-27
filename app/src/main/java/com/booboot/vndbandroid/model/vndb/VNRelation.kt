@@ -2,7 +2,7 @@ package com.booboot.vndbandroid.model.vndb
 
 import java.util.*
 
-data class Relation(
+data class VNRelation(
         var id: Int = 0,
         var relation: String = "",
         var title: String = "",

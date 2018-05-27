@@ -43,7 +43,7 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
     @Inject lateinit var accountRepository: AccountRepository
     var searchView: SearchView? = null
-    private lateinit var connectionReceiver: ConnectionReceiver
+    private var connectionReceiver: ConnectionReceiver? = null
     private var savedFilter: String? = null
     var selectedItem: Int = 0
 
@@ -270,7 +270,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onDestroy() {
-        unregisterReceiver(connectionReceiver)
+        if (connectionReceiver != null) unregisterReceiver(connectionReceiver)
         super.onDestroy()
     }
 

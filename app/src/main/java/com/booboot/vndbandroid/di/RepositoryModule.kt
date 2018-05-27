@@ -1,5 +1,6 @@
 package com.booboot.vndbandroid.di
 
+import com.booboot.vndbandroid.api.VNDBServer
 import com.booboot.vndbandroid.dao.DB
 import com.booboot.vndbandroid.repository.*
 import dagger.Module
@@ -26,7 +27,7 @@ internal class RepositoryModule {
 
     @Provides
     @Singleton
-    fun vnRepository(db: DB) = VNRepository(db)
+    fun vnRepository(db: DB, vndbServer: VNDBServer) = VNRepository(db, vndbServer)
 
     @Provides
     @Singleton

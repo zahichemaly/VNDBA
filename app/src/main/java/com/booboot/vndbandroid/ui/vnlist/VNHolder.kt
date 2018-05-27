@@ -1,5 +1,6 @@
 package com.booboot.vndbandroid.ui.vnlist
 
+import android.content.Intent
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.booboot.vndbandroid.R
@@ -11,12 +12,17 @@ import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.model.vndbandroid.Priority
 import com.booboot.vndbandroid.model.vndbandroid.Status
 import com.booboot.vndbandroid.model.vndbandroid.Vote
+import com.booboot.vndbandroid.ui.vndetails.VNDetailsActivity
 import com.booboot.vndbandroid.util.Utils
 import com.booboot.vndbandroid.util.image.BlurIfDemoTransform
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.vn_card.view.*
 
-class VNHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+class VNHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+    init {
+        itemView.cardView.setOnClickListener(this)
+    }
+
     fun onBind(
             vn: VN,
             vnlist: Vnlist?,
@@ -56,6 +62,14 @@ class VNHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         statusButton.text = Status.toShortString(vnlist?.status)
         wishlistButton.text = Priority.toShortString(wishlist?.priority)
         votesButton.text = Vote.toShortString(votelist?.vote)
-        cardView.tag = vn.id
+        itemView.tag = vn.id
+    }
+
+    override fun onClick(v: View?) {
+        itemView.context?.let {
+            val intent = Intent(it, VNDetailsActivity::class.java)
+            intent.putExtra(VNDetailsActivity.VN_ARG, itemView.tag as Int)
+            it.startActivity(intent)
+        }
     }
 }

@@ -13,10 +13,14 @@
         <item name="android:windowActionBar">false</item>
     </style>
 
-    <!--<style name="SplashScreen" parent="AppTheme.NoActionBar">-->
-        <!--<item name="android:windowContentOverlay">@null</item>-->
-        <!--<item name="android:windowBackground">@drawable/splash_logo</item>-->
-    <!--</style>-->
+    <style name="AppTheme.NoActionBar.Translucent">
+        <item name="android:windowTranslucentStatus" tools:targetApi="kitkat">true</item>
+    </style>
+
+    <style name="SplashScreen" parent="AppTheme.NoActionBar">
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowBackground">@drawable/splash_logo</item>
+    </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 

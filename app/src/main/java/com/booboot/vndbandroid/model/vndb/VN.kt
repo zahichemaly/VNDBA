@@ -1,9 +1,6 @@
 package com.booboot.vndbandroid.model.vndb
 
-import android.arch.persistence.room.Entity
-import android.arch.persistence.room.Ignore
-import android.arch.persistence.room.PrimaryKey
-import android.arch.persistence.room.RoomWarnings
+import android.arch.persistence.room.*
 import com.booboot.vndbandroid.R
 
 @SuppressWarnings(RoomWarnings.DEFAULT_CONSTRUCTOR)
@@ -24,7 +21,7 @@ data class VN(
         var image: String? = null,
         var image_nsfw: Boolean = false,
         @Ignore var anime: List<Anime> = emptyList(),
-        @Ignore var relations: List<Relation> = emptyList(),
+        @Ignore var relations: List<VNRelation> = emptyList(),
         @Ignore var tags: List<List<Number>> = emptyList(),
         var popularity: Float = 0f,
         var rating: Float = 0f,

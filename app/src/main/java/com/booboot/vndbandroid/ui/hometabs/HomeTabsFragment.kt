@@ -75,7 +75,8 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener {
     override fun onTabReselected(tab: TabLayout.Tab) {}
 
     companion object {
-        const val LIST_TYPE_ARG = "LIST_TYPE"
+        const val LIST_TYPE_ARG = "LIST_TYPE_ARG"
+        const val TAB_VALUE_ARG = "TAB_VALUE_ARG"
         const val VNLIST = 1
         const val VOTELIST = 2
         const val WISHLIST = 3

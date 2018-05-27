@@ -26,7 +26,7 @@ class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
 
-        val tabValue = arguments?.getInt(TAB_VALUE_ARG) ?: -1
+        val tabValue = arguments?.getInt(HomeTabsFragment.TAB_VALUE_ARG) ?: -1
         val listType = arguments?.getInt(HomeTabsFragment.LIST_TYPE_ARG) ?: VNLIST
 
         vnListViewModel = ViewModelProviders.of(this).get(VNListViewModel::class.java)
@@ -71,10 +71,5 @@ class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
         //                    if (Cache.countDownLatch != null) Cache.countDownLatch.countDown()
         //                }
         //            })
-    }
-
-    companion object {
-        const val TAB_VALUE_ARG = "STATUS"
-        const val VN_ARG = "VN"
     }
 }

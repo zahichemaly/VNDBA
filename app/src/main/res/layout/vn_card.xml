@@ -3,7 +3,6 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/cardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         card_view:cardCornerRadius="5dp"
@@ -11,16 +10,19 @@
         card_view:cardUseCompatPadding="true">
 
     <LinearLayout
+            android:id="@+id/cardView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
+            android:focusable="true"
             android:orientation="horizontal"
             tools:showIn="@layout/vn_card">
 
         <ImageView
                 android:id="@+id/image"
                 android:layout_width="108dp"
+                tools:src="@tools:sample/backgrounds/scenic"
                 android:layout_height="150dp"
                 android:contentDescription="@null"
                 android:scaleType="centerCrop"/>
@@ -44,17 +46,18 @@
                         android:maxLines="2"
                         android:paddingBottom="12dp"
                         android:paddingLeft="14dp"
+                        tools:text="@tools:sample/lorem/random"
                         android:paddingRight="14dp"
                         android:paddingTop="10dp"
                         android:singleLine="false"
-                        android:textSize="16sp"
-                        tools:text="Title"/>
+                        android:textSize="16sp"/>
 
                 <TextView
                         android:id="@+id/subtitle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
+                        tools:text="@tools:sample/lorem/random"
                         android:gravity="center_horizontal"
                         android:singleLine="true"
                         android:textColor="@color/secondaryText"

@@ -4,8 +4,6 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.model.vndb.Links
 import com.booboot.vndbandroid.model.vndb.Results
@@ -15,7 +13,6 @@ import com.booboot.vndbandroid.ui.base.BaseActivity
 import com.booboot.vndbandroid.ui.home.MainActivity
 import com.booboot.vndbandroid.util.Logger
 import kotlinx.android.synthetic.main.login_activity.*
-import kotlinx.android.synthetic.main.progress_bar.*
 
 class LoginActivity : BaseActivity() {
     private lateinit var loginViewModel: LoginViewModel
@@ -44,10 +41,5 @@ class LoginActivity : BaseActivity() {
     private fun showResult(result: Results<VN>?) {
         Logger.log(result.toString())
         startActivity(Intent(this, MainActivity::class.java))
-    }
-
-    private fun showLoading(show: Boolean?) {
-        if (show == null) return
-        progressBar.visibility = if (show) VISIBLE else GONE
     }
 }
