@@ -36,16 +36,13 @@ abstract class VNDao {
 
     fun findAll(ids: List<Int> = emptyList()): List<VN> {
         val vnWithRelations = if (ids.isEmpty()) _findAll() else _findAll(ids)
-        val vns = mutableListOf<VN>()
-        vnWithRelations.forEach {
-            it.vn.screens = it.screens
-            vns.add(it.vn)
-        }
-        return vns
+        return vnWithRelations.mapNotNullTo(mutableListOf(), ::mapToVn)
     }
 
-    fun find(id: Int): VN? = _find(id)?.let {
-        it.vn.screens = it.screens
+    fun find(id: Int): VN? = mapToVn(_find(id))
+
+    private fun mapToVn(it: VNWithRelations?): VN? = it?.let {
+        it.vn?.screens = it.screens ?: emptyList()
         it.vn
     }
 
