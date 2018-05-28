@@ -13,32 +13,63 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/app_bar_height"
             android:fitsSystemWindows="true"
-            android:theme="@style/AppTheme.AppBarOverlay">
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <android.support.design.widget.CollapsingToolbarLayout
                 android:id="@+id/collapsingToolbar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:fitsSystemWindows="true"
-                app:contentScrim="?attr/colorPrimary"
-                app:layout_scrollFlags="scroll|exitUntilCollapsed"
+                app:statusBarScrim="@android:color/transparent"
                 app:title=" "
-                app:titleEnabled="true"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed"
+                app:titleEnabled="false"
                 app:toolbarId="@+id/toolbar">
 
             <android.support.v7.widget.RecyclerView
                     android:id="@+id/slideshow"
                     android:layout_width="match_parent"
+                    tools:orientation="horizontal"
+                    tools:listitem="@layout/slideshow_item"
                     android:layout_height="match_parent"
                     android:fitsSystemWindows="true"
-                    app:layout_collapseMode="pin"/>
+                    app:layout_collapseMode="parallax"/>
 
             <android.support.v7.widget.Toolbar
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
+                    android:layout_marginBottom="48dp"
                     app:layout_collapseMode="pin"
-                    app:popupTheme="@style/AppTheme.PopupOverlay"/>
+                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
+            <android.support.design.widget.TabLayout
+                    android:id="@+id/tabLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/transparentBlack"
+                    android:layout_gravity="bottom"
+                    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                    app:layout_collapseMode="pin"
+                    app:tabGravity="fill"
+                    app:tabMode="scrollable">
+
+                <!--<android.support.design.widget.TabItem-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:text="Summary"/>-->
+                <!---->
+                <!--<android.support.design.widget.TabItem-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:text="Characters"/>-->
+                <!---->
+                <android.support.design.widget.TabItem
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Releases"/>
+                <!---->
+            </android.support.design.widget.TabLayout>
 
             <include layout="@layout/progress_bar"/>
         </android.support.design.widget.CollapsingToolbarLayout>
@@ -54,21 +85,54 @@
             app:cardElevation="2dp"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!--<include layout="@layout/vn_details_activity_content"/>-->
-
+        <android.support.v4.view.ViewPager
+                android:id="@+id/viewPager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
     </android.support.v7.widget.CardView>
 
-    <!--<android.support.v7.widget.AppCompatButton-->
-            <!--android:id="@+id/bookButton"-->
-            <!--android:layout_width="match_parent"-->
+    <!--<LinearLayout-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_gravity="bottom|center_horizontal"-->
+    <!--android:layout_margin="@dimen/fab_margin"-->
+    <!--android:elevation="8dp"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:orientation="horizontal">-->
+
+    <!--<android.support.design.widget.FloatingActionButton-->
+            <!--android:id="@+id/statusButton"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--app:layout_anchor="@id/voteButton"-->
             <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="bottom"-->
-            <!--android:layout_marginBottom="12dp"-->
-            <!--android:layout_marginEnd="16dp"-->
-            <!--android:layout_marginStart="16dp"-->
-            <!--android:text="@string/book_a_table"-->
-            <!--android:textAllCaps="true"-->
-            <!--android:textColor="@color/colorAccent"-->
-            <!--app:backgroundTint="@color/colorPrimary"/>-->
+            <!--android:layout_gravity="start|bottom"-->
+            <!--app:useCompatPadding="true"-->
+            <!--app:layout_anchorGravity="start"-->
+            <!--android:clickable="true"-->
+            <!--android:focusable="true"-->
+            <!--app:backgroundTint="@color/colorPrimary"-->
+            <!--android:tint="@color/white"/>-->
+<!---->
+    <!--<android.support.design.widget.FloatingActionButton-->
+            <!--android:id="@+id/voteButton"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_gravity="bottom|center_horizontal"-->
+            <!--android:layout_margin="@dimen/fab_margin"-->
+            <!--app:useCompatPadding="true"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--app:backgroundTint="@color/colorPrimary"-->
+            <!--android:tint="@color/white"/>-->
+<!---->
+    <!--<android.support.design.widget.FloatingActionButton-->
+            <!--android:id="@+id/wishlistButton"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_gravity="bottom|end"-->
+            <!--app:useCompatPadding="true"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--app:layout_anchor="@id/voteButton"-->
+            <!--app:layout_anchorGravity="end"-->
+            <!--app:backgroundTint="@color/colorPrimary"-->
+            <!--android:tint="@color/white"/>-->
+    <!--</LinearLayout>-->
 </android.support.design.widget.CoordinatorLayout>

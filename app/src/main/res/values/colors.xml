@@ -15,4 +15,5 @@
     <color name="buttonPressed">#E5E5E5</color>
     <color name="primaryText">#de000000</color>
     <color name="secondaryText">#8a000000</color>
+    <color name="transparentBlack">#33000000</color>
 </resources>

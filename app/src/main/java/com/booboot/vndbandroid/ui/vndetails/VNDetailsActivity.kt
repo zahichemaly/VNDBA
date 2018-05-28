@@ -19,6 +19,7 @@ import kotlinx.android.synthetic.main.vn_details_activity.*
 class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener {
     private lateinit var vnDetailsViewModel: VNDetailsViewModel
     private lateinit var slideshowAdapter: SlideshowAdapter
+    private lateinit var tabsAdapter: VNDetailsTabsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +35,12 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener {
         slideshow.adapter = slideshowAdapter
         val snapHelper = PagerSnapHelper()
         snapHelper.attachToRecyclerView(slideshow)
+
+        tabsAdapter = VNDetailsTabsAdapter(supportFragmentManager)
+        viewPager.adapter = tabsAdapter
+        tabLayout.setupWithViewPager(viewPager)
+//        viewPager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabLayout))
+//        tabLayout.addOnTabSelectedListener(this)
 
         val vnId = intent.getIntExtra(VN_ARG, 0)
 
@@ -54,7 +61,16 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener {
     private fun showVn(vn: VN?) {
         if (vn == null) return
         Logger.log(vn.toString())
+        toolbar.title = vn.title
         slideshowAdapter.images = vn.screens.map { it.image }
+        tabsAdapter.vn = vn
+
+        val titles = listOf("Summary", "Characters", "Releases", "Staff", "Tags")
+        if (tabLayout.tabCount <= 0) { // INIT
+            titles.forEach { tabLayout.addTab(tabLayout.newTab().setText(it)) }
+        } else { // UPDATE
+            for (i in 0 until tabLayout.tabCount) tabLayout.getTabAt(i)?.text = titles[i]
+        }
     }
 
     override fun onImageClicked(position: Int, images: List<String>) {
