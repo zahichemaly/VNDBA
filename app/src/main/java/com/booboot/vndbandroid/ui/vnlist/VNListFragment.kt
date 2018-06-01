@@ -2,7 +2,9 @@ package com.booboot.vndbandroid.ui.vnlist
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.os.Bundle
+import android.support.v4.app.ActivityOptionsCompat
 import android.support.v4.widget.SwipeRefreshLayout
 import android.view.LayoutInflater
 import android.view.View
@@ -10,18 +12,20 @@ import android.view.ViewGroup
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.factory.VNCardFactory
 import com.booboot.vndbandroid.model.vndb.AccountItems
+import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.booboot.vndbandroid.ui.home.MainActivity
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment.Companion.VNLIST
+import com.booboot.vndbandroid.ui.vndetails.VNDetailsActivity
 import com.booboot.vndbandroid.util.Utils
+import kotlinx.android.synthetic.main.vn_card.view.*
 import kotlinx.android.synthetic.main.vn_list_fragment.*
 
-class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
+class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, (View, VN) -> Unit {
     override val layout: Int = R.layout.vn_list_fragment
     private lateinit var vnListViewModel: VNListViewModel
     private lateinit var adapter: VNAdapter
-    //    public static boolean refreshOnInit;
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
@@ -38,7 +42,8 @@ class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        adapter = VNCardFactory.setupList(activity, vnList, false, false, false, false, false)
+        adapter = VNAdapter(this)
+        VNCardFactory.setupList(activity, vnList, adapter)
 
         refreshLayout.setOnRefreshListener(this)
         refreshLayout.setColorSchemeColors(Utils.getThemeColor(activity, R.attr.colorAccent))
@@ -52,24 +57,18 @@ class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     fun filter(search: CharSequence) = adapter.filter.filter(search)
 
+    override fun invoke(itemView: View, vn: VN) {
+        activity?.let {
+            val options = ActivityOptionsCompat.makeSceneTransitionAnimation(activity!!, itemView.image, "slideshow")
+            val intent = Intent(it, VNDetailsActivity::class.java)
+            intent.putExtra(VNDetailsActivity.EXTRA_VN_ID, vn.id)
+            intent.putExtra(VNDetailsActivity.EXTRA_SHARED_ELEMENT_COVER, vn.image)
+            intent.putExtra(VNDetailsActivity.EXTRA_SHARED_ELEMENT_COVER_NSFW, vn.image_nsfw)
+            it.startActivity(intent, options.toBundle())
+        }
+    }
+
     override fun onRefresh() {
-        //            Cache.loadData(activity, object : Callback() {
-        //                protected fun config() {
-        //                    if (Cache.shouldRefreshView) {
-        //                        if (activity is MainActivity && !activity.isDestroyed()) {
-        //                            (activity as MainActivity).refreshVnlistFragment()
-        //                        }
-        //                    }
-        //                    refreshLayout.setRefreshing(false)
-        //                }
-        //            }, object : Callback() {
-        //                protected fun config() {
-        //                    if (Cache.pipeliningError) return
-        //                    Cache.pipeliningError = true
-        //                    Callback.showToast(activity, message)
-        //                    refreshLayout.setRefreshing(false)
-        //                    if (Cache.countDownLatch != null) Cache.countDownLatch.countDown()
-        //                }
-        //            })
+        // TODO
     }
 }

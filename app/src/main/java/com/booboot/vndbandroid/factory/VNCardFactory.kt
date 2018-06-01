@@ -12,8 +12,7 @@ import com.booboot.vndbandroid.util.Pixels
  * Created by od on 17/04/2016.
  */
 object VNCardFactory {
-    fun setupList(context: Context?, vnList: RecyclerView, showFullDate: Boolean, showRank: Boolean, showRating: Boolean, showPopularity: Boolean, showVoteCount: Boolean): VNAdapter {
-        val adapter = VNAdapter(showFullDate, showRank, showRating, showPopularity, showVoteCount)
+    fun setupList(context: Context?, vnList: RecyclerView, adapter: VNAdapter) {
         if (context != null) {
             vnList.layoutManager = GridAutofitLayoutManager(context, Pixels.px(300))
             vnList.adapter = adapter
@@ -34,6 +33,5 @@ object VNCardFactory {
                 })
             }
         }
-        return adapter
     }
 }

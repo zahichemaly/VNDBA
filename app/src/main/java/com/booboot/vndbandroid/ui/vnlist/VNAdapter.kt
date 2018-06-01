@@ -3,6 +3,7 @@ package com.booboot.vndbandroid.ui.vnlist
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
@@ -15,11 +16,12 @@ import com.booboot.vndbandroid.model.vndb.VN
  * Created by od on 22/11/2016.
  */
 class VNAdapter(
-        private val showFullDate: Boolean,
-        private val showRank: Boolean,
-        private val showRating: Boolean,
-        private val showPopularity: Boolean,
-        private val showVoteCount: Boolean
+        private val onVnClicked: (View, VN) -> Unit,
+        private val showFullDate: Boolean = false,
+        private val showRank: Boolean = false,
+        private val showRating: Boolean = false,
+        private val showPopularity: Boolean = false,
+        private val showVoteCount: Boolean = false
 ) : RecyclerView.Adapter<VNHolder>(), Filterable {
     var items = AccountItems()
         set(value) {
@@ -32,7 +34,7 @@ class VNAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VNHolder {
         val v = LayoutInflater.from(parent.context).inflate(R.layout.vn_card, parent, false)
-        return VNHolder(v)
+        return VNHolder(v, onVnClicked)
     }
 
     override fun onBindViewHolder(holder: VNHolder, position: Int) = holder.onBind(

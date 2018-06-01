@@ -39,10 +39,12 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener {
         tabsAdapter = VNDetailsTabsAdapter(supportFragmentManager)
         viewPager.adapter = tabsAdapter
         tabLayout.setupWithViewPager(viewPager)
-//        viewPager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabLayout))
-//        tabLayout.addOnTabSelectedListener(this)
 
-        val vnId = intent.getIntExtra(VN_ARG, 0)
+        val vnId = intent.getIntExtra(EXTRA_VN_ID, 0)
+        val vnImage = intent.getStringExtra(EXTRA_SHARED_ELEMENT_COVER)
+        val vnImageNsfw = intent.getBooleanExtra(EXTRA_SHARED_ELEMENT_COVER_NSFW, false)
+
+        if (vnImage != null) slideshowAdapter.images = mutableListOf(vnImage)
 
         vnDetailsViewModel = ViewModelProviders.of(this).get(VNDetailsViewModel::class.java)
         vnDetailsViewModel.loadingData.observe(this, Observer { showLoading(it) })
@@ -53,7 +55,7 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            android.R.id.home -> finish()
+            android.R.id.home -> supportFinishAfterTransition()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -62,7 +64,11 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener {
         if (vn == null) return
         Logger.log(vn.toString())
         toolbar.title = vn.title
-        slideshowAdapter.images = vn.screens.map { it.image }
+
+        val screens = if (vn.image != null) mutableListOf(vn.image!!) else mutableListOf()
+        screens.addAll(vn.screens.map { it.image })
+        slideshowAdapter.images = screens.toList()
+
         tabsAdapter.vn = vn
 
         val titles = listOf("Summary", "Characters", "Releases", "Staff", "Tags")
@@ -81,6 +87,8 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener {
     }
 
     companion object {
-        const val VN_ARG = "VN"
+        const val EXTRA_VN_ID = "EXTRA_VN_ID"
+        const val EXTRA_SHARED_ELEMENT_COVER = "EXTRA_SHARED_ELEMENT_COVER"
+        const val EXTRA_SHARED_ELEMENT_COVER_NSFW = "EXTRA_SHARED_ELEMENT_COVER_NSFW"
     }
 }

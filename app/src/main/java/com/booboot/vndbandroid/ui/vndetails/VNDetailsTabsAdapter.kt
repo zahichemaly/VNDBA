@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
 import com.booboot.vndbandroid.model.vndb.VN
+import com.booboot.vndbandroid.ui.vnsummary.SummaryFragment
 
 /**
  * Created by od on 13/03/2016.
@@ -21,12 +22,11 @@ class VNDetailsTabsAdapter(fm: FragmentManager?) : FragmentStatePagerAdapter(fm)
 
     override fun getItem(position: Int): Fragment {
         val args = Bundle()
-        val tab = Fragment()
 
-        when (position) {
+        return when (position) {
+            0 -> SummaryFragment()
+            else -> Fragment()
         }
-
-        return tab
     }
 
     override fun getCount(): Int = numOfTabs
