@@ -1,11 +1,13 @@
 package com.booboot.vndbandroid.ui.slideshow
 
+import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.diff.StringDiffCallback
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.slideshow_item.view.*
 
@@ -17,8 +19,9 @@ class SlideshowAdapter(
 ) : RecyclerView.Adapter<SlideshowHolder>() {
     var images: List<String> = emptyList()
         set(value) {
+            val diffResult = DiffUtil.calculateDiff(StringDiffCallback(field, value))
             field = value
-            notifyDataSetChanged()
+            diffResult.dispatchUpdatesTo(this)
         }
 
     interface Listener {
