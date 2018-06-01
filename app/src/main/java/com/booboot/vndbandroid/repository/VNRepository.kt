@@ -14,12 +14,20 @@ import javax.inject.Singleton
 class VNRepository @Inject constructor(var db: DB, var vndbServer: VNDBServer) : Repository<VN>() {
     override fun getItems(): Single<List<VN>> = Single.fromCallable {
         if (items.isNotEmpty()) items.values.toList()
-        else db.vnDao().findAll()
+        else {
+            val res = db.vnDao().findAll()
+            this.items.putAll(res.map { it.id to it }.toMap().toMutableMap())
+            res
+        }
     }
 
     override fun getItems(ids: List<Int>): Single<List<VN>> = Single.fromCallable {
         if (items.isNotEmpty()) items.filter { it.key in ids }.values.toList()
-        else db.vnDao().findAll(ids)
+        else {
+            val res = db.vnDao().findAll(ids)
+            this.items.putAll(res.map { it.id to it }.toMap().toMutableMap())
+            res
+        }
     }
 
     override fun setItems(items: List<VN>): Completable = Completable.fromAction {
