@@ -1,48 +1,51 @@
 package com.booboot.vndbandroid.ui.slideshow
 
-import android.support.v7.util.DiffUtil
-import android.support.v7.widget.RecyclerView
+import android.content.Context
+import android.support.v4.view.PagerAdapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import com.booboot.vndbandroid.R
-import com.booboot.vndbandroid.diff.StringDiffCallback
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.slideshow_item.view.*
 
-class SlideshowHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
-
-class SlideshowAdapter(
+internal class SlideshowAdapter(
+        mContext: Context,
         private val listener: Listener? = null,
         private val scaleType: ImageView.ScaleType = ImageView.ScaleType.CENTER_CROP
-) : RecyclerView.Adapter<SlideshowHolder>() {
+) : PagerAdapter() {
+    var mLayoutInflater: LayoutInflater = mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
     var images: List<String> = emptyList()
         set(value) {
-            val diffResult = DiffUtil.calculateDiff(StringDiffCallback(field, value))
             field = value
-            diffResult.dispatchUpdatesTo(this)
+            notifyDataSetChanged()
         }
 
     interface Listener {
         fun onImageClicked(position: Int, images: List<String>)
     }
 
-    override fun getItemCount(): Int {
-        return images.size
-    }
+    override fun getCount(): Int = images.size
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SlideshowHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.slideshow_item, parent, false)
-        return SlideshowHolder(view)
-    }
+    override fun isViewFromObject(view: View, any: Any) = view === any
 
-    override fun onBindViewHolder(viewHolder: SlideshowHolder, i: Int) {
-        viewHolder.itemView.imageView.scaleType = scaleType
-        Picasso.get().load(images[i]).into(viewHolder.itemView.imageView)
+    override fun instantiateItem(container: ViewGroup, position: Int): Any {
+        val itemView = mLayoutInflater.inflate(R.layout.slideshow_item, container, false)
 
-        viewHolder.itemView.setOnClickListener {
-            listener?.onImageClicked(viewHolder.adapterPosition, images)
+        itemView.imageView.scaleType = scaleType
+        Picasso.get().load(images[position]).into(itemView.imageView)
+
+        itemView.setOnClickListener {
+            listener?.onImageClicked(position, images)
         }
+
+        container.addView(itemView)
+
+        return itemView
+    }
+
+    override fun destroyItem(container: ViewGroup, position: Int, any: Any) {
+        container.removeView(any as View)
     }
 }

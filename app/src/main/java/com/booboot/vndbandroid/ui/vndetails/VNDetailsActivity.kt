@@ -4,11 +4,9 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.PagerSnapHelper
 import android.view.MenuItem
+import android.widget.ImageView
 import com.booboot.vndbandroid.R
-import com.booboot.vndbandroid.extensions.disallowVerticalScrollIntercepts
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.ui.base.BaseActivity
 import com.booboot.vndbandroid.ui.slideshow.SlideshowActivity
@@ -29,21 +27,16 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        slideshow.disallowVerticalScrollIntercepts()
-        slideshow.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        slideshowAdapter = SlideshowAdapter(this)
-        slideshow.adapter = slideshowAdapter
-        val snapHelper = PagerSnapHelper()
-        snapHelper.attachToRecyclerView(slideshow)
+        val vnId = intent.getIntExtra(EXTRA_VN_ID, 0)
+        val vnImage = intent.getStringExtra(EXTRA_SHARED_ELEMENT_COVER)
+        val vnImageNsfw = intent.getBooleanExtra(EXTRA_SHARED_ELEMENT_COVER_NSFW, false)
 
         tabsAdapter = VNDetailsTabsAdapter(supportFragmentManager)
         viewPager.adapter = tabsAdapter
         tabLayout.setupWithViewPager(viewPager)
 
-        val vnId = intent.getIntExtra(EXTRA_VN_ID, 0)
-        val vnImage = intent.getStringExtra(EXTRA_SHARED_ELEMENT_COVER)
-        val vnImageNsfw = intent.getBooleanExtra(EXTRA_SHARED_ELEMENT_COVER_NSFW, false)
-
+        slideshowAdapter = SlideshowAdapter(this, this, scaleType = ImageView.ScaleType.CENTER_CROP)
+        slideshow.adapter = slideshowAdapter
         if (vnImage != null) slideshowAdapter.images = mutableListOf(vnImage)
 
         vnDetailsViewModel = ViewModelProviders.of(this).get(VNDetailsViewModel::class.java)
