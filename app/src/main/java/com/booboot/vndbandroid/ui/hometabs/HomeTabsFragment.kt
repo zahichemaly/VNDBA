@@ -41,7 +41,7 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener {
         if (tabLayout.tabCount <= 0) { // INIT
             titles.forEach { tabLayout.addTab(tabLayout.newTab().setText(it)) }
 
-            adapter = HomeTabsAdapter(fragmentManager, tabLayout.tabCount, type)
+            adapter = HomeTabsAdapter(childFragmentManager, tabLayout.tabCount, type)
             viewPager.adapter = adapter
             viewPager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabLayout))
             tabLayout.addOnTabSelectedListener(this)
