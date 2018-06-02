@@ -1,6 +1,9 @@
 package com.booboot.vndbandroid.model.vndb
 
-import android.arch.persistence.room.*
+import android.arch.persistence.room.Entity
+import android.arch.persistence.room.Ignore
+import android.arch.persistence.room.PrimaryKey
+import android.arch.persistence.room.RoomWarnings
 import com.booboot.vndbandroid.R
 
 @SuppressWarnings(RoomWarnings.DEFAULT_CONSTRUCTOR)
@@ -22,7 +25,7 @@ data class VN(
         var image_nsfw: Boolean = false,
         @Ignore var anime: List<Anime> = emptyList(),
         @Ignore var relations: List<VNRelation> = emptyList(),
-        @Ignore var tags: List<List<Number>> = emptyList(),
+        var tags: ArrayList<ArrayList<Number>> = ArrayList(),
         var popularity: Float = 0f,
         var rating: Float = 0f,
         var votecount: Int = 0,
@@ -55,4 +58,7 @@ data class VN(
         popularity >= 1 -> R.drawable.score_orange
         else -> R.drawable.score_red
     }
+
+    fun isComplete(): Boolean =
+            screens.isNotEmpty() && tags.isNotEmpty()
 }

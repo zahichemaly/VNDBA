@@ -12,9 +12,13 @@ import javax.inject.Singleton
 internal class JSONModule {
     @Provides
     @Singleton
-    fun json(): ObjectMapper = ObjectMapper().apply {
-        configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
-        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-        setSerializationInclusion(JsonInclude.Include.NON_NULL)
+    fun json(): ObjectMapper = objectMapper()
+
+    companion object {
+        fun objectMapper(): ObjectMapper = ObjectMapper().apply {
+            configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
+            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            setSerializationInclusion(JsonInclude.Include.NON_NULL)
+        }
     }
 }

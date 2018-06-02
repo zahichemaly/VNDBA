@@ -36,18 +36,21 @@ class VNRepository @Inject constructor(var db: DB, var vndbServer: VNDBServer) :
     }
 
     fun getItem(vnId: Int): Single<VN> = Single.fromCallable {
-        if (items[vnId]?.screens?.isNotEmpty() == true) items[vnId]
+        if (items[vnId]?.isComplete() == true) items[vnId]
         else {
             val completeVn: VN
             val dbVn = db.vnDao().find(vnId)
-            if (dbVn?.screens?.isNotEmpty() == true) completeVn = dbVn
+            if (dbVn?.isComplete() == true) completeVn = dbVn
             else {
-                val flags = if (dbVn != null) "screens" else "basic,details,stats,screens"
+                var flags = "screens,tags"
+                if (dbVn == null) flags += "basic,details,stats"
+
                 val apiVn = vndbServer.get<VN>("vn", flags, "(id = $vnId)", Options(results = 1), type())
                         .blockingGet()
                         .items[0]
 
                 dbVn?.screens = apiVn.screens
+                dbVn?.tags = apiVn.tags
                 completeVn = dbVn ?: apiVn
                 db.vnDao().insertAll(listOf(completeVn))
             }

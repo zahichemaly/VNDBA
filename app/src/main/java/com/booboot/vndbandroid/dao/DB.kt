@@ -2,6 +2,7 @@ package com.booboot.vndbandroid.dao
 
 import android.arch.persistence.room.Database
 import android.arch.persistence.room.RoomDatabase
+import android.arch.persistence.room.TypeConverters
 import com.booboot.vndbandroid.model.vndb.*
 
 @Database(version = 1, exportSchema = false, entities = [
@@ -11,6 +12,7 @@ import com.booboot.vndbandroid.model.vndb.*
     VN::class,
     Screen::class
 ])
+@TypeConverters(value = [TagsTypeConverters::class])
 abstract class DB : RoomDatabase() {
     abstract fun votelistDao(): VotelistDao
     abstract fun wishlistDao(): WishlistDao
