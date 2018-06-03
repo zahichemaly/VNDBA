@@ -1,17 +1,14 @@
 package com.booboot.vndbandroid.ui.login
 
 import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
 import android.text.TextUtils
 import com.booboot.vndbandroid.App
-import com.booboot.vndbandroid.BuildConfig
 import com.booboot.vndbandroid.api.VNDBServer
 import com.booboot.vndbandroid.dao.DB
-import com.booboot.vndbandroid.di.Schedulers
 import com.booboot.vndbandroid.extensions.completableTransaction
 import com.booboot.vndbandroid.model.vndb.*
-import com.booboot.vndbandroid.model.vndbandroid.*
+import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.repository.VNRepository
 import com.booboot.vndbandroid.repository.VnlistRepository
 import com.booboot.vndbandroid.repository.VotelistRepository
@@ -20,13 +17,13 @@ import com.booboot.vndbandroid.ui.base.BaseViewModel
 import com.booboot.vndbandroid.util.type
 import io.reactivex.Maybe
 import io.reactivex.Single
-import io.reactivex.disposables.Disposable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Function3
+import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 class LoginViewModel constructor(application: Application) : BaseViewModel(application) {
     @Inject lateinit var vndbServer: VNDBServer
-    @Inject lateinit var schedulers: Schedulers
     @Inject lateinit var vnlistRepository: VnlistRepository
     @Inject lateinit var votelistRepository: VotelistRepository
     @Inject lateinit var wishlistRepository: WishlistRepository
@@ -52,14 +49,14 @@ class LoginViewModel constructor(application: Application) : BaseViewModel(appli
                 Options(results = 100, fetchAllPages = true, socketIndex = 2), type())
 
         disposables[DISPOSABLE_LOGIN] = VNDBServer.closeAll()
-                .observeOn(schedulers.ui())
+                .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe { loadingData.value = true }
-                .observeOn(schedulers.io())
+                .observeOn(Schedulers.io())
                 .andThen(Single.zip(vnlistIds, votelistIds, wishlistIds,
                         Function3<Results<Vnlist>, Results<Votelist>, Results<Wishlist>, AccountItems> { vni, vti, wsi ->
                             AccountItems(vni.items, vti.items, wsi.items)
                         }))
-                .observeOn(schedulers.io())
+                .observeOn(Schedulers.io())
                 .flatMapMaybe<Results<VN>> { _items: AccountItems ->
                     items = _items
 
@@ -83,7 +80,7 @@ class LoginViewModel constructor(application: Application) : BaseViewModel(appli
                         else -> Maybe.empty() // nothing new: skipping DB update with an empty result
                     }
                 }
-                .observeOn(schedulers.io())
+                .observeOn(Schedulers.io())
                 .flatMapCompletable { _vns ->
                     vns = _vns
                     db.completableTransaction(
@@ -93,7 +90,7 @@ class LoginViewModel constructor(application: Application) : BaseViewModel(appli
                             vnRepository.setItems(_vns.items)
                     )
                 }
-                .observeOn(schedulers.ui())
+                .observeOn(AndroidSchedulers.mainThread())
                 .doFinally {
                     loadingData.value = false
                     disposables.remove(DISPOSABLE_LOGIN)

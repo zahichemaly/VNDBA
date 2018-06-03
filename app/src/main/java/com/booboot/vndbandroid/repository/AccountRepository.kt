@@ -1,9 +1,10 @@
 package com.booboot.vndbandroid.repository
 
 import com.booboot.vndbandroid.dao.DB
-import com.booboot.vndbandroid.di.Schedulers
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -13,8 +14,7 @@ class AccountRepository @Inject constructor(
         var vnRepository: VNRepository,
         var vnlistRepository: VnlistRepository,
         var votelistRepository: VotelistRepository,
-        var wishlistRepository: WishlistRepository,
-        var schedulers: Schedulers
+        var wishlistRepository: WishlistRepository
 ) {
     fun getItems(): Single<AccountItems> = Single.fromCallable {
         AccountItems(
@@ -24,6 +24,6 @@ class AccountRepository @Inject constructor(
                 vnRepository.getItems().blockingGet()
         )
     }
-            .subscribeOn(schedulers.io())
-            .observeOn(schedulers.ui())
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
 }

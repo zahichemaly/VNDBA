@@ -36,7 +36,6 @@ internal class RepositoryModule {
             vnRepository: VNRepository,
             vnlistRepository: VnlistRepository,
             votelistRepository: VotelistRepository,
-            wishlistRepository: WishlistRepository,
-            schedulers: Schedulers
-    ) = AccountRepository(db, vnRepository, vnlistRepository, votelistRepository, wishlistRepository, schedulers)
+            wishlistRepository: WishlistRepository
+    ) = AccountRepository(db, vnRepository, vnlistRepository, votelistRepository, wishlistRepository)
 }

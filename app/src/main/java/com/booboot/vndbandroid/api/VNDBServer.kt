@@ -3,7 +3,6 @@ package com.booboot.vndbandroid.api
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.BuildConfig
 import com.booboot.vndbandroid.R
-import com.booboot.vndbandroid.di.Schedulers
 import com.booboot.vndbandroid.model.vndb.*
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.util.ErrorHandler
@@ -15,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.SingleEmitter
+import io.reactivex.schedulers.Schedulers
 import java.io.IOException
 import java.io.InputStreamReader
 import java.io.UnsupportedEncodingException
@@ -29,8 +29,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 class VNDBServer @Inject constructor(
-        private val json: ObjectMapper,
-        private val schedulers: Schedulers
+        private val json: ObjectMapper
 ) {
     private fun <T> connect(socketIndex: Int, emitter: SingleEmitter<Response<T>>): Boolean {
         try {
@@ -91,7 +90,7 @@ class VNDBServer @Inject constructor(
                 Single.create<Response<Results<T>>> { emitter ->
                     val threadOptions = options.copy(page = index + 1, socketIndex = index % options.numberOfSockets)
                     sendCommand(command + json.writeValueAsString(threadOptions), threadOptions, emitter, resultClass)
-                }.doOnError { processError(it, index) }.subscribeOn(schedulers.newThread())
+                }.doOnError { processError(it, index) }.subscribeOn(Schedulers.newThread())
             }
 
             Single.merge(observables)
@@ -117,7 +116,7 @@ class VNDBServer @Inject constructor(
                 originalEmitter.onSuccess(results)
             }
                     .doOnError { processError(it, options.socketIndex) }
-                    .subscribeOn(schedulers.newThread())
+                    .subscribeOn(Schedulers.newThread())
         }
     }
 
