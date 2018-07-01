@@ -1,5 +1,6 @@
 package com.booboot.vndbandroid.model.vndb
 
+import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.R
 import java.io.Serializable
 
@@ -22,27 +23,40 @@ data class Tag(
         if (javaClass != other?.javaClass) return false
 
         other as Tag
-
         if (id != other.id) return false
-
         return true
     }
 
-    override fun hashCode(): Int {
-        return id
-    }
+    override fun hashCode() = id
 
     companion object {
+        const val KEY_GENRES = "genres"
+        const val KEY_POPULAR = "popular"
+        const val KEY_SEXUAL = "ero"
+        const val KEY_CONTENT = "cont"
+        const val KEY_TECHNICAL = "tech"
+
+        val CATEGORIES = linkedMapOf(
+                KEY_GENRES to R.string.genres,
+                KEY_POPULAR to R.string.popular,
+                KEY_CONTENT to R.string.content,
+                KEY_TECHNICAL to R.string.technical,
+                KEY_SEXUAL to R.string.sexual_content
+        )
+
         fun checkSpoilerLevel(authorizedLevel: Int, actualLevel: Int): Boolean =
                 if (authorizedLevel == 2) true else actualLevel < authorizedLevel + 1
 
         fun getScoreImage(tag: List<Number>): Int = tag[1].toFloat().let {
             when {
-                it >= 2 -> R.drawable.score_green
-                it >= 1 -> R.drawable.score_light_green
-                it >= 0 -> R.drawable.score_yellow
-                else -> R.drawable.score_red
+                it >= 2 -> R.drawable.rounded_green_background
+                it >= 1 -> R.drawable.rounded_light_green_background
+                it >= 0.5 -> R.drawable.rounded_yellow_background
+                it >= 0.1 -> R.drawable.rounded_orange_background
+                else -> R.drawable.rounded_red_background
             }
         }
+
+        fun getCategoryName(category: String): String = App.context.getString(CATEGORIES[category] ?: R.string.content)
     }
 }

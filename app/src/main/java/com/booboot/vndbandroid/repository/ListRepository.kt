@@ -17,8 +17,4 @@ abstract class ListRepository<T : AccountItem> : Repository<T>() {
         this.items = items.map { it.vn to it }.toMap().toMutableMap()
         addItemsToDB(items)
     }
-
-    override fun getItems(ids: List<Int>): Single<List<T>> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 }

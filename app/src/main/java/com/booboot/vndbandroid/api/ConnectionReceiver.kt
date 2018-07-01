@@ -17,7 +17,7 @@ class ConnectionReceiver : BroadcastReceiver() {
         fun isConnected(context: Context): Boolean {
             val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             val networkInfo: NetworkInfo = connectivityManager.activeNetworkInfo
-            return networkInfo.state == NetworkInfo.State.CONNECTED
+            return networkInfo.isConnected
         }
     }
 }

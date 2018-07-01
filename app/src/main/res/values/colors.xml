@@ -16,4 +16,12 @@
     <color name="primaryText">#de000000</color>
     <color name="secondaryText">#8a000000</color>
     <color name="transparentBlack">#33000000</color>
+
+    <!-- Tag grading colors -->
+    <color name="tagGreen">#64DD17</color>
+    <color name="tagLightGreen">#EEFF41</color>
+    <color name="tagYellow">#FFF176</color>
+    <color name="tagLightOrange">#FFD54F</color>
+    <color name="tagOrange">#FFC400</color>
+    <color name="tagRed">#DD2C00</color>
 </resources>

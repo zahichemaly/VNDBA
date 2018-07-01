@@ -54,4 +54,10 @@
     <string name="password">Password</string>
     <string name="login">Login</string>
     <string name="action_filter_hint">Filter your VN list…</string>
+    <string name="genres">Genres</string>
+    <string name="popular_tags">Popular tags</string>
+    <string name="all_tags">All tags</string>
+    <string name="sexual_content">Sexual</string>
+    <string name="content">Content</string>
+    <string name="technical">Technical</string>
 </resources>

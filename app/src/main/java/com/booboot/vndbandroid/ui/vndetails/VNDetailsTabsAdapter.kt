@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.ui.vnsummary.SummaryFragment
+import com.booboot.vndbandroid.ui.vntags.TagsFragment
 
 /**
  * Created by od on 13/03/2016.
@@ -22,12 +23,20 @@ class VNDetailsTabsAdapter(fm: FragmentManager?) : FragmentStatePagerAdapter(fm)
 
     override fun getItem(position: Int): Fragment {
         val args = Bundle()
+        args.putInt(VNDetailsActivity.EXTRA_VN_ID, vn?.id ?: 0)
 
-        return when (position) {
-            0 -> SummaryFragment()
+        val fragment = when (position) {
+            0 -> TagsFragment()
+            1 -> SummaryFragment()
             else -> Fragment()
         }
+
+        fragment.arguments = args
+        return fragment
     }
 
     override fun getCount(): Int = numOfTabs
+
+    val tabs = listOf("Tags", "Summary", "Characters", "Releases", "Staff")
+    override fun getPageTitle(position: Int): CharSequence? = tabs[position]
 }
