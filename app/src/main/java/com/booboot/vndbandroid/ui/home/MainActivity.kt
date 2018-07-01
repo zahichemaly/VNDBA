@@ -3,17 +3,9 @@ package com.booboot.vndbandroid.ui.home
 import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.net.ConnectivityManager
 import android.os.Bundle
-import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.navigation.NavigationView
-import androidx.fragment.app.Fragment
-import androidx.core.view.GravityCompat
-import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -23,9 +15,12 @@ import android.widget.ImageView
 import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
+import androidx.fragment.app.Fragment
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.R
-import com.booboot.vndbandroid.api.ConnectionReceiver
 import com.booboot.vndbandroid.api.VNDBServer
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.repository.AccountRepository
@@ -34,6 +29,8 @@ import com.booboot.vndbandroid.ui.login.LoginActivity
 import com.booboot.vndbandroid.ui.vnlist.VNListFragment
 import com.booboot.vndbandroid.util.Utils
 import com.crashlytics.android.Crashlytics
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.main_activity.*
 import kotlinx.android.synthetic.main.progress_bar.*
@@ -43,7 +40,6 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
     @Inject lateinit var accountRepository: AccountRepository
     var searchView: SearchView? = null
-    private var connectionReceiver: ConnectionReceiver? = null
     private var savedFilter: String? = null
     var selectedItem: Int = 0
 
@@ -97,9 +93,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             floatingSearchButton.setOnClickListener(this)
             updateMenuCounters()
-
-            connectionReceiver = ConnectionReceiver()
-            registerReceiver(connectionReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
         }
     }
 
@@ -267,11 +260,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         outState.putInt(SELECTED_ITEM, selectedItem)
         outState.putString(SAVED_FILTER_STATE, searchView?.query.toString())
         super.onSaveInstanceState(outState)
-    }
-
-    override fun onDestroy() {
-        if (connectionReceiver != null) unregisterReceiver(connectionReceiver)
-        super.onDestroy()
     }
 
     companion object {

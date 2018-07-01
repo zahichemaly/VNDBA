@@ -1,7 +1,10 @@
 package com.booboot.vndbandroid
 
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import androidx.multidex.MultiDexApplication
 import cat.ereza.customactivityoncrash.config.CaocConfig
+import com.booboot.vndbandroid.api.ConnectionReceiver
 import com.booboot.vndbandroid.di.AppComponent
 import com.booboot.vndbandroid.di.AppModule
 import com.booboot.vndbandroid.di.DaggerAppComponent
@@ -27,6 +30,9 @@ class App : MultiDexApplication() {
 
         val core = CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build()
         Fabric.with(this, Crashlytics.Builder().core(core).build())
+
+        val connectionReceiver = ConnectionReceiver()
+        registerReceiver(connectionReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
 
         /* Prevents RxJava from crashing the app when there is an exception and let all onError() handle them */
         RxJavaPlugins.setErrorHandler { it.printStackTrace() }
