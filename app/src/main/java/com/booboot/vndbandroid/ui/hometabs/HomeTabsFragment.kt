@@ -6,7 +6,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.extensions.updateTabs
 import com.booboot.vndbandroid.ui.base.BaseFragment
+import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.home_tabs_fragment.*
 
 /**
@@ -37,9 +39,11 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener {
 
     private fun showTitles(titles: List<String>?) {
         if (titles == null) return
-        if (tabLayout.tabCount <= 0) { // INIT
-            titles.forEach { tabLayout.addTab(tabLayout.newTab().setText(it)) }
 
+        val tabLayoutEmpty = tabLayout.tabCount <= 0
+        tabLayout.updateTabs(titles)
+
+        if (tabLayoutEmpty) { // INIT
             adapter = HomeTabsAdapter(childFragmentManager, tabLayout.tabCount, type)
             viewPager.adapter = adapter
             viewPager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabLayout))
@@ -49,8 +53,6 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener {
                 viewPager.currentItem = currentPage
             else
                 currentPage = 0
-        } else { // UPDATE
-            for (i in 0 until tabLayout.tabCount) tabLayout.getTabAt(i)?.text = titles[i]
         }
     }
 

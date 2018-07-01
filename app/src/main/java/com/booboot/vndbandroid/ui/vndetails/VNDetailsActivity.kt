@@ -15,7 +15,7 @@ import com.booboot.vndbandroid.util.Logger
 import kotlinx.android.synthetic.main.vn_details_activity.*
 
 class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener {
-    private lateinit var vnDetailsViewModel: VNDetailsViewModel
+    private lateinit var viewModel: VNDetailsViewModel
     private lateinit var slideshowAdapter: SlideshowAdapter
     private lateinit var tabsAdapter: VNDetailsTabsAdapter
 
@@ -39,11 +39,14 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener {
         slideshow.adapter = slideshowAdapter
         if (vnImage != null) slideshowAdapter.images = mutableListOf(vnImage)
 
-        vnDetailsViewModel = ViewModelProviders.of(this).get(VNDetailsViewModel::class.java)
-        vnDetailsViewModel.loadingData.observe(this, Observer { showLoading(it) })
-        vnDetailsViewModel.vnData.observe(this, Observer { showVn(it) })
-        vnDetailsViewModel.errorData.observe(this, Observer { showError(it) })
-        vnDetailsViewModel.loadVn(vnId)
+        viewModel = ViewModelProviders.of(this).get(VNDetailsViewModel::class.java)
+        viewModel.loadingData.observe(this, Observer { showLoading(it) })
+        viewModel.vnData.observe(this, Observer { showVn(it) })
+        viewModel.errorData.observe(this, Observer { showError(it) })
+
+        if (viewModel.vnData.value == null) {
+            viewModel.loadVn(vnId)
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -63,13 +66,6 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener {
         slideshowAdapter.images = screens.toList()
 
         tabsAdapter.vn = vn
-
-        val titles = listOf("Summary", "Characters", "Releases", "Staff", "Tags")
-        if (tabLayout.tabCount <= 0) { // INIT
-            titles.forEach { tabLayout.addTab(tabLayout.newTab().setText(it)) }
-        } else { // UPDATE
-            for (i in 0 until tabLayout.tabCount) tabLayout.getTabAt(i)?.text = titles[i]
-        }
     }
 
     override fun onImageClicked(position: Int, images: List<String>) {
