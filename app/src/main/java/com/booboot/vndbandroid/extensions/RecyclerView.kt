@@ -1,6 +1,6 @@
 package com.booboot.vndbandroid.extensions
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.MotionEvent
 
 fun RecyclerView.disallowVerticalScrollIntercepts() {

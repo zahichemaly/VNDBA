@@ -1,6 +1,6 @@
 package com.booboot.vndbandroid.diff
 
-import android.support.v7.util.DiffUtil
+import androidx.recyclerview.widget.DiffUtil
 
 class StringDiffCallback(private var oldItems: List<String>, private var newItems: List<String>) : DiffUtil.Callback() {
     override fun getOldListSize() = oldItems.size

@@ -1,6 +1,6 @@
 package com.booboot.vndbandroid.ui.vnlist
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.model.vndb.VN

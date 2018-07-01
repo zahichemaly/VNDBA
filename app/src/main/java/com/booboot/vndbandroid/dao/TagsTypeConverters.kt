@@ -1,6 +1,6 @@
 package com.booboot.vndbandroid.dao
 
-import android.arch.persistence.room.TypeConverter
+import androidx.room.TypeConverter
 import com.booboot.vndbandroid.di.JSONModule
 import com.booboot.vndbandroid.util.type
 

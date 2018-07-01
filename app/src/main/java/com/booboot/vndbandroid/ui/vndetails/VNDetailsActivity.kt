@@ -1,11 +1,11 @@
 package com.booboot.vndbandroid.ui.vndetails
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.ImageView
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.ui.base.BaseActivity

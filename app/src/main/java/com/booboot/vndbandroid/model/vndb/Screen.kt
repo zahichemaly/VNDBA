@@ -1,7 +1,7 @@
 package com.booboot.vndbandroid.model.vndb
 
-import android.arch.persistence.room.*
-import android.arch.persistence.room.ForeignKey.CASCADE
+import androidx.room.*
+import androidx.room.ForeignKey.CASCADE
 
 @SuppressWarnings(RoomWarnings.DEFAULT_CONSTRUCTOR)
 @Entity(tableName = "screen", indices = [(Index("vnId"))]

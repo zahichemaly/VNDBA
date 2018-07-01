@@ -1,6 +1,6 @@
 package com.booboot.vndbandroid.diff
 
-import android.support.v7.util.DiffUtil
+import androidx.recyclerview.widget.DiffUtil
 import com.booboot.vndbandroid.model.vndb.VN
 
 class VNDiffCallback(private var oldItems: List<VN>, private var newItems: List<VN>) : DiffUtil.Callback() {

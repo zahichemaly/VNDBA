@@ -1,7 +1,7 @@
 package com.booboot.vndbandroid.dao
 
-import android.arch.persistence.room.Embedded
-import android.arch.persistence.room.Relation
+import androidx.room.Embedded
+import androidx.room.Relation
 import com.booboot.vndbandroid.model.vndb.Screen
 import com.booboot.vndbandroid.model.vndb.VN
 

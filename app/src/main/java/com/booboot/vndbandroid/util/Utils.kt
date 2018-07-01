@@ -5,8 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.support.customtabs.CustomTabsIntent
-import android.support.v7.app.AppCompatActivity
+import androidx.browser.customtabs.CustomTabsIntent
+import androidx.appcompat.app.AppCompatActivity
 import android.util.TypedValue
 import com.booboot.vndbandroid.BuildConfig
 import com.booboot.vndbandroid.R

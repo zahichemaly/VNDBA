@@ -1,7 +1,7 @@
 package com.booboot.vndbandroid.ui.login
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
 import com.booboot.vndbandroid.R

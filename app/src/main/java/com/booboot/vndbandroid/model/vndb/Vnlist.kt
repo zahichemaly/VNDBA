@@ -1,8 +1,8 @@
 package com.booboot.vndbandroid.model.vndb
 
-import android.arch.persistence.room.Entity
-import android.arch.persistence.room.PrimaryKey
-import android.arch.persistence.room.RoomWarnings
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import androidx.room.RoomWarnings
 
 @SuppressWarnings(RoomWarnings.DEFAULT_CONSTRUCTOR)
 @Entity(tableName = "vnlist")

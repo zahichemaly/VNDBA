@@ -1,7 +1,7 @@
 package com.booboot.vndbandroid.di
 
 import android.app.Application
-import android.arch.persistence.room.Room
+import androidx.room.Room
 import com.booboot.vndbandroid.dao.DB
 import dagger.Module
 import dagger.Provides

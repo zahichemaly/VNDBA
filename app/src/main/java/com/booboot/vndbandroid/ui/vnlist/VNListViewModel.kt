@@ -1,7 +1,7 @@
 package com.booboot.vndbandroid.ui.vnlist
 
 import android.app.Application
-import android.arch.lifecycle.MutableLiveData
+import androidx.lifecycle.MutableLiveData
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.repository.AccountRepository

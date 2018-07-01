@@ -1,7 +1,7 @@
 package com.booboot.vndbandroid.ui.login
 
 import android.app.Application
-import android.arch.lifecycle.MutableLiveData
+import androidx.lifecycle.MutableLiveData
 import android.text.TextUtils
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.api.VNDBServer
