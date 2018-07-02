@@ -18,7 +18,8 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
         (application as App).appComponent.inject(this)
     }
 
-    fun loadVn(vnId: Int) {
+    fun loadVn(vnId: Int, force: Boolean = true) {
+        if (!force && vnData.value != null) return
         if (disposables.contains(DISPOSABLE_VN)) return
 
         disposables[DISPOSABLE_VN] = vnRepository.getItem(vnId)

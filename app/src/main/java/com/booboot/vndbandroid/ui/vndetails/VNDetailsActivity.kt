@@ -43,10 +43,7 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener {
         viewModel.loadingData.observe(this, Observer { showLoading(it) })
         viewModel.vnData.observe(this, Observer { showVn(it) })
         viewModel.errorData.observe(this, Observer { showError(it) })
-
-        if (viewModel.vnData.value == null) {
-            viewModel.loadVn(vnId)
-        }
+        viewModel.loadVn(vnId, false)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

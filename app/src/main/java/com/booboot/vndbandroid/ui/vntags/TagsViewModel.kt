@@ -27,7 +27,8 @@ class TagsViewModel constructor(application: Application) : BaseViewModel(applic
         (application as App).appComponent.inject(this)
     }
 
-    fun loadTags(vnId: Int) {
+    fun loadTags(vnId: Int, force: Boolean = true) {
+        if (!force && tagsData.value != null) return
         if (disposables.contains(DISPOSABLE_LOAD_TAGS)) return
 
         val vnObservable = vnRepository.getItem(vnId).subscribeOn(Schedulers.newThread())
