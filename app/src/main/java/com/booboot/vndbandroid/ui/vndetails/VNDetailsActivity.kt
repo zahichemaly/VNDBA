@@ -61,6 +61,7 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener {
         val screens = if (vn.image != null) mutableListOf(vn.image!!) else mutableListOf()
         screens.addAll(vn.screens.map { it.image })
         slideshowAdapter.images = screens.toList()
+        numberOfImages.text = String.format("x%d", screens.size)
 
         tabsAdapter.vn = vn
     }
