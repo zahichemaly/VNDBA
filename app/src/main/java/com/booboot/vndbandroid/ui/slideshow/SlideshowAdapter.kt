@@ -11,11 +11,11 @@ import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.slideshow_item.view.*
 
 internal class SlideshowAdapter(
-        mContext: Context,
+        context: Context,
         private val listener: Listener? = null,
         private val scaleType: ImageView.ScaleType = ImageView.ScaleType.CENTER_CROP
 ) : PagerAdapter() {
-    var mLayoutInflater: LayoutInflater = mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+    private var mLayoutInflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
     var images: List<String> = emptyList()
         set(value) {
             field = value
