@@ -1,46 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        package="com.booboot.vndbandroid">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.booboot.vndbandroid">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
-            android:name=".App"
-            android:allowBackup="true"
-            android:icon="@mipmap/ic_launcher"
-            android:label="@string/app_name"
-            android:roundIcon="@mipmap/ic_launcher_round"
-            android:supportsRtl="true"
-            android:theme="@style/AppTheme">
+        android:name=".App"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning">
 
         <meta-data
-                android:name="io.fabric.ApiKey"
-                android:value="${FABRIC_API_KEY}"/>
+            android:name="io.fabric.ApiKey"
+            android:value="${FABRIC_API_KEY}" />
 
         <activity
-                android:name=".ui.home.MainActivity"
-                android:launchMode="singleTask"
-                android:theme="@style/AppTheme.NoActionBar">
+            android:name=".ui.home.MainActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <activity
-                android:name=".ui.vndetails.VNDetailsActivity"
-                android:theme="@style/SplashScreen"/>
+            android:name=".ui.vndetails.VNDetailsActivity"
+            android:theme="@style/SplashScreen" />
 
         <activity
-                android:name=".ui.slideshow.SlideshowActivity"
-                android:theme="@style/AppTheme.NoActionBar.Translucent"/>
+            android:name=".ui.slideshow.SlideshowActivity"
+            android:theme="@style/AppTheme.NoActionBar.Translucent" />
 
         <activity
-                android:name=".ui.login.LoginActivity"
-                android:label="@string/app_name"
-                android:launchMode="singleTop"
-                android:theme="@style/AppTheme.NoActionBar"/>
+            android:name=".ui.login.LoginActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTop"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 </manifest>
