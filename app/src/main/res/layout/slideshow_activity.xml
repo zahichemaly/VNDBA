@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:theme="@style/Theme.MaterialComponents">
 
-    <com.booboot.vndbandroid.util.image.PhotoViewPager
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <com.booboot.vndbandroid.util.image.PhotoViewPager xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/slideshow"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -23,6 +21,6 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:title="zefzef" />
+            tools:title="1/11" />
     </com.google.android.material.appbar.AppBarLayout>
 </FrameLayout>

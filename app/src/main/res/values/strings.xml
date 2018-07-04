@@ -60,4 +60,5 @@
     <string name="sexual_content">Sexual</string>
     <string name="content">Content</string>
     <string name="technical">Technical</string>
+    <string name="share_screenshot_rationale">%s needs your permission to access the device\'s storage and save the screenshot.</string>
 </resources>

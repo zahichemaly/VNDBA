@@ -1,19 +1,19 @@
 package com.booboot.vndbandroid.ui.slideshow
 
 import android.content.Context
-import androidx.viewpager.widget.PagerAdapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.viewpager.widget.PagerAdapter
 import com.booboot.vndbandroid.R
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.slideshow_item.view.*
 
 internal class SlideshowAdapter(
-        context: Context,
-        private val listener: Listener? = null,
-        private val scaleType: ImageView.ScaleType = ImageView.ScaleType.CENTER_CROP
+    context: Context,
+    private val listener: Listener? = null,
+    private val scaleType: ImageView.ScaleType = ImageView.ScaleType.CENTER_CROP
 ) : PagerAdapter() {
     private var mLayoutInflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
     var images: List<String> = emptyList()
@@ -35,6 +35,7 @@ internal class SlideshowAdapter(
 
         itemView.imageView.scaleType = scaleType
         Picasso.get().load(images[position]).into(itemView.imageView)
+        itemView.imageView.tag = position
 
         itemView.setOnClickListener {
             listener?.onImageClicked(position, images)
