@@ -1,5 +1,6 @@
 package com.booboot.vndbandroid.model.vndbandroid
 
+import android.graphics.Bitmap
 import java.io.File
 
 /**
@@ -7,5 +8,6 @@ import java.io.File
  */
 data class FileAction(
     val file: File,
+    val bitmap: Bitmap,
     val action: Int
 )

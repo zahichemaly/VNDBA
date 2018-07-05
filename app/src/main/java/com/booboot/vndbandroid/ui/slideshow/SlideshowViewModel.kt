@@ -14,14 +14,14 @@ import java.io.FileOutputStream
 class SlideshowViewModel constructor(application: Application) : BaseViewModel(application) {
     val fileData: MutableLiveData<FileAction> = MutableLiveData()
 
-    fun downloadScreenshot(bitmap: Bitmap?, action: Int, cacheDirectory: File) {
+    fun downloadScreenshot(bitmap: Bitmap?, action: Int, directory: File) {
         if (disposables.contains(DISPOSABLE_DOWNLOAD_SCREENSHOT)) return
 
         disposables[DISPOSABLE_DOWNLOAD_SCREENSHOT] = Single.fromCallable {
             if (bitmap == null) throw Exception("The image is not ready yet.")
 
             val filename = String.format("IMAGE_%d.jpg", System.currentTimeMillis())
-            val file = File(cacheDirectory, filename)
+            val file = File(directory, filename)
 
             file.createNewFile()
             val ostream = FileOutputStream(file)
@@ -37,7 +37,7 @@ class SlideshowViewModel constructor(application: Application) : BaseViewModel(a
                 disposables.remove(DISPOSABLE_DOWNLOAD_SCREENSHOT)
             }
             .subscribe({
-                fileData.value = FileAction(it, action)
+                fileData.value = FileAction(it, bitmap!!, action)
                 fileData.value = null
             }, ::onError)
     }

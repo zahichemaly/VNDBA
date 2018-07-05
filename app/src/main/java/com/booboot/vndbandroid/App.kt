@@ -8,6 +8,7 @@ import com.booboot.vndbandroid.api.ConnectionReceiver
 import com.booboot.vndbandroid.di.AppComponent
 import com.booboot.vndbandroid.di.AppModule
 import com.booboot.vndbandroid.di.DaggerAppComponent
+import com.booboot.vndbandroid.util.Notifications
 import com.chibatching.kotpref.Kotpref
 import com.crashlytics.android.Crashlytics
 import com.crashlytics.android.core.CrashlyticsCore
@@ -25,11 +26,13 @@ class App : MultiDexApplication() {
         Kotpref.init(this)
 
         CaocConfig.Builder.create()
-                .errorDrawable(R.mipmap.ic_launcher)
-                .apply()
+            .errorDrawable(R.mipmap.ic_launcher)
+            .apply()
 
         val core = CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build()
         Fabric.with(this, Crashlytics.Builder().core(core).build())
+
+        Notifications.createNotificationChannels(this)
 
         val connectionReceiver = ConnectionReceiver()
         registerReceiver(connectionReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))

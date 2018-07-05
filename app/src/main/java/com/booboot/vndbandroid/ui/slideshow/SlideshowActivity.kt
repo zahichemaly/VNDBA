@@ -1,22 +1,30 @@
 package com.booboot.vndbandroid.ui.slideshow
 
 import android.Manifest
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Intent
 import android.graphics.drawable.BitmapDrawable
+import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
+import androidx.core.app.NotificationCompat
+import androidx.core.content.FileProvider
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.model.vndbandroid.FileAction
 import com.booboot.vndbandroid.ui.base.BaseActivity
+import com.booboot.vndbandroid.util.Notifications
 import kotlinx.android.synthetic.main.slideshow_activity.*
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
+
 
 class SlideshowActivity : BaseActivity(), ViewPager.OnPageChangeListener {
     private lateinit var viewModel: SlideshowViewModel
@@ -53,6 +61,7 @@ class SlideshowActivity : BaseActivity(), ViewPager.OnPageChangeListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> finish()
+            R.id.action_download -> downloadScreenshot(DOWNLOAD_SCREENSHOT_PERMISSION)
             R.id.action_share -> downloadScreenshot(SHARE_SCREENSHOT_PERMISSION)
         }
         return super.onOptionsItemSelected(item)
@@ -77,7 +86,12 @@ class SlideshowActivity : BaseActivity(), ViewPager.OnPageChangeListener {
         if (EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             val imageView = slideshow.findViewWithTag<ImageView>(slideshow.currentItem)
             val bitmap = (imageView.drawable as? BitmapDrawable)?.bitmap
-            viewModel.downloadScreenshot(bitmap, action, externalCacheDir)
+            val directory = when (action) {
+                DOWNLOAD_SCREENSHOT_PERMISSION -> Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                SHARE_SCREENSHOT_PERMISSION -> externalCacheDir
+                else -> return
+            }
+            viewModel.downloadScreenshot(bitmap, action, directory)
         } else {
             EasyPermissions.requestPermissions(this, String.format(getString(R.string.share_screenshot_rationale), getString(R.string.app_name)),
                 action, Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -87,16 +101,36 @@ class SlideshowActivity : BaseActivity(), ViewPager.OnPageChangeListener {
     private fun fileIntent(fileAction: FileAction?) {
         if (fileAction == null) return
 
-        when (fileAction.action) {
-            DOWNLOAD_SCREENSHOT_PERMISSION -> {
-                // TODO download action menu + download notification with preview like Slide
+        MediaScannerConnection.scanFile(applicationContext, arrayOf(fileAction.file.absolutePath), null) { _, _ ->
+            val uri = FileProvider.getUriForFile(applicationContext, applicationContext.packageName + ".fileprovider", fileAction.file)
+            val intent = Intent()
+            intent.setDataAndType(uri, contentResolver.getType(uri))
+            intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
 
-            }
-            SHARE_SCREENSHOT_PERMISSION -> {
-                val intent = Intent(Intent.ACTION_SEND)
-                intent.type = "image/*"
-                intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(fileAction.file))
-                startActivity(Intent.createChooser(intent, getString(R.string.action_share)))
+            when (fileAction.action) {
+                DOWNLOAD_SCREENSHOT_PERMISSION -> {
+                    intent.action = Intent.ACTION_VIEW
+                    val pendingIntent = PendingIntent.getActivity(applicationContext, 100, intent, PendingIntent.FLAG_CANCEL_CURRENT)
+
+                    // TODO share + delete actions
+                    // TODO transparent small icon
+                    val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+                    val notif = NotificationCompat.Builder(applicationContext, Notifications.DEFAULT_CHANNEL_ID)
+                        .setContentIntent(pendingIntent)
+                        .setContentTitle("Image saved.")
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setLargeIcon(fileAction.bitmap)
+                        .setAutoCancel(true)
+                        .setStyle(NotificationCompat.BigPictureStyle().bigPicture(fileAction.bitmap))
+                        .build()
+                    notificationManager.notify(Notifications.IMAGE_DOWNLOADED_NOTIFICATION_ID, notif)
+                }
+
+                SHARE_SCREENSHOT_PERMISSION -> {
+                    intent.action = Intent.ACTION_SEND
+                    intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(fileAction.file))
+                    startActivity(Intent.createChooser(intent, getString(R.string.action_share)))
+                }
             }
         }
     }

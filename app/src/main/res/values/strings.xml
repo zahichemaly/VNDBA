@@ -61,4 +61,8 @@
     <string name="content">Content</string>
     <string name="technical">Technical</string>
     <string name="share_screenshot_rationale">%s needs your permission to access the device\'s storage and save the screenshot.</string>
+    <string name="action_download_screenshot">Download image</string>
+    <string name="action_share_screenshot">Share image</string>
+    <string name="default_notification_channel_name">Default</string>
+    <string name="default_notification_channel_description">Default notifications.</string>
 </resources>
