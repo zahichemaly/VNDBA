@@ -4,7 +4,7 @@ import android.content.IntentFilter
 import android.net.ConnectivityManager
 import androidx.multidex.MultiDexApplication
 import cat.ereza.customactivityoncrash.config.CaocConfig
-import com.booboot.vndbandroid.api.ConnectionReceiver
+import com.booboot.vndbandroid.receiver.ConnectionReceiver
 import com.booboot.vndbandroid.di.AppComponent
 import com.booboot.vndbandroid.di.AppModule
 import com.booboot.vndbandroid.di.DaggerAppComponent

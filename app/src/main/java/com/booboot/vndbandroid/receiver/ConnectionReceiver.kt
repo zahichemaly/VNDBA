@@ -1,10 +1,11 @@
-package com.booboot.vndbandroid.api
+package com.booboot.vndbandroid.receiver
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
+import com.booboot.vndbandroid.api.VNDBServer
 
 class ConnectionReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
