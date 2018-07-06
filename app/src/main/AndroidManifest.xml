@@ -46,6 +46,8 @@
             android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar"/>
 
+        <service android:name=".receiver.ScreenshotNotificationService"/>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.booboot.vndbandroid.fileprovider"

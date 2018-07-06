@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.model.vndbandroid.FileAction
+import com.booboot.vndbandroid.receiver.ScreenshotNotificationService
 import com.booboot.vndbandroid.ui.base.BaseActivity
 import com.booboot.vndbandroid.util.Notifications
 import kotlinx.android.synthetic.main.slideshow_activity.*
@@ -50,7 +51,7 @@ class SlideshowActivity : BaseActivity(), ViewPager.OnPageChangeListener {
         viewModel = ViewModelProviders.of(this).get(SlideshowViewModel::class.java)
         viewModel.errorData.observe(this, Observer { showError(it) })
         viewModel.loadingData.observe(this, Observer { showLoading(it) })
-        viewModel.fileData.observe(this, Observer { fileIntent(it) })
+        viewModel.fileData.observe(this, Observer { launchActionForImage(it) })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -98,41 +99,56 @@ class SlideshowActivity : BaseActivity(), ViewPager.OnPageChangeListener {
         }
     }
 
-    private fun fileIntent(fileAction: FileAction?) {
+    private fun launchActionForImage(fileAction: FileAction?) {
         if (fileAction == null) return
 
         MediaScannerConnection.scanFile(applicationContext, arrayOf(fileAction.file.absolutePath), null) { _, _ ->
             val uri = FileProvider.getUriForFile(applicationContext, applicationContext.packageName + ".fileprovider", fileAction.file)
-            val intent = Intent()
-            intent.setDataAndType(uri, contentResolver.getType(uri))
-            intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+            val shareIntent = getFileIntent(uri).apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_UID, REQUEST_CODE_SHARE)
+            }
 
             when (fileAction.action) {
                 DOWNLOAD_SCREENSHOT_PERMISSION -> {
-                    intent.action = Intent.ACTION_VIEW
-                    val pendingIntent = PendingIntent.getActivity(applicationContext, 100, intent, PendingIntent.FLAG_CANCEL_CURRENT)
+                    val mainIntent = getFileIntent(uri).apply { action = Intent.ACTION_VIEW }
+                    shareIntent.setClass(this@SlideshowActivity, ScreenshotNotificationService::class.java)
+                    val deleteIntent = getFileIntent(uri).apply {
+                        setClass(this@SlideshowActivity, ScreenshotNotificationService::class.java)
+                        putExtra(Intent.EXTRA_TEXT, fileAction.file.absolutePath)
+                        putExtra(Intent.EXTRA_UID, REQUEST_CODE_DELETE)
+                    }
 
-                    // TODO share + delete actions
+                    val pendingFlags = PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_ONE_SHOT
+                    val mainPendingIntent = PendingIntent.getActivity(applicationContext, REQUEST_CODE_VIEW, mainIntent, pendingFlags)
+                    val sharePendingIntent = PendingIntent.getService(applicationContext, REQUEST_CODE_SHARE, shareIntent, pendingFlags)
+                    val deletePendingIntent = PendingIntent.getService(applicationContext, REQUEST_CODE_DELETE, deleteIntent, pendingFlags)
+
                     // TODO transparent small icon
                     val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
                     val notif = NotificationCompat.Builder(applicationContext, Notifications.DEFAULT_CHANNEL_ID)
-                        .setContentIntent(pendingIntent)
+                        .setContentIntent(mainPendingIntent)
                         .setContentTitle("Image saved.")
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setLargeIcon(fileAction.bitmap)
+                        .addAction(R.drawable.ic_share_white_24dp, getString(R.string.action_share), sharePendingIntent)
+                        .addAction(R.drawable.ic_delete_forever_black_24dp, getString(R.string.action_delete), deletePendingIntent)
                         .setAutoCancel(true)
                         .setStyle(NotificationCompat.BigPictureStyle().bigPicture(fileAction.bitmap))
                         .build()
                     notificationManager.notify(Notifications.IMAGE_DOWNLOADED_NOTIFICATION_ID, notif)
                 }
 
-                SHARE_SCREENSHOT_PERMISSION -> {
-                    intent.action = Intent.ACTION_SEND
-                    intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(fileAction.file))
-                    startActivity(Intent.createChooser(intent, getString(R.string.action_share)))
-                }
+                SHARE_SCREENSHOT_PERMISSION -> startActivity(Intent.createChooser(shareIntent, getString(R.string.action_share)))
             }
         }
+    }
+
+    private fun getFileIntent(uri: Uri) = Intent().apply {
+        setDataAndType(uri, contentResolver.getType(uri))
+        action = System.nanoTime().toString()
+        putExtra(Intent.EXTRA_STREAM, uri)
+        flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
     }
 
     override fun onPageScrollStateChanged(state: Int) {
@@ -150,5 +166,8 @@ class SlideshowActivity : BaseActivity(), ViewPager.OnPageChangeListener {
         const val INDEX_ARG = "INDEX_ARG"
         const val DOWNLOAD_SCREENSHOT_PERMISSION = 1001
         const val SHARE_SCREENSHOT_PERMISSION = 1002
+        const val REQUEST_CODE_VIEW = 100
+        const val REQUEST_CODE_SHARE = 101
+        const val REQUEST_CODE_DELETE = 102
     }
 }
