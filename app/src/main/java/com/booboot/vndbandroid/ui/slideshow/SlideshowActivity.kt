@@ -124,12 +124,11 @@ class SlideshowActivity : BaseActivity(), ViewPager.OnPageChangeListener {
                     val sharePendingIntent = PendingIntent.getService(applicationContext, REQUEST_CODE_SHARE, shareIntent, pendingFlags)
                     val deletePendingIntent = PendingIntent.getService(applicationContext, REQUEST_CODE_DELETE, deleteIntent, pendingFlags)
 
-                    // TODO transparent small icon
                     val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
                     val notif = NotificationCompat.Builder(applicationContext, Notifications.DEFAULT_CHANNEL_ID)
                         .setContentIntent(mainPendingIntent)
                         .setContentTitle("Image saved.")
-                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setSmallIcon(R.drawable.ic_logo_transparent)
                         .setLargeIcon(fileAction.bitmap)
                         .addAction(R.drawable.ic_share_white_24dp, getString(R.string.action_share), sharePendingIntent)
                         .addAction(R.drawable.ic_delete_forever_black_24dp, getString(R.string.action_delete), deletePendingIntent)
