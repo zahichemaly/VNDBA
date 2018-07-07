@@ -62,14 +62,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             toggle.syncState()
 
             navigationView.setNavigationItemSelectedListener(this)
-            val states = arrayOf(
-                    intArrayOf(android.R.attr.state_checked), // selected
-                    intArrayOf(-android.R.attr.state_checked) // not selected
-            )
-
-            val colors = intArrayOf(Utils.getThemeColor(this, R.attr.colorAccent), Color.BLACK)
-            navigationView.itemTextColor = ColorStateList(states, colors)
-            navigationView.itemIconTintList = ColorStateList(states, colors)
 
             //            navigationView.menu.findItem(R.id.accountTitle).setTitle(SettingsManager.getUsername(this))
 
