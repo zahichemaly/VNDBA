@@ -133,7 +133,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         } ?: return false
 
         fragment.arguments = args
-        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, fragment, "FRAGMENT").addToBackStack(null).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, fragment, TAG_FRAGMENT).addToBackStack(null).commit()
         drawer?.closeDrawer(GravityCompat.START)
         toggleFloatingSearchButton(id != R.id.nav_settings)
         enableToolbarScroll(Arrays.asList(R.id.nav_vnlist, R.id.nav_votelist, R.id.nav_wishlist).contains(id))
@@ -166,7 +166,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             override fun onQueryTextChange(search: String): Boolean {
                 savedFilter = search
-                val currentFragment = supportFragmentManager.findFragmentByTag("FRAGMENT") as? HomeTabsFragment
+                val currentFragment = supportFragmentManager.findFragmentByTag(TAG_FRAGMENT) as? HomeTabsFragment
                         ?: return true
 
                 currentFragment.registeredFragments.values.forEach { (it as? VNListFragment)?.filter(search) }
