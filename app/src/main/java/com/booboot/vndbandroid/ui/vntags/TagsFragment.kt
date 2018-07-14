@@ -11,12 +11,15 @@ import com.booboot.vndbandroid.model.vndbandroid.VNDetailsTags
 import com.booboot.vndbandroid.model.vndbandroid.VNTag
 import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.booboot.vndbandroid.ui.vndetails.VNDetailsActivity
+import com.google.android.flexbox.AlignItems
+import com.google.android.flexbox.FlexboxLayoutManager
+import com.google.android.flexbox.JustifyContent
 import kotlinx.android.synthetic.main.tags_fragment.*
 
-class TagsFragment : BaseFragment(), (VNTag) -> Unit {
+class TagsFragment : BaseFragment(), TagsAdapter.Callback {
     override val layout: Int = R.layout.tags_fragment
     private lateinit var tagsViewModel: TagsViewModel
-    private lateinit var tagsPagerAdapter: TagsPagerAdapter
+    private lateinit var tagsAdapter: TagsAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
@@ -26,9 +29,13 @@ class TagsFragment : BaseFragment(), (VNTag) -> Unit {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if (activity == null) return
 
-        tagsPagerAdapter = TagsPagerAdapter(activity!!, this)
-        allTagsPager.adapter = tagsPagerAdapter
-        allTagsTabLayout.setupWithViewPager(allTagsPager)
+        val flexbox = FlexboxLayoutManager(context)
+        flexbox.alignItems = AlignItems.FLEX_START
+        flexbox.justifyContent = JustifyContent.CENTER
+
+        recyclerView.layoutManager = flexbox
+        tagsAdapter = TagsAdapter(this)
+        recyclerView.adapter = tagsAdapter
 
         val vnId = arguments?.getInt(VNDetailsActivity.EXTRA_VN_ID) ?: 0
 
@@ -47,9 +54,12 @@ class TagsFragment : BaseFragment(), (VNTag) -> Unit {
 
     private fun showTags(tags: VNDetailsTags?) {
         if (tags == null) return
-        tagsPagerAdapter.tags = tags
+        tagsAdapter.items = tags
     }
 
-    override fun invoke(p1: VNTag) {
+    override fun onTitleClicked(title: String) {
+    }
+
+    override fun onChipClicked(tag: VNTag) {
     }
 }
