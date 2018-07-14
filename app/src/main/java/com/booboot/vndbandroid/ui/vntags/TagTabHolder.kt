@@ -18,8 +18,13 @@ class TagTabHolder(itemView: View, private val callback: TagsAdapter.Callback) :
     fun onBind(title: String) = with(itemView) {
         this@TagTabHolder.title = title
 
-        tabLayout.removeAllTabs()
-        tabLayout.addTab(tabLayout.newTab().setText(Tag.getCategoryName(title)).setIcon(ContextCompat.getDrawable(context, R.drawable.ic_keyboard_arrow_down_white_24dp)))
+        val fullTitle = Tag.getCategoryName(title)
+        if (tabLayout.getTabAt(0)?.text == fullTitle) {
+            /* Trying to bind the same tab: nothing to do atm */
+        } else {
+            tabLayout.removeAllTabs()
+            tabLayout.addTab(tabLayout.newTab().setText(fullTitle).setIcon(ContextCompat.getDrawable(context, R.drawable.ic_keyboard_arrow_down_white_24dp)))
+        }
     }
 
     override fun onTabReselected(p0: TabLayout.Tab?) {
@@ -30,6 +35,5 @@ class TagTabHolder(itemView: View, private val callback: TagsAdapter.Callback) :
     }
 
     override fun onTabSelected(p0: TabLayout.Tab?) {
-        callback.onTitleClicked(title)
     }
 }
