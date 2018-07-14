@@ -69,7 +69,7 @@
                     android:title="@string/my_recommendations"/>
 
                 <item
-                    android:id="@+id/nav_settings"
+                    android:id="@+id/nav_preferences"
                     android:icon="@drawable/ic_settings_black_48dp"
                     android:title="@string/preferences"/>
 

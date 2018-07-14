@@ -20,7 +20,7 @@
     <string name="pref_key_spoiler">spoiler</string>
     <string name="set_spoiler_level_for_this_vn">Set spoiler level for this VN</string>
     <string name="pref_key_spoiler_completed">spoiler_completed</string>
-    <string name="pref_key_nsfw">nsfw</string>
+    <string name="pref_key_nsfw" translatable="false">NSFW</string>
     <string name="rankings">Rankings</string>
     <string name="top">Top</string>
     <string name="popular">Popular</string>
@@ -35,7 +35,7 @@
     <string name="about">About</string>
     <string name="customactivityoncrash_error_activity_error_occurred_explanation">An unexpected error occurred.\nSorry for the inconvenience.\nThe error details have been sent to us and we\'ll take a look as soon as possible!</string>
     <string name="sign_up_here">Don\'t have a VNDB account yet? Sign up here.</string>
-    <string name="pref_key_browser">browser</string>
+    <string name="pref_key_browser" translatable="false">IN_APP_BROWSER</string>
     <string name="action_send">Send</string>
     <string name="feedback">Feedback</string>
     <string name="send_a_feedback">Send a feedback</string>
@@ -66,4 +66,12 @@
     <string name="default_notification_channel_name">Default</string>
     <string name="default_notification_channel_description">Default notifications.</string>
     <string name="action_delete">Delete</string>
+    <string name="dark">Dark</string>
+    <string name="light">Light</string>
+    <string name="automatic">Automatic</string>
+    <string name="system">System</string>
+    <string name="dark_mode_automatic_subtitle">Changes automatically based on the time of day.</string>
+    <string name="dark_mode">Dark mode</string>
+    <string name="dark_mode_system_subtitle">Matches Android system\'s settings.</string>
+    <string name="pref_key_night_mode" translatable="false">NIGHT_MODE_STRING</string>
 </resources>

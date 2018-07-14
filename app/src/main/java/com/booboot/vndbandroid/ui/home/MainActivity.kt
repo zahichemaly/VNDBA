@@ -3,9 +3,8 @@ package com.booboot.vndbandroid.ui.home
 import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
-import android.content.res.ColorStateList
-import android.graphics.Color
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -26,8 +25,8 @@ import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.repository.AccountRepository
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment
 import com.booboot.vndbandroid.ui.login.LoginActivity
+import com.booboot.vndbandroid.ui.preferences.PreferencesFragment
 import com.booboot.vndbandroid.ui.vnlist.VNListFragment
-import com.booboot.vndbandroid.util.Utils
 import com.crashlytics.android.Crashlytics
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.navigation.NavigationView
@@ -119,6 +118,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 args.putInt(HomeTabsFragment.LIST_TYPE_ARG, HomeTabsFragment.WISHLIST)
                 HomeTabsFragment()
             }
+            R.id.nav_preferences -> PreferencesFragment()
         //            R.id.nav_stats -> DatabaseStatisticsFragment()
         //            R.id.nav_top -> RankingTopFragment()
         //            R.id.nav_popular -> RankingPopularFragment()
@@ -126,7 +126,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //            R.id.nav_newly_released -> RankingNewlyReleasedFragment()
         //            R.id.nav_newly_added -> RankingNewlyAddedFragment()
         //            R.id.nav_recommendations -> RecommendationsFragment()
-        //            R.id.nav_settings -> PreferencesFragment()
         //            R.id.nav_about -> AboutFragment()
             R.id.nav_logout -> return logout()
             else -> null
@@ -135,7 +134,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         fragment.arguments = args
         supportFragmentManager.beginTransaction().replace(R.id.fragment_container, fragment, TAG_FRAGMENT).addToBackStack(null).commit()
         drawer?.closeDrawer(GravityCompat.START)
-        toggleFloatingSearchButton(id != R.id.nav_settings)
+        toggleFloatingSearchButton(id != R.id.nav_preferences)
         enableToolbarScroll(Arrays.asList(R.id.nav_vnlist, R.id.nav_votelist, R.id.nav_wishlist).contains(id))
 
         return true

@@ -9,12 +9,11 @@
     <color name="transparentWhite">#f5ffffff</color>
     <color name="black">#000000</color>
     <color name="light_gray">#CCCCCC</color>
+    <color name="medium_gray">#646464</color>
     <color name="dark_blue">#000055</color>
     <color name="green">#388E3C</color>
     <color name="red">#F44336</color>
     <color name="buttonPressed">#E5E5E5</color>
-    <color name="primaryText">#de000000</color>
-    <color name="secondaryText">#8a000000</color>
     <color name="transparentBlack">#33000000</color>
 
     <!-- Tag grading colors -->
@@ -24,4 +23,7 @@
     <color name="tagLightOrange">#FFD54F</color>
     <color name="tagOrange">#FFC400</color>
     <color name="tagRed">#DD2C00</color>
+
+    <!-- DayNight colors -->
+    <color name="cardDividerColor">@color/medium_gray</color>
 </resources>

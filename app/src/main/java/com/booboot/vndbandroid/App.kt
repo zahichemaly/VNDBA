@@ -1,13 +1,17 @@
 package com.booboot.vndbandroid
 
+import android.content.Context
 import android.content.IntentFilter
 import android.net.ConnectivityManager
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDexApplication
+import androidx.preference.PreferenceManager
 import cat.ereza.customactivityoncrash.config.CaocConfig
-import com.booboot.vndbandroid.receiver.ConnectionReceiver
 import com.booboot.vndbandroid.di.AppComponent
 import com.booboot.vndbandroid.di.AppModule
 import com.booboot.vndbandroid.di.DaggerAppComponent
+import com.booboot.vndbandroid.model.vndbandroid.Preferences
+import com.booboot.vndbandroid.receiver.ConnectionReceiver
 import com.booboot.vndbandroid.util.Notifications
 import com.chibatching.kotpref.Kotpref
 import com.crashlytics.android.Crashlytics
@@ -32,6 +36,8 @@ class App : MultiDexApplication() {
         val core = CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build()
         Fabric.with(this, Crashlytics.Builder().core(core).build())
 
+        PreferenceManager.setDefaultValues(this, Preferences.kotprefName, Context.MODE_PRIVATE, R.xml.app_preferences, false)
+        AppCompatDelegate.setDefaultNightMode(Preferences.nightMode)
         Notifications.createNotificationChannels(this)
 
         val connectionReceiver = ConnectionReceiver()
