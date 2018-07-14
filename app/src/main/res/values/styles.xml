@@ -1,6 +1,17 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="AppTheme" parent="Theme.MaterialComponents">
+    <style name="AppTheme.Light" parent="Theme.MaterialComponents.Light">
+        <!-- your light theme attributes -->
+    </style>
+
+    <style name="AppTheme.Dark" parent="Theme.MaterialComponents">
+        <!-- your dark theme attributes -->
+    </style>
+
+    <style name="Base.AppTheme.DayNight" parent="AppTheme.Light" />
+
+    <style name="AppTheme.DayNight" parent="Base.AppTheme.DayNight">
+        <!-- your light/dark theme independent attributes -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -10,18 +21,18 @@
         <item name="android:windowContentTransitions" tools:targetApi="lollipop">true</item>
     </style>
 
-    <style name="AppTheme.NoActionBar">
+    <style name="AppTheme.DayNight.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBar">false</item>
     </style>
 
-    <style name="AppTheme.NoActionBar.Translucent">
+    <style name="AppTheme.DayNight.NoActionBar.Translucent">
         <item name="android:windowTranslucentStatus" tools:targetApi="kitkat">true</item>
     </style>
 
-    <style name="SplashScreen" parent="AppTheme.NoActionBar">
+    <style name="SplashScreen" parent="AppTheme.DayNight.NoActionBar">
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowBackground">@drawable/splash_logo</item>
     </style>

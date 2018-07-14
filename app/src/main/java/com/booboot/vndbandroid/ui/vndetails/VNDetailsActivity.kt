@@ -21,7 +21,7 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTheme(R.style.AppTheme_NoActionBar_Translucent)
+        setTheme(R.style.AppTheme_DayNight_NoActionBar_Translucent)
         setContentView(R.layout.vn_details_activity)
 
         setSupportActionBar(toolbar)
