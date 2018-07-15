@@ -41,7 +41,7 @@ class TagsAdapter(private val callback: Callback) : RecyclerView.Adapter<Recycle
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = items.get(position)
         when (holder) {
-            is TagTabHolder -> holder.onBind(item as String)
+            is TagTabHolder -> holder.onBind(item as String, items.all[item]?.isEmpty() != false)
             is TagHolder -> holder.onBind(item as VNTag)
         }
     }
