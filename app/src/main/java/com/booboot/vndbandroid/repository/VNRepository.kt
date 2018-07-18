@@ -31,7 +31,7 @@ class VNRepository @Inject constructor(var db: DB, var vndbServer: VNDBServer) :
     }
 
     override fun setItems(items: List<VN>): Completable = Completable.fromAction {
-        this.items = items.map { it.id to it }.toMap().toMutableMap()
+        this.items.putAll(items.map { it.id to it }.toMap().toMutableMap())
         db.vnDao().insertAll(items)
     }
 

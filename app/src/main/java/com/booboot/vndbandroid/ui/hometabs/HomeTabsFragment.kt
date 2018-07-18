@@ -1,7 +1,11 @@
 package com.booboot.vndbandroid.ui.hometabs
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -16,26 +20,28 @@ import kotlinx.android.synthetic.main.home_tabs_fragment.*
  */
 class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener {
     override val layout: Int = R.layout.home_tabs_fragment
-    private lateinit var homeTabsViewModel: HomeTabsViewModel
+    private lateinit var viewModel: HomeTabsViewModel
 
     private var type: Int = 0
-    private lateinit var adapter: HomeTabsAdapter
+    private var adapter: HomeTabsAdapter? = null
 
     val registeredFragments: Map<Int, Fragment>
-        get() = adapter.registeredFragments
+        get() = adapter?.registeredFragments ?: emptyMap()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
 
         type = arguments?.getInt(LIST_TYPE_ARG) ?: VNLIST
 
-        homeTabsViewModel = ViewModelProviders.of(this).get(HomeTabsViewModel::class.java)
-        homeTabsViewModel.titlesData.observe(this, Observer { showTitles(it) })
-        homeTabsViewModel.errorData.observe(this, Observer { showError(it) })
-        homeTabsViewModel.getTabTitles(type)
+        viewModel = ViewModelProviders.of(this).get(HomeTabsViewModel::class.java)
+        viewModel.titlesData.observe(this, Observer { showTitles(it) })
+        viewModel.errorData.observe(this, Observer { showError(it) })
+        update()
 
         return rootView
     }
+
+    fun update() = viewModel.getTabTitles(type)
 
     private fun showTitles(titles: List<String>?) {
         if (titles == null) return

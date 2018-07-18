@@ -23,7 +23,7 @@
             android:value="${FABRIC_API_KEY}"/>
 
         <activity
-            android:name=".ui.home.MainActivity"
+            android:name=".ui.home.HomeActivity"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.DayNight.NoActionBar">
             <intent-filter>

@@ -1,21 +1,20 @@
 package com.booboot.vndbandroid.ui.login
 
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndb.Links
-import com.booboot.vndbandroid.model.vndb.Results
-import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.ui.base.BaseActivity
-import com.booboot.vndbandroid.ui.home.MainActivity
+import com.booboot.vndbandroid.ui.home.HomeActivity
 import com.booboot.vndbandroid.util.Logger
 import kotlinx.android.synthetic.main.login_activity.*
 
 class LoginActivity : BaseActivity() {
-    private lateinit var loginViewModel: LoginViewModel
+    private lateinit var viewModel: LoginViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,17 +28,18 @@ class LoginActivity : BaseActivity() {
         loginButton.setOnClickListener {
             Preferences.username = loginUsername.text.toString()
             Preferences.password = loginPassword.text.toString()
-            loginViewModel.login()
+            viewModel.login()
         }
 
-        loginViewModel = ViewModelProviders.of(this).get(LoginViewModel::class.java)
-        loginViewModel.loadingData.observe(this, Observer { showLoading(it) })
-        loginViewModel.vnData.observe(this, Observer { showResult(it) })
-        loginViewModel.errorData.observe(this, Observer { showError(it) })
+        viewModel = ViewModelProviders.of(this).get(LoginViewModel::class.java)
+        viewModel.loadingData.observe(this, Observer { showLoading(it) })
+        viewModel.accountData.observe(this, Observer { showResult(it) })
+        viewModel.errorData.observe(this, Observer { showError(it) })
     }
 
-    private fun showResult(result: Results<VN>?) {
+    private fun showResult(result: AccountItems?) {
+        if (result == null) return
         Logger.log(result.toString())
-        startActivity(Intent(this, MainActivity::class.java))
+        startActivity(Intent(this, HomeActivity::class.java))
     }
 }

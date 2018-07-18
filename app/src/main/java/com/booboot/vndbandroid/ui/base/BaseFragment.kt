@@ -1,11 +1,14 @@
 package com.booboot.vndbandroid.ui.base
 
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import com.booboot.vndbandroid.ui.home.HomeActivity
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.progress_bar.*
+import kotlinx.android.synthetic.main.vn_list_fragment.*
 
 /**
  * Created by od on 13/03/2016.
@@ -24,4 +27,12 @@ abstract class BaseFragment : Fragment() {
         val view = activity?.findViewById<View>(android.R.id.content) ?: return
         Snackbar.make(view, message, Snackbar.LENGTH_LONG).show()
     }
+
+    open fun showLoading(show: Boolean?) {
+        if (show == null) return
+        progressBar?.visibility = if (show) View.VISIBLE else View.GONE
+        refreshLayout.isRefreshing = show
+    }
+
+    fun home() = (activity as? HomeActivity?)
 }

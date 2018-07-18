@@ -4,40 +4,41 @@ import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.widget.ImageView
 import android.widget.SearchView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.api.VNDBServer
+import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.repository.AccountRepository
+import com.booboot.vndbandroid.ui.base.BaseActivity
+import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment
 import com.booboot.vndbandroid.ui.login.LoginActivity
 import com.booboot.vndbandroid.ui.preferences.PreferencesFragment
 import com.booboot.vndbandroid.ui.vnlist.VNListFragment
+import com.booboot.vndbandroid.util.Logger
 import com.crashlytics.android.Crashlytics
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.main_activity.*
-import kotlinx.android.synthetic.main.progress_bar.*
-import java.util.*
 import javax.inject.Inject
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
+class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
+    private lateinit var viewModel: HomeViewModel
     @Inject lateinit var accountRepository: AccountRepository
+
     var searchView: SearchView? = null
     private var savedFilter: String? = null
     var selectedItem: Int = 0
@@ -73,11 +74,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 savedFilter = savedInstanceState.getString(SAVED_FILTER_STATE)
             }
 
+            viewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
+            viewModel.loadingData.observe(this, Observer { showLoading(it) })
+            viewModel.accountData.observe(this, Observer { showResult(it) })
+            viewModel.errorData.observe(this, Observer { showError(it) })
+
             val oldFragment = supportFragmentManager.findFragmentByTag(TAG_FRAGMENT)
 
             if (oldFragment == null) {
                 navigationView.menu.getItem(0).isChecked = true
                 onNavigationItemSelected(navigationView.menu.getItem(0))
+                viewModel.startupSync()
             } else {
                 enableToolbarScroll(oldFragment is HomeTabsFragment)
             }
@@ -97,6 +104,34 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             android.R.id.home -> finish()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun showLoading(show: Boolean?) {
+        if (show == null) return
+
+        val currentFragment = supportFragmentManager.findFragmentByTag(TAG_FRAGMENT)
+        when (currentFragment) {
+            is HomeTabsFragment -> currentFragment.registeredFragments.values.forEach { (it as? VNListFragment)?.showLoading(show) }
+            is BaseFragment -> currentFragment.showLoading(show)
+            else -> super.showLoading(show)
+        }
+    }
+
+    fun isLoading() = viewModel.loadingData.value == true
+
+    fun startupSync() = viewModel.startupSync()
+
+    private fun showResult(result: AccountItems?) {
+        if (result == null) return
+        Logger.log(result.toString() ?: "Empty result")
+        updateMenuCounters()
+        val currentFragment = supportFragmentManager.findFragmentByTag(TAG_FRAGMENT)
+        when (currentFragment) {
+            is HomeTabsFragment -> {
+                currentFragment.update()
+                currentFragment.registeredFragments.values.forEach { (it as? VNListFragment)?.update() }
+            }
+        }
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean = goToFragment(item.itemId)
@@ -135,7 +170,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         supportFragmentManager.beginTransaction().replace(R.id.fragment_container, fragment, TAG_FRAGMENT).addToBackStack(null).commit()
         drawer?.closeDrawer(GravityCompat.START)
         toggleFloatingSearchButton(id != R.id.nav_preferences)
-        enableToolbarScroll(Arrays.asList(R.id.nav_vnlist, R.id.nav_votelist, R.id.nav_wishlist).contains(id))
+        enableToolbarScroll(id in listOf(R.id.nav_vnlist, R.id.nav_votelist, R.id.nav_wishlist))
 
         return true
     }
@@ -166,7 +201,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             override fun onQueryTextChange(search: String): Boolean {
                 savedFilter = search
                 val currentFragment = supportFragmentManager.findFragmentByTag(TAG_FRAGMENT) as? HomeTabsFragment
-                        ?: return true
+                    ?: return true
 
                 currentFragment.registeredFragments.values.forEach { (it as? VNListFragment)?.filter(search) }
                 return true
@@ -194,7 +229,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    fun updateMenuCounters() {
+    private fun updateMenuCounters() {
         accountRepository.getItems().subscribe { it ->
             setMenuCounter(R.id.nav_vnlist, it.vnlist.size)
             setMenuCounter(R.id.nav_wishlist, it.wishlist.size)
@@ -237,14 +272,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             startMain.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(startMain)
         }
-    }
-
-    fun showError(message: String?) {
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
-    }
-
-    fun showLoading(show: Boolean) {
-        progressBar.visibility = if (show) VISIBLE else GONE
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

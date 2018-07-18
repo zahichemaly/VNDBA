@@ -1,20 +1,20 @@
 package com.booboot.vndbandroid.ui.vnlist
 
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
-import androidx.core.app.ActivityOptionsCompat
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.app.ActivityOptionsCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.factory.VNCardFactory
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.ui.base.BaseFragment
-import com.booboot.vndbandroid.ui.home.MainActivity
+import com.booboot.vndbandroid.ui.home.HomeActivity
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment.Companion.VNLIST
 import com.booboot.vndbandroid.ui.vndetails.VNDetailsActivity
@@ -24,22 +24,26 @@ import kotlinx.android.synthetic.main.vn_list_fragment.*
 
 class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, (View, VN) -> Unit {
     override val layout: Int = R.layout.vn_list_fragment
-    private lateinit var vnListViewModel: VNListViewModel
+    private lateinit var viewModel: VNListViewModel
     private lateinit var adapter: VNAdapter
+    private var tabValue: Int = 0
+    private var listType: Int = 0
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
 
-        val tabValue = arguments?.getInt(HomeTabsFragment.TAB_VALUE_ARG) ?: -1
-        val listType = arguments?.getInt(HomeTabsFragment.LIST_TYPE_ARG) ?: VNLIST
+        tabValue = arguments?.getInt(HomeTabsFragment.TAB_VALUE_ARG) ?: -1
+        listType = arguments?.getInt(HomeTabsFragment.LIST_TYPE_ARG) ?: VNLIST
 
-        vnListViewModel = ViewModelProviders.of(this).get(VNListViewModel::class.java)
-        vnListViewModel.vnData.observe(this, Observer { showVns(it) })
-        vnListViewModel.errorData.observe(this, Observer { showError(it) })
-        vnListViewModel.getVns(listType, tabValue)
+        viewModel = ViewModelProviders.of(this).get(VNListViewModel::class.java)
+        viewModel.vnData.observe(this, Observer { showVns(it) })
+        viewModel.errorData.observe(this, Observer { showError(it) })
+        update()
 
         return rootView
     }
+
+    fun update() = viewModel.getVns(listType, tabValue)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         adapter = VNAdapter(this)
@@ -47,12 +51,13 @@ class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, (Vi
 
         refreshLayout.setOnRefreshListener(this)
         refreshLayout.setColorSchemeColors(Utils.getThemeColor(activity, R.attr.colorAccent))
+        showLoading(home()?.isLoading() == true)
     }
 
     private fun showVns(accountItems: AccountItems?) {
         if (accountItems == null) return
         adapter.items = accountItems
-        filter((activity as MainActivity).searchView?.query ?: "")
+        filter((activity as HomeActivity).searchView?.query ?: "")
     }
 
     fun filter(search: CharSequence) = adapter.filter.filter(search)
@@ -69,6 +74,6 @@ class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, (Vi
     }
 
     override fun onRefresh() {
-        // TODO
+        home()?.startupSync()
     }
 }

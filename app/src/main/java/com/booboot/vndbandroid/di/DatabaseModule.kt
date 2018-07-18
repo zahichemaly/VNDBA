@@ -18,7 +18,5 @@ internal class DatabaseModule {
     @Provides
     @Singleton
     fun db(application: Application): DB =
-            Room.databaseBuilder(application,
-                    DB::class.java, "VNDB_ANDROID")
-                    .build()
+        Room.databaseBuilder(application, DB::class.java, "VNDB_ANDROID").build()
 }
