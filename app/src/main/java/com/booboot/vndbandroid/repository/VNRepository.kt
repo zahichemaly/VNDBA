@@ -46,8 +46,8 @@ class VNRepository @Inject constructor(var db: DB, var vndbServer: VNDBServer) :
                 if (dbVn == null) flags += "basic,details,stats"
 
                 val apiVn = vndbServer.get<VN>("vn", flags, "(id = $vnId)", Options(results = 1), type())
-                        .blockingGet()
-                        .items[0]
+                    .blockingGet()
+                    .items[0]
 
                 dbVn?.screens = apiVn.screens
                 dbVn?.tags = apiVn.tags

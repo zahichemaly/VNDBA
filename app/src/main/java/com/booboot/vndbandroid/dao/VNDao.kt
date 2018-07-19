@@ -12,23 +12,23 @@ import com.booboot.vndbandroid.model.vndb.VN
 abstract class VNDao {
     @Transaction
     @Query("SELECT * FROM vn WHERE id IN (:ids)")
-    abstract fun _findAll(ids: List<Int>): List<VNWithRelations>
+    protected abstract fun _findAll(ids: List<Int>): List<VNWithRelations>
 
     @Transaction
     @Query("SELECT * FROM vn")
-    abstract fun _findAll(): List<VNWithRelations>
+    protected abstract fun _findAll(): List<VNWithRelations>
 
     @Transaction
     @Query("SELECT * FROM vn WHERE id = :id LIMIT 1")
-    abstract fun _find(id: Int): VNWithRelations?
+    protected abstract fun _find(id: Int): VNWithRelations?
 
     @Transaction
     @Insert(onConflict = REPLACE)
-    abstract fun _insertAll(items: List<VN>)
+    protected abstract fun _insertAll(items: List<VN>)
 
     @Transaction
     @Insert(onConflict = REPLACE)
-    abstract fun _insertScreens(screens: List<Screen>)
+    protected abstract fun _insertScreens(screens: List<Screen>)
 
     @Transaction
     @Query("DELETE FROM vn")

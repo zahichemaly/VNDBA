@@ -72,7 +72,7 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
                     items.wishlist != oldWishlist
 
                 when {
-                    allIds.isEmpty() -> Maybe.just(Results())// Single.just(Optional.of(Results())) // empty account
+                    allIds.isEmpty() -> Maybe.just(Results()) // empty account
                     newIds.isNotEmpty() -> { // should send get vn
                         val mergedIdsString = TextUtils.join(",", newIds)
                         val numberOfPages = Math.ceil(newIds.size * 1.0 / 25).toInt()
@@ -88,7 +88,6 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
             .observeOn(Schedulers.io())
             .flatMapCompletable {
                 db.completableTransaction(
-                    // TODO here, remove THEN add items (otherwise removed VNs are never removed from the DB!)
                     vnlistRepository.setItems(items.vnlist),
                     votelistRepository.setItems(items.votelist),
                     wishlistRepository.setItems(items.wishlist),

@@ -7,13 +7,18 @@ import androidx.room.Query
 import com.booboot.vndbandroid.model.vndb.Votelist
 
 @Dao
-interface VotelistDao {
+abstract class VotelistDao {
     @Query("SELECT * FROM votelist")
-    fun findAll(): List<Votelist>
+    abstract fun findAll(): List<Votelist>
 
     @Insert(onConflict = REPLACE)
-    fun insertAll(items: List<Votelist>)
+    protected abstract fun _insertAll(items: List<Votelist>)
 
     @Query("DELETE FROM votelist")
-    fun deleteAll()
+    abstract fun deleteAll()
+
+    fun insertAll(items: List<Votelist>) {
+        deleteAll()
+        _insertAll(items)
+    }
 }

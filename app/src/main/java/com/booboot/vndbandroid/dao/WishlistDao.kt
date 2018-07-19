@@ -7,13 +7,18 @@ import androidx.room.Query
 import com.booboot.vndbandroid.model.vndb.Wishlist
 
 @Dao
-interface WishlistDao {
+abstract class WishlistDao {
     @Query("SELECT * FROM wishlist")
-    fun findAll(): List<Wishlist>
+    abstract fun findAll(): List<Wishlist>
 
     @Insert(onConflict = REPLACE)
-    fun insertAll(items: List<Wishlist>)
+    protected abstract fun _insertAll(items: List<Wishlist>)
 
     @Query("DELETE FROM wishlist")
-    fun deleteAll()
+    abstract fun deleteAll()
+
+    fun insertAll(items: List<Wishlist>) {
+        deleteAll()
+        _insertAll(items)
+    }
 }
