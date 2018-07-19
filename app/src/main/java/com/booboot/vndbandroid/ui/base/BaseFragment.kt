@@ -31,7 +31,7 @@ abstract class BaseFragment : Fragment() {
     open fun showLoading(show: Boolean?) {
         if (show == null) return
         progressBar?.visibility = if (show) View.VISIBLE else View.GONE
-        refreshLayout.isRefreshing = show
+        refreshLayout?.isRefreshing = show
     }
 
     fun home() = (activity as? HomeActivity?)
