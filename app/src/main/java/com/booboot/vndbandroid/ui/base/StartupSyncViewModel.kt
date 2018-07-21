@@ -49,23 +49,23 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
         // TODO add the auto-update of Tags and Traits as another thread inside the zip()
         return Single.zip(vnlistIds, votelistIds, wishlistIds,
             Function3<Results<Vnlist>, Results<Votelist>, Results<Wishlist>, AccountItems> { vni, vti, wsi ->
-                AccountItems(vni.items, vti.items, wsi.items)
+                AccountItems(vni.items.map { it.vn to it }.toMap(), vti.items.map { it.vn to it }.toMap(), wsi.items.map { it.vn to it }.toMap())
             })
             .observeOn(Schedulers.io())
             .flatMapMaybe<Results<VN>> { _items: AccountItems ->
                 items = _items
 
-                val allIds = _items.vnlist.map { it.vn }
-                    .union(_items.votelist.map { it.vn })
-                    .union(_items.wishlist.map { it.vn })
+                val allIds = _items.vnlist.keys
+                    .union(_items.votelist.keys)
+                    .union(_items.wishlist.keys)
 
                 val oldVnlist = vnlistRepository.getItems().blockingGet()
                 val oldVotelist = votelistRepository.getItems().blockingGet()
                 val oldWishlist = wishlistRepository.getItems().blockingGet()
 
-                val newIds = allIds.minus(oldVnlist.map { it.vn })
-                    .minus(oldVotelist.map { it.vn })
-                    .minus(oldWishlist.map { it.vn })
+                val newIds = allIds.minus(oldVnlist.keys)
+                    .minus(oldVotelist.keys)
+                    .minus(oldWishlist.keys)
 
                 val haveListsChanged = items.vnlist != oldVnlist ||
                     items.votelist != oldVotelist ||
@@ -88,9 +88,9 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
             .observeOn(Schedulers.io())
             .flatMapCompletable {
                 db.completableTransaction(
-                    vnlistRepository.setItems(items.vnlist),
-                    votelistRepository.setItems(items.votelist),
-                    wishlistRepository.setItems(items.wishlist),
+                    vnlistRepository.setItems(items.vnlist.values.toList()),
+                    votelistRepository.setItems(items.votelist.values.toList()),
+                    wishlistRepository.setItems(items.wishlist.values.toList()),
                     vnRepository.setItems(it.items)
                 )
                 // TODO DB startup clean

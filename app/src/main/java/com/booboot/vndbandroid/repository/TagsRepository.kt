@@ -11,7 +11,7 @@ import javax.inject.Singleton
 
 @Singleton
 class TagsRepository @Inject constructor(var json: ObjectMapper) : Repository<Tag>() {
-    override fun getMapItems(): Single<Map<Int, Tag>> = Single.fromCallable {
+    override fun getItems(): Single<Map<Int, Tag>> = Single.fromCallable {
         if (items.isNotEmpty()) items
         else {
             val raw = App.context.resources.openRawResource(R.raw.tags)

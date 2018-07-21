@@ -19,21 +19,30 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
         (application as App).appComponent.inject(this)
     }
 
-    fun getVns(listType: Int, tabValue: Int) {
-        accountRepository.getItems().subscribe({ cache ->
-            cache.vns = cache.vns.filter {
-                when (listType) {
-                    VNLIST -> it.id in cache.vnlist.filter { it.status == tabValue }.map { it.vn }
+    fun getVns(listType: Int, tabValue: Int, force: Boolean = true) {
+        if (!force && vnData.value != null) return
+        if (disposables.contains(DISPOSABLE_GET_VN)) return
 
-                    VOTELIST -> it.id in cache.votelist.filter { it.vote / 10 == tabValue || it.vote / 10 == tabValue - 1 }.map { it.vn }
+        disposables[DISPOSABLE_GET_VN] = accountRepository.getItems()
+            .doFinally { disposables.remove(DISPOSABLE_GET_VN) }
+            .subscribe({ cache ->
+                cache.vns = cache.vns.filterKeys {
+                    when (listType) {
+                        VNLIST -> it in cache.vnlist.filterValues { it.status == tabValue }.keys
 
-                    WISHLIST -> it.id in cache.wishlist.filter { it.priority == tabValue }.map { it.vn }
+                        VOTELIST -> it in cache.votelist.filterValues { it.vote / 10 == tabValue || it.vote / 10 == tabValue - 1 }.keys
 
-                    else -> true
+                        WISHLIST -> it in cache.wishlist.filterValues { it.priority == tabValue }.keys
+
+                        else -> true
+                    }
                 }
-            }
 
-            vnData.value = cache
-        }, ::onError)
+                vnData.value = cache
+            }, ::onError)
+    }
+
+    companion object {
+        private const val DISPOSABLE_GET_VN = "DISPOSABLE_GET_VN"
     }
 }

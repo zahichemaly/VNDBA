@@ -11,7 +11,7 @@ import javax.inject.Singleton
 
 @Singleton
 class TraitsRepository @Inject constructor(var json: ObjectMapper) : Repository<Trait>() {
-    override fun getMapItems(): Single<Map<Int, Trait>> = Single.fromCallable {
+    override fun getItems(): Single<Map<Int, Trait>> = Single.fromCallable {
         if (items.isNotEmpty()) items
         else {
             val raw = App.context.resources.openRawResource(R.raw.traits)

@@ -38,12 +38,12 @@ class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, (Vi
         viewModel = ViewModelProviders.of(this).get(VNListViewModel::class.java)
         viewModel.vnData.observe(this, Observer { showVns(it) })
         viewModel.errorData.observe(this, Observer { showError(it) })
-        update()
+        update(false)
 
         return rootView
     }
 
-    fun update() = viewModel.getVns(listType, tabValue)
+    fun update(force: Boolean = true) = viewModel.getVns(listType, tabValue, force)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         adapter = VNAdapter(this)
@@ -56,8 +56,8 @@ class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, (Vi
 
     private fun showVns(accountItems: AccountItems?) {
         if (accountItems == null) return
+        adapter.filterString = (activity as HomeActivity).searchView?.query?.toString() ?: ""
         adapter.items = accountItems
-        filter((activity as HomeActivity).searchView?.query ?: "")
     }
 
     fun filter(search: CharSequence) = adapter.filter.filter(search)
