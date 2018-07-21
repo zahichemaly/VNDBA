@@ -6,7 +6,6 @@
     <color name="windowBackground">#FFFFFF</color>
 
     <color name="white">#FFFFFF</color>
-    <color name="transparentWhite">#f5ffffff</color>
     <color name="black">#000000</color>
     <color name="light_gray">#CCCCCC</color>
     <color name="medium_gray">#646464</color>
@@ -14,7 +13,8 @@
     <color name="green">#388E3C</color>
     <color name="red">#F44336</color>
     <color name="buttonPressed">#E5E5E5</color>
-    <color name="transparentBlack">#33000000</color>
+    <color name="transparentBlack">#46000000</color>
+    <color name="transparentWhite">#50ffffff</color>
 
     <!-- Tag grading colors -->
     <color name="tagGreen">#64DD17</color>
@@ -25,5 +25,6 @@
     <color name="tagRed">#DD2C00</color>
 
     <!-- DayNight colors -->
-    <color name="cardDividerColor">@color/medium_gray</color>
+    <color name="cardDividerColor">@color/light_gray</color>
+    <color name="tabBackgroundColor">@color/transparentWhite</color>
 </resources>

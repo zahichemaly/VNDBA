@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!-- DayNight colors -->
-    <color name="cardDividerColor">@color/light_gray</color>
-</resources>

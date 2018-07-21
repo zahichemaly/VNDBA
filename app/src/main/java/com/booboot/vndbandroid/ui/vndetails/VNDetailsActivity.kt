@@ -7,6 +7,7 @@ import android.widget.ImageView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.extensions.setStatusBarThemeForCollapsingToolbar
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.ui.base.BaseActivity
 import com.booboot.vndbandroid.ui.slideshow.SlideshowActivity
@@ -34,6 +35,8 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener {
         tabsAdapter = VNDetailsTabsAdapter(supportFragmentManager)
         viewPager.adapter = tabsAdapter
         tabLayout.setupWithViewPager(viewPager)
+
+        appBarLayout.setStatusBarThemeForCollapsingToolbar(this, collapsingToolbar, content)
 
         slideshowAdapter = SlideshowAdapter(this, this, scaleType = ImageView.ScaleType.CENTER_CROP)
         slideshow.adapter = slideshowAdapter

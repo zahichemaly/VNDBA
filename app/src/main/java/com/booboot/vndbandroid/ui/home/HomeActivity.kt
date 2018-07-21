@@ -216,7 +216,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
         val searchIconId = searchView?.context?.resources?.getIdentifier("android:id/search_button", null, null)
         val searchIcon = searchView?.findViewById<ImageView>(searchIconId ?: 0)
-        searchIcon?.setImageResource(R.drawable.ic_filter_list_white_24dp)
+        searchIcon?.setImageResource(R.drawable.ic_filter_list_24dp)
 
         return true
     }
