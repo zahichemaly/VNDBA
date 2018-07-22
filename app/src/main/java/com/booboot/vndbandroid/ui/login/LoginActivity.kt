@@ -33,7 +33,7 @@ class LoginActivity : BaseActivity() {
 
         viewModel = ViewModelProviders.of(this).get(LoginViewModel::class.java)
         viewModel.loadingData.observe(this, Observer { showLoading(it) })
-        viewModel.accountData.observe(this, Observer { showResult(it) })
+        viewModel.syncData.observe(this, Observer { showResult(it) })
         viewModel.errorData.observe(this, Observer { showError(it) })
     }
 

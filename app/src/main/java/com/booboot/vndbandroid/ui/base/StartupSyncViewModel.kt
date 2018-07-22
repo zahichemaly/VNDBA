@@ -36,7 +36,7 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
     @Inject lateinit var db: DB
 
     private lateinit var items: AccountItems
-    val accountData: MutableLiveData<AccountItems> = MutableLiveData()
+    val syncData: MutableLiveData<AccountItems> = MutableLiveData()
 
     protected fun startupSyncCompletable(): Single<AccountItems> {
         val vnlistIds = vndbServer.get<Vnlist>("vnlist", "basic", "(uid = 0)",

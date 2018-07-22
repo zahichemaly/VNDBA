@@ -36,12 +36,12 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener {
         viewModel = ViewModelProviders.of(this).get(HomeTabsViewModel::class.java)
         viewModel.titlesData.observe(this, Observer { showTitles(it) })
         viewModel.errorData.observe(this, Observer { showError(it) })
-        update()
+        update(false)
 
         return rootView
     }
 
-    fun update() = viewModel.getTabTitles(type)
+    fun update(force: Boolean = true) = viewModel.getTabTitles(type, force)
 
     private fun showTitles(titles: List<String>?) {
         if (titles == null) return

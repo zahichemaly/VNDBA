@@ -28,8 +28,8 @@ class LoginViewModel constructor(application: Application) : StartupSyncViewMode
             }
             .subscribe({
                 Preferences.loggedIn = true
-                accountData.value = it
-                accountData.value = null
+                syncData.value = it
+                syncData.value = null
             }, ::onError)
     }
 

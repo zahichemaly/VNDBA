@@ -13,14 +13,14 @@ import javax.inject.Inject
 
 class VNListViewModel constructor(application: Application) : BaseViewModel(application) {
     @Inject lateinit var accountRepository: AccountRepository
-    val vnData: MutableLiveData<AccountItems> = MutableLiveData()
+    val accountData: MutableLiveData<AccountItems> = MutableLiveData()
 
     init {
         (application as App).appComponent.inject(this)
     }
 
     fun getVns(listType: Int, tabValue: Int, force: Boolean = true) {
-        if (!force && vnData.value != null) return
+        if (!force && accountData.value != null) return
         if (disposables.contains(DISPOSABLE_GET_VN)) return
 
         disposables[DISPOSABLE_GET_VN] = accountRepository.getItems()
@@ -38,7 +38,7 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
                     }
                 }
 
-                vnData.value = cache
+                accountData.value = cache
             }, ::onError)
     }
 

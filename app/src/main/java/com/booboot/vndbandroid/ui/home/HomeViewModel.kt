@@ -1,11 +1,15 @@
 package com.booboot.vndbandroid.ui.home
 
 import android.app.Application
+import androidx.lifecycle.MutableLiveData
 import com.booboot.vndbandroid.App
+import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.ui.base.StartupSyncViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 
 class HomeViewModel constructor(application: Application) : StartupSyncViewModel(application) {
+    val accountData: MutableLiveData<AccountItems> = MutableLiveData()
+
     init {
         (application as App).appComponent.inject(this)
     }
@@ -22,11 +26,22 @@ class HomeViewModel constructor(application: Application) : StartupSyncViewModel
             }
             .subscribe({
                 accountData.value = it
-                accountData.value = null
+                syncData.value = it
+                syncData.value = null
             }, ::onError)
+    }
+
+    fun getVns(force: Boolean = true) {
+        if (!force && accountData.value != null) return
+        if (disposables.contains(DISPOSABLE_GET_VNS)) return
+
+        disposables[DISPOSABLE_GET_VNS] = accountRepository.getItems()
+            .doFinally { disposables.remove(DISPOSABLE_GET_VNS) }
+            .subscribe({ accountData.value = it }, ::onError)
     }
 
     companion object {
         private const val DISPOSABLE_STARTUP_SYNC = "DISPOSABLE_STARTUP_SYNC"
+        private const val DISPOSABLE_GET_VNS = "DISPOSABLE_GET_VNS"
     }
 }

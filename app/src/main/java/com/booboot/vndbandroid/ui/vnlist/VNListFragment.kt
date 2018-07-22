@@ -36,7 +36,7 @@ class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, (Vi
         listType = arguments?.getInt(HomeTabsFragment.LIST_TYPE_ARG) ?: VNLIST
 
         viewModel = ViewModelProviders.of(this).get(VNListViewModel::class.java)
-        viewModel.vnData.observe(this, Observer { showVns(it) })
+        viewModel.accountData.observe(this, Observer { showVns(it) })
         viewModel.errorData.observe(this, Observer { showError(it) })
         update(false)
 

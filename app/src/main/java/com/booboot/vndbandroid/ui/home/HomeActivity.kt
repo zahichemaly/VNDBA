@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.api.VNDBServer
+import com.booboot.vndbandroid.extensions.Track
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.repository.AccountRepository
@@ -28,7 +29,6 @@ import com.booboot.vndbandroid.ui.login.LoginActivity
 import com.booboot.vndbandroid.ui.preferences.PreferencesFragment
 import com.booboot.vndbandroid.ui.vnlist.VNListFragment
 import com.booboot.vndbandroid.util.Logger
-import com.crashlytics.android.Crashlytics
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.app_bar_main.*
@@ -76,8 +76,12 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
             viewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
             viewModel.loadingData.observe(this, Observer { showLoading(it) })
-            viewModel.accountData.observe(this, Observer { showResult(it) })
+            viewModel.syncData.observe(this, Observer { showResult(it) })
+            viewModel.accountData.observe(this, Observer { updateMenuCounters(it) })
             viewModel.errorData.observe(this, Observer { showError(it) })
+
+            floatingSearchButton.setOnClickListener(this)
+            viewModel.getVns(false)
 
             val oldFragment = supportFragmentManager.findFragmentByTag(TAG_FRAGMENT)
 
@@ -88,15 +92,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             } else {
                 enableToolbarScroll(oldFragment is HomeTabsFragment)
             }
-
-            floatingSearchButton.setOnClickListener(this)
-            updateMenuCounters()
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        addInfoToCrashlytics()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -124,7 +120,6 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private fun showResult(result: AccountItems?) {
         if (result == null) return
         Logger.log(result.toString() ?: "Empty result")
-        updateMenuCounters()
         val currentFragment = supportFragmentManager.findFragmentByTag(TAG_FRAGMENT)
         when (currentFragment) {
             is HomeTabsFragment -> {
@@ -132,6 +127,14 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 currentFragment.registeredFragments.values.forEach { (it as? VNListFragment)?.update() }
             }
         }
+    }
+
+    private fun updateMenuCounters(accountItems: AccountItems?) {
+        if (accountItems == null) return
+        Track.tag(accountItems)
+        setMenuCounter(R.id.nav_vnlist, accountItems.vnlist.size)
+        setMenuCounter(R.id.nav_wishlist, accountItems.wishlist.size)
+        setMenuCounter(R.id.nav_votelist, accountItems.votelist.size)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean = goToFragment(item.itemId)
@@ -229,27 +232,10 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
     }
 
-    private fun updateMenuCounters() {
-        accountRepository.getItems().subscribe { it ->
-            setMenuCounter(R.id.nav_vnlist, it.vnlist.size)
-            setMenuCounter(R.id.nav_wishlist, it.wishlist.size)
-            setMenuCounter(R.id.nav_votelist, it.votelist.size)
-        }
-    }
-
     private fun setMenuCounter(itemId: Int, count: Int) {
         if (navigationView != null) {
             val view = navigationView.menu.findItem(itemId).actionView as TextView
             view.text = if (count > 0) count.toString() else null
-        }
-    }
-
-    private fun addInfoToCrashlytics() {
-        accountRepository.getItems().subscribe { it ->
-            Crashlytics.setInt("VNS SIZE", it.vns.size)
-            Crashlytics.setInt("VNLIST SIZE", it.vnlist.size)
-            Crashlytics.setInt("VOTELIST SIZE", it.votelist.size)
-            Crashlytics.setInt("WISHLIST SIZE", it.wishlist.size)
         }
     }
 
