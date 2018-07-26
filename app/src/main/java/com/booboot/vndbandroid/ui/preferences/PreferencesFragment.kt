@@ -1,13 +1,10 @@
 package com.booboot.vndbandroid.ui.preferences
 
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 
@@ -19,14 +16,6 @@ class PreferencesFragment : PreferenceFragmentCompat(), Preference.OnPreferenceC
         for (i in 0 until preferenceScreen.preferenceCount) {
             preferenceScreen.getPreference(i).onPreferenceChangeListener = this
         }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        /* Hacky fix to show dividers between preferences (SDK is bugged) */
-        val dividerItemDecoration = DividerItemDecoration(listView.context, LinearLayoutManager.VERTICAL)
-        listView.addItemDecoration(dividerItemDecoration)
     }
 
     override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
