@@ -3,7 +3,13 @@ package com.booboot.vndbandroid.api
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.BuildConfig
 import com.booboot.vndbandroid.R
-import com.booboot.vndbandroid.model.vndb.*
+import com.booboot.vndbandroid.model.vndb.DbStats
+import com.booboot.vndbandroid.model.vndb.Error
+import com.booboot.vndbandroid.model.vndb.Fields
+import com.booboot.vndbandroid.model.vndb.Login
+import com.booboot.vndbandroid.model.vndb.Options
+import com.booboot.vndbandroid.model.vndb.Response
+import com.booboot.vndbandroid.model.vndb.Results
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.util.ErrorHandler
 import com.booboot.vndbandroid.util.Logger
@@ -29,7 +35,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 class VNDBServer @Inject constructor(
-        private val json: ObjectMapper
+    private val json: ObjectMapper
 ) {
     private fun <T> connect(socketIndex: Int, emitter: SingleEmitter<Response<T>>): Boolean {
         try {
@@ -72,8 +78,8 @@ class VNDBServer @Inject constructor(
                     val login = Login(PROTOCOL, CLIENT, CLIENTVER, username, password)
                     sendCommand("login " + json.writeValueAsString(login), options, emitter, type())
                 }
-                        .doOnError { originalEmitter.onError(it) }
-                        .subscribe() // no need for subscribeOn(): we need to be on the same thread as the original emitter
+                    .doOnError { originalEmitter.onError(it) }
+                    .subscribe() // no need for subscribeOn(): we need to be on the same thread as the original emitter
             }
         }
     }
@@ -94,9 +100,9 @@ class VNDBServer @Inject constructor(
             }
 
             Single.merge(observables)
-                    .collect({ Results<T>() }, { results, response ->
-                        results.items.addAll(response.results?.items ?: emptyList())
-                    })
+                .collect({ Results<T>() }, { results, response ->
+                    results.items.addAll(response.results?.items ?: emptyList())
+                })
         } else {
             /* We don't know how many pages we must fetch (hence how many requests we have to send): creating Singles sequentially until done */
             Single.create<Results<T>> { originalEmitter ->
@@ -106,8 +112,8 @@ class VNDBServer @Inject constructor(
                         options.socketIndex %= options.numberOfSockets
                         sendCommand(command + json.writeValueAsString(options), options, emitter, resultClass)
                     }
-                            .doOnError { t: Throwable -> originalEmitter.onError(t) } // any error in a child Single will trigger the parent error
-                            .blockingGet() // blocking get is ok because we're in a bounding Single
+                        .doOnError { t: Throwable -> originalEmitter.onError(t) } // any error in a child Single will trigger the parent error
+                        .blockingGet() // blocking get is ok because we're in a bounding Single
 
                     results.items.addAll(response.results?.items ?: emptyList())
                     options.page++
@@ -115,8 +121,8 @@ class VNDBServer @Inject constructor(
 
                 originalEmitter.onSuccess(results)
             }
-                    .doOnError { processError(it, options.socketIndex) }
-                    .subscribeOn(Schedulers.newThread())
+                .doOnError { processError(it, options.socketIndex) }
+                .subscribeOn(Schedulers.newThread())
         }
     }
 
@@ -158,8 +164,7 @@ class VNDBServer @Inject constructor(
 
                     var isThrottled = false
                     response = getResponse(input, emitter, resultClass)
-                    if (response?.error != null) {
-                        val error = response.error!!
+                    response?.error?.let { error ->
                         isThrottled = error.id == "throttled"
                         if (isThrottled) {
                             if (SocketPool.throttleHandlingSocket < 0) SocketPool.throttleHandlingSocket = options.socketIndex
@@ -269,7 +274,7 @@ class VNDBServer @Inject constructor(
         }
 
         fun closeAll(): Completable = Completable.fromAction { for (i in 0 until SocketPool.MAX_SOCKETS) close(i) }
-                .subscribeOn(io.reactivex.schedulers.Schedulers.io())
+            .subscribeOn(Schedulers.io())
 
         fun processError(t: Throwable, socketIndex: Int) {
             Utils.processException(t)

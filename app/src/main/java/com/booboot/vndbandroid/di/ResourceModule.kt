@@ -1,5 +1,7 @@
 package com.booboot.vndbandroid.di
 
+import android.app.Application
+import com.booboot.vndbandroid.api.VNDBService
 import com.booboot.vndbandroid.repository.TagsRepository
 import com.booboot.vndbandroid.repository.TraitsRepository
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -11,7 +13,7 @@ import javax.inject.Singleton
 internal class ResourceModule {
     @Provides
     @Singleton
-    fun tags(json: ObjectMapper) = TagsRepository(json)
+    fun tags(vndbService: VNDBService, json: ObjectMapper, app: Application) = TagsRepository(vndbService, json, app)
 
     @Provides
     @Singleton

@@ -20,17 +20,13 @@ class LoginViewModel constructor(application: Application) : StartupSyncViewMode
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe { loadingData.value = true }
             .observeOn(Schedulers.io())
-            .andThen(startupSyncCompletable())
+            .andThen(startupSyncSingle())
             .observeOn(AndroidSchedulers.mainThread())
             .doFinally {
                 loadingData.value = false
                 disposables.remove(DISPOSABLE_LOGIN)
             }
-            .subscribe({
-                Preferences.loggedIn = true
-                syncData.value = it
-                syncData.value = null
-            }, ::onError)
+            .subscribe({ Preferences.loggedIn = true }, ::onError)
     }
 
     companion object {

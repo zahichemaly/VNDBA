@@ -28,7 +28,6 @@ import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment
 import com.booboot.vndbandroid.ui.login.LoginActivity
 import com.booboot.vndbandroid.ui.preferences.PreferencesFragment
 import com.booboot.vndbandroid.ui.vnlist.VNListFragment
-import com.booboot.vndbandroid.util.Logger
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.app_bar_main.*
@@ -76,7 +75,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
             viewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
             viewModel.loadingData.observe(this, Observer { showLoading(it) })
-            viewModel.syncData.observe(this, Observer { showResult(it) })
+            viewModel.syncAccountData.observe(this, Observer { showResult(it) })
             viewModel.accountData.observe(this, Observer { updateMenuCounters(it) })
             viewModel.errorData.observe(this, Observer { showError(it) })
 
@@ -119,7 +118,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     private fun showResult(result: AccountItems?) {
         if (result == null) return
-        Logger.log(result.toString() ?: "Empty result")
+//        Logger.log(result.toString())
         val currentFragment = supportFragmentManager.findFragmentByTag(TAG_FRAGMENT)
         when (currentFragment) {
             is HomeTabsFragment -> {

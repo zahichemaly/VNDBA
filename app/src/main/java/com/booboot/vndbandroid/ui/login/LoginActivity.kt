@@ -5,9 +5,9 @@ import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
-import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndb.Links
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
+import com.booboot.vndbandroid.model.vndbandroid.SyncData
 import com.booboot.vndbandroid.ui.base.BaseActivity
 import com.booboot.vndbandroid.ui.home.HomeActivity
 import com.booboot.vndbandroid.util.Logger
@@ -37,7 +37,7 @@ class LoginActivity : BaseActivity() {
         viewModel.errorData.observe(this, Observer { showError(it) })
     }
 
-    private fun showResult(result: AccountItems?) {
+    private fun showResult(result: SyncData?) {
         if (result == null) return
         Logger.log(result.toString())
         startActivity(Intent(this, HomeActivity::class.java))

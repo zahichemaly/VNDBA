@@ -12,12 +12,12 @@ import javax.inject.Singleton
 
 @Singleton
 class VNRepository @Inject constructor(var db: DB, var vndbServer: VNDBServer) : Repository<VN>() {
-    override fun getItems(): Single<Map<Int, VN>> = Single.fromCallable {
-        if (items.isNotEmpty()) items
-        else {
-            items.putAll(db.vnDao().findAll().map { it.id to it }.toMap().toMutableMap())
-            items
-        }
+    override fun getItems(cachePolicy: CachePolicy<Map<Int, VN>>): Single<Map<Int, VN>> = Single.fromCallable {
+        cachePolicy
+            .fetchFromMemory { items }
+            .fetchFromDatabase { db.vnDao().findAll().map { it.id to it }.toMap() }
+            .putInMemory { items.putAll(it) }
+            .get()
     }
 
     override fun getItems(ids: List<Int>): Single<Map<Int, VN>> = Single.fromCallable {
@@ -32,28 +32,25 @@ class VNRepository @Inject constructor(var db: DB, var vndbServer: VNDBServer) :
         db.vnDao().insertAll(items)
     }
 
-    fun getItem(vnId: Int): Single<VN> = Single.fromCallable {
-        if (items[vnId]?.isComplete() == true) items[vnId]
-        else {
-            val completeVn: VN
-            val dbVn = db.vnDao().find(vnId)
-            if (dbVn?.isComplete() == true) completeVn = dbVn
-            else {
+    override fun getItem(id: Int, cachePolicy: CachePolicy<VN>): Single<VN> = Single.fromCallable {
+        cachePolicy
+            .fetchFromMemory { items[id] }
+            .fetchFromDatabase { db.vnDao().find(id) }
+            .fetchFromNetwork { dbVn ->
                 var flags = "screens,tags"
                 if (dbVn == null) flags += "basic,details,stats"
 
-                val apiVn = vndbServer.get<VN>("vn", flags, "(id = $vnId)", Options(results = 1), type())
+                val apiVn = vndbServer.get<VN>("vn", flags, "(id = $id)", Options(results = 1), type())
                     .blockingGet()
                     .items[0]
 
                 dbVn?.screens = apiVn.screens
                 dbVn?.tags = apiVn.tags
-                completeVn = dbVn ?: apiVn
-                db.vnDao().insertAll(listOf(completeVn))
+                dbVn ?: apiVn
             }
-
-            items[vnId] = completeVn
-            completeVn
-        }
+            .isEmpty { !it.isComplete() }
+            .putInMemory { items[id] = it }
+            .putInDatabase { db.vnDao().insertAll(listOf(it)) }
+            .get()
     }
 }

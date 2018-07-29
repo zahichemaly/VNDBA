@@ -10,18 +10,26 @@ import com.booboot.vndbandroid.extensions.leaveIfEmpty
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndb.Options
 import com.booboot.vndbandroid.model.vndb.Results
+import com.booboot.vndbandroid.model.vndb.Tag
+import com.booboot.vndbandroid.model.vndb.Trait
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndb.Vnlist
 import com.booboot.vndbandroid.model.vndb.Votelist
 import com.booboot.vndbandroid.model.vndb.Wishlist
+import com.booboot.vndbandroid.model.vndbandroid.SyncData
 import com.booboot.vndbandroid.repository.AccountRepository
+import com.booboot.vndbandroid.repository.CachePolicy
+import com.booboot.vndbandroid.repository.TagsRepository
+import com.booboot.vndbandroid.repository.TraitsRepository
 import com.booboot.vndbandroid.repository.VNRepository
 import com.booboot.vndbandroid.repository.VnlistRepository
 import com.booboot.vndbandroid.repository.VotelistRepository
 import com.booboot.vndbandroid.repository.WishlistRepository
+import com.booboot.vndbandroid.util.EmptyMaybeException
 import com.booboot.vndbandroid.util.type
 import io.reactivex.Maybe
 import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Function3
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
@@ -33,12 +41,15 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
     @Inject lateinit var wishlistRepository: WishlistRepository
     @Inject lateinit var vnRepository: VNRepository
     @Inject lateinit var accountRepository: AccountRepository
+    @Inject lateinit var tagsRepository: TagsRepository
+    @Inject lateinit var traitsRepository: TraitsRepository
     @Inject lateinit var db: DB
 
     private lateinit var items: AccountItems
-    val syncData: MutableLiveData<AccountItems> = MutableLiveData()
+    val syncAccountData: MutableLiveData<AccountItems> = MutableLiveData()
+    val syncData: MutableLiveData<SyncData> = MutableLiveData()
 
-    protected fun startupSyncCompletable(): Single<AccountItems> {
+    protected fun startupSyncSingle(doOnAccountSuccess: (AccountItems) -> Unit = {}): Single<SyncData> {
         val vnlistIds = vndbServer.get<Vnlist>("vnlist", "basic", "(uid = 0)",
             Options(results = 100, fetchAllPages = true), type())
         val votelistIds = vndbServer.get<Votelist>("votelist", "basic", "(uid = 0)",
@@ -46,8 +57,7 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
         val wishlistIds = vndbServer.get<Wishlist>("wishlist", "basic", "(uid = 0)",
             Options(results = 100, fetchAllPages = true, socketIndex = 2), type())
 
-        // TODO add the auto-update of Tags and Traits as another thread inside the zip()
-        return Single.zip(vnlistIds, votelistIds, wishlistIds,
+        val accountSingle = Single.zip(vnlistIds, votelistIds, wishlistIds,
             Function3<Results<Vnlist>, Results<Votelist>, Results<Wishlist>, AccountItems> { vni, vti, wsi ->
                 AccountItems(vni.items.map { it.vn to it }.toMap(), vti.items.map { it.vn to it }.toMap(), wsi.items.map { it.vn to it }.toMap())
             })
@@ -93,8 +103,42 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
                     wishlistRepository.setItems(items.wishlist.values.toList()),
                     vnRepository.setItems(it.items)
                 )
-                // TODO DB startup clean
+                // TODO DB startup clean (in a new flatmap, must make sure the above transaction has completed before)
             }
             .andThen(accountRepository.getItems())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSuccess {
+                /* This Single is going to be zipped with other independent and longer Singles: sending a UI update now to be as fast as possible */
+                /* During login, don't use this LiveData because we always need account data + tags + traits before proceeding! Home only needs account data though so can use this LiveData. */
+                doOnAccountSuccess(it)
+                syncAccountData.value = it
+                syncAccountData.value = null
+            }
+            .onErrorResumeNext {
+                /* If leaveIfEmpty(), sync should continue anyway and still update tags and traits, without going in the above doOnSuccess, hence returning an empty result only now */
+                if (it is EmptyMaybeException) Single.just(AccountItems())
+                else Single.error(it)
+            }
+
+        // TODO in Repository: force update only if empty or timestamp expired. Returns cache otherwise event with force=true
+        // TODO in Repository: CACHE POLICY : if force is false but memory and DB are empty, still launch a network update (shouldn't happen but whatnot)
+        val tagsSingle = tagsRepository
+            .getItems(CachePolicy(false))
+            .subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnError(::onError)
+            .onErrorResumeNext { Single.just(emptyMap()) }
+        val traitsSingle = traitsRepository.getItems(CachePolicy(false)).subscribeOn(Schedulers.newThread())
+
+
+        return Single.zip(accountSingle, tagsSingle, traitsSingle, Function3<AccountItems, Map<Int, Tag>, Map<Int, Trait>, SyncData> { accountItems, tags, traits ->
+            SyncData(accountItems, tags, traits)
+        })
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSuccess {
+                syncData.value = it
+                syncData.value = null
+            }
     }
 }

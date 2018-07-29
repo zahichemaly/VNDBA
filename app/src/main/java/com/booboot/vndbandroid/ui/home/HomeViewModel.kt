@@ -17,18 +17,15 @@ class HomeViewModel constructor(application: Application) : StartupSyncViewModel
     fun startupSync() {
         if (disposables.contains(DISPOSABLE_STARTUP_SYNC)) return
 
-        disposables[DISPOSABLE_STARTUP_SYNC] = startupSyncCompletable()
+        disposables[DISPOSABLE_STARTUP_SYNC] = startupSyncSingle { accountData.value = it }
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe { loadingData.value = true }
             .doFinally {
                 loadingData.value = false
                 disposables.remove(DISPOSABLE_STARTUP_SYNC)
             }
-            .subscribe({
-                accountData.value = it
-                syncData.value = it
-                syncData.value = null
-            }, ::onError)
+            .doOnError(::onError)
+            .subscribe()
     }
 
     fun getVns(force: Boolean = true) {

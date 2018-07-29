@@ -14,7 +14,7 @@ import javax.inject.Singleton
 @Component(modules = [
     AppModule::class,
     DatabaseModule::class,
-    RxModule::class,
+    ApiModule::class,
     RepositoryModule::class,
     ResourceModule::class,
     JSONModule::class

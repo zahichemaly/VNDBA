@@ -7,7 +7,7 @@ import com.booboot.vndbandroid.BuildConfig
 import com.booboot.vndbandroid.util.EmptyMaybeException
 import io.reactivex.disposables.Disposable
 
-open class BaseViewModel constructor(application: Application) : AndroidViewModel(application) {
+abstract class BaseViewModel constructor(application: Application) : AndroidViewModel(application) {
     val loadingData: MutableLiveData<Boolean> = MutableLiveData()
     val errorData: MutableLiveData<String> = MutableLiveData()
     val disposables: MutableMap<String, Disposable> = mutableMapOf()
@@ -15,7 +15,7 @@ open class BaseViewModel constructor(application: Application) : AndroidViewMode
     fun onError(throwable: Throwable) {
         if (throwable is EmptyMaybeException) return
         if (BuildConfig.DEBUG) throwable.printStackTrace()
-        errorData.value = throwable.localizedMessage
+        errorData.value = throwable.localizedMessage ?: throwable.toString()
         errorData.value = null
     }
 }

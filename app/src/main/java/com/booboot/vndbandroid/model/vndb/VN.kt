@@ -59,6 +59,5 @@ data class VN(
         else -> R.drawable.score_red
     }
 
-    fun isComplete(): Boolean =
-            screens.isNotEmpty() && tags.isNotEmpty()
+    fun isComplete(): Boolean = screens.isNotEmpty() && tags.isNotEmpty()
 }
