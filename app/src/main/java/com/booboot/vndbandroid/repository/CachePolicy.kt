@@ -3,17 +3,20 @@ package com.booboot.vndbandroid.repository
 class CachePolicy<T>(
     /** Cache enabled **/
     var enabled: Boolean = true,
+    /** Never sends a network request, only check the cache. Must define a defaultValue in get(). */
+    var cacheOnly: Boolean = false,
     /** Cache expiration time in milliseconds (default 10 minutes) **/
     var expiration: Long = if (enabled) 600000 else 0
 ) {
-    private var fetchFromMemory: () -> T? = { throw NotImplementedError("Implement fetchFromMemory") }
-    private var fetchFromDatabase: () -> T? = { null }
+    private var fetchFromMemory: () -> CacheValue<T> = { CacheValue() }
+    private var fetchFromDatabase: () -> CacheValue<T> = { CacheValue() }
     private var fetchFromNetwork: (T?) -> T = { throw NotImplementedError("Implement fetchFromNetwork") }
     private var putInDatabase: (T) -> Unit = { }
     private var putInMemory: (T) -> Unit = { }
-    private var isExpired: (T) -> Boolean = { _ -> false }
+    private var isExpired: (T?) -> Boolean = { _ -> false }
     private var putExpiration: (T) -> Unit = { }
-    private var isEmpty: (T) -> Boolean = { it is Collection<*> && it.isEmpty() || it is Map<*, *> && it.isEmpty() }
+    private var isEmpty: (T?) -> Boolean = { it is Collection<*> && it.isEmpty() || it is Map<*, *> && it.isEmpty() }
+    private var defaultValue: (T?) -> T = { it ?: throw NotImplementedError("get() with cacheOnly must define a defaultValue !") }
 
     /**
      * Copying a CachePolicy enables the creation of a new CachePolicy with the same parameters, without the risk of overriding the blocks
@@ -23,13 +26,17 @@ class CachePolicy<T>(
 
     fun fetchFromMemory(fetchFromMemory: () -> T?) = apply {
         this.fetchFromMemory = {
-            requireNonEmpty(fetchFromMemory())
+            with(fetchFromMemory()) {
+                CacheValue(this, requireNonEmpty(this))
+            }
         }
     }
 
     fun fetchFromDatabase(fetchFromDatabase: () -> T?) = apply {
         this.fetchFromDatabase = {
-            requireNonEmpty(fetchFromDatabase())?.apply { putInMemory(this) }
+            with(fetchFromDatabase()) {
+                CacheValue(this, requireNonEmpty(this)?.apply(putInMemory))
+            }
         }
     }
 
@@ -56,28 +63,34 @@ class CachePolicy<T>(
     }
 
     fun isExpired(isExpired: (T) -> Boolean) = apply {
-        this.isExpired = isExpired
+        this.isExpired = { it == null || isExpired(it) }
     }
 
     fun isEmpty(isEmpty: (T) -> Boolean) = apply {
-        this.isEmpty = isEmpty
+        this.isEmpty = { it == null || isEmpty(it) }
     }
 
-    private fun requireNonEmpty(value: T?) = with(value) {
-        if (this != null && !isEmpty(this)) {
-            this
-        } else null
-    }
+    private fun requireNonEmpty(value: T?) = if (isEmpty(value)) null else value
 
-    fun get(): T = if (enabled) {
-        val cache = fetchFromMemory() ?: fetchFromDatabase()
+    fun get(defaultValue: (T?) -> T = this.defaultValue): T = if (enabled) {
+        var cache = fetchFromMemory()
+        if (cache.checkedValue == null) cache = fetchFromDatabase()
 
-        if (cache == null || isExpired(cache)) {
-            fetchFromNetwork(cache)
-        } else {
-            cache
+        if (cacheOnly) {
+            cache.rawValue ?: defaultValue(cache.rawValue)
+        } else with(cache.checkedValue) {
+            if (this == null || isExpired(this)) {
+                fetchFromNetwork(cache.rawValue)
+            } else {
+                this
+            }
         }
     } else {
         fetchFromNetwork(null)
     }
+
+    private data class CacheValue<T>(
+        val rawValue: T? = null, // Raw value as contained in the cache
+        val checkedValue: T? = null // Null if isEmpty(), else = rawValue
+    )
 }
