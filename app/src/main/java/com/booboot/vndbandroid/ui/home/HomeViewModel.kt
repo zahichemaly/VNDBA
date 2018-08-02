@@ -24,8 +24,7 @@ class HomeViewModel constructor(application: Application) : StartupSyncViewModel
                 loadingData.value = false
                 disposables.remove(DISPOSABLE_STARTUP_SYNC)
             }
-            .doOnError(::onError)
-            .subscribe()
+            .subscribe({}, ::onError)
     }
 
     fun getVns(force: Boolean = true) {

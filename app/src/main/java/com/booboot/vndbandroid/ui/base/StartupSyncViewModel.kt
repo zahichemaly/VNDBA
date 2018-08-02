@@ -113,7 +113,7 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
             }
             .onErrorResumeNext {
                 /* If leaveIfEmpty(), sync should continue anyway and still update tags and traits, without going in the above doOnSuccess, hence returning an empty result only now */
-                if (it is EmptyMaybeException) Single.just(AccountItems())
+                if (it is EmptyMaybeException) accountRepository.getItems()
                 else Single.error(it)
             }
 
@@ -122,13 +122,15 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
         val tagsSingle = tagsRepository
             .getItems(CachePolicy(false))
             .subscribeOn(Schedulers.newThread())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnError(::onError)
-            .onErrorResumeNext { Single.just(emptyMap()) }
+            .onErrorResumeNext {
+                pendingError = it
+                Single.just(emptyMap())
+            }
         val traitsSingle = traitsRepository.getItems(CachePolicy(false)).subscribeOn(Schedulers.newThread())
 
 
         return Single.zip(accountSingle, tagsSingle, traitsSingle, Function3<AccountItems, Map<Int, Tag>, Map<Int, Trait>, SyncData> { accountItems, tags, traits ->
+            pendingError?.let { throw it }
             SyncData(accountItems, tags, traits)
         })
             .subscribeOn(Schedulers.io())
