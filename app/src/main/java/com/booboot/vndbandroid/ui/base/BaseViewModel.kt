@@ -4,7 +4,10 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.booboot.vndbandroid.BuildConfig
+import com.booboot.vndbandroid.extensions.errorMessage
+import com.booboot.vndbandroid.extensions.log
 import com.booboot.vndbandroid.util.EmptyMaybeException
+import com.crashlytics.android.Crashlytics
 import io.reactivex.disposables.Disposable
 
 abstract class BaseViewModel constructor(application: Application) : AndroidViewModel(application) {
@@ -14,8 +17,9 @@ abstract class BaseViewModel constructor(application: Application) : AndroidView
 
     fun onError(throwable: Throwable) {
         if (throwable is EmptyMaybeException) return
-        if (BuildConfig.DEBUG) throwable.printStackTrace()
-        errorData.value = throwable.localizedMessage ?: throwable.toString()
+        throwable.log()
+
+        errorData.value = throwable.errorMessage()
         errorData.value = null
     }
 }

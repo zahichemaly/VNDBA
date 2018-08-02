@@ -3,6 +3,7 @@ package com.booboot.vndbandroid.api
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.BuildConfig
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.extensions.log
 import com.booboot.vndbandroid.model.vndb.DbStats
 import com.booboot.vndbandroid.model.vndb.Error
 import com.booboot.vndbandroid.model.vndb.Fields
@@ -13,7 +14,6 @@ import com.booboot.vndbandroid.model.vndb.Results
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.util.ErrorHandler
 import com.booboot.vndbandroid.util.Logger
-import com.booboot.vndbandroid.util.Utils
 import com.booboot.vndbandroid.util.type
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -93,10 +93,11 @@ class VNDBServer @Inject constructor(
             /* We know in advance how many pages we must fetch: we can parallelize them with Single.merge */
             val observables = mutableListOf<Single<Response<Results<T>>>>()
             (0 until options.numberOfPages).mapTo(observables) { index ->
+                val socketIndex = index % options.numberOfSockets
                 Single.create<Response<Results<T>>> { emitter ->
-                    val threadOptions = options.copy(page = index + 1, socketIndex = index % options.numberOfSockets)
+                    val threadOptions = options.copy(page = index + 1, socketIndex = socketIndex)
                     sendCommand(command + json.writeValueAsString(threadOptions), threadOptions, emitter, resultClass)
-                }.doOnError { processError(it, index) }.subscribeOn(Schedulers.newThread())
+                }.doOnError { VNDBServer.close(socketIndex) }.subscribeOn(Schedulers.newThread())
             }
 
             Single.merge(observables)
@@ -121,7 +122,7 @@ class VNDBServer @Inject constructor(
 
                 originalEmitter.onSuccess(results)
             }
-                .doOnError { processError(it, options.socketIndex) }
+                .doOnError { VNDBServer.close(options.socketIndex) }
                 .subscribeOn(Schedulers.newThread())
         }
     }
@@ -269,16 +270,11 @@ class VNDBServer @Inject constructor(
                     SocketPool.setSocket(socketIndex, null)
                 }
             } catch (ioe: IOException) {
-                Utils.processException(ioe)
+                ioe.log()
             }
         }
 
         fun closeAll(): Completable = Completable.fromAction { for (i in 0 until SocketPool.MAX_SOCKETS) close(i) }
             .subscribeOn(Schedulers.io())
-
-        fun processError(t: Throwable, socketIndex: Int) {
-            Utils.processException(t)
-            VNDBServer.close(socketIndex)
-        }
     }
 }

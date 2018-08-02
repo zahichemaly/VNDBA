@@ -5,13 +5,11 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.net.Uri
-import androidx.browser.customtabs.CustomTabsIntent
-import androidx.appcompat.app.AppCompatActivity
 import android.util.TypedValue
-import com.booboot.vndbandroid.BuildConfig
+import androidx.appcompat.app.AppCompatActivity
+import androidx.browser.customtabs.CustomTabsIntent
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
-import com.crashlytics.android.Crashlytics
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -42,11 +40,6 @@ object Utils {
         val colorAttribute = TypedValue()
         context?.theme?.resolveAttribute(resid, colorAttribute, true)
         return colorAttribute.data
-    }
-
-    fun processException(exception: Throwable) {
-        if (BuildConfig.DEBUG) exception.printStackTrace()
-        else Crashlytics.logException(exception)
     }
 
     fun getDate(date: String?, showFullDate: Boolean): String? = if (date == null) {
