@@ -50,16 +50,13 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
     val syncData: MutableLiveData<SyncData> = MutableLiveData()
 
     protected fun startupSyncSingle(doOnAccountSuccess: (AccountItems) -> Unit = {}): Single<SyncData> {
-        val vnlistIds = vndbServer.get<Vnlist>("vnlist", "basic", "(uid = 0)",
-            Options(results = 100, fetchAllPages = true), type())
-        val votelistIds = vndbServer.get<Votelist>("votelist", "basic", "(uid = 0)",
-            Options(results = 100, fetchAllPages = true, socketIndex = 1), type())
-        val wishlistIds = vndbServer.get<Wishlist>("wishlist", "basic", "(uid = 0)",
-            Options(results = 100, fetchAllPages = true, socketIndex = 2), type())
-
-        val accountSingle = Single.zip(vnlistIds, votelistIds, wishlistIds,
-            Function3<Results<Vnlist>, Results<Votelist>, Results<Wishlist>, AccountItems> { vni, vti, wsi ->
-                AccountItems(vni.items.map { it.vn to it }.toMap(), vti.items.map { it.vn to it }.toMap(), wsi.items.map { it.vn to it }.toMap())
+        var pendingError: Throwable? = null
+        val accountSingle = Single.zip(
+            vnlistRepository.getItems(CachePolicy(false)),
+            votelistRepository.getItems(CachePolicy(false)),
+            wishlistRepository.getItems(CachePolicy(false)),
+            Function3<Map<Int, Vnlist>, Map<Int, Votelist>, Map<Int, Wishlist>, AccountItems> { vni, vti, wsi ->
+                AccountItems(vni, vti, wsi)
             })
             .observeOn(Schedulers.io())
             .flatMapMaybe<Results<VN>> { _items: AccountItems ->
@@ -69,9 +66,9 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
                     .union(_items.votelist.keys)
                     .union(_items.wishlist.keys)
 
-                val oldVnlist = vnlistRepository.getItems().blockingGet()
-                val oldVotelist = votelistRepository.getItems().blockingGet()
-                val oldWishlist = wishlistRepository.getItems().blockingGet()
+                val oldVnlist = vnlistRepository.getItems(CachePolicy(cacheOnly = true)).blockingGet()
+                val oldVotelist = votelistRepository.getItems(CachePolicy(cacheOnly = true)).blockingGet()
+                val oldWishlist = wishlistRepository.getItems(CachePolicy(cacheOnly = true)).blockingGet()
 
                 val newIds = allIds.minus(oldVnlist.keys)
                     .minus(oldVotelist.keys)
