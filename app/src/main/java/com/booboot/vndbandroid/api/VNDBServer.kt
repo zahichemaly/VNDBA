@@ -19,7 +19,6 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.reactivex.Completable
 import io.reactivex.Single
-import io.reactivex.SingleEmitter
 import io.reactivex.schedulers.Schedulers
 import java.io.IOException
 import java.io.InputStreamReader
@@ -35,7 +34,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 class VNDBServer @Inject constructor(private val json: ObjectMapper) {
-    private fun <T> connect(socketIndex: Int, emitter: SingleEmitter<Response<T>>): Boolean = try {
+    private fun connect(socketIndex: Int) = try {
         val sf = SSLSocketFactory.getDefault()
         val socket = sf.createSocket(HOST, PORT) as SSLSocket
         socket.keepAlive = false
@@ -45,38 +44,28 @@ class VNDBServer @Inject constructor(private val json: ObjectMapper) {
         val s = socket.session
 
         if (!hv.verify(HOST, s)) {
-            emitter.onError(Throwable("The API's certificate is not valid. Expected $HOST"))
-            false
-        } else {
-            SocketPool.setSocket(socketIndex, socket)
-            true
+            throw Throwable("The API's certificate is not valid. Expected $HOST")
         }
+
+        SocketPool.setSocket(socketIndex, socket)
     } catch (uhe: UnknownHostException) {
-        emitter.onError(Throwable("Unable to reach the server $HOST. Please try again later."))
-        false
+        throw Throwable("Unable to reach the server $HOST. Please try again later.")
     } catch (ioe: IOException) {
-        emitter.onError(Throwable("An error occurred during the connection to the server. Please try again later."))
-        false
+        throw Throwable("An error occurred during the connection to the server. Please try again later.")
     }
 
     /**
      * Logs the user with its credentials to VNDB.org. Connects the SSL socket then send a login request.
      * So it can be automatic, this is never called manually, but always internally by SocketPool, on behalf of another request.
-     * This is why we pass the Emitter of the original request as a parameter.
      */
-    fun <T> login(options: Options, originalEmitter: SingleEmitter<Response<T>>) {
+    fun login(options: Options) {
         synchronized(SocketPool.getLock(options.socketIndex)) {
             if (SocketPool.getSocket(options.socketIndex) == null) {
-                if (!connect(options.socketIndex, originalEmitter)) return
+                connect(options.socketIndex)
                 val username = Preferences.username?.toLowerCase()?.trim() ?: ""
                 val password = Preferences.password ?: ""
-                Single.create<Response<Void>> { emitter ->
-                    val login = Login(PROTOCOL, CLIENT, CLIENTVER, username, password)
-                    sendCommand("login " + json.writeValueAsString(login), options, emitter, type())
-                }.subscribe({}, {
-                    VNDBServer.close(options.socketIndex)
-                    originalEmitter.onError(it)
-                }) // no need for subscribeOn(): we need to be on the same thread as the original emitter
+                val login = Login(PROTOCOL, CLIENT, CLIENTVER, username, password)
+                sendCommand("login " + json.writeValueAsString(login), options, type<Response<Void>>())
             }
         }
     }
@@ -91,33 +80,27 @@ class VNDBServer @Inject constructor(private val json: ObjectMapper) {
             val observables = mutableListOf<Single<Response<Results<T>>>>()
             (0 until options.numberOfPages).mapTo(observables) { index ->
                 val socketIndex = index % options.numberOfSockets
-                Single.create<Response<Results<T>>> { emitter ->
+                Single.fromCallable<Response<Results<T>>> {
                     val threadOptions = options.copy(page = index + 1, socketIndex = socketIndex)
-                    sendCommand(command + json.writeValueAsString(threadOptions), threadOptions, emitter, resultClass)
+                    sendCommand(command + json.writeValueAsString(threadOptions), threadOptions, resultClass)
                 }.doOnError { VNDBServer.close(socketIndex) }.subscribeOn(Schedulers.newThread())
             }
 
-            Single.merge(observables)
-                .collect({ Results<T>() }, { results, response ->
-                    results.items.addAll(response.results?.items ?: emptyList())
-                })
+            Single.merge(observables).collect({ Results<T>() }, { results, response ->
+                results.items.addAll(response.results?.items ?: emptyList())
+            })
         } else {
             /* We don't know how many pages we must fetch (hence how many requests we have to send): creating Singles sequentially until done */
-            Single.create<Results<T>> { originalEmitter ->
+            Single.fromCallable<Results<T>> {
                 val results = Results<T>()
                 do {
-                    val response = Single.create<Response<Results<T>>> { emitter ->
-                        options.socketIndex %= options.numberOfSockets
-                        sendCommand(command + json.writeValueAsString(options), options, emitter, resultClass)
-                    }
-                        .doOnError { t: Throwable -> originalEmitter.onError(t) } // any error in a child Single will trigger the parent error
-                        .blockingGet() // blocking get is ok because we're in a bounding Single
-
+                    options.socketIndex %= options.numberOfSockets
+                    val response = sendCommand(command + json.writeValueAsString(options), options, resultClass)
                     results.items.addAll(response.results?.items ?: emptyList())
                     options.page++
                 } while (options.fetchAllPages && response.results?.more == true)
 
-                originalEmitter.onSuccess(results)
+                results
             }
                 .doOnError { VNDBServer.close(options.socketIndex) }
                 .subscribeOn(Schedulers.newThread())
@@ -127,30 +110,25 @@ class VNDBServer @Inject constructor(private val json: ObjectMapper) {
     fun set(type: String, id: Int, fields: Fields): Completable {
         val command = "set $type $id " + json.writeValueAsString(fields)
 
-        return Single.create<Response<Void>> { emitter ->
-            sendCommand(command, emitter = emitter, resultClass = type())
+        return Single.fromCallable<Response<Void>> {
+            sendCommand(command, resultClass = type())
         }.flatMapCompletable { Completable.complete() }
     }
 
     @Suppress("unused")
     fun dbstats(): Single<DbStats> {
-        return Single.create<Response<DbStats>> { emitter ->
-            sendCommand("dbstats", emitter = emitter, resultClass = type())
+        return Single.fromCallable<Response<DbStats>> {
+            sendCommand("dbstats", resultClass = type())
         }.map { response: Response<DbStats> -> response.results!! }
     }
 
-    private fun <T> sendCommand(command: String, options: Options = Options(), emitter: SingleEmitter<Response<T>>, resultClass: TypeReference<T>, retry: Boolean = false) {
+    private fun <T> sendCommand(command: String, options: Options = Options(), resultClass: TypeReference<T>, retry: Boolean = false): Response<T> =
         synchronized(SocketPool.getLock(options.socketIndex)) {
             val query = command + EOM
             var response: Response<T>?
 
             try {
-                val socket = SocketPool.getSocket(this, options, emitter)
-                if (socket == null) {
-                    emitter.onError(Throwable("Unable to connect. Please try again later."))
-                    return
-                }
-
+                val socket = SocketPool.getSocket(this, options) ?: throw Throwable("Unable to connect. Please try again later.")
                 val output = socket.outputStream
                 val input = InputStreamReader(socket.inputStream)
 
@@ -161,7 +139,7 @@ class VNDBServer @Inject constructor(private val json: ObjectMapper) {
                     output.write(query.toByteArray(charset("UTF-8")))
 
                     var isThrottled = false
-                    response = getResponse(input, emitter, resultClass)
+                    response = getResponse(input, resultClass)
                     response?.error?.let { error ->
                         isThrottled = error.id == "throttled"
                         if (isThrottled) {
@@ -183,31 +161,29 @@ class VNDBServer @Inject constructor(private val json: ObjectMapper) {
                     }
                 } while (isThrottled)
             } catch (uee: UnsupportedEncodingException) {
-                return emitter.onError(Throwable("Tried to send a query to the API with a wrong encoding. Aborting operation."))
+                throw Throwable("Tried to send a query to the API with a wrong encoding. Aborting operation.")
             } catch (se: SocketException) {
-                return emitter.onError(Throwable("A connection error occurred. Please check your connection or try again later."))
+                throw Throwable("A connection error occurred. Please check your connection or try again later.")
             } catch (ssle: SSLException) {
                 VNDBServer.close(options.socketIndex)
                 return if (retry || command.startsWith("login", true)) {
-                    emitter.onError(Throwable("An error occurred while writing a query to the API. Please try again later."))
+                    throw Throwable("An error occurred while writing a query to the API. Please try again later.")
                 } else {
-                    sendCommand(command, options, emitter, resultClass, true)
+                    sendCommand(command, options, resultClass, true)
                 }
             } catch (ioe: IOException) {
-                return emitter.onError(Throwable("An error occurred while sending a query to the API. Please try again later."))
+                throw Throwable("An error occurred while sending a query to the API. Please try again later.")
             } catch (t: Throwable) {
-                return emitter.onError(t)
+                throw t
             } finally {
                 if (SocketPool.throttleHandlingSocket > -1 && SocketPool.throttleHandlingSocket == options.socketIndex)
                     SocketPool.throttleHandlingSocket = -1
             }
 
-            if (response != null) emitter.onSuccess(response)
-            else emitter.onError(Throwable("Empty response."))
+            response ?: throw Throwable("Empty response.")
         }
-    }
 
-    private fun <T> getResponse(input: InputStreamReader, emitter: SingleEmitter<Response<T>>, resultClass: TypeReference<T>): Response<T>? {
+    private fun <T> getResponse(input: InputStreamReader, resultClass: TypeReference<T>): Response<T>? {
         val responseWrapper = Response<T>()
         val response = StringBuilder()
         try {
@@ -217,8 +193,7 @@ class VNDBServer @Inject constructor(private val json: ObjectMapper) {
                 read = input.read()
             }
         } catch (exception: Exception) {
-            emitter.onError(Throwable("An error occurred while receiving the response from the API. Please try again later."))
-            return null
+            throw Throwable("An error occurred while receiving the response from the API. Please try again later.")
         }
 
         //        if (BuildConfig.DEBUG) Logger.log(response.toString())
@@ -230,8 +205,7 @@ class VNDBServer @Inject constructor(private val json: ObjectMapper) {
                 responseWrapper
             } else {
                 /* Undocumented error : the server returned an empty response (""), which means absolutely nothing but "leave the ship because something undebuggable happened!" */
-                emitter.onError(Throwable("VNDB.org returned an unexpected error. Please try again later."))
-                null
+                throw Throwable("VNDB.org returned an unexpected error. Please try again later.")
             }
         }
 
@@ -245,8 +219,7 @@ class VNDBServer @Inject constructor(private val json: ObjectMapper) {
             }
             responseWrapper
         } catch (ioe: IOException) {
-            emitter.onError(Throwable("An error occurred while decoding the response from the API. Aborting operation."))
-            null
+            throw Throwable("An error occurred while decoding the response from the API. Aborting operation.")
         }
     }
 

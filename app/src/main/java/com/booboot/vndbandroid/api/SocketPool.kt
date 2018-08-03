@@ -1,8 +1,6 @@
 package com.booboot.vndbandroid.api
 
 import com.booboot.vndbandroid.model.vndb.Options
-import com.booboot.vndbandroid.model.vndb.Response
-import io.reactivex.SingleEmitter
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
 
@@ -14,17 +12,15 @@ object SocketPool {
     private val LOCKS: ConcurrentMap<Int, Int> = ConcurrentHashMap()
     var throttleHandlingSocket = -1
 
-    fun <T> getSocket(server: VNDBServer, options: Options, emitter: SingleEmitter<Response<T>>): SSLSocket? {
-        server.login(options, emitter)
+    fun getSocket(server: VNDBServer, options: Options): SSLSocket? {
+        server.login(options)
         return SOCKETS[options.socketIndex]
     }
 
+    fun getSocket(socketIndex: Int): SSLSocket? = SOCKETS[socketIndex]
+
     fun setSocket(socketIndex: Int, socket: SSLSocket?) {
         SOCKETS[socketIndex] = socket
-    }
-
-    fun getSocket(socketIndex: Int): SSLSocket? {
-        return SOCKETS[socketIndex]
     }
 
     fun getLock(id: Int): Int {
