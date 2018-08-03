@@ -34,33 +34,29 @@ import javax.net.ssl.SSLSocketFactory
 import kotlin.math.max
 import kotlin.math.min
 
-class VNDBServer @Inject constructor(
-    private val json: ObjectMapper
-) {
-    private fun <T> connect(socketIndex: Int, emitter: SingleEmitter<Response<T>>): Boolean {
-        try {
-            val sf = SSLSocketFactory.getDefault()
-            val socket = sf.createSocket(HOST, PORT) as SSLSocket
-            socket.keepAlive = false
-            socket.soTimeout = 0
+class VNDBServer @Inject constructor(private val json: ObjectMapper) {
+    private fun <T> connect(socketIndex: Int, emitter: SingleEmitter<Response<T>>): Boolean = try {
+        val sf = SSLSocketFactory.getDefault()
+        val socket = sf.createSocket(HOST, PORT) as SSLSocket
+        socket.keepAlive = false
+        socket.soTimeout = 0
 
-            val hv = HttpsURLConnection.getDefaultHostnameVerifier()
-            val s = socket.session
+        val hv = HttpsURLConnection.getDefaultHostnameVerifier()
+        val s = socket.session
 
-            if (!hv.verify(HOST, s)) {
-                emitter.onError(Throwable("The API's certificate is not valid. Expected $HOST"))
-                return false
-            }
-
+        if (!hv.verify(HOST, s)) {
+            emitter.onError(Throwable("The API's certificate is not valid. Expected $HOST"))
+            false
+        } else {
             SocketPool.setSocket(socketIndex, socket)
-            return true
-        } catch (uhe: UnknownHostException) {
-            emitter.onError(Throwable("Unable to reach the server $HOST. Please try again later."))
-            return false
-        } catch (ioe: IOException) {
-            emitter.onError(Throwable("An error occurred during the connection to the server. Please try again later."))
-            return false
+            true
         }
+    } catch (uhe: UnknownHostException) {
+        emitter.onError(Throwable("Unable to reach the server $HOST. Please try again later."))
+        false
+    } catch (ioe: IOException) {
+        emitter.onError(Throwable("An error occurred during the connection to the server. Please try again later."))
+        false
     }
 
     /**
@@ -77,9 +73,10 @@ class VNDBServer @Inject constructor(
                 Single.create<Response<Void>> { emitter ->
                     val login = Login(PROTOCOL, CLIENT, CLIENTVER, username, password)
                     sendCommand("login " + json.writeValueAsString(login), options, emitter, type())
-                }
-                    .doOnError { originalEmitter.onError(it) }
-                    .subscribe() // no need for subscribeOn(): we need to be on the same thread as the original emitter
+                }.subscribe({}, {
+                    VNDBServer.close(options.socketIndex)
+                    originalEmitter.onError(it)
+                }) // no need for subscribeOn(): we need to be on the same thread as the original emitter
             }
         }
     }
@@ -206,6 +203,7 @@ class VNDBServer @Inject constructor(
             }
 
             if (response != null) emitter.onSuccess(response)
+            else emitter.onError(Throwable("Empty response."))
         }
     }
 

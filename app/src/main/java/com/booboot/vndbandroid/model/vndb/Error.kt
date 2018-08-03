@@ -9,6 +9,6 @@ data class Error(
 ) {
     fun fullMessage(): String = when (id) {
         "throttled" -> "VNDB.org is too busy to fulfill your request now, so your lists may not be up-to-date. Please wait a bit and try again."
-        else -> id + " : " + msg
+        else -> "$id : $msg"
     }
 }

@@ -39,7 +39,6 @@ class LoginActivity : BaseActivity() {
 
     private fun showResult(result: SyncData?) {
         if (result == null) return
-        Logger.log(result.toString())
         startActivity(Intent(this, HomeActivity::class.java))
     }
 }
