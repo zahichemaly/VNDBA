@@ -1,16 +1,15 @@
 package com.booboot.vndbandroid.ui.login
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.extensions.startActivity
 import com.booboot.vndbandroid.model.vndb.Links
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.model.vndbandroid.SyncData
 import com.booboot.vndbandroid.ui.base.BaseActivity
 import com.booboot.vndbandroid.ui.home.HomeActivity
-import com.booboot.vndbandroid.util.Logger
 import kotlinx.android.synthetic.main.login_activity.*
 
 class LoginActivity : BaseActivity() {
@@ -39,6 +38,8 @@ class LoginActivity : BaseActivity() {
 
     private fun showResult(result: SyncData?) {
         if (result == null) return
-        startActivity(Intent(this, HomeActivity::class.java))
+        startActivity<HomeActivity> {
+            putExtra(HomeActivity.SHOULD_SYNC, false)
+        }
     }
 }

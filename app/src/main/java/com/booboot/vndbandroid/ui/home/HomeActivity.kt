@@ -68,9 +68,14 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 //            val headerBackground = header.findViewById<ImageView>(R.id.headerBackground)
             //            Picasso.get().load(Theme.THEMES.get(SettingsManager.getTheme(this)).getWallpaper()).transform(BlurIfDemoTransform(this)).into(headerBackground)
 
-            if (savedInstanceState != null) {
-                selectedItem = savedInstanceState.getInt(SELECTED_ITEM)
-                savedFilter = savedInstanceState.getString(SAVED_FILTER_STATE)
+            var shouldSync = true
+            intent.extras?.apply {
+                shouldSync = getBoolean(SHOULD_SYNC, true)
+                remove(SHOULD_SYNC)
+            }
+            savedInstanceState?.apply {
+                selectedItem = getInt(SELECTED_ITEM)
+                savedFilter = getString(SAVED_FILTER_STATE)
             }
 
             viewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
@@ -87,7 +92,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             if (oldFragment == null) {
                 navigationView.menu.getItem(0).isChecked = true
                 onNavigationItemSelected(navigationView.menu.getItem(0))
-                viewModel.startupSync()
+                if (shouldSync) viewModel.startupSync()
             } else {
                 enableToolbarScroll(oldFragment is HomeTabsFragment)
             }
@@ -156,14 +161,14 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 HomeTabsFragment()
             }
             R.id.nav_preferences -> PreferencesFragment()
-        //            R.id.nav_stats -> DatabaseStatisticsFragment()
-        //            R.id.nav_top -> RankingTopFragment()
-        //            R.id.nav_popular -> RankingPopularFragment()
-        //            R.id.nav_most_voted -> RankingMostVotedFragment()
-        //            R.id.nav_newly_released -> RankingNewlyReleasedFragment()
-        //            R.id.nav_newly_added -> RankingNewlyAddedFragment()
-        //            R.id.nav_recommendations -> RecommendationsFragment()
-        //            R.id.nav_about -> AboutFragment()
+            //            R.id.nav_stats -> DatabaseStatisticsFragment()
+            //            R.id.nav_top -> RankingTopFragment()
+            //            R.id.nav_popular -> RankingPopularFragment()
+            //            R.id.nav_most_voted -> RankingMostVotedFragment()
+            //            R.id.nav_newly_released -> RankingNewlyReleasedFragment()
+            //            R.id.nav_newly_added -> RankingNewlyAddedFragment()
+            //            R.id.nav_recommendations -> RecommendationsFragment()
+            //            R.id.nav_about -> AboutFragment()
             R.id.nav_logout -> return logout()
             else -> null
         } ?: return false
@@ -269,5 +274,6 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         const val TAG_FRAGMENT = "TAG_FRAGMENT"
         const val SELECTED_ITEM = "SELECTED_ITEM"
         const val SAVED_FILTER_STATE = "SAVED_FILTER_STATE"
+        const val SHOULD_SYNC = "SHOULD_SYNC"
     }
 }
