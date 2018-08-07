@@ -25,12 +25,12 @@ data class VN(
         var image_nsfw: Boolean = false,
         @Ignore var anime: List<Anime> = emptyList(),
         @Ignore var relations: List<VNRelation> = emptyList(),
-        var tags: ArrayList<ArrayList<Number>> = ArrayList(),
         var popularity: Float = 0f,
         var rating: Float = 0f,
         var votecount: Int = 0,
         @Ignore var screens: List<Screen> = emptyList(),
         @Ignore var staff: List<VnStaff> = emptyList()
+    @JvmSuppressWildcards var tags: List<List<Float>> = emptyList(),
 ) {
     fun lengthString(): String = when (length) {
         1 -> "Very short (< 2 hours)"

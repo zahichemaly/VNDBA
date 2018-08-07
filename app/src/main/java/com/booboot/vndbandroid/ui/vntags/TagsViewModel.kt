@@ -44,7 +44,7 @@ class TagsViewModel constructor(application: Application) : BaseViewModel(applic
             .observeOn(Schedulers.computation())
             .map { vnAndTags ->
                 val sortedTags = vnAndTags.vn.tags.sortedByDescending { it[1].toInt() }.mapNotNull { tagInfo ->
-                    vnAndTags.tags[tagInfo[0]]?.let { tag -> VNTag(tag, tagInfo) }
+                    vnAndTags.tags[tagInfo[0].toInt()]?.let { tag -> VNTag(tag, tagInfo) }
                 }
 
                 val categories = mutableMapOf(

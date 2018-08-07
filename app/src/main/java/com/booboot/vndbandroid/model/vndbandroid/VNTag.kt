@@ -7,5 +7,5 @@ import com.booboot.vndbandroid.model.vndb.Tag
  */
 data class VNTag(
     val tag: Tag,
-    val infos: ArrayList<Number>
+    val infos: List<Float>
 )
