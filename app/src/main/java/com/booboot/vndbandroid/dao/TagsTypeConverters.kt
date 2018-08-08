@@ -1,13 +1,26 @@
 package com.booboot.vndbandroid.dao
 
 import androidx.room.TypeConverter
-import com.booboot.vndbandroid.di.JSONModule
-import com.booboot.vndbandroid.util.type
+import com.booboot.vndbandroid.App
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
+import javax.inject.Inject
 
 class TagsTypeConverters {
-    @TypeConverter
-    fun toJson(value: List<List<Float>>): String = JSONModule.objectMapper().writeValueAsString(value)
+    @Inject lateinit var moshi: Moshi
+
+    init {
+        App.context.appComponent.inject(this)
+    }
 
     @TypeConverter
-    fun toTags(value: String): List<List<Float>> = JSONModule.objectMapper().readValue(value, type<List<List<Float>>>())
+    fun toJson(value: List<List<Float>>): String = moshi
+        .adapter<List<List<Float>>>(Types.newParameterizedType(List::class.java, Types.newParameterizedType(List::class.java, java.lang.Float::class.java)))
+        .toJson(value)
+
+    @TypeConverter
+    fun toTags(value: String): List<List<Float>> = moshi
+        .adapter<List<List<Float>>>(Types.newParameterizedType(List::class.java, Types.newParameterizedType(List::class.java, java.lang.Float::class.java)))
+        .fromJson(value)
+        ?: emptyList()
 }

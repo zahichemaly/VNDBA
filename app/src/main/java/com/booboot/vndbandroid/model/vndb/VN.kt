@@ -5,32 +5,37 @@ import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import androidx.room.RoomWarnings
 import com.booboot.vndbandroid.R
+import com.squareup.moshi.FromJson
+import com.squareup.moshi.JsonClass
+import com.squareup.moshi.JsonQualifier
+import javax.annotation.Nullable
 
 @SuppressWarnings(RoomWarnings.DEFAULT_CONSTRUCTOR)
 @Entity(tableName = "vn")
+@JsonClass(generateAdapter = true)
 data class VN(
-        @PrimaryKey var id: Int = 0,
-        var title: String = "",
-        var original: String? = null,
-        var released: String? = null,
-        // TODO write a type converter for easy list to string conversion
-        @Ignore var languages: List<String> = emptyList(),
-        @Ignore var orig_lang: List<String> = emptyList(),
-        @Ignore var platforms: List<String> = emptyList(),
-        var aliases: String? = null,
-        var length: Int = 0,
-        var description: String? = null,
-        @Ignore var links: Links = Links(),
-        var image: String? = null,
-        var image_nsfw: Boolean = false,
-        @Ignore var anime: List<Anime> = emptyList(),
-        @Ignore var relations: List<VNRelation> = emptyList(),
-        var popularity: Float = 0f,
-        var rating: Float = 0f,
-        var votecount: Int = 0,
-        @Ignore var screens: List<Screen> = emptyList(),
-        @Ignore var staff: List<VnStaff> = emptyList()
+    @PrimaryKey var id: Int = 0,
+    var title: String = "",
+    var original: String? = null,
+    var released: String? = null,
+    // TODO write a type converter for easy list to string conversion
+    @Ignore var languages: List<String> = emptyList(),
+    @Ignore var orig_lang: List<String> = emptyList(),
+    @Ignore var platforms: List<String> = emptyList(),
+    var aliases: String? = null,
+    var length: Int? = 0,
+    var description: String? = null,
+    @Ignore var links: Links = Links(),
+    var image: String? = null,
+    var image_nsfw: Boolean = false,
+    @Ignore var anime: List<Anime> = emptyList(),
+    @Ignore var relations: List<VNRelation> = emptyList(),
     @JvmSuppressWildcards var tags: List<List<Float>> = emptyList(),
+    var popularity: Float = 0f,
+    var rating: Float = 0f,
+    var votecount: Int = 0,
+    @Ignore var screens: List<Screen> = emptyList(),
+    @Ignore var staff: List<VnStaff> = emptyList()
 ) {
     fun lengthString(): String = when (length) {
         1 -> "Very short (< 2 hours)"

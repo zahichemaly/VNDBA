@@ -64,7 +64,7 @@ class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, (Vi
 
     override fun invoke(itemView: View, vn: VN) {
         activity?.let {
-            val options = ActivityOptionsCompat.makeSceneTransitionAnimation(activity!!, itemView.image, "slideshow")
+            val options = ActivityOptionsCompat.makeSceneTransitionAnimation(it, itemView.image, "slideshow")
             val intent = Intent(it, VNDetailsActivity::class.java)
             intent.putExtra(VNDetailsActivity.EXTRA_VN_ID, vn.id)
             intent.putExtra(VNDetailsActivity.EXTRA_SHARED_ELEMENT_COVER, vn.image)

@@ -14,9 +14,9 @@ import com.booboot.vndbandroid.model.vndb.Results
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.util.ErrorHandler
 import com.booboot.vndbandroid.util.Logger
+import com.booboot.vndbandroid.util.TypeReference
 import com.booboot.vndbandroid.util.type
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.squareup.moshi.Moshi
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
@@ -33,7 +33,7 @@ import javax.net.ssl.SSLSocketFactory
 import kotlin.math.max
 import kotlin.math.min
 
-class VNDBServer @Inject constructor(private val json: ObjectMapper) {
+class VNDBServer @Inject constructor(private val moshi: Moshi) {
     private fun connect(socketIndex: Int) = try {
         val sf = SSLSocketFactory.getDefault()
         val socket = sf.createSocket(HOST, PORT) as SSLSocket
@@ -65,7 +65,7 @@ class VNDBServer @Inject constructor(private val json: ObjectMapper) {
                 val username = Preferences.username?.toLowerCase()?.trim() ?: ""
                 val password = Preferences.password ?: ""
                 val login = Login(PROTOCOL, CLIENT, CLIENTVER, username, password)
-                sendCommand("login " + json.writeValueAsString(login), options, type<Response<Void>>())
+                sendCommand("login " + moshi.adapter(Login::class.java).toJson(login), options, type<Response<Void>>())
             }
         }
     }
@@ -82,7 +82,7 @@ class VNDBServer @Inject constructor(private val json: ObjectMapper) {
                 val socketIndex = index % options.numberOfSockets
                 Single.fromCallable<Response<Results<T>>> {
                     val threadOptions = options.copy(page = index + 1, socketIndex = socketIndex)
-                    sendCommand(command + json.writeValueAsString(threadOptions), threadOptions, resultClass)
+                    sendCommand(command + moshi.adapter(Options::class.java).toJson(threadOptions), threadOptions, resultClass)
                 }.doOnError { VNDBServer.close(socketIndex) }.subscribeOn(Schedulers.newThread())
             }
 
@@ -95,7 +95,7 @@ class VNDBServer @Inject constructor(private val json: ObjectMapper) {
                 val results = Results<T>()
                 do {
                     options.socketIndex %= options.numberOfSockets
-                    val response = sendCommand(command + json.writeValueAsString(options), options, resultClass)
+                    val response = sendCommand(command + moshi.adapter(Options::class.java).toJson(options), options, resultClass)
                     results.items.addAll(response.results?.items ?: emptyList())
                     options.page++
                 } while (options.fetchAllPages && response.results?.more == true)
@@ -108,7 +108,7 @@ class VNDBServer @Inject constructor(private val json: ObjectMapper) {
     }
 
     fun set(type: String, id: Int, fields: Fields): Completable {
-        val command = "set $type $id " + json.writeValueAsString(fields)
+        val command = "set $type $id " + moshi.adapter(Fields::class.java).toJson(fields)
 
         return Single.fromCallable<Response<Void>> {
             sendCommand(command, resultClass = type())
@@ -213,9 +213,9 @@ class VNDBServer @Inject constructor(private val json: ObjectMapper) {
             val command = response.substring(0, delimiterIndex).trim()
             val params = response.substring(delimiterIndex, response.length).replace(EOM + "", "")
             if (command == "error") {
-                responseWrapper.error = json.readValue(params, Error::class.java)
+                responseWrapper.error = moshi.adapter(Error::class.java).fromJson(params)
             } else {
-                responseWrapper.results = json.readValue(params, resultClass)
+                responseWrapper.results = moshi.adapter<T>(resultClass.type).fromJson(params)
             }
             responseWrapper
         } catch (ioe: IOException) {

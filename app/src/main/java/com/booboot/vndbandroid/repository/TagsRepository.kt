@@ -3,11 +3,12 @@ package com.booboot.vndbandroid.repository
 import android.app.Application
 import com.booboot.vndbandroid.api.VNDBService
 import com.booboot.vndbandroid.extensions.saveToDisk
+import com.booboot.vndbandroid.extensions.toBufferedSource
 import com.booboot.vndbandroid.extensions.unzip
 import com.booboot.vndbandroid.extensions.use
 import com.booboot.vndbandroid.model.vndb.Tag
-import com.booboot.vndbandroid.util.type
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
 import io.reactivex.Single
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -16,7 +17,7 @@ import javax.inject.Singleton
 @Singleton
 class TagsRepository @Inject constructor(
     var vndbService: VNDBService,
-    var json: ObjectMapper,
+    var moshi: Moshi,
     var app: Application
 ) : Repository<Tag>() {
     override fun getItems(cachePolicy: CachePolicy<Map<Int, Tag>>): Single<Map<Int, Tag>> = Single.fromCallable {
@@ -29,8 +30,14 @@ class TagsRepository @Inject constructor(
                     .blockingGet()
                     .saveToDisk("tags.json.gz", app.cacheDir)
                     .unzip()
-                    .use { json.readValue<List<Tag>>(it, type<List<Tag>>()).map { it.id to it }.toMap() }
-                    ?: throw Exception("Error while getting tags")
+                    .use {
+                        moshi
+                            .adapter<List<Tag>>(Types.newParameterizedType(List::class.java, Tag::class.java))
+                            .fromJson(it.toBufferedSource())
+                            ?.map { it.id to it }
+                            ?.toMap()
+                            ?: throw Exception("Error while getting tags : empty.")
+                    }
             }
             .putInMemory { items = it.toMutableMap() }
             .putInDatabase { /* TODO */ }

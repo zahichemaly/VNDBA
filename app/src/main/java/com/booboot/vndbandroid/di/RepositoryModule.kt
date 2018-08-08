@@ -11,7 +11,7 @@ import com.booboot.vndbandroid.repository.VNRepository
 import com.booboot.vndbandroid.repository.VnlistRepository
 import com.booboot.vndbandroid.repository.VotelistRepository
 import com.booboot.vndbandroid.repository.WishlistRepository
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -50,9 +50,9 @@ internal class RepositoryModule {
 
     @Provides
     @Singleton
-    fun tagsRepository(vndbService: VNDBService, json: ObjectMapper, app: Application) = TagsRepository(vndbService, json, app)
+    fun tagsRepository(vndbService: VNDBService, moshi: Moshi, app: Application) = TagsRepository(vndbService, moshi, app)
 
     @Provides
     @Singleton
-    fun traitsRepository(json: ObjectMapper) = TraitsRepository(json)
+    fun traitsRepository(moshi: Moshi) = TraitsRepository(moshi)
 }

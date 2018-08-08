@@ -1,7 +1,7 @@
 package com.booboot.vndbandroid.ui.vnlist
 
-import androidx.recyclerview.widget.RecyclerView
 import android.view.View
+import androidx.recyclerview.widget.RecyclerView
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndb.Vnlist
@@ -24,15 +24,15 @@ class VNHolder(itemView: View, private val onVnClicked: (View, VN) -> Unit) : Re
     }
 
     fun onBind(
-            vn: VN,
-            vnlist: Vnlist?,
-            votelist: Votelist?,
-            wishlist: Wishlist?,
-            showFullDate: Boolean,
-            showRank: Boolean,
-            showRating: Boolean,
-            showPopularity: Boolean,
-            showVoteCount: Boolean
+        vn: VN,
+        vnlist: Vnlist?,
+        votelist: Votelist?,
+        wishlist: Wishlist?,
+        showFullDate: Boolean,
+        showRank: Boolean,
+        showRating: Boolean,
+        showPopularity: Boolean,
+        showVoteCount: Boolean
     ) = with(itemView) {
         this@VNHolder.vn = vn
 
@@ -49,7 +49,7 @@ class VNHolder(itemView: View, private val onVnClicked: (View, VN) -> Unit) : Re
         }
 
         subtitleText.append(context.getString(R.string.bullet))
-        if (vn.length > 0)
+        if (vn.length ?: 0 > 0)
             subtitleText.append(vn.lengthString())
         else
             subtitleText.append(Utils.getDate(vn.released, true))

@@ -1,5 +1,6 @@
 package com.booboot.vndbandroid.extensions
 
+import okio.Okio
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.File
@@ -33,3 +34,5 @@ fun <T> File.use(action: (File) -> T): T = try {
 } finally {
     delete()
 }
+
+fun File.toBufferedSource() = Okio.buffer(Okio.source(this))

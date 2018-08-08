@@ -1,9 +1,6 @@
 package com.booboot.vndbandroid.di
 
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
+import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -12,13 +9,5 @@ import javax.inject.Singleton
 internal class JSONModule {
     @Provides
     @Singleton
-    fun json(): ObjectMapper = objectMapper()
-
-    companion object {
-        fun objectMapper(): ObjectMapper = ObjectMapper().apply {
-            configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
-            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            setSerializationInclusion(JsonInclude.Include.NON_NULL)
-        }
-    }
+    fun moshi(): Moshi = Moshi.Builder().build()
 }
