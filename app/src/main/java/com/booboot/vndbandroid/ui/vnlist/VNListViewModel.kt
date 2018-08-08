@@ -9,6 +9,8 @@ import com.booboot.vndbandroid.ui.base.BaseViewModel
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment.Companion.VNLIST
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment.Companion.VOTELIST
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment.Companion.WISHLIST
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 class VNListViewModel constructor(application: Application) : BaseViewModel(application) {
@@ -24,22 +26,25 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
         if (disposables.contains(DISPOSABLE_GET_VN)) return
 
         disposables[DISPOSABLE_GET_VN] = accountRepository.getItems()
-            .doFinally { disposables.remove(DISPOSABLE_GET_VN) }
-            .subscribe({ cache ->
+            .observeOn(Schedulers.computation())
+            .map { cache ->
+                val vnlist = cache.vnlist.filterValues { it.status == tabValue }
+                val votelist = cache.votelist.filterValues { it.vote / 10 == tabValue || it.vote / 10 == tabValue - 1 }
+                val wishlist = cache.wishlist.filterValues { it.priority == tabValue }
+
                 cache.vns = cache.vns.filterKeys {
                     when (listType) {
-                        VNLIST -> it in cache.vnlist.filterValues { it.status == tabValue }.keys
-
-                        VOTELIST -> it in cache.votelist.filterValues { it.vote / 10 == tabValue || it.vote / 10 == tabValue - 1 }.keys
-
-                        WISHLIST -> it in cache.wishlist.filterValues { it.priority == tabValue }.keys
-
+                        VNLIST -> it in vnlist
+                        VOTELIST -> it in votelist
+                        WISHLIST -> it in wishlist
                         else -> true
                     }
                 }
-
-                accountData.value = cache
-            }, ::onError)
+                cache
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .doFinally { disposables.remove(DISPOSABLE_GET_VN) }
+            .subscribe({ accountData.value = it }, ::onError)
     }
 
     companion object {

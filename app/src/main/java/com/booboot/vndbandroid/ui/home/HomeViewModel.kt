@@ -32,6 +32,7 @@ class HomeViewModel constructor(application: Application) : StartupSyncViewModel
         if (disposables.contains(DISPOSABLE_GET_VNS)) return
 
         disposables[DISPOSABLE_GET_VNS] = accountRepository.getItems()
+            .observeOn(AndroidSchedulers.mainThread())
             .doFinally { disposables.remove(DISPOSABLE_GET_VNS) }
             .subscribe({ accountData.value = it }, ::onError)
     }

@@ -7,6 +7,7 @@ import com.booboot.vndbandroid.model.vndbandroid.Priority
 import com.booboot.vndbandroid.model.vndbandroid.Status
 import com.booboot.vndbandroid.repository.AccountRepository
 import com.booboot.vndbandroid.ui.base.BaseViewModel
+import io.reactivex.android.schedulers.AndroidSchedulers
 import javax.inject.Inject
 
 class HomeTabsViewModel constructor(application: Application) : BaseViewModel(application) {
@@ -22,6 +23,7 @@ class HomeTabsViewModel constructor(application: Application) : BaseViewModel(ap
         if (disposables.contains(DISPOSABLE_TAB_TITLES)) return
 
         disposables[DISPOSABLE_TAB_TITLES] = accountRepository.getItems()
+            .observeOn(AndroidSchedulers.mainThread())
             .doFinally { disposables.remove(DISPOSABLE_TAB_TITLES) }
             .subscribe({
                 val titles = when (type) {

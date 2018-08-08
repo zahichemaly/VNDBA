@@ -133,7 +133,7 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
             pendingError?.let { throw it }
             SyncData(accountItems, tags, traits)
         })
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSuccess {
                 syncData.value = it
