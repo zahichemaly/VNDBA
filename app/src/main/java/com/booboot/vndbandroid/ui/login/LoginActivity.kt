@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.extensions.hideKeyboard
 import com.booboot.vndbandroid.extensions.startActivity
 import com.booboot.vndbandroid.model.vndb.Links
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
@@ -25,6 +26,8 @@ class LoginActivity : BaseActivity() {
         loginPassword.setText(Preferences.password)
 
         loginButton.setOnClickListener {
+            enableButtons(false)
+            it.hideKeyboard()
             Preferences.username = loginUsername.text.toString()
             Preferences.password = loginPassword.text.toString()
             viewModel.login()
@@ -36,10 +39,23 @@ class LoginActivity : BaseActivity() {
         viewModel.errorData.observe(this, Observer { showError(it) })
     }
 
+    private fun enableButtons(enabled: Boolean) {
+        listOf(loginUsername, loginPassword, loginButton).forEach {
+            it.isEnabled = enabled
+        }
+    }
+
+    override fun showLoading(show: Boolean?) {
+        super.showLoading(show)
+        if (show == null) return
+        enableButtons(!show)
+    }
+
     private fun showResult(result: SyncData?) {
         if (result == null) return
         startActivity<HomeActivity> {
             putExtra(HomeActivity.SHOULD_SYNC, false)
         }
+        finish()
     }
 }
