@@ -2,17 +2,19 @@ package com.booboot.vndbandroid.model.vndb
 
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.R
+import com.squareup.moshi.JsonClass
 import java.io.Serializable
 
+@JsonClass(generateAdapter = true)
 data class Tag(
-        var id: Int = 0,
-        var name: String = "",
-        var description: String = "",
-        var meta: Boolean = false,
-        var vns: Int = 0,
-        var cat: String = "",
-        var aliases: List<String> = emptyList(),
-        var parents: List<Int> = emptyList()
+    var id: Int = 0,
+    var name: String = "",
+    var description: String = "",
+    var meta: Boolean = false,
+    var vns: Int = 0,
+    var cat: String = "",
+    var aliases: List<String> = emptyList(),
+    var parents: List<Int> = emptyList()
 ) : Serializable {
     override fun toString(): String {
         return "Tag(name=$name)"
@@ -37,15 +39,15 @@ data class Tag(
         const val KEY_TECHNICAL = "tech"
 
         val CATEGORIES = linkedMapOf(
-                KEY_GENRES to R.string.genres,
-                KEY_POPULAR to R.string.popular,
-                KEY_CONTENT to R.string.content,
-                KEY_TECHNICAL to R.string.technical,
-                KEY_SEXUAL to R.string.sexual_content
+            KEY_GENRES to R.string.genres,
+            KEY_POPULAR to R.string.popular,
+            KEY_CONTENT to R.string.content,
+            KEY_TECHNICAL to R.string.technical,
+            KEY_SEXUAL to R.string.sexual_content
         )
 
         fun checkSpoilerLevel(authorizedLevel: Int, actualLevel: Int): Boolean =
-                if (authorizedLevel == 2) true else actualLevel < authorizedLevel + 1
+            if (authorizedLevel == 2) true else actualLevel < authorizedLevel + 1
 
         fun getScoreImage(tag: List<Number>): Int = tag[1].toFloat().let {
             when {

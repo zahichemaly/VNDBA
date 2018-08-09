@@ -5,10 +5,7 @@ import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import androidx.room.RoomWarnings
 import com.booboot.vndbandroid.R
-import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonClass
-import com.squareup.moshi.JsonQualifier
-import javax.annotation.Nullable
 
 @SuppressWarnings(RoomWarnings.DEFAULT_CONSTRUCTOR)
 @Entity(tableName = "vn")
