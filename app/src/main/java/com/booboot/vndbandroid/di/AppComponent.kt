@@ -1,5 +1,7 @@
 package com.booboot.vndbandroid.di
 
+import com.booboot.vndbandroid.dao.IntsTypeConverters
+import com.booboot.vndbandroid.dao.StringsTypeConverters
 import com.booboot.vndbandroid.dao.TagsTypeConverters
 import com.booboot.vndbandroid.ui.home.HomeActivity
 import com.booboot.vndbandroid.ui.home.HomeViewModel
@@ -28,4 +30,6 @@ interface AppComponent {
     fun inject(vnDetailsViewModel: VNDetailsViewModel)
     fun inject(tagsViewModel: TagsViewModel)
     fun inject(tagsTypeConverters: TagsTypeConverters)
+    fun inject(stringsTypeConverters: StringsTypeConverters)
+    fun inject(intsTypeConverters: IntsTypeConverters)
 }

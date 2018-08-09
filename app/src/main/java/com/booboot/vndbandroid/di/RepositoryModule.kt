@@ -50,7 +50,7 @@ internal class RepositoryModule {
 
     @Provides
     @Singleton
-    fun tagsRepository(vndbService: VNDBService, moshi: Moshi, app: Application) = TagsRepository(vndbService, moshi, app)
+    fun tagsRepository(vndbService: VNDBService, moshi: Moshi, app: Application, db: DB) = TagsRepository(vndbService, moshi, app, db)
 
     @Provides
     @Singleton

@@ -1,13 +1,18 @@
 package com.booboot.vndbandroid.model.vndb
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import androidx.room.RoomWarnings
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.R
 import com.squareup.moshi.JsonClass
 import java.io.Serializable
 
+@SuppressWarnings(RoomWarnings.DEFAULT_CONSTRUCTOR)
+@Entity(tableName = "tag")
 @JsonClass(generateAdapter = true)
 data class Tag(
-    var id: Int = 0,
+    @PrimaryKey var id: Int = 0,
     var name: String = "",
     var description: String = "",
     var meta: Boolean = false,
