@@ -15,20 +15,20 @@ class VNRepository @Inject constructor(var db: DB, var vndbServer: VNDBServer) :
     override fun getItems(cachePolicy: CachePolicy<Map<Int, VN>>): Single<Map<Int, VN>> = Single.fromCallable {
         cachePolicy
             .fetchFromMemory { items }
-            .fetchFromDatabase { db.vnDao().findAll().map { it.id to it }.toMap() }
+            .fetchFromDatabase { db.vnDao().findAll().associateBy { it.id } }
             .putInMemory { items.putAll(it) }
             .get()
     }
 
     override fun getItems(ids: List<Int>): Single<Map<Int, VN>> = Single.fromCallable {
         if (items.isEmpty()) {
-            items.putAll(db.vnDao().findAll(ids).map { it.id to it }.toMap().toMutableMap())
+            db.vnDao().findAll(ids).associateByTo(items) { it.id }
         }
         items.filterKeys { it in ids }
     }
 
     override fun setItems(items: List<VN>): Completable = Completable.fromAction {
-        this.items.putAll(items.map { it.id to it }.toMap().toMutableMap())
+        items.associateByTo(this.items) { it.id }
         db.vnDao().insertAll(items)
     }
 

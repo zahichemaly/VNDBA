@@ -24,7 +24,7 @@ class TagsRepository @Inject constructor(
     override fun getItems(cachePolicy: CachePolicy<Map<Int, Tag>>): Single<Map<Int, Tag>> = Single.fromCallable {
         cachePolicy
             .fetchFromMemory { items }
-            .fetchFromDatabase { /* TODO */ db.tagDao().findAll().map { it.id to it }.toMap() }
+            .fetchFromDatabase { /* TODO */ db.tagDao().findAll().associateBy { it.id } }
             .fetchFromNetwork {
                 vndbService
                     .getTags()
@@ -35,8 +35,7 @@ class TagsRepository @Inject constructor(
                         moshi
                             .adapter<List<Tag>>(Types.newParameterizedType(List::class.java, Tag::class.java))
                             .fromJson(it.toBufferedSource())
-                            ?.map { it.id to it }
-                            ?.toMap()
+                            ?.associateBy { it.id }
                             ?: throw Exception("Error while getting tags : empty.")
                     }
             }

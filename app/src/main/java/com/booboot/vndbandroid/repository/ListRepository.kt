@@ -16,15 +16,15 @@ abstract class ListRepository<T : AccountItem> : Repository<T>() {
     override fun getItems(cachePolicy: CachePolicy<Map<Int, T>>): Single<Map<Int, T>> = Single.fromCallable {
         cachePolicy
             .fetchFromMemory { items }
-            .fetchFromDatabase { getItemsFromDB().map { it.vn to it }.toMap() }
-            .fetchFromNetwork { getItemsFromAPI().items.map { it.vn to it }.toMap() }
+            .fetchFromDatabase { getItemsFromDB().associateBy { it.vn } }
+            .fetchFromNetwork { getItemsFromAPI().items.associateBy { it.vn } }
             .putInMemory { if (cachePolicy.enabled) items = it.toMutableMap() }
             .putInDatabase { if (cachePolicy.enabled) addItemsToDB(it.values.toList()) }
             .get { emptyMap() }
     }.subscribeOn(Schedulers.newThread())
 
     override fun setItems(items: List<T>): Completable = Completable.fromAction {
-        this.items = items.map { it.vn to it }.toMap().toMutableMap()
+        this.items = items.associateBy { it.vn }.toMutableMap()
         addItemsToDB(items)
     }
 }
