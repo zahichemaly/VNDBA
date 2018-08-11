@@ -14,6 +14,7 @@ import com.booboot.vndbandroid.repository.WishlistRepository
 import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
+import io.objectbox.BoxStore
 import javax.inject.Singleton
 
 /**
@@ -50,7 +51,7 @@ internal class RepositoryModule {
 
     @Provides
     @Singleton
-    fun tagsRepository(vndbService: VNDBService, moshi: Moshi, app: Application, db: DB) = TagsRepository(vndbService, moshi, app, db)
+    fun tagsRepository(vndbService: VNDBService, moshi: Moshi, app: Application, db: DB, boxStore: BoxStore) = TagsRepository(vndbService, moshi, app, db, boxStore)
 
     @Provides
     @Singleton

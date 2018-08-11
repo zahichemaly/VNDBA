@@ -18,7 +18,6 @@ import com.crashlytics.android.Crashlytics
 import com.crashlytics.android.core.CrashlyticsCore
 import io.fabric.sdk.android.Fabric
 import io.reactivex.plugins.RxJavaPlugins
-import io.realm.Realm
 
 class App : MultiDexApplication() {
     lateinit var appComponent: AppComponent
@@ -29,7 +28,6 @@ class App : MultiDexApplication() {
 
         appComponent = DaggerAppComponent.builder().appModule(AppModule(this)).build()
         Kotpref.init(this)
-        Realm.init(this)
 
         CaocConfig.Builder.create()
             .errorDrawable(R.mipmap.ic_launcher)

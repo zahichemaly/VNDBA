@@ -1,24 +1,53 @@
 package com.booboot.vndbandroid.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy.REPLACE
-import androidx.room.Query
 import com.booboot.vndbandroid.model.vndb.Tag
+import io.objectbox.Box
+import io.objectbox.annotation.Entity
+import io.objectbox.annotation.Id
+import io.objectbox.relation.ToMany
 
-@Dao
-abstract class TagDao {
-    @Query("SELECT * FROM tag")
-    abstract fun findAll(): List<Tag>
+@Entity
+class TagDao() {
+    @Id(assignable = true) var id: Long = 0
+    var name: String = ""
+    var description: String = ""
+    var meta: Boolean = false
+    var vns: Int = 0
+    var cat: String = ""
+    lateinit var aliases: ToMany<TagAlias>
+    lateinit var parents: ToMany<TagParent>
 
-    @Insert(onConflict = REPLACE)
-    protected abstract fun _insertAll(items: List<Tag>)
-
-    @Query("DELETE FROM tag")
-    abstract fun deleteAll()
-
-    fun insertAll(items: List<Tag>) {
-        deleteAll()
-        _insertAll(items)
+    constructor(tag: Tag, box: Box<TagDao>) : this() {
+        id = tag.id.toLong()
+        name = tag.name
+        description = tag.description
+        meta = tag.meta
+        vns = tag.vns
+        cat = tag.cat
+        box.attach(this)
+        tag.aliases.forEach { aliases.add(TagAlias(it.hashCode().toLong(), it)) }
+        tag.parents.forEach { parents.add(TagParent(it.toLong())) }
     }
+
+    fun toBo() = Tag(
+        id.toInt(),
+        name,
+        description,
+        meta,
+        vns,
+        cat,
+        aliases.map { it.alias },
+        parents.map { it.id.toInt() }
+    )
 }
+
+@Entity
+data class TagAlias(
+    @Id(assignable = true) var id: Long = 0,
+    var alias: String = ""
+)
+
+@Entity
+data class TagParent(
+    @Id(assignable = true) var id: Long = 0
+)

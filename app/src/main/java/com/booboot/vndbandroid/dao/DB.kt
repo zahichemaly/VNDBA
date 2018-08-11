@@ -24,5 +24,5 @@ abstract class DB : RoomDatabase() {
     abstract fun wishlistDao(): WishlistDao
     abstract fun vnlistDao(): VnlistDao
     abstract fun vnDao(): VNDao
-    abstract fun tagDao(): TagDao
+//    abstract fun tagDao(): TagDao
 }

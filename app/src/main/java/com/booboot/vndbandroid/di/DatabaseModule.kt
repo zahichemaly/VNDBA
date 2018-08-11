@@ -3,8 +3,10 @@ package com.booboot.vndbandroid.di
 import android.app.Application
 import androidx.room.Room
 import com.booboot.vndbandroid.dao.DB
+import com.booboot.vndbandroid.dao.MyObjectBox
 import dagger.Module
 import dagger.Provides
+import io.objectbox.BoxStore
 import javax.inject.Singleton
 
 /**
@@ -19,4 +21,8 @@ internal class DatabaseModule {
     @Singleton
     fun db(application: Application): DB =
         Room.databaseBuilder(application, DB::class.java, "VNDB_ANDROID").build()
+
+    @Provides
+    @Singleton
+    fun boxStore(application: Application): BoxStore = MyObjectBox.builder().androidContext(application).build()
 }
