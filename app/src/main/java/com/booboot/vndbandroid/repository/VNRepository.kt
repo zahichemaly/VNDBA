@@ -12,7 +12,7 @@ import javax.inject.Singleton
 
 @Singleton
 class VNRepository @Inject constructor(var db: DB, var vndbServer: VNDBServer) : Repository<VN>() {
-    override fun getItems(cachePolicy: CachePolicy<Map<Int, VN>>): Single<Map<Int, VN>> = Single.fromCallable {
+    override fun getItems(cachePolicy: CachePolicy<Map<Long, VN>>): Single<Map<Long, VN>> = Single.fromCallable {
         cachePolicy
             .fetchFromMemory { items }
             .fetchFromDatabase { db.vnDao().findAll().associateBy { it.id } }
@@ -20,7 +20,7 @@ class VNRepository @Inject constructor(var db: DB, var vndbServer: VNDBServer) :
             .get()
     }
 
-    override fun getItems(ids: List<Int>): Single<Map<Int, VN>> = Single.fromCallable {
+    override fun getItems(ids: List<Long>): Single<Map<Long, VN>> = Single.fromCallable {
         if (items.isEmpty()) {
             db.vnDao().findAll(ids).associateByTo(items) { it.id }
         }
@@ -32,7 +32,7 @@ class VNRepository @Inject constructor(var db: DB, var vndbServer: VNDBServer) :
         db.vnDao().insertAll(items)
     }
 
-    override fun getItem(id: Int, cachePolicy: CachePolicy<VN>): Single<VN> = Single.fromCallable {
+    override fun getItem(id: Long, cachePolicy: CachePolicy<VN>): Single<VN> = Single.fromCallable {
         cachePolicy
             .fetchFromMemory { items[id] }
             .fetchFromDatabase { db.vnDao().find(id) }

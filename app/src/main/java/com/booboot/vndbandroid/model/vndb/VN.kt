@@ -11,7 +11,7 @@ import com.squareup.moshi.JsonClass
 @Entity(tableName = "vn")
 @JsonClass(generateAdapter = true)
 data class VN(
-    @PrimaryKey var id: Int = 0,
+    @PrimaryKey var id: Long = 0,
     var title: String = "",
     var original: String? = null,
     var released: String? = null,

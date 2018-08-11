@@ -9,8 +9,8 @@ import com.squareup.moshi.JsonClass
 @Entity(tableName = "vnlist")
 @JsonClass(generateAdapter = true)
 data class Vnlist(
-        @PrimaryKey override var vn: Int = 0,
-        override var added: Int = 0,
-        var status: Int = 0,
-        var notes: String? = null
+    @PrimaryKey override var vn: Long = 0,
+    override var added: Int = 0,
+    var status: Int = 0,
+    var notes: String? = null
 ) : AccountItem()

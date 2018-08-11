@@ -25,7 +25,7 @@ class AccountRepository @Inject constructor(
         votelistRepository.getItems(),
         wishlistRepository.getItems(),
         vnRepository.getItems().subscribeOn(Schedulers.newThread()),
-        Function4<Map<Int, Vnlist>, Map<Int, Votelist>, Map<Int, Wishlist>, Map<Int, VN>, AccountItems> { vni, vti, wsi, vn ->
+        Function4<Map<Long, Vnlist>, Map<Long, Votelist>, Map<Long, Wishlist>, Map<Long, VN>, AccountItems> { vni, vti, wsi, vn ->
             AccountItems(vni, vti, wsi, vn)
         }).subscribeOn(Schedulers.io())
 }

@@ -18,7 +18,7 @@ class TagDao() {
     lateinit var parents: ToMany<TagParent>
 
     constructor(tag: Tag, box: Box<TagDao>) : this() {
-        id = tag.id.toLong()
+        id = tag.id
         name = tag.name
         description = tag.description
         meta = tag.meta
@@ -26,18 +26,18 @@ class TagDao() {
         cat = tag.cat
         box.attach(this)
         tag.aliases.forEach { aliases.add(TagAlias(it.hashCode().toLong(), it)) }
-        tag.parents.forEach { parents.add(TagParent(it.toLong())) }
+        tag.parents.forEach { parents.add(TagParent(it)) }
     }
 
     fun toBo() = Tag(
-        id.toInt(),
+        id,
         name,
         description,
         meta,
         vns,
         cat,
         aliases.map { it.alias },
-        parents.map { it.id.toInt() }
+        parents.map { it.id }
     )
 }
 

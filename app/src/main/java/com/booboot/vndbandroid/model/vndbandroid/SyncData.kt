@@ -6,6 +6,6 @@ import com.booboot.vndbandroid.model.vndb.Trait
 
 data class SyncData(
     val accountItems: AccountItems,
-    val tags: Map<Int, Tag>,
-    val traits: Map<Int, Trait>
+    val tags: Map<Long, Tag>,
+    val traits: Map<Long, Trait>
 )

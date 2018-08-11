@@ -28,14 +28,14 @@ class TagsViewModel constructor(application: Application) : BaseViewModel(applic
         (application as App).appComponent.inject(this)
     }
 
-    fun loadTags(vnId: Int, force: Boolean = true) {
+    fun loadTags(vnId: Long, force: Boolean = true) {
         if (!force && tagsData.value != null) return
         if (disposables.contains(DISPOSABLE_LOAD_TAGS)) return
 
         val vnObservable = vnRepository.getItem(vnId).subscribeOn(Schedulers.newThread())
         val tagsObservable = tagsRepository.getItems().subscribeOn(Schedulers.newThread())
 
-        disposables[DISPOSABLE_LOAD_TAGS] = Single.zip(vnObservable, tagsObservable, BiFunction<VN, Map<Int, Tag>, VNAndTags> { vn, tags ->
+        disposables[DISPOSABLE_LOAD_TAGS] = Single.zip(vnObservable, tagsObservable, BiFunction<VN, Map<Long, Tag>, VNAndTags> { vn, tags ->
             VNAndTags(vn, tags)
         })
             .subscribeOn(Schedulers.io())
@@ -44,7 +44,7 @@ class TagsViewModel constructor(application: Application) : BaseViewModel(applic
             .observeOn(Schedulers.computation())
             .map { vnAndTags ->
                 val sortedTags = vnAndTags.vn.tags.sortedByDescending { it[1].toInt() }.mapNotNull { tagInfo ->
-                    vnAndTags.tags[tagInfo[0].toInt()]?.let { tag -> VNTag(tag, tagInfo) }
+                    vnAndTags.tags[tagInfo[0].toLong()]?.let { tag -> VNTag(tag, tagInfo) }
                 }
 
                 val categories = mutableMapOf(

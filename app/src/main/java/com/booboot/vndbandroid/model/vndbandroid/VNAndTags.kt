@@ -7,6 +7,6 @@ import com.booboot.vndbandroid.model.vndb.VN
  * Temporary class used with Rx to zip a VN and Tags in a single object.
  */
 data class VNAndTags(
-        var vn: VN,
-        var tags: Map<Int, Tag>
+    var vn: VN,
+    var tags: Map<Long, Tag>
 )

@@ -60,7 +60,7 @@ class VNAdapter(
         override fun performFiltering(constraint: CharSequence): Filter.FilterResults {
             filterString = constraint.toString().trim().toLowerCase()
             val results = Filter.FilterResults()
-            val newVns = mutableMapOf<Int, VN>()
+            val newVns = mutableMapOf<Long, VN>()
 
             items.vns.forEach {
                 if (it.value.title.trim().toLowerCase().contains(filterString)) {

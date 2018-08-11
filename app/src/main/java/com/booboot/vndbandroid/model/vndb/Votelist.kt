@@ -9,7 +9,7 @@ import com.squareup.moshi.JsonClass
 @Entity(tableName = "votelist")
 @JsonClass(generateAdapter = true)
 data class Votelist(
-        @PrimaryKey override var vn: Int = 0,
-        override var added: Int = 0,
-        var vote: Int = 0
+    @PrimaryKey override var vn: Long = 0,
+    override var added: Int = 0,
+    var vote: Int = 0
 ) : AccountItem()

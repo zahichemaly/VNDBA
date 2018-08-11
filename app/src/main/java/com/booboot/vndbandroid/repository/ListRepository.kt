@@ -13,7 +13,7 @@ abstract class ListRepository<T : AccountItem> : Repository<T>() {
 
     protected abstract fun getItemsFromAPI(): Results<T>
 
-    override fun getItems(cachePolicy: CachePolicy<Map<Int, T>>): Single<Map<Int, T>> = Single.fromCallable {
+    override fun getItems(cachePolicy: CachePolicy<Map<Long, T>>): Single<Map<Long, T>> = Single.fromCallable {
         cachePolicy
             .fetchFromMemory { items }
             .fetchFromDatabase { getItemsFromDB().associateBy { it.vn } }

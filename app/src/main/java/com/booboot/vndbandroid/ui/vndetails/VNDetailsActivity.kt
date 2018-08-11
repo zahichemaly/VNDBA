@@ -28,7 +28,7 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val vnId = intent.getIntExtra(EXTRA_VN_ID, 0)
+        val vnId = intent.getLongExtra(EXTRA_VN_ID, 0)
         val vnImage = intent.getStringExtra(EXTRA_SHARED_ELEMENT_COVER)
         val vnImageNsfw = intent.getBooleanExtra(EXTRA_SHARED_ELEMENT_COVER_NSFW, false)
 

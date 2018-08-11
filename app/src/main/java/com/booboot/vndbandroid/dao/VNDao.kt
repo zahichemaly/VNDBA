@@ -12,7 +12,7 @@ import com.booboot.vndbandroid.model.vndb.VN
 abstract class VNDao {
     @Transaction
     @Query("SELECT * FROM vn WHERE id IN (:ids)")
-    protected abstract fun _findAll(ids: List<Int>): List<VNWithRelations>
+    protected abstract fun _findAll(ids: List<Long>): List<VNWithRelations>
 
     @Transaction
     @Query("SELECT * FROM vn")
@@ -20,7 +20,7 @@ abstract class VNDao {
 
     @Transaction
     @Query("SELECT * FROM vn WHERE id = :id LIMIT 1")
-    protected abstract fun _find(id: Int): VNWithRelations?
+    protected abstract fun _find(id: Long): VNWithRelations?
 
     @Transaction
     @Insert(onConflict = REPLACE)
@@ -34,12 +34,12 @@ abstract class VNDao {
     @Query("DELETE FROM vn")
     abstract fun deleteAll()
 
-    fun findAll(ids: List<Int> = emptyList()): List<VN> {
+    fun findAll(ids: List<Long> = emptyList()): List<VN> {
         val vnWithRelations = if (ids.isEmpty()) _findAll() else _findAll(ids)
         return vnWithRelations.mapNotNull(::mapToVn)
     }
 
-    fun find(id: Int): VN? = mapToVn(_find(id))
+    fun find(id: Long): VN? = mapToVn(_find(id))
 
     private fun mapToVn(it: VNWithRelations?): VN? = it?.let {
         it.vn?.screens = it.screens ?: emptyList()

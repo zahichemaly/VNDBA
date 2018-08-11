@@ -10,7 +10,7 @@ import androidx.room.ForeignKey.CASCADE
 )
 data class Screen(
         @PrimaryKey(autoGenerate = true) var id: Long = 0,
-        var vnId: Int = 0,
+        var vnId: Long = 0,
         var image: String = "",
         var rid: Int = 0,
         var nsfw: Boolean = false,

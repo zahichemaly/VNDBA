@@ -55,7 +55,7 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
             vnlistRepository.getItems(CachePolicy(false)),
             votelistRepository.getItems(CachePolicy(false)),
             wishlistRepository.getItems(CachePolicy(false)),
-            Function3<Map<Int, Vnlist>, Map<Int, Votelist>, Map<Int, Wishlist>, AccountItems> { vni, vti, wsi ->
+            Function3<Map<Long, Vnlist>, Map<Long, Votelist>, Map<Long, Wishlist>, AccountItems> { vni, vti, wsi ->
                 AccountItems(vni, vti, wsi)
             })
             .observeOn(Schedulers.io())
@@ -129,7 +129,7 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
         val traitsSingle = traitsRepository.getItems(CachePolicy(false)).subscribeOn(Schedulers.newThread())
 
 
-        return Single.zip(accountSingle, tagsSingle, traitsSingle, Function3<AccountItems, Map<Int, Tag>, Map<Int, Trait>, SyncData> { accountItems, tags, traits ->
+        return Single.zip(accountSingle, tagsSingle, traitsSingle, Function3<AccountItems, Map<Long, Tag>, Map<Long, Trait>, SyncData> { accountItems, tags, traits ->
             pendingError?.let { throw it }
             SyncData(accountItems, tags, traits)
         })

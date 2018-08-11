@@ -1,25 +1,20 @@
 package com.booboot.vndbandroid.model.vndb
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import androidx.room.RoomWarnings
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.R
 import com.squareup.moshi.JsonClass
 import java.io.Serializable
 
-@SuppressWarnings(RoomWarnings.DEFAULT_CONSTRUCTOR)
-@Entity(tableName = "tag")
 @JsonClass(generateAdapter = true)
 data class Tag(
-    @PrimaryKey var id: Int = 0,
+    var id: Long = 0,
     var name: String = "",
     var description: String = "",
     var meta: Boolean = false,
     var vns: Int = 0,
     var cat: String = "",
     var aliases: List<String> = emptyList(),
-    var parents: List<Int> = emptyList()
+    var parents: List<Long> = emptyList()
 ) : Serializable {
     override fun toString(): String {
         return "Tag(name=$name)"
@@ -34,7 +29,7 @@ data class Tag(
         return true
     }
 
-    override fun hashCode() = id
+    override fun hashCode() = id.toInt()
 
     companion object {
         const val KEY_GENRES = "genres"

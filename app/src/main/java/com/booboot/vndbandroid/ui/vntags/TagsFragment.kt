@@ -37,7 +37,7 @@ class TagsFragment : BaseFragment(), TagsAdapter.Callback {
         tagsAdapter = TagsAdapter(this)
         recyclerView.adapter = tagsAdapter
 
-        val vnId = arguments?.getInt(VNDetailsActivity.EXTRA_VN_ID) ?: 0
+        val vnId = arguments?.getLong(VNDetailsActivity.EXTRA_VN_ID) ?: 0
 
         viewModel = ViewModelProviders.of(this).get(TagsViewModel::class.java)
         viewModel.errorData.observe(this, Observer { showError(it) })

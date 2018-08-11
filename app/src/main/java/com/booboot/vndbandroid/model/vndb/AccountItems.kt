@@ -4,10 +4,10 @@ import com.booboot.vndbandroid.model.vndbandroid.Priority
 import com.booboot.vndbandroid.model.vndbandroid.Status
 
 data class AccountItems(
-    var vnlist: Map<Int, Vnlist> = emptyMap(),
-    var votelist: Map<Int, Votelist> = emptyMap(),
-    var wishlist: Map<Int, Wishlist> = emptyMap(),
-    var vns: Map<Int, VN> = emptyMap()
+    var vnlist: Map<Long, Vnlist> = emptyMap(),
+    var votelist: Map<Long, Votelist> = emptyMap(),
+    var wishlist: Map<Long, Wishlist> = emptyMap(),
+    var vns: Map<Long, VN> = emptyMap()
 ) {
     fun getStatusCount() = mutableMapOf<Int, Int>().apply {
         Status.ALL.forEach { this[it] = 0 }

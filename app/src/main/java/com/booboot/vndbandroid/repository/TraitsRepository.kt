@@ -8,7 +8,7 @@ import javax.inject.Singleton
 
 @Singleton
 class TraitsRepository @Inject constructor(var moshi: Moshi) : Repository<Trait>() {
-    override fun getItems(cachePolicy: CachePolicy<Map<Int, Trait>>): Single<Map<Int, Trait>> = Single.fromCallable {
+    override fun getItems(cachePolicy: CachePolicy<Map<Long, Trait>>): Single<Map<Long, Trait>> = Single.fromCallable {
         items
         // TODO
     }
