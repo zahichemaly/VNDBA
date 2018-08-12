@@ -28,7 +28,11 @@ class TagsRepository @Inject constructor(
     override fun getItems(cachePolicy: CachePolicy<Map<Long, Tag>>): Single<Map<Long, Tag>> = Single.fromCallable {
         cachePolicy
             .fetchFromMemory { items }
-            .fetchFromDatabase { boxStore.boxFor<TagDao>().all.map { it.toBo() }.associateBy { it.id } }
+            .fetchFromDatabase {
+                boxStore.callInReadTx {
+                    boxStore.boxFor<TagDao>().all.map { it.toBo() }.associateBy { it.id }
+                }
+            }
             .fetchFromNetwork {
                 vndbService
                     .getTags()
@@ -45,8 +49,11 @@ class TagsRepository @Inject constructor(
             }
             .putInMemory { items = it.toMutableMap() }
             .putInDatabase {
-                with(boxStore.boxFor<TagDao>()) {
-                    put(it.map { TagDao(it.value, this) })
+                boxStore.runInTx {
+                    with(boxStore.boxFor<TagDao>()) {
+                        removeAll()
+                        put(it.map { TagDao(it.value, this) })
+                    }
                 }
             }
             .isExpired { /* TODO */ false }
