@@ -2,7 +2,6 @@ package com.booboot.vndbandroid.repository
 
 import android.app.Application
 import com.booboot.vndbandroid.api.VNDBService
-import com.booboot.vndbandroid.dao.DB
 import com.booboot.vndbandroid.dao.TagDao
 import com.booboot.vndbandroid.extensions.saveToDisk
 import com.booboot.vndbandroid.extensions.toBufferedSource
@@ -23,7 +22,6 @@ class TagsRepository @Inject constructor(
     var vndbService: VNDBService,
     var moshi: Moshi,
     var app: Application,
-    var db: DB,
     var boxStore: BoxStore
 ) : Repository<Tag>() {
     override fun getItems(cachePolicy: CachePolicy<Map<Long, Tag>>): Single<Map<Long, Tag>> = Single.fromCallable {

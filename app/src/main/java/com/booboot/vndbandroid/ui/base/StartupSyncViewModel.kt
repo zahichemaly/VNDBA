@@ -117,8 +117,6 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
                 else Single.error(it)
             }
 
-        // TODO in Repository: force update only if empty or timestamp expired. Returns cache otherwise event with force=true
-        // TODO in Repository: CACHE POLICY : if force is false but memory and DB are empty, still launch a network update (shouldn't happen but whatnot)
         val tagsSingle = tagsRepository
             .getItems(CachePolicy(true))
             .subscribeOn(Schedulers.newThread())
@@ -126,8 +124,13 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
                 pendingError = it
                 Single.just(emptyMap())
             }
-        val traitsSingle = traitsRepository.getItems(CachePolicy(false)).subscribeOn(Schedulers.newThread())
-
+        val traitsSingle = traitsRepository
+            .getItems(CachePolicy(true))
+            .subscribeOn(Schedulers.newThread())
+            .onErrorResumeNext {
+                pendingError = it
+                Single.just(emptyMap())
+            }
 
         return Single.zip(accountSingle, tagsSingle, traitsSingle, Function3<AccountItems, Map<Long, Tag>, Map<Long, Trait>, SyncData> { accountItems, tags, traits ->
             pendingError?.let { throw it }
