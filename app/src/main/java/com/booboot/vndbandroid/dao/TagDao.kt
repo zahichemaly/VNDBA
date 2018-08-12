@@ -1,9 +1,10 @@
 package com.booboot.vndbandroid.dao
 
 import com.booboot.vndbandroid.model.vndb.Tag
-import io.objectbox.Box
+import io.objectbox.BoxStore
 import io.objectbox.annotation.Entity
 import io.objectbox.annotation.Id
+import io.objectbox.kotlin.boxFor
 import io.objectbox.relation.ToMany
 
 @Entity
@@ -17,16 +18,20 @@ class TagDao() {
     lateinit var aliases: ToMany<TagAlias>
     lateinit var parents: ToMany<TagParent>
 
-    constructor(tag: Tag, box: Box<TagDao>) : this() {
+    constructor(tag: Tag, boxStore: BoxStore) : this() {
         id = tag.id
         name = tag.name
         description = tag.description
         meta = tag.meta
         vns = tag.vns
         cat = tag.cat
-        box.attach(this)
+
+        boxStore.boxFor<TagDao>().attach(this)
         tag.aliases.forEach { aliases.add(TagAlias(it.hashCode().toLong(), it)) }
         tag.parents.forEach { parents.add(TagParent(it)) }
+
+        boxStore.boxFor<TagAlias>().put(aliases)
+        boxStore.boxFor<TagParent>().put(parents)
     }
 
     fun toBo() = Tag(

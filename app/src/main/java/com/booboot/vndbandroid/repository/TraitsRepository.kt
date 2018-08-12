@@ -51,7 +51,7 @@ class TraitsRepository @Inject constructor(
                 boxStore.runInTx {
                     with(boxStore.boxFor<TraitDao>()) {
                         removeAll()
-                        put(it.map { TraitDao(it.value, this) })
+                        put(it.map { TraitDao(it.value, boxStore) })
                     }
                 }
             }

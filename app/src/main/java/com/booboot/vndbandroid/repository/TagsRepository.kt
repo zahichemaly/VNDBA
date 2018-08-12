@@ -51,7 +51,7 @@ class TagsRepository @Inject constructor(
                 boxStore.runInTx {
                     with(boxStore.boxFor<TagDao>()) {
                         removeAll()
-                        put(it.map { TagDao(it.value, this) })
+                        put(it.map { TagDao(it.value, boxStore) })
                     }
                 }
             }

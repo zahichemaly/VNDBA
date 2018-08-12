@@ -1,9 +1,10 @@
 package com.booboot.vndbandroid.dao
 
 import com.booboot.vndbandroid.model.vndb.Trait
-import io.objectbox.Box
+import io.objectbox.BoxStore
 import io.objectbox.annotation.Entity
 import io.objectbox.annotation.Id
+import io.objectbox.kotlin.boxFor
 import io.objectbox.relation.ToMany
 
 @Entity
@@ -16,15 +17,19 @@ class TraitDao() {
     lateinit var aliases: ToMany<TraitAlias>
     lateinit var parents: ToMany<TraitParent>
 
-    constructor(trait: Trait, box: Box<TraitDao>) : this() {
+    constructor(trait: Trait, boxStore: BoxStore) : this() {
         id = trait.id
         name = trait.name
         description = trait.description
         meta = trait.meta
         chars = trait.chars
-        box.attach(this)
+
+        boxStore.boxFor<TraitDao>().attach(this)
         trait.aliases.forEach { aliases.add(TraitAlias(it.hashCode().toLong(), it)) }
         trait.parents.forEach { parents.add(TraitParent(it)) }
+
+        boxStore.boxFor<TraitAlias>().put(aliases)
+        boxStore.boxFor<TraitParent>().put(parents)
     }
 
     fun toBo() = Trait(
