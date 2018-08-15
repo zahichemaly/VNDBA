@@ -20,7 +20,7 @@ class VNRepository @Inject constructor(var boxStore: BoxStore, var vndbServer: V
         cachePolicy
             .fetchFromMemory { items }
             .fetchFromDatabase {
-                boxStore.get<VNDao, Map<Long, VN>> { it.all.map { it.toBo(moshi) }.associateBy { it.id } }
+                boxStore.get<VNDao, Map<Long, VN>> { it.all.map { it.toBo() }.associateBy { it.id } }
             }
             .putInMemory { items.putAll(it) }
             .get()
@@ -28,20 +28,20 @@ class VNRepository @Inject constructor(var boxStore: BoxStore, var vndbServer: V
 
     override fun getItems(ids: List<Long>): Single<Map<Long, VN>> = Single.fromCallable {
         if (items.isEmpty()) {
-            boxStore.get<VNDao, Map<Long, VN>> { it.get(ids).map { it.toBo(moshi) }.associateByTo(items) { it.id } }
+            boxStore.get<VNDao, Map<Long, VN>> { it.get(ids).map { it.toBo() }.associateByTo(items) { it.id } }
         }
         items.filterKeys { it in ids }
     }
 
     override fun setItems(items: List<VN>): Completable = Completable.fromAction {
         items.associateByTo(this.items) { it.id }
-        boxStore.save { items.map { VNDao(it, boxStore, moshi) } }
+        boxStore.save { items.map { VNDao(it, boxStore) } }
     }
 
     override fun getItem(id: Long, cachePolicy: CachePolicy<VN>): Single<VN> = Single.fromCallable {
         cachePolicy
             .fetchFromMemory { items[id] }
-            .fetchFromDatabase { boxStore.get<VNDao, VN> { it.get(id).toBo(moshi) } }
+            .fetchFromDatabase { boxStore.get<VNDao, VN> { it.get(id).toBo() } }
             .fetchFromNetwork { dbVn ->
                 var flags = "screens,tags"
                 if (dbVn == null) flags += ",basic,details,stats"
@@ -56,7 +56,7 @@ class VNRepository @Inject constructor(var boxStore: BoxStore, var vndbServer: V
             }
             .isEmpty { !it.isComplete() }
             .putInMemory { items[id] = it }
-            .putInDatabase { boxStore.save { listOf(VNDao(it, boxStore, moshi)) } }
+            .putInDatabase { boxStore.save { listOf(VNDao(it, boxStore)) } }
             .get()
     }
 }

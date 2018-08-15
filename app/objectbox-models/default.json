@@ -275,10 +275,6 @@
           "name": "image_nsfw"
         },
         {
-          "id": "10:4299097524267281048",
-          "name": "tags"
-        },
-        {
           "id": "11:359216080782705193",
           "name": "popularity"
         },
@@ -295,19 +291,49 @@
         {
           "id": "5:3423473361525100159",
           "name": "screens"
+        },
+        {
+          "id": "6:2048183445605003020",
+          "name": "tags"
         }
       ]
+    },
+    {
+      "id": "12:3310468597704175954",
+      "lastPropertyId": "4:687193963527442749",
+      "name": "VNTagDao",
+      "properties": [
+        {
+          "id": "1:1430905045332429929",
+          "name": "id"
+        },
+        {
+          "id": "2:2263744153950994738",
+          "name": "tagId"
+        },
+        {
+          "id": "3:7734617761140334758",
+          "name": "score"
+        },
+        {
+          "id": "4:687193963527442749",
+          "name": "spoilerLevel"
+        }
+      ],
+      "relations": []
     }
   ],
-  "lastEntityId": "11:2803488608654642723",
+  "lastEntityId": "12:3310468597704175954",
   "lastIndexId": "0:0",
-  "lastRelationId": "5:3423473361525100159",
+  "lastRelationId": "6:2048183445605003020",
   "lastSequenceId": "0:0",
   "modelVersion": 4,
   "modelVersionParserMinimum": 4,
   "retiredEntityUids": [],
   "retiredIndexUids": [],
-  "retiredPropertyUids": [],
+  "retiredPropertyUids": [
+    4299097524267281048
+  ],
   "retiredRelationUids": [],
   "version": 1
 }

@@ -1,8 +1,6 @@
 package com.booboot.vndbandroid.dao
 
 import com.booboot.vndbandroid.model.vndb.VN
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.Types
 import io.objectbox.BoxStore
 import io.objectbox.annotation.Entity
 import io.objectbox.annotation.Id
@@ -20,13 +18,13 @@ class VNDao() {
     var description: String? = null
     var image: String? = null
     var image_nsfw: Boolean = false
-    var tags: String = ""
+    lateinit var tags: ToMany<VNTagDao>
     var popularity: Float = 0f
     var rating: Float = 0f
     var votecount: Int = 0
     lateinit var screens: ToMany<ScreenDao>
 
-    constructor(vn: VN, boxStore: BoxStore, moshi: Moshi) : this() {
+    constructor(vn: VN, boxStore: BoxStore) : this() {
         id = vn.id
         title = vn.title
         original = vn.original
@@ -36,18 +34,16 @@ class VNDao() {
         description = vn.description
         image = vn.image
         image_nsfw = vn.image_nsfw
-        tags = moshi
-            .adapter<List<List<Float>>>(Types.newParameterizedType(List::class.java, Types.newParameterizedType(List::class.java, java.lang.Float::class.java)))
-            .toJson(vn.tags)
         popularity = vn.popularity
         rating = vn.rating
         votecount = vn.votecount
 
         boxStore.boxFor<VNDao>().attach(this)
+        vn.tags.forEach { tags.add(VNTagDao(it)) }
         vn.screens.forEach { screens.add(ScreenDao(it)) }
     }
 
-    fun toBo(moshi: Moshi) = VN(
+    fun toBo() = VN(
         id,
         title,
         original,
@@ -57,10 +53,7 @@ class VNDao() {
         description = description,
         image = image,
         image_nsfw = image_nsfw,
-        tags = moshi
-            .adapter<List<List<Float>>>(Types.newParameterizedType(List::class.java, Types.newParameterizedType(List::class.java, java.lang.Float::class.java)))
-            .fromJson(tags)
-            ?: emptyList(),
+        tags = tags.map { it.toBo() },
         popularity = popularity,
         rating = rating,
         votecount = votecount,
