@@ -3,7 +3,6 @@ package com.booboot.vndbandroid.di
 import android.app.Application
 import com.booboot.vndbandroid.api.VNDBServer
 import com.booboot.vndbandroid.api.VNDBService
-import com.booboot.vndbandroid.dao.DB
 import com.booboot.vndbandroid.repository.AccountRepository
 import com.booboot.vndbandroid.repository.TagsRepository
 import com.booboot.vndbandroid.repository.TraitsRepository
@@ -25,29 +24,28 @@ import javax.inject.Singleton
 internal class RepositoryModule {
     @Provides
     @Singleton
-    fun vnlistRepository(db: DB, vndbServer: VNDBServer) = VnlistRepository(db, vndbServer)
+    fun vnlistRepository(boxStore: BoxStore, vndbServer: VNDBServer) = VnlistRepository(boxStore, vndbServer)
 
     @Provides
     @Singleton
-    fun votelistRepository(db: DB, vndbServer: VNDBServer) = VotelistRepository(db, vndbServer)
+    fun votelistRepository(boxStore: BoxStore, vndbServer: VNDBServer) = VotelistRepository(boxStore, vndbServer)
 
     @Provides
     @Singleton
-    fun wishlistRepository(db: DB, vndbServer: VNDBServer) = WishlistRepository(db, vndbServer)
+    fun wishlistRepository(boxStore: BoxStore, vndbServer: VNDBServer) = WishlistRepository(boxStore, vndbServer)
 
     @Provides
     @Singleton
-    fun vnRepository(db: DB, vndbServer: VNDBServer) = VNRepository(db, vndbServer)
+    fun vnRepository(boxStore: BoxStore, vndbServer: VNDBServer, moshi: Moshi) = VNRepository(boxStore, vndbServer, moshi)
 
     @Provides
     @Singleton
     fun accountRepository(
-        db: DB,
         vnRepository: VNRepository,
         vnlistRepository: VnlistRepository,
         votelistRepository: VotelistRepository,
         wishlistRepository: WishlistRepository
-    ) = AccountRepository(db, vnRepository, vnlistRepository, votelistRepository, wishlistRepository)
+    ) = AccountRepository(vnRepository, vnlistRepository, votelistRepository, wishlistRepository)
 
     @Provides
     @Singleton

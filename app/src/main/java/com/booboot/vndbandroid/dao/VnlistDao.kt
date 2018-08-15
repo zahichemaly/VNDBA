@@ -1,24 +1,17 @@
 package com.booboot.vndbandroid.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy.REPLACE
-import androidx.room.Query
 import com.booboot.vndbandroid.model.vndb.Vnlist
+import io.objectbox.annotation.Entity
+import io.objectbox.annotation.Id
 
-@Dao
-abstract class VnlistDao {
-    @Query("SELECT * FROM vnlist")
-    abstract fun findAll(): List<Vnlist>
+@Entity
+data class VnlistDao(
+    @Id(assignable = true) var vn: Long = 0,
+    var added: Int = 0,
+    var status: Int = 0,
+    var notes: String? = null
+) {
+    constructor(vnlist: Vnlist) : this(vnlist.vn, vnlist.added, vnlist.status, vnlist.notes)
 
-    @Insert(onConflict = REPLACE)
-    protected abstract fun _insertAll(items: List<Vnlist>)
-
-    @Query("DELETE FROM vnlist")
-    abstract fun deleteAll()
-
-    fun insertAll(items: List<Vnlist>) {
-        deleteAll()
-        _insertAll(items)
-    }
+    fun toBo() = Vnlist(vn, added, status, notes)
 }

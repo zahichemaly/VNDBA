@@ -1,41 +1,47 @@
 package com.booboot.vndbandroid.repository
 
 import com.booboot.vndbandroid.api.VNDBServer
-import com.booboot.vndbandroid.dao.DB
+import com.booboot.vndbandroid.dao.VNDao
+import com.booboot.vndbandroid.extensions.get
+import com.booboot.vndbandroid.extensions.save
 import com.booboot.vndbandroid.model.vndb.Options
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.util.type
+import com.squareup.moshi.Moshi
+import io.objectbox.BoxStore
 import io.reactivex.Completable
 import io.reactivex.Single
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class VNRepository @Inject constructor(var db: DB, var vndbServer: VNDBServer) : Repository<VN>() {
+class VNRepository @Inject constructor(var boxStore: BoxStore, var vndbServer: VNDBServer, var moshi: Moshi) : Repository<VN>() {
     override fun getItems(cachePolicy: CachePolicy<Map<Long, VN>>): Single<Map<Long, VN>> = Single.fromCallable {
         cachePolicy
             .fetchFromMemory { items }
-            .fetchFromDatabase { db.vnDao().findAll().associateBy { it.id } }
+            .fetchFromDatabase {
+                boxStore.get<VNDao, Map<Long, VN>> { it.all.map { it.toBo(moshi) }.associateBy { it.id } }
+            }
             .putInMemory { items.putAll(it) }
             .get()
     }
 
     override fun getItems(ids: List<Long>): Single<Map<Long, VN>> = Single.fromCallable {
         if (items.isEmpty()) {
-            db.vnDao().findAll(ids).associateByTo(items) { it.id }
+            boxStore.get<VNDao, Map<Long, VN>> { it.get(ids).map { it.toBo(moshi) }.associateByTo(items) { it.id } }
         }
         items.filterKeys { it in ids }
     }
 
     override fun setItems(items: List<VN>): Completable = Completable.fromAction {
         items.associateByTo(this.items) { it.id }
-        db.vnDao().insertAll(items)
+        boxStore.save { items.map { VNDao(it, boxStore, moshi) } }
     }
 
     override fun getItem(id: Long, cachePolicy: CachePolicy<VN>): Single<VN> = Single.fromCallable {
         cachePolicy
             .fetchFromMemory { items[id] }
-            .fetchFromDatabase { db.vnDao().find(id) }
+            .fetchFromDatabase { boxStore.get<VNDao, VN> { it.get(id).toBo(moshi) } }
             .fetchFromNetwork { dbVn ->
                 var flags = "screens,tags"
                 if (dbVn == null) flags += ",basic,details,stats"
@@ -50,7 +56,7 @@ class VNRepository @Inject constructor(var db: DB, var vndbServer: VNDBServer) :
             }
             .isEmpty { !it.isComplete() }
             .putInMemory { items[id] = it }
-            .putInDatabase { db.vnDao().insertAll(listOf(it)) }
+            .putInDatabase { boxStore.save { listOf(VNDao(it, boxStore, moshi)) } }
             .get()
     }
 }

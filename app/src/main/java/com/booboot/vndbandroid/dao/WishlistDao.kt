@@ -1,24 +1,16 @@
 package com.booboot.vndbandroid.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy.REPLACE
-import androidx.room.Query
 import com.booboot.vndbandroid.model.vndb.Wishlist
+import io.objectbox.annotation.Entity
+import io.objectbox.annotation.Id
 
-@Dao
-abstract class WishlistDao {
-    @Query("SELECT * FROM wishlist")
-    abstract fun findAll(): List<Wishlist>
+@Entity
+data class WishlistDao(
+    @Id(assignable = true) var vn: Long = 0,
+    var added: Int = 0,
+    var priority: Int = 0
+) {
+    constructor(wishlist: Wishlist) : this(wishlist.vn, wishlist.added, wishlist.priority)
 
-    @Insert(onConflict = REPLACE)
-    protected abstract fun _insertAll(items: List<Wishlist>)
-
-    @Query("DELETE FROM wishlist")
-    abstract fun deleteAll()
-
-    fun insertAll(items: List<Wishlist>) {
-        deleteAll()
-        _insertAll(items)
-    }
+    fun toBo() = Wishlist(vn, added, priority)
 }

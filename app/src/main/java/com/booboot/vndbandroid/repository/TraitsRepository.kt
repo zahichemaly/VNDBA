@@ -3,6 +3,8 @@ package com.booboot.vndbandroid.repository
 import android.app.Application
 import com.booboot.vndbandroid.api.VNDBService
 import com.booboot.vndbandroid.dao.TraitDao
+import com.booboot.vndbandroid.extensions.get
+import com.booboot.vndbandroid.extensions.save
 import com.booboot.vndbandroid.extensions.saveToDisk
 import com.booboot.vndbandroid.extensions.toBufferedSource
 import com.booboot.vndbandroid.extensions.unzip
@@ -12,7 +14,6 @@ import com.booboot.vndbandroid.model.vndbandroid.Expiration
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import io.objectbox.BoxStore
-import io.objectbox.kotlin.boxFor
 import io.reactivex.Single
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -28,9 +29,7 @@ class TraitsRepository @Inject constructor(
         cachePolicy
             .fetchFromMemory { items }
             .fetchFromDatabase {
-                boxStore.callInReadTx {
-                    boxStore.boxFor<TraitDao>().all.map { it.toBo() }.associateBy { it.id }
-                }
+                boxStore.get<TraitDao, Map<Long, Trait>> { it.all.map { it.toBo() }.associateBy { it.id } }
             }
             .fetchFromNetwork {
                 vndbService
@@ -48,12 +47,7 @@ class TraitsRepository @Inject constructor(
             }
             .putInMemory { items = it.toMutableMap() }
             .putInDatabase {
-                boxStore.runInTx {
-                    with(boxStore.boxFor<TraitDao>()) {
-                        removeAll()
-                        put(it.map { TraitDao(it.value, boxStore) })
-                    }
-                }
+                boxStore.save(true) { it.map { TraitDao(it.value, boxStore) } }
             }
             .isExpired { System.currentTimeMillis() > Expiration.traits }
             .putExpiration { Expiration.traits = System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7 }

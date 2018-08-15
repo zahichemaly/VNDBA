@@ -4,7 +4,6 @@ import android.app.Application
 import android.text.TextUtils
 import androidx.lifecycle.MutableLiveData
 import com.booboot.vndbandroid.api.VNDBServer
-import com.booboot.vndbandroid.dao.DB
 import com.booboot.vndbandroid.extensions.completableTransaction
 import com.booboot.vndbandroid.extensions.leaveIfEmpty
 import com.booboot.vndbandroid.model.vndb.AccountItems
@@ -27,6 +26,7 @@ import com.booboot.vndbandroid.repository.VotelistRepository
 import com.booboot.vndbandroid.repository.WishlistRepository
 import com.booboot.vndbandroid.util.EmptyMaybeException
 import com.booboot.vndbandroid.util.type
+import io.objectbox.BoxStore
 import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -43,7 +43,7 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
     @Inject lateinit var accountRepository: AccountRepository
     @Inject lateinit var tagsRepository: TagsRepository
     @Inject lateinit var traitsRepository: TraitsRepository
-    @Inject lateinit var db: DB
+    @Inject lateinit var boxStore: BoxStore
 
     private lateinit var items: AccountItems
     val syncAccountData: MutableLiveData<AccountItems> = MutableLiveData()
@@ -94,7 +94,7 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
             .leaveIfEmpty()
             .observeOn(Schedulers.io())
             .flatMapCompletable {
-                db.completableTransaction(
+                boxStore.completableTransaction(
                     vnlistRepository.setItems(items.vnlist.values.toList()),
                     votelistRepository.setItems(items.votelist.values.toList()),
                     wishlistRepository.setItems(items.wishlist.values.toList()),

@@ -71,11 +71,76 @@
         }
       ],
       "relations": []
+    },
+    {
+      "id": "4:8275220623806677493",
+      "lastPropertyId": "2:3232588614002497578",
+      "name": "TraitAlias",
+      "properties": [
+        {
+          "id": "1:416777893852061871",
+          "name": "id"
+        },
+        {
+          "id": "2:3232588614002497578",
+          "name": "alias"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "5:827800910841698263",
+      "lastPropertyId": "5:2693393788243465705",
+      "name": "TraitDao",
+      "properties": [
+        {
+          "id": "1:7879098999978363557",
+          "name": "id"
+        },
+        {
+          "id": "2:460791765555878929",
+          "name": "name"
+        },
+        {
+          "id": "3:7442792879486712567",
+          "name": "description"
+        },
+        {
+          "id": "4:2764148235316876797",
+          "name": "meta"
+        },
+        {
+          "id": "5:2693393788243465705",
+          "name": "chars"
+        }
+      ],
+      "relations": [
+        {
+          "id": "3:6949965739491798599",
+          "name": "aliases"
+        },
+        {
+          "id": "4:2145276859790287325",
+          "name": "parents"
+        }
+      ]
+    },
+    {
+      "id": "6:1291972672765963073",
+      "lastPropertyId": "1:5326741755606834243",
+      "name": "TraitParent",
+      "properties": [
+        {
+          "id": "1:5326741755606834243",
+          "name": "id"
+        }
+      ],
+      "relations": []
     }
   ],
-  "lastEntityId": "3:2099568879449573628",
+  "lastEntityId": "6:1291972672765963073",
   "lastIndexId": "0:0",
-  "lastRelationId": "2:6239154917433058285",
+  "lastRelationId": "4:2145276859790287325",
   "lastSequenceId": "0:0",
   "modelVersion": 4,
   "modelVersionParserMinimum": 4,

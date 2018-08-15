@@ -1,60 +1,69 @@
 package com.booboot.vndbandroid.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy.REPLACE
-import androidx.room.Query
-import androidx.room.Transaction
-import com.booboot.vndbandroid.model.vndb.Screen
 import com.booboot.vndbandroid.model.vndb.VN
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
+import io.objectbox.BoxStore
+import io.objectbox.annotation.Entity
+import io.objectbox.annotation.Id
+import io.objectbox.kotlin.boxFor
+import io.objectbox.relation.ToMany
 
-@Dao
-abstract class VNDao {
-    @Transaction
-    @Query("SELECT * FROM vn WHERE id IN (:ids)")
-    protected abstract fun _findAll(ids: List<Long>): List<VNWithRelations>
+@Entity
+class VNDao() {
+    @Id(assignable = true) var id: Long = 0
+    var title: String = ""
+    var original: String? = null
+    var released: String? = null
+    var aliases: String? = null
+    var length: Int? = 0
+    var description: String? = null
+    var image: String? = null
+    var image_nsfw: Boolean = false
+    var tags: String = ""
+    var popularity: Float = 0f
+    var rating: Float = 0f
+    var votecount: Int = 0
+    lateinit var screens: ToMany<ScreenDao>
 
-    @Transaction
-    @Query("SELECT * FROM vn")
-    protected abstract fun _findAll(): List<VNWithRelations>
+    constructor(vn: VN, boxStore: BoxStore, moshi: Moshi) : this() {
+        id = vn.id
+        title = vn.title
+        original = vn.original
+        released = vn.released
+        aliases = vn.aliases
+        length = vn.length
+        description = vn.description
+        image = vn.image
+        image_nsfw = vn.image_nsfw
+        tags = moshi
+            .adapter<List<List<Float>>>(Types.newParameterizedType(List::class.java, Types.newParameterizedType(List::class.java, java.lang.Float::class.java)))
+            .toJson(vn.tags)
+        popularity = vn.popularity
+        rating = vn.rating
+        votecount = vn.votecount
 
-    @Transaction
-    @Query("SELECT * FROM vn WHERE id = :id LIMIT 1")
-    protected abstract fun _find(id: Long): VNWithRelations?
-
-    @Transaction
-    @Insert(onConflict = REPLACE)
-    protected abstract fun _insertAll(items: List<VN>)
-
-    @Transaction
-    @Insert(onConflict = REPLACE)
-    protected abstract fun _insertScreens(screens: List<Screen>)
-
-    @Transaction
-    @Query("DELETE FROM vn")
-    abstract fun deleteAll()
-
-    fun findAll(ids: List<Long> = emptyList()): List<VN> {
-        val vnWithRelations = if (ids.isEmpty()) _findAll() else _findAll(ids)
-        return vnWithRelations.mapNotNull(::mapToVn)
+        boxStore.boxFor<VNDao>().attach(this)
+        vn.screens.forEach { screens.add(ScreenDao(it)) }
     }
 
-    fun find(id: Long): VN? = mapToVn(_find(id))
-
-    private fun mapToVn(it: VNWithRelations?): VN? = it?.let {
-        it.vn?.screens = it.screens ?: emptyList()
-        it.vn
-    }
-
-    fun insertAll(vns: List<VN>) {
-        vns.forEach {
-            if (it.screens.isNotEmpty()) insertScreensForVn(it, it.screens)
-        }
-        _insertAll(vns)
-    }
-
-    fun insertScreensForVn(vn: VN, screens: List<Screen>) {
-        screens.forEach { it.vnId = vn.id }
-        _insertScreens(screens)
-    }
+    fun toBo(moshi: Moshi) = VN(
+        id,
+        title,
+        original,
+        released,
+        aliases = aliases,
+        length = length,
+        description = description,
+        image = image,
+        image_nsfw = image_nsfw,
+        tags = moshi
+            .adapter<List<List<Float>>>(Types.newParameterizedType(List::class.java, Types.newParameterizedType(List::class.java, java.lang.Float::class.java)))
+            .fromJson(tags)
+            ?: emptyList(),
+        popularity = popularity,
+        rating = rating,
+        votecount = votecount,
+        screens = screens.map { it.toBo() }
+    )
 }
