@@ -18,10 +18,10 @@ class VNDao() {
     var description: String? = null
     var image: String? = null
     var image_nsfw: Boolean = false
-    lateinit var tags: ToMany<VNTagDao>
     var popularity: Float = 0f
     var rating: Float = 0f
     var votecount: Int = 0
+    lateinit var tags: ToMany<VNTagDao>
     lateinit var screens: ToMany<ScreenDao>
 
     constructor(vn: VN, boxStore: BoxStore) : this() {
@@ -43,7 +43,7 @@ class VNDao() {
         vn.screens.forEach { screens.add(ScreenDao(it)) }
     }
 
-    fun toBo() = VN(
+    fun toBo(fetchAll: Boolean = false): VN = VN(
         id,
         title,
         original,
@@ -53,10 +53,13 @@ class VNDao() {
         description = description,
         image = image,
         image_nsfw = image_nsfw,
-        tags = tags.map { it.toBo() },
         popularity = popularity,
         rating = rating,
-        votecount = votecount,
-        screens = screens.map { it.toBo() }
-    )
+        votecount = votecount
+    ).apply {
+        if (fetchAll) {
+            tags = this@VNDao.tags.map { it.toBo() }
+            screens = this@VNDao.screens.map { it.toBo() }
+        }
+    }
 }

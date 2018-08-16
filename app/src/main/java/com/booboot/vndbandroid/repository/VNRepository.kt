@@ -41,7 +41,7 @@ class VNRepository @Inject constructor(var boxStore: BoxStore, var vndbServer: V
     override fun getItem(id: Long, cachePolicy: CachePolicy<VN>): Single<VN> = Single.fromCallable {
         cachePolicy
             .fetchFromMemory { items[id] }
-            .fetchFromDatabase { boxStore.get<VNDao, VN> { it.get(id).toBo() } }
+            .fetchFromDatabase { boxStore.get<VNDao, VN> { it.get(id).toBo(true) } }
             .fetchFromNetwork { dbVn ->
                 var flags = "screens,tags"
                 if (dbVn == null) flags += ",basic,details,stats"
