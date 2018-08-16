@@ -3,6 +3,7 @@ package com.booboot.vndbandroid
 import android.content.Context
 import android.content.IntentFilter
 import android.net.ConnectivityManager
+import android.os.Looper
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDexApplication
 import androidx.preference.PreferenceManager
@@ -10,6 +11,7 @@ import cat.ereza.customactivityoncrash.config.CaocConfig
 import com.booboot.vndbandroid.di.AppComponent
 import com.booboot.vndbandroid.di.AppModule
 import com.booboot.vndbandroid.di.DaggerAppComponent
+import com.booboot.vndbandroid.extensions.log
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.receiver.ConnectionReceiver
 import com.booboot.vndbandroid.util.Notifications
@@ -17,6 +19,8 @@ import com.chibatching.kotpref.Kotpref
 import com.crashlytics.android.Crashlytics
 import com.crashlytics.android.core.CrashlyticsCore
 import io.fabric.sdk.android.Fabric
+import io.reactivex.android.plugins.RxAndroidPlugins
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.plugins.RxJavaPlugins
 
 class App : MultiDexApplication() {
@@ -44,7 +48,12 @@ class App : MultiDexApplication() {
         registerReceiver(connectionReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
 
         /* Prevents RxJava from crashing the app when there is an exception and let all onError() handle them */
-        RxJavaPlugins.setErrorHandler { it.printStackTrace() }
+        RxJavaPlugins.setErrorHandler { it.log() }
+
+        /* Speeding up Rx's main thread scheduling (RxAndroid 2.1.0's optimization) */
+        val asyncMainThreadScheduler = AndroidSchedulers.from(Looper.getMainLooper(), true)
+        RxAndroidPlugins.setInitMainThreadSchedulerHandler { asyncMainThreadScheduler }
+        RxAndroidPlugins.setMainThreadSchedulerHandler { asyncMainThreadScheduler }
     }
 
     companion object {
