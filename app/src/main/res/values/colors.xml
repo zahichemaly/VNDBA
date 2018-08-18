@@ -28,8 +28,8 @@
 
     <!-- Platform colors -->
     <color name="android">#4b7d2f</color>
-    <color name="web">#373737</color>
-    <color name="pc">#373737</color>
+    <color name="web">#424242</color>
+    <color name="pc">#424242</color>
     <color name="dos">#000000</color>
     <color name="pc88">#000000</color>
     <color name="pc98">#000000</color>
