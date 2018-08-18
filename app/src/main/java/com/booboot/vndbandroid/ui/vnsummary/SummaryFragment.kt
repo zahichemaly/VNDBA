@@ -11,6 +11,7 @@ import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndbandroid.LANGUAGES
 import com.booboot.vndbandroid.model.vndbandroid.PLATFORMS
+import com.booboot.vndbandroid.model.vndbandroid.Vote
 import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.booboot.vndbandroid.ui.vndetails.VNDetailsActivity
 import com.google.android.material.chip.Chip
@@ -33,6 +34,8 @@ class SummaryFragment : BaseFragment() {
 
     private fun showVn(vn: VN?) {
         if (vn == null) return
+        val context = context ?: return
+
         title.text = vn.title
         originalTitle.text = vn.original
         originalTitle.toggle(vn.original?.isNotEmpty() == true)
@@ -59,5 +62,11 @@ class SummaryFragment : BaseFragment() {
                 languages.addView(this)
             }
         }
+
+        popularityBubble.setCardBackgroundColor(ContextCompat.getColor(context, vn.popularityColor()))
+        ratingBubble.setCardBackgroundColor(ContextCompat.getColor(context, Vote.getColor(vn.rating)))
+        popularity.text = String.format(getString(R.string.percent), vn.popularity)
+        ratingVotes.text = String.format(getString(R.string.x_votes), vn.votecount)
+        rating.text = String.format("%.2f", vn.rating)
     }
 }

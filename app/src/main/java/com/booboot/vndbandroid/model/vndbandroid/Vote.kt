@@ -1,5 +1,6 @@
 package com.booboot.vndbandroid.model.vndbandroid
 
+import androidx.annotation.ColorRes
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.R
 
@@ -10,10 +11,10 @@ object Vote {
     const val DEFAULT = "Add a vote"
     private val VOTE_FORMAT = DecimalFormat("#.#")
 
-    fun outOf10(vote: Int) = vote / 10.0
+    fun outOf10(vote: Int) = vote / 10f
 
     fun toString(vote: Int) =
-            if (vote < 1) DEFAULT else toShortString(vote) + " (" + getName(outOf10(vote)) + ")"
+        if (vote < 1) DEFAULT else toShortString(vote) + " (" + getName(outOf10(vote)) + ")"
 
     fun toShortString(vote: Int?): String = if (vote != null) VOTE_FORMAT.format(outOf10(vote)) else App.context.getString(R.string.dash)
 
@@ -23,7 +24,7 @@ object Vote {
         return pattern.matcher(vote).matches()
     }
 
-    fun getName(vote: Double) = when {
+    fun getName(vote: Float) = when {
         vote >= 10 -> "masterpiece"
         vote >= 9 -> "excellent"
         vote >= 8 -> "very good"
@@ -38,12 +39,13 @@ object Vote {
         else -> DEFAULT
     }
 
-    fun getImage(vote: Double) = when {
-        vote >= 8 -> R.drawable.score_green
-        vote >= 7 -> R.drawable.score_light_green
-        vote >= 6 -> R.drawable.score_yellow
-        vote >= 4 -> R.drawable.score_light_orange
-        vote >= 3 -> R.drawable.score_orange
-        else -> R.drawable.score_red
+    @ColorRes
+    fun getColor(vote: Float) = when {
+        vote >= 8 -> R.color.green
+        vote >= 7 -> R.color.lightGreen
+        vote >= 6 -> R.color.yellow
+        vote >= 4 -> R.color.lightOrange
+        vote >= 3 -> R.color.orange
+        else -> R.color.red
     }
 }

@@ -42,7 +42,7 @@ class VNHolder(itemView: View, private val onVnClicked: (View, VN) -> Unit) : Re
             titleText.append("#").append(adapterPosition + 1).append(context.getString(R.string.dash))
         titleText.append(vn.title)
         when {
-            showRating -> subtitleText.append(vn.rating).append(" (").append(Vote.getName(vn.rating.toDouble())).append(")")
+            showRating -> subtitleText.append(vn.rating).append(" (").append(Vote.getName(vn.rating)).append(")")
             showPopularity -> subtitleText.append(vn.popularity).append("%")
             showVoteCount -> subtitleText.append(vn.votecount).append(" votes")
             else -> subtitleText.append(Utils.getDate(vn.released, showFullDate))

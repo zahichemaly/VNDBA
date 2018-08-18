@@ -1,5 +1,6 @@
 package com.booboot.vndbandroid.model.vndb
 
+import androidx.annotation.ColorRes
 import com.booboot.vndbandroid.R
 import com.squareup.moshi.JsonClass
 
@@ -45,13 +46,14 @@ data class VN(
         else -> -1
     }
 
-    fun popularityImage(): Int = when {
-        popularity >= 60 -> R.drawable.score_green
-        popularity >= 40 -> R.drawable.score_light_green
-        popularity >= 20 -> R.drawable.score_yellow
-        popularity >= 10 -> R.drawable.score_light_orange
-        popularity >= 1 -> R.drawable.score_orange
-        else -> R.drawable.score_red
+    @ColorRes
+    fun popularityColor(): Int = when {
+        popularity >= 60 -> R.color.green
+        popularity >= 40 -> R.color.lightGreen
+        popularity >= 20 -> R.color.yellow
+        popularity >= 10 -> R.color.lightOrange
+        popularity >= 1 -> R.color.orange
+        else -> R.color.red
     }
 
     fun isComplete(): Boolean = screens.isNotEmpty() && tags.isNotEmpty()

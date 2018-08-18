@@ -74,4 +74,6 @@
     <string name="dark_mode">Dark mode</string>
     <string name="dark_mode_system_subtitle">Matches Android system\'s settings.</string>
     <string name="pref_key_night_mode" translatable="false">NIGHT_MODE_STRING</string>
+    <string name="percent" translatable="false">%.1f%%</string>
+    <string name="x_votes">%d votes</string>
 </resources>

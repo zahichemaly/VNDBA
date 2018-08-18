@@ -7,17 +7,17 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginBottom="8dp"
-    app:cardBackgroundColor="@color/xbox"
     app:contentPaddingBottom="4dp"
     app:contentPaddingLeft="20dp"
     app:contentPaddingRight="20dp"
     app:contentPaddingTop="4dp"
-    tools:showIn="@layout/summary_fragment">
+    tools:cardBackgroundColor="@color/xbox">
 
     <TextView
         android:id="@+id/tagText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:textAllCaps="true"
         android:textColor="@color/white"
         android:textStyle="bold"
