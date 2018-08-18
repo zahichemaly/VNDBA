@@ -23,13 +23,13 @@ object Pixels {
      */
     fun dp(px: Int): Int = Math.round(px / App.context.resources.displayMetrics.density)
 
-    fun spToPx(sp: Int): Int = Math.round(sp * App.context.resources.displayMetrics.scaledDensity)
+    fun spToPx(sp: Int): Float = sp * App.context.resources.displayMetrics.scaledDensity
 
     fun screenWidth(): Int = App.context.resources.displayMetrics.widthPixels
 
     fun textAsBitmap(text: String, textSize: Int, textColor: Int): Bitmap {
         val paint = Paint(ANTI_ALIAS_FLAG)
-        paint.textSize = spToPx(textSize).toFloat()
+        paint.textSize = spToPx(textSize)
         paint.color = textColor
         paint.textAlign = Paint.Align.LEFT
         val baseline = -paint.ascent() // ascent() is negative

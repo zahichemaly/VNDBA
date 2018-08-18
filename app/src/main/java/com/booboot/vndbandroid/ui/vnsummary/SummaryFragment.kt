@@ -1,7 +1,10 @@
 package com.booboot.vndbandroid.ui.vnsummary
 
+import android.content.res.ColorStateList
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.View
+import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -14,7 +17,9 @@ import com.booboot.vndbandroid.model.vndbandroid.PLATFORMS
 import com.booboot.vndbandroid.model.vndbandroid.Vote
 import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.booboot.vndbandroid.ui.vndetails.VNDetailsActivity
+import com.booboot.vndbandroid.util.Utils
 import com.google.android.material.chip.Chip
+import kotlinx.android.synthetic.main.info_bubble.view.*
 import kotlinx.android.synthetic.main.platform_tag.view.*
 import kotlinx.android.synthetic.main.summary_fragment.*
 
@@ -63,10 +68,38 @@ class SummaryFragment : BaseFragment() {
             }
         }
 
-        popularityBubble.setCardBackgroundColor(ContextCompat.getColor(context, vn.popularityColor()))
-        ratingBubble.setCardBackgroundColor(ContextCompat.getColor(context, Vote.getColor(vn.rating)))
-        popularity.text = String.format(getString(R.string.percent), vn.popularity)
-        ratingVotes.text = String.format(getString(R.string.x_votes), vn.votecount)
-        rating.text = String.format("%.2f", vn.rating)
+        val white = ContextCompat.getColor(context, R.color.white)
+        length.apply {
+            icon.setImageResource(R.drawable.ic_access_time_black_48dp)
+            title.text = vn.lengthString()
+            value.text = vn.lengthInHours()
+            value.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+        }
+        released.apply {
+            icon.setImageResource(R.drawable.ic_event_black_48dp)
+            title.setText(R.string.released_on)
+            value.text = Utils.formatDateMedium(context, vn.released)
+            value.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+        }
+        with(popularity) {
+            this as CardView
+            setCardBackgroundColor(ContextCompat.getColor(context, vn.popularityColor()))
+            icon.setImageResource(R.drawable.ic_whatshot_black_48dp)
+            title.setText(R.string.popularity)
+            value.text = String.format(getString(R.string.percent), vn.popularity)
+            icon.imageTintList = ColorStateList.valueOf(white)
+            title.setTextColor(white)
+            value.setTextColor(white)
+        }
+        rating.apply {
+            this as CardView
+            setCardBackgroundColor(ContextCompat.getColor(context, Vote.getColor(vn.rating)))
+            icon.setImageResource(R.drawable.ic_trending_up_black_48dp)
+            title.text = String.format(getString(R.string.x_votes), vn.votecount)
+            value.text = String.format("%.2f", vn.rating)
+            icon.imageTintList = ColorStateList.valueOf(white)
+            title.setTextColor(white)
+            value.setTextColor(white)
+        }
     }
 }

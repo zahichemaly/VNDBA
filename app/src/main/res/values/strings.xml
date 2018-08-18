@@ -76,4 +76,6 @@
     <string name="pref_key_night_mode" translatable="false">NIGHT_MODE_STRING</string>
     <string name="percent" translatable="false">%.1f%%</string>
     <string name="x_votes">%d votes</string>
+    <string name="popularity">Popularity</string>
+    <string name="released_on">Released on</string>
 </resources>

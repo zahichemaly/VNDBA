@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.extensions.getThemeColor
 import com.booboot.vndbandroid.factory.VNCardFactory
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndb.VN
@@ -18,7 +19,6 @@ import com.booboot.vndbandroid.ui.home.HomeActivity
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment.Companion.VNLIST
 import com.booboot.vndbandroid.ui.vndetails.VNDetailsActivity
-import com.booboot.vndbandroid.util.Utils
 import kotlinx.android.synthetic.main.vn_card.view.*
 import kotlinx.android.synthetic.main.vn_list_fragment.*
 
@@ -46,11 +46,12 @@ class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, (Vi
     fun update(force: Boolean = true) = viewModel.getVns(listType, tabValue, force)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val context = context ?: return
         adapter = VNAdapter(this)
         VNCardFactory.setupList(activity, vnList, adapter)
 
         refreshLayout.setOnRefreshListener(this)
-        refreshLayout.setColorSchemeColors(Utils.getThemeColor(activity, R.attr.colorAccent))
+        refreshLayout.setColorSchemeColors(context.getThemeColor(R.attr.colorAccent))
         showLoading(home()?.isLoading() == true)
     }
 

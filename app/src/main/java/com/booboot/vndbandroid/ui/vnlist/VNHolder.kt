@@ -50,7 +50,7 @@ class VNHolder(itemView: View, private val onVnClicked: (View, VN) -> Unit) : Re
 
         subtitleText.append(context.getString(R.string.bullet))
         if (vn.length ?: 0 > 0)
-            subtitleText.append(vn.lengthString())
+            subtitleText.append(vn.lengthFull())
         else
             subtitleText.append(Utils.getDate(vn.released, true))
 

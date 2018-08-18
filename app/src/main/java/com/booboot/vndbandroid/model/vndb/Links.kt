@@ -9,7 +9,7 @@ import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
 import android.widget.TextView
-import com.booboot.vndbandroid.util.Utils
+import com.booboot.vndbandroid.extensions.openURL
 
 class Links {
     var wikipedia: String? = null
@@ -37,7 +37,7 @@ class Links {
             val ss = SpannableString(textView.text)
             val clickableSpan = object : ClickableSpan() {
                 override fun onClick(textView: View) {
-                    Utils.openURL(context, url)
+                    context.openURL(url)
                 }
 
                 override fun updateDrawState(ds: TextPaint) {

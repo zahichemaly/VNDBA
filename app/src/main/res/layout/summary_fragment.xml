@@ -15,7 +15,7 @@
         android:orientation="vertical"
         android:padding="20dp">
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -23,7 +23,7 @@
             android:textSize="20sp"
             tools:text="Eden* They Were Only Two, On The Planet." />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/originalTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -31,7 +31,7 @@
             android:textSize="18sp"
             tools:text="逆転裁判" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/aliases"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -44,7 +44,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            app:dividerDrawable="@drawable/flexbox_divider"
+            app:dividerDrawable="@drawable/flexbox_divider_8dp"
             app:flexWrap="wrap"
             app:justifyContent="space_evenly"
             app:showDividerVertical="middle" />
@@ -54,7 +54,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            app:dividerDrawable="@drawable/flexbox_divider"
+            app:dividerDrawable="@drawable/flexbox_divider_8dp"
             app:flexWrap="wrap"
             app:justifyContent="space_evenly"
             app:showDividerVertical="middle" />
@@ -65,95 +65,26 @@
             android:clipChildren="false"
             android:clipToPadding="false"
             android:padding="5dp"
+            app:dividerDrawable="@drawable/flexbox_divider_16dp"
             app:flexWrap="wrap"
-            app:justifyContent="space_evenly">
+            app:justifyContent="space_evenly"
+            app:showDividerVertical="middle">
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/popularityBubble"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                app:cardCornerRadius="50dp"
-                app:contentPadding="5dp"
-                tools:cardBackgroundColor="@color/green">
+            <include
+                android:id="@+id/released"
+                layout="@layout/info_bubble" />
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:orientation="vertical">
+            <include
+                android:id="@+id/length"
+                layout="@layout/info_bubble" />
 
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:src="@drawable/ic_whatshot_black_48dp"
-                        app:tint="@color/white" />
+            <include
+                android:id="@+id/popularity"
+                layout="@layout/info_bubble" />
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Popularity"
-                        android:textAlignment="center"
-                        android:textColor="@color/white"
-                        android:textSize="12sp" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/popularity"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:textAlignment="center"
-                        android:textColor="@color/white"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        tools:text="22.2%" />
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/ratingBubble"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                app:cardCornerRadius="50dp"
-                app:contentPadding="5dp"
-                tools:cardBackgroundColor="@color/yellow">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:src="@drawable/ic_trending_up_black_48dp"
-                        app:tint="@color/white" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/ratingVotes"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:maxLines="1"
-                        android:textAlignment="center"
-                        android:textColor="@color/white"
-                        android:textSize="12sp"
-                        tools:text="523 votes" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/rating"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:textAlignment="center"
-                        android:textColor="@color/white"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        tools:text="8.7" />
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
+            <include
+                android:id="@+id/rating"
+                layout="@layout/info_bubble" />
 
         </com.google.android.flexbox.FlexboxLayout>
     </LinearLayout>

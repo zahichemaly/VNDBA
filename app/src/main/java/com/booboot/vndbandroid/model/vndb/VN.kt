@@ -28,22 +28,24 @@ data class VN(
     var screens: List<Screen> = emptyList(),
     var staff: List<VnStaff> = emptyList()
 ) {
+    fun lengthFull(): String = lengthString() + " (" + lengthInHours() + ")"
+
     fun lengthString(): String = when (length) {
-        1 -> "Very short (< 2 hours)"
-        2 -> "Short (2 - 10 hours)"
-        3 -> "Medium (10 - 30 hours)"
-        4 -> "Long (30 - 50 hours)"
-        5 -> "Very long (> 50 hours)"
+        1 -> "Very short"
+        2 -> "Short"
+        3 -> "Medium"
+        4 -> "Long"
+        5 -> "Very long"
         else -> "Unknown"
     }
 
-    fun lengthImage(): Int = when (length) {
-        1 -> R.drawable.score_green
-        2 -> R.drawable.score_light_green
-        3 -> R.drawable.score_yellow
-        4 -> R.drawable.score_orange
-        5 -> R.drawable.score_red
-        else -> -1
+    fun lengthInHours(): String = when (length) {
+        1 -> "< 2 hours"
+        2 -> "2 - 10 hours"
+        3 -> "10 - 30 hours"
+        4 -> "30 - 50 hours"
+        5 -> "> 50 hours"
+        else -> "Unknown"
     }
 
     @ColorRes
