@@ -1,72 +1,41 @@
 package com.booboot.vndbandroid.model.vndbandroid
 
+import androidx.annotation.DrawableRes
 import com.booboot.vndbandroid.R
 
-import java.util.HashMap
+data class Language(
+    val text: String = "",
+    @DrawableRes val flag: Int = 0
+)
 
-object Language {
-    val FULL_TEXT: MutableMap<String, String> = HashMap()
-    val FLAGS: MutableMap<String, Int> = HashMap()
-
-    init {
-        FULL_TEXT.put("ar", "Arabic")
-        FULL_TEXT.put("ca", "Catalan")
-        FULL_TEXT.put("cs", "Czech")
-        FULL_TEXT.put("da", "Danish")
-        FULL_TEXT.put("de", "German")
-        FULL_TEXT.put("en", "English")
-        FULL_TEXT.put("es", "Spanish")
-        FULL_TEXT.put("fi", "Finnish")
-        FULL_TEXT.put("fr", "French")
-        FULL_TEXT.put("he", "Hebrew")
-        FULL_TEXT.put("hu", "Hungarian")
-        FULL_TEXT.put("id", "Indonesian")
-        FULL_TEXT.put("it", "Italian")
-        FULL_TEXT.put("ja", "Japanese")
-        FULL_TEXT.put("ko", "Korean")
-        FULL_TEXT.put("nl", "Dutch")
-        FULL_TEXT.put("no", "Norwegian")
-        FULL_TEXT.put("pl", "Polish")
-        FULL_TEXT.put("pt-br", "Portuguese (Brazil)")
-        FULL_TEXT.put("pt-pt", "Portuguese (Portugal)")
-        FULL_TEXT.put("ro", "Romanian")
-        FULL_TEXT.put("ru", "Russian")
-        FULL_TEXT.put("sk", "Slovak")
-        FULL_TEXT.put("sv", "Swedish")
-        FULL_TEXT.put("ta", "Tagalog")
-        FULL_TEXT.put("tr", "Turkish")
-        FULL_TEXT.put("uk", "Ukrainian")
-        FULL_TEXT.put("vi", "Vietnamese")
-        FULL_TEXT.put("zh", "Chinese")
-
-        FLAGS.put("ar", R.drawable.ar)
-        FLAGS.put("ca", R.drawable.ca)
-        FLAGS.put("cs", R.drawable.cs)
-        FLAGS.put("da", R.drawable.da)
-        FLAGS.put("de", R.drawable.de)
-        FLAGS.put("en", R.drawable.en)
-        FLAGS.put("es", R.drawable.es)
-        FLAGS.put("fi", R.drawable.fi)
-        FLAGS.put("fr", R.drawable.fr)
-        FLAGS.put("he", R.drawable.he)
-        FLAGS.put("hu", R.drawable.hu)
-        FLAGS.put("id", R.drawable.id)
-        FLAGS.put("it", R.drawable.it)
-        FLAGS.put("ja", R.drawable.ja)
-        FLAGS.put("ko", R.drawable.ko)
-        FLAGS.put("nl", R.drawable.nl)
-        FLAGS.put("no", R.drawable.no)
-        FLAGS.put("pl", R.drawable.pl)
-        FLAGS.put("pt-br", R.drawable.pt_br)
-        FLAGS.put("pt-pt", R.drawable.pt_pt)
-        FLAGS.put("ro", R.drawable.ro)
-        FLAGS.put("ru", R.drawable.ru)
-        FLAGS.put("sk", R.drawable.sk)
-        FLAGS.put("sv", R.drawable.sv)
-        FLAGS.put("ta", R.drawable.ta)
-        FLAGS.put("tr", R.drawable.tr)
-        FLAGS.put("uk", R.drawable.uk)
-        FLAGS.put("vi", R.drawable.vi)
-        FLAGS.put("zh", R.drawable.zh)
-    }
-}
+val LANGUAGES = mapOf(
+    "ar" to Language("Arabic", R.drawable.ic_saudi_arabia),
+    "ca" to Language("Catalan", R.drawable.ic_balearic_islands),
+    "cs" to Language("Czech", R.drawable.ic_czech_republic),
+    "da" to Language("Danish", R.drawable.ic_denmark),
+    "de" to Language("German", R.drawable.ic_germany),
+    "en" to Language("English", R.drawable.ic_united_kingdom),
+    "es" to Language("Spanish", R.drawable.ic_spain),
+    "fi" to Language("Finnish", R.drawable.ic_finland),
+    "fr" to Language("French", R.drawable.ic_france),
+    "he" to Language("Hebrew", R.drawable.ic_israel),
+    "hu" to Language("Hungarian", R.drawable.ic_hungary),
+    "id" to Language("Indonesian", R.drawable.ic_indonesia),
+    "it" to Language("Italian", R.drawable.ic_italy),
+    "ja" to Language("Japanese", R.drawable.ic_japan),
+    "ko" to Language("Korean", R.drawable.ic_south_korea),
+    "nl" to Language("Dutch", R.drawable.ic_netherlands),
+    "no" to Language("Norwegian", R.drawable.ic_norway),
+    "pl" to Language("Polish", R.drawable.ic_republic_of_poland),
+    "pt-br" to Language("Portuguese (Brazil)", R.drawable.ic_brazil),
+    "pt-pt" to Language("Portuguese (Portugal)", R.drawable.ic_portugal),
+    "ro" to Language("Romanian", R.drawable.ic_romania),
+    "ru" to Language("Russian", R.drawable.ic_russia),
+    "sk" to Language("Slovak", R.drawable.ic_slovakia),
+    "sv" to Language("Swedish", R.drawable.ic_sweden),
+    "ta" to Language("Tagalog", R.drawable.ic_philippines),
+    "tr" to Language("Turkish", R.drawable.ic_turkey),
+    "uk" to Language("Ukrainian", R.drawable.ic_ukraine),
+    "vi" to Language("Vietnamese", R.drawable.ic_vietnam),
+    "zh" to Language("Chinese", R.drawable.ic_china)
+)

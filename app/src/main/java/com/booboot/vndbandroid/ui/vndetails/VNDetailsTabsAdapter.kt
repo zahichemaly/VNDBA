@@ -26,8 +26,8 @@ class VNDetailsTabsAdapter(fm: FragmentManager?) : FragmentStatePagerAdapter(fm)
         args.putLong(VNDetailsActivity.EXTRA_VN_ID, vn?.id ?: 0)
 
         val fragment = when (position) {
-            0 -> TagsFragment()
-            1 -> SummaryFragment()
+            0 -> SummaryFragment()
+            1 -> TagsFragment()
             else -> Fragment()
         }
 
@@ -37,6 +37,6 @@ class VNDetailsTabsAdapter(fm: FragmentManager?) : FragmentStatePagerAdapter(fm)
 
     override fun getCount(): Int = numOfTabs
 
-    val tabs = listOf("Tags", "Summary", "Characters", "Releases", "Staff")
+    val tabs = listOf("Summary", "Tags", "Characters", "Releases", "Staff")
     override fun getPageTitle(position: Int): CharSequence? = tabs[position]
 }

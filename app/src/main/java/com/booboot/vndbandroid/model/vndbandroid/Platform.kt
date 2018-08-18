@@ -1,83 +1,49 @@
 package com.booboot.vndbandroid.model.vndbandroid
 
+import androidx.annotation.ColorRes
 import com.booboot.vndbandroid.R
-import java.util.*
 
-object Platform {
-    val FULL_TEXT: MutableMap<String, String> = HashMap()
-    val IMAGES: MutableMap<String, Int> = HashMap()
+data class Platform(
+    val text: String = "",
+    @ColorRes val color: Int = 0
+)
 
-    init {
-        FULL_TEXT.put("win", "Windows")
-        FULL_TEXT.put("dos", "DOS")
-        FULL_TEXT.put("lin", "Linux")
-        FULL_TEXT.put("mac", "Mac OS")
-        FULL_TEXT.put("ios", "Apple iProduct")
-        FULL_TEXT.put("and", "Android")
-        FULL_TEXT.put("dvd", "DVD Player")
-        FULL_TEXT.put("bdp", "Blu-ray Player")
-        FULL_TEXT.put("fmt", "FM Towns")
-        FULL_TEXT.put("gba", "Game Boy Advance")
-        FULL_TEXT.put("gbc", "Game Boy Color")
-        FULL_TEXT.put("msx", "MSX")
-        FULL_TEXT.put("nds", "Nintendo DS")
-        FULL_TEXT.put("nes", "Famicom")
-        FULL_TEXT.put("p88", "PC-88")
-        FULL_TEXT.put("p98", "PC-98")
-        FULL_TEXT.put("pce", "PC Engine")
-        FULL_TEXT.put("pcf", "PC-FX")
-        FULL_TEXT.put("psp", "PlayStation Portable")
-        FULL_TEXT.put("ps1", "PlayStation 1")
-        FULL_TEXT.put("ps2", "PlayStation 2")
-        FULL_TEXT.put("ps3", "PlayStation 3")
-        FULL_TEXT.put("ps4", "PlayStation 4")
-        FULL_TEXT.put("psv", "PlayStation Vita")
-        FULL_TEXT.put("drc", "Dreamcast")
-        FULL_TEXT.put("sat", "Sega Saturn")
-        FULL_TEXT.put("sfc", "Super Nintendo")
-        FULL_TEXT.put("wii", "Nintendo Wii")
-        FULL_TEXT.put("n3d", "Nintendo 3DS")
-        FULL_TEXT.put("x68", "X68000")
-        FULL_TEXT.put("xb1", "Xbox")
-        FULL_TEXT.put("xb3", "Xbox 360")
-        FULL_TEXT.put("xbo", "Xbox One")
-        FULL_TEXT.put("web", "Website")
-        FULL_TEXT.put("oth", "Other")
-
-        IMAGES.put("win", R.drawable.win)
-        IMAGES.put("dos", R.drawable.dos)
-        IMAGES.put("lin", R.drawable.lin)
-        IMAGES.put("mac", R.drawable.mac)
-        IMAGES.put("ios", R.drawable.ios)
-        IMAGES.put("and", R.drawable.and)
-        IMAGES.put("dvd", R.drawable.dvd)
-        IMAGES.put("bdp", R.drawable.bdp)
-        IMAGES.put("fmt", R.drawable.fmt)
-        IMAGES.put("gba", R.drawable.gba)
-        IMAGES.put("gbc", R.drawable.gbc)
-        IMAGES.put("msx", R.drawable.msx)
-        IMAGES.put("nds", R.drawable.nds)
-        IMAGES.put("nes", R.drawable.nes)
-        IMAGES.put("p88", R.drawable.p88)
-        IMAGES.put("p98", R.drawable.p98)
-        IMAGES.put("pce", R.drawable.pce)
-        IMAGES.put("pcf", R.drawable.pcf)
-        IMAGES.put("psp", R.drawable.psp)
-        IMAGES.put("ps1", R.drawable.ps1)
-        IMAGES.put("ps2", R.drawable.ps2)
-        IMAGES.put("ps3", R.drawable.ps3)
-        IMAGES.put("ps4", R.drawable.ps4)
-        IMAGES.put("psv", R.drawable.psv)
-        IMAGES.put("drc", R.drawable.drc)
-        IMAGES.put("sat", R.drawable.sat)
-        IMAGES.put("sfc", R.drawable.sfc)
-        IMAGES.put("wii", R.drawable.wii)
-        IMAGES.put("n3d", R.drawable.n3d)
-        IMAGES.put("x68", R.drawable.x68)
-        IMAGES.put("xb1", R.drawable.xb1)
-        IMAGES.put("xb3", R.drawable.xb3)
-        IMAGES.put("xbo", R.drawable.xbo)
-        IMAGES.put("web", R.drawable.web)
-        IMAGES.put("oth", R.drawable.oth)
-    }
-}
+val PLATFORMS = mapOf(
+    "web" to Platform("Web", R.color.web),
+    "win" to Platform("PC", R.color.pc),
+    "dos" to Platform("DOS", R.color.dos),
+    "lin" to Platform("Linux", R.color.linux),
+    "mac" to Platform("Mac", R.color.mac),
+    "ios" to Platform("iOS", R.color.ios),
+    "and" to Platform("Android", R.color.android),
+    "dvd" to Platform("DVD", R.color.dvd),
+    "bdp" to Platform("Blu-ray", R.color.bluray),
+    "fmt" to Platform("FM Towns", R.color.fmtowns),
+    "gba" to Platform("GBA", R.color.gba),
+    "gbc" to Platform("GBC", R.color.gbc),
+    "msx" to Platform("MSX", R.color.msx),
+    "nds" to Platform("DS", R.color.ds),
+    "nes" to Platform("NES", R.color.nes),
+    "p88" to Platform("PC-88", R.color.pc88),
+    "p98" to Platform("PC-98", R.color.pc98),
+    "pce" to Platform("PC Engine", R.color.pcengine),
+    "pcf" to Platform("PC-FX", R.color.pcfx),
+    "psp" to Platform("PSP", R.color.psp),
+    "ps1" to Platform("PS1", R.color.ps1),
+    "ps2" to Platform("PS2", R.color.ps2),
+    "ps3" to Platform("PS3", R.color.ps3),
+    "ps4" to Platform("PS4", R.color.ps4),
+    "psv" to Platform("PS Vita", R.color.psvita),
+    "drc" to Platform("Dreamcast", R.color.dreamcast),
+    "sat" to Platform("Saturn", R.color.saturn),
+    "sfc" to Platform("SNES", R.color.snes),
+    "wii" to Platform("Wii", R.color.wii),
+    "wiu" to Platform("Wii U", R.color.wiiu),
+    "swi" to Platform("Switch", R.color.nswitch),
+    "n3d" to Platform("3DS", R.color._3ds),
+    "x68" to Platform("X68000", R.color.x68),
+    "xb1" to Platform("Xbox", R.color.xbox),
+    "xb3" to Platform("X360", R.color.xbox360),
+    "xbo" to Platform("XOne", R.color.xboxone),
+    "oth" to Platform("Other", R.color.other)
+)

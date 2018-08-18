@@ -10,6 +10,10 @@ fun View.toggle() {
     visibility = if (visibility == GONE) VISIBLE else GONE
 }
 
+fun View.toggle(show: Boolean) {
+    visibility = if (show) VISIBLE else GONE
+}
+
 fun View.hideKeyboard() {
     val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     imm.hideSoftInputFromWindow(windowToken, 0)

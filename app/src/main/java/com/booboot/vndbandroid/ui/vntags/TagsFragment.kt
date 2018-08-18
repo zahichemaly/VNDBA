@@ -21,11 +21,6 @@ class TagsFragment : BaseFragment(), TagsAdapter.Callback {
     private lateinit var viewModel: TagsViewModel
     private lateinit var tagsAdapter: TagsAdapter
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        super.onCreateView(inflater, container, savedInstanceState)
-        return rootView
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if (activity == null) return
 

@@ -13,9 +13,6 @@
     android:paddingBottom="8dp">
 
     <com.google.android.material.chip.Chip
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/chip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -23,6 +20,6 @@
         app:chipIconSize="31dp"
         app:chipStartPadding="0dp"
         tools:chipIcon="@drawable/rounded_green_background"
-        tools:chipText="Romantic"
+        tools:text="Romantic"
         tools:targetApi="lollipop" />
 </LinearLayout>

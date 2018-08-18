@@ -58,7 +58,6 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener {
 
     private fun showVn(vn: VN?) {
         if (vn == null) return
-        Logger.log(vn.toString())
         supportActionBar?.title = vn.title
 
         val screens = if (vn.image != null) mutableListOf(vn.image!!) else mutableListOf()
