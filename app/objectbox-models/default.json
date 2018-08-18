@@ -295,6 +295,18 @@
         {
           "id": "6:2048183445605003020",
           "name": "tags"
+        },
+        {
+          "id": "7:5193514285912189364",
+          "name": "languages"
+        },
+        {
+          "id": "8:6004578287152691036",
+          "name": "orig_lang"
+        },
+        {
+          "id": "9:8877722148301353548",
+          "name": "platforms"
         }
       ]
     },
@@ -321,11 +333,59 @@
         }
       ],
       "relations": []
+    },
+    {
+      "id": "13:2004469773461443688",
+      "lastPropertyId": "2:3742630984561189864",
+      "name": "LanguagaDao",
+      "properties": [
+        {
+          "id": "1:2773197008656919714",
+          "name": "id"
+        },
+        {
+          "id": "2:3742630984561189864",
+          "name": "value"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "14:3493308045902120423",
+      "lastPropertyId": "2:7444683997660937398",
+      "name": "OriginalLanguagaDao",
+      "properties": [
+        {
+          "id": "1:9097837578298024101",
+          "name": "id"
+        },
+        {
+          "id": "2:7444683997660937398",
+          "name": "value"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "15:1283349800001857741",
+      "lastPropertyId": "2:5898636249980689573",
+      "name": "PlatformDao",
+      "properties": [
+        {
+          "id": "1:7125411083384653765",
+          "name": "id"
+        },
+        {
+          "id": "2:5898636249980689573",
+          "name": "value"
+        }
+      ],
+      "relations": []
     }
   ],
-  "lastEntityId": "12:3310468597704175954",
+  "lastEntityId": "15:1283349800001857741",
   "lastIndexId": "0:0",
-  "lastRelationId": "6:2048183445605003020",
+  "lastRelationId": "9:8877722148301353548",
   "lastSequenceId": "0:0",
   "modelVersion": 4,
   "modelVersionParserMinimum": 4,
