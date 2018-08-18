@@ -14,7 +14,7 @@
     <color name="red">#F44336</color>
     <color name="buttonPressed">#E5E5E5</color>
     <color name="transparentBlack">#46000000</color>
-    <color name="transparentWhite">#50ffffff</color>
+    <color name="transparentWhite">#78ffffff</color>
 
     <!-- Tag grading colors -->
     <color name="tagGreen">#64DD17</color>
