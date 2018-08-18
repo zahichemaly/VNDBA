@@ -27,4 +27,43 @@
     <!-- DayNight colors -->
     <color name="cardDividerColor">@color/light_gray</color>
     <color name="tabBackgroundColor">@color/transparentWhite</color>
+
+    <!-- Platform colors -->
+    <color name="android">#4b7d2f</color>
+    <color name="web">#373737</color>
+    <color name="pc">#373737</color>
+    <color name="dos">#000000</color>
+    <color name="pc88">#000000</color>
+    <color name="pc98">#000000</color>
+    <color name="pcengine">#000000</color>
+    <color name="pcfx">#fec101</color>
+    <color name="linux">#f5bd0c</color>
+    <color name="mac">#b2b7bb</color>
+    <color name="ios">#8e8e93</color>
+    <color name="dvd">#000000</color>
+    <color name="fmtowns">#33cc66</color>
+    <color name="gba">#492e81</color>
+    <color name="gbc">#56266d</color>
+    <color name="msx">#dc0f0f1d</color>
+    <color name="ds">#793A3A</color>
+    <color name="_3ds">#984234</color>
+    <color name="nes">#fc0c18</color>
+    <color name="snes">#fc0c18</color>
+    <color name="wii">#92445e</color>
+    <color name="wiiu">#66428e</color>
+    <color name="nswitch">#e60012</color>
+    <color name="dreamcast">#cf3311</color>
+    <color name="saturn">#363499</color>
+    <color name="bluray">#0095d5</color>
+    <color name="psp">#09f</color>
+    <color name="ps1">#1e0afa</color>
+    <color name="ps2">#321ef0</color>
+    <color name="ps3">#4545dc</color>
+    <color name="ps4">#597eb7</color>
+    <color name="psvita">#36c</color>
+    <color name="x68">#fc0204</color>
+    <color name="xboxone">#869a56</color>
+    <color name="xbox360">#61850b</color>
+    <color name="xbox">#466400</color>
+    <color name="other">#888888</color>
 </resources>
