@@ -66,17 +66,21 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
                     .union(_items.votelist.keys)
                     .union(_items.wishlist.keys)
 
-                val oldVnlist = vnlistRepository.getItems(CachePolicy(cacheOnly = true)).blockingGet()
-                val oldVotelist = votelistRepository.getItems(CachePolicy(cacheOnly = true)).blockingGet()
-                val oldWishlist = wishlistRepository.getItems(CachePolicy(cacheOnly = true)).blockingGet()
+                val oldItems = Single.zip(
+                    vnlistRepository.getItems(CachePolicy(cacheOnly = true)),
+                    votelistRepository.getItems(CachePolicy(cacheOnly = true)),
+                    wishlistRepository.getItems(CachePolicy(cacheOnly = true)),
+                    Function3<Map<Long, Vnlist>, Map<Long, Votelist>, Map<Long, Wishlist>, AccountItems> { vni, vti, wsi ->
+                        AccountItems(vni, vti, wsi)
+                    }).blockingGet()
 
-                val newIds = allIds.minus(oldVnlist.keys)
-                    .minus(oldVotelist.keys)
-                    .minus(oldWishlist.keys)
+                val newIds = allIds.minus(oldItems.vnlist.keys)
+                    .minus(oldItems.votelist.keys)
+                    .minus(oldItems.wishlist.keys)
 
-                val haveListsChanged = items.vnlist != oldVnlist ||
-                    items.votelist != oldVotelist ||
-                    items.wishlist != oldWishlist
+                val haveListsChanged = items.vnlist != oldItems.vnlist ||
+                    items.votelist != oldItems.votelist ||
+                    items.wishlist != oldItems.wishlist
 
                 when {
                     allIds.isEmpty() -> Maybe.just(Results()) // empty account
