@@ -16,7 +16,7 @@ import javax.inject.Singleton
 class VotelistRepository @Inject constructor(var boxStore: BoxStore, var vndbServer: VNDBServer) : ListRepository<Votelist>() {
     override fun getItemsFromDB(): List<Votelist> = boxStore.get<VotelistDao, List<Votelist>> { it.all.map { it.toBo() } }
 
-    override fun addItemsToDB(items: List<Votelist>) = boxStore.save { items.map { VotelistDao(it) } }
+    override fun addItemsToDB(items: List<Votelist>) = boxStore.save(true) { items.map { VotelistDao(it) } }
 
     override fun getItemsFromAPI(): Results<Votelist> = vndbServer
         .get<Votelist>("votelist", "basic", "(uid = 0)", Options(results = 100, fetchAllPages = true, socketIndex = 1), type())

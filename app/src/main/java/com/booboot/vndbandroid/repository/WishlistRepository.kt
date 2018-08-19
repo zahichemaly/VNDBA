@@ -16,7 +16,7 @@ import javax.inject.Singleton
 open class WishlistRepository @Inject constructor(var boxStore: BoxStore, var vndbServer: VNDBServer) : ListRepository<Wishlist>() {
     override fun getItemsFromDB(): List<Wishlist> = boxStore.get<WishlistDao, List<Wishlist>> { it.all.map { it.toBo() } }
 
-    override fun addItemsToDB(items: List<Wishlist>) = boxStore.save { items.map { WishlistDao(it) } }
+    override fun addItemsToDB(items: List<Wishlist>) = boxStore.save(true) { items.map { WishlistDao(it) } }
 
     override fun getItemsFromAPI(): Results<Wishlist> = vndbServer
         .get<Wishlist>("wishlist", "basic", "(uid = 0)", Options(results = 100, fetchAllPages = true, socketIndex = 2), type())
