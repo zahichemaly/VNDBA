@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.extensions.formatText
 import com.booboot.vndbandroid.extensions.hideKeyboard
 import com.booboot.vndbandroid.extensions.startActivity
 import com.booboot.vndbandroid.model.vndb.Links
@@ -20,7 +21,7 @@ class LoginActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.login_activity)
 
-        Links.setTextViewLink(this, signupTextView, Links.VNDB_REGISTER, signupTextView.text.toString().indexOf("Sign up here"), signupTextView.text.toString().length)
+        signupTextView.formatText(signupTextView.text.toString().replace("Sign up here", "[url=" + Links.VNDB_REGISTER + "]Sign up here[/url]", true))
 
         loginUsername.setText(Preferences.username)
         loginPassword.setText(Preferences.password)

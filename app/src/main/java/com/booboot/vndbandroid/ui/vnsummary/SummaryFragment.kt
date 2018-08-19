@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.extensions.formatText
 import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndbandroid.LANGUAGES
@@ -46,6 +47,9 @@ class SummaryFragment : BaseFragment() {
         originalTitle.toggle(vn.original?.isNotEmpty() == true)
         aliases.text = vn.aliases?.split("\n")?.joinToString()
         aliases.toggle(vn.aliases?.isNotEmpty() == true)
+
+        description.formatText(vn.description)
+        description.toggle(description.text.isNotEmpty())
 
         platforms.removeAllViews()
         vn.platforms.forEach {

@@ -47,7 +47,7 @@ data class Tag(
         )
 
         fun checkSpoilerLevel(authorizedLevel: Int, actualLevel: Int): Boolean =
-            if (authorizedLevel == 2) true else actualLevel < authorizedLevel + 1
+            if (authorizedLevel == 2) true else actualLevel <= authorizedLevel
 
         fun getScoreImage(tag: List<Number>): Int = tag[1].toFloat().let {
             when {

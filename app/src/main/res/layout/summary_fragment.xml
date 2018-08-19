@@ -87,5 +87,13 @@
                 layout="@layout/info_bubble" />
 
         </com.google.android.flexbox.FlexboxLayout>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="14sp"
+            tools:text="Description" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

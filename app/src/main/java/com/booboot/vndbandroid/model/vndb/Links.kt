@@ -1,16 +1,5 @@
 package com.booboot.vndbandroid.model.vndb
 
-import android.app.Activity
-import android.graphics.Color
-import android.text.SpannableString
-import android.text.Spanned
-import android.text.TextPaint
-import android.text.method.LinkMovementMethod
-import android.text.style.ClickableSpan
-import android.view.View
-import android.widget.TextView
-import com.booboot.vndbandroid.extensions.openURL
-
 class Links {
     var wikipedia: String? = null
     var encubed: String? = null
@@ -32,24 +21,5 @@ class Links {
         val PLAY_STORE = "https://play.google.com/store/apps/details?id=com.booboot.vndbandroid"
         val VNSTAT = "https://vnstat.net/"
         val EMAIL = "vndba.app@gmail.com"
-
-        fun setTextViewLink(context: Activity, textView: TextView, url: String, start: Int, end: Int) {
-            val ss = SpannableString(textView.text)
-            val clickableSpan = object : ClickableSpan() {
-                override fun onClick(textView: View) {
-                    context.openURL(url)
-                }
-
-                override fun updateDrawState(ds: TextPaint) {
-                    super.updateDrawState(ds)
-                    ds.isUnderlineText = false
-                }
-            }
-            ss.setSpan(clickableSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-
-            textView.text = ss
-            textView.movementMethod = LinkMovementMethod.getInstance()
-            textView.highlightColor = Color.TRANSPARENT
-        }
     }
 }
