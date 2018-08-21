@@ -6,6 +6,7 @@ import io.objectbox.annotation.Entity
 import io.objectbox.annotation.Id
 import io.objectbox.kotlin.boxFor
 import io.objectbox.relation.ToMany
+import io.objectbox.relation.ToOne
 
 @Entity
 class VNDao() {
@@ -26,6 +27,7 @@ class VNDao() {
     lateinit var platforms: ToMany<PlatformDao>
     lateinit var tags: ToMany<VNTagDao>
     lateinit var screens: ToMany<ScreenDao>
+    lateinit var links: ToOne<LinksDao>
 
     constructor(vn: VN, boxStore: BoxStore) : this() {
         id = vn.id
@@ -47,6 +49,7 @@ class VNDao() {
         vn.platforms.forEach { platforms.add(PlatformDao(it.hashCode().toLong(), it)) }
         vn.tags.forEach { tags.add(VNTagDao(it)) }
         vn.screens.forEach { screens.add(ScreenDao(it)) }
+        links.target = LinksDao(vn.links)
 
         boxStore.boxFor<LanguagaDao>().put(languages)
         boxStore.boxFor<OriginalLanguagaDao>().put(orig_lang)
@@ -73,6 +76,7 @@ class VNDao() {
             platforms = this@VNDao.platforms.map { it.value }
             tags = this@VNDao.tags.map { it.toBo() }
             screens = this@VNDao.screens.map { it.toBo() }
+            links = this@VNDao.links.target.toBo()
         }
     }
 }

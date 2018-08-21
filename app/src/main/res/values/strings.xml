@@ -78,4 +78,7 @@
     <string name="x_votes">%d votes</string>
     <string name="popularity">Popularity</string>
     <string name="released_on">Released on</string>
+    <string name="wikipedia">Wikipedia</string>
+    <string name="encubed">Encubed</string>
+    <string name="renai">Ren\'Ai</string>
 </resources>

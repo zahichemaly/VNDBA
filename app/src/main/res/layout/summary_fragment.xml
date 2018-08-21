@@ -95,5 +95,53 @@
             android:textColor="?android:attr/textColorPrimary"
             android:textSize="14sp"
             tools:text="Description" />
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/links"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:dividerDrawable="@drawable/flexbox_divider_8dp"
+            app:flexWrap="wrap"
+            app:justifyContent="space_evenly"
+            app:showDividerVertical="middle">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/wikipediaButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:drawableStart="@drawable/ic_wikipedia"
+                android:drawablePadding="8dp"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:text="@string/wikipedia"
+                android:textColor="?android:attr/textColorPrimary"
+                app:backgroundTint="?attr/colorPrimary" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/renaiButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:drawablePadding="8dp"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:text="@string/renai"
+                android:textColor="?android:attr/textColorPrimary"
+                app:backgroundTint="?attr/colorPrimary" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/encubedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:drawablePadding="8dp"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:text="@string/encubed"
+                android:textColor="?android:attr/textColorPrimary"
+                app:backgroundTint="?attr/colorPrimary" />
+        </com.google.android.flexbox.FlexboxLayout>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

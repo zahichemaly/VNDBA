@@ -11,7 +11,9 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.formatText
+import com.booboot.vndbandroid.extensions.openURL
 import com.booboot.vndbandroid.extensions.toggle
+import com.booboot.vndbandroid.model.vndb.Links
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndbandroid.LANGUAGES
 import com.booboot.vndbandroid.model.vndbandroid.PLATFORMS
@@ -105,5 +107,13 @@ class SummaryFragment : BaseFragment() {
             title.setTextColor(white)
             value.setTextColor(white)
         }
+
+        wikipediaButton.toggle(vn.links.wikipedia?.isNotEmpty() == true)
+        renaiButton.toggle(vn.links.renai?.isNotEmpty() == true)
+        encubedButton.toggle(vn.links.encubed?.isNotEmpty() == true)
+
+        wikipediaButton.setOnClickListener { context.openURL(Links.WIKIPEDIA + vn.links.wikipedia) }
+        renaiButton.setOnClickListener { context.openURL(Links.RENAI + vn.links.renai) }
+        encubedButton.setOnClickListener { context.openURL(Links.ENCUBED + vn.links.encubed) }
     }
 }

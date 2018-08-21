@@ -21,11 +21,5 @@ class ScreenDao() {
         width = screen.width
     }
 
-    fun toBo() = Screen(
-        image,
-        rid,
-        nsfw,
-        height,
-        width
-    )
+    fun toBo() = Screen(image, rid, nsfw, height, width)
 }

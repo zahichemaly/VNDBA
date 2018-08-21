@@ -1,13 +1,16 @@
 package com.booboot.vndbandroid.model.vndb
 
-class Links {
-    var wikipedia: String? = null
-    var encubed: String? = null
-    var renai: String? = null
-    var homepage: String? = null
-    var twitter: String? = null
-    var anidb: String? = null
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
+data class Links(
+    var wikipedia: String? = null,
+    var encubed: String? = null,
+    var renai: String? = null,
+    var homepage: String? = null,
+    var twitter: String? = null,
+    var anidb: String? = null
+) {
     companion object {
         val WIKIPEDIA = "https://en.wikipedia.org/wiki/"
         val ENCUBED = "http://novelnews.net/tag/"
