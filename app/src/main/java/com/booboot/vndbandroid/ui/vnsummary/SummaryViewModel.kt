@@ -3,6 +3,7 @@ package com.booboot.vndbandroid.ui.vnsummary
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import com.booboot.vndbandroid.App
+import com.booboot.vndbandroid.extensions.format
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.repository.VNRepository
 import com.booboot.vndbandroid.ui.base.BaseViewModel
@@ -26,6 +27,13 @@ class SummaryViewModel constructor(application: Application) : BaseViewModel(app
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe { loadingData.value = true }
+            .observeOn(Schedulers.computation())
+            .map {
+                it.aliases = it.aliases?.replace("\n", ", ")
+                it.description = it.description?.format(getApplication<Application>().packageName) ?: ""
+                it
+            }
+            .observeOn(AndroidSchedulers.mainThread())
             .doFinally {
                 loadingData.value = false
                 disposables.remove(DISPOSABLE_VN)

@@ -2,15 +2,16 @@ package com.booboot.vndbandroid.ui.vnsummary
 
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
 import android.util.TypedValue
 import android.view.View
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import androidx.core.text.HtmlCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import com.booboot.vndbandroid.R
-import com.booboot.vndbandroid.extensions.formatText
 import com.booboot.vndbandroid.extensions.openURL
 import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.model.vndb.Links
@@ -47,10 +48,11 @@ class SummaryFragment : BaseFragment() {
         title.text = vn.title
         originalTitle.text = vn.original
         originalTitle.toggle(vn.original?.isNotEmpty() == true)
-        aliases.text = vn.aliases?.split("\n")?.joinToString()
+        aliases.text = vn.aliases
         aliases.toggle(vn.aliases?.isNotEmpty() == true)
 
-        description.formatText(vn.description)
+        description.movementMethod = LinkMovementMethod.getInstance()
+        description.text = HtmlCompat.fromHtml(vn.description ?: "", HtmlCompat.FROM_HTML_MODE_COMPACT)
         description.toggle(description.text.isNotEmpty())
 
         platforms.removeAllViews()

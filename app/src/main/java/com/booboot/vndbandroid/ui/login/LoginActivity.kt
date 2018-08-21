@@ -1,10 +1,12 @@
 package com.booboot.vndbandroid.ui.login
 
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
+import androidx.core.text.HtmlCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
-import com.booboot.vndbandroid.extensions.formatText
+import com.booboot.vndbandroid.extensions.format
 import com.booboot.vndbandroid.extensions.hideKeyboard
 import com.booboot.vndbandroid.extensions.startActivity
 import com.booboot.vndbandroid.model.vndb.Links
@@ -21,7 +23,9 @@ class LoginActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.login_activity)
 
-        signupTextView.formatText(signupTextView.text.toString().replace("Sign up here", "[url=" + Links.VNDB_REGISTER + "]Sign up here[/url]", true))
+        val signupText = signupTextView.text.toString().replace("Sign up here", "[url=" + Links.VNDB_REGISTER + "]Sign up here[/url]", true)
+        signupTextView.movementMethod = LinkMovementMethod.getInstance()
+        signupTextView.text = HtmlCompat.fromHtml(signupText.format(packageName), HtmlCompat.FROM_HTML_MODE_COMPACT)
 
         loginUsername.setText(Preferences.username)
         loginPassword.setText(Preferences.password)
