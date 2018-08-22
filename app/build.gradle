@@ -42,8 +42,6 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha4'
     testImplementation 'junit:junit:4.12'
 
@@ -75,12 +73,12 @@ dependencies {
     kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"
     implementation "io.objectbox:objectbox-kotlin:$objectbox_version"
 
-    implementation ('com.squareup.picasso:picasso:2.71828') {
+    implementation('com.squareup.picasso:picasso:2.71828') {
         exclude group: 'com.android.support'
     }
 
-    implementation "com.chibatching.kotpref:kotpref:2.5.0"
-    implementation ('cat.ereza:customactivityoncrash:2.2.0') {
+    implementation "com.chibatching.kotpref:kotpref:2.6.0"
+    implementation('cat.ereza:customactivityoncrash:2.2.0') {
         exclude group: 'com.android.support'
     }
     implementation('com.crashlytics.sdk.android:crashlytics:2.9.4@aar') {
