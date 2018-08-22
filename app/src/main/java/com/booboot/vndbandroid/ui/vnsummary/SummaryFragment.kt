@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.util.TypedValue
 import android.view.View
+import androidx.asynclayoutinflater.view.AsyncLayoutInflater
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
@@ -55,24 +56,25 @@ class SummaryFragment : BaseFragment() {
         description.text = HtmlCompat.fromHtml(vn.description ?: "", HtmlCompat.FROM_HTML_MODE_COMPACT)
         description.toggle(description.text.isNotEmpty())
 
+        val asyncInflater = AsyncLayoutInflater(context)
         platforms.removeAllViews()
         vn.platforms.forEach {
-            layoutInflater.inflate(R.layout.platform_tag, platforms, false).apply {
-                val platform = PLATFORMS[it] ?: return@apply
-                tagBackground.setCardBackgroundColor(ContextCompat.getColor(context, platform.color))
-                tagText.text = platform.text
-                platforms.addView(this)
+            asyncInflater.inflate(R.layout.platform_tag, platforms) { view, _, _ ->
+                val platform = PLATFORMS[it] ?: return@inflate
+                view.tagBackground.setCardBackgroundColor(ContextCompat.getColor(context, platform.color))
+                view.tagText.text = platform.text
+                platforms.addView(view)
             }
         }
 
         languages.removeAllViews()
         vn.languages.forEach {
-            layoutInflater.inflate(R.layout.language_tag, languages, false).apply {
-                val language = LANGUAGES[it] ?: return@apply
-                val chip = this as Chip
+            asyncInflater.inflate(R.layout.language_tag, languages) { view, _, _ ->
+                val language = LANGUAGES[it] ?: return@inflate
+                val chip = view as Chip
                 chip.text = language.text
                 chip.chipIcon = VectorDrawableCompat.create(resources, language.flag, context.theme)
-                languages.addView(this)
+                languages.addView(chip)
             }
         }
 
