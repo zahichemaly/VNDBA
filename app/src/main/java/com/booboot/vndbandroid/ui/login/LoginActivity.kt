@@ -2,7 +2,6 @@ package com.booboot.vndbandroid.ui.login
 
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
-import androidx.core.text.HtmlCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
@@ -25,7 +24,7 @@ class LoginActivity : BaseActivity() {
 
         val signupText = signupTextView.text.toString().replace("Sign up here", "[url=" + Links.VNDB_REGISTER + "]Sign up here[/url]", true)
         signupTextView.movementMethod = LinkMovementMethod.getInstance()
-        signupTextView.text = HtmlCompat.fromHtml(signupText.format(packageName), HtmlCompat.FROM_HTML_MODE_COMPACT)
+        signupTextView.text = signupText.format(packageName)
 
         loginUsername.setText(Preferences.username)
         loginPassword.setText(Preferences.password)

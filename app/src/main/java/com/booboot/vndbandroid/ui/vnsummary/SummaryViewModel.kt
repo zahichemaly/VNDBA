@@ -1,6 +1,8 @@
 package com.booboot.vndbandroid.ui.vnsummary
 
 import android.app.Application
+import android.text.SpannableString
+import android.text.Spanned
 import androidx.lifecycle.MutableLiveData
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.extensions.format
@@ -13,7 +15,7 @@ import javax.inject.Inject
 
 class SummaryViewModel constructor(application: Application) : BaseViewModel(application) {
     @Inject lateinit var vnRepository: VNRepository
-    val vnData: MutableLiveData<VN> = MutableLiveData()
+    val vnData: MutableLiveData<SummaryVN> = MutableLiveData()
 
     init {
         (application as App).appComponent.inject(this)
@@ -30,8 +32,8 @@ class SummaryViewModel constructor(application: Application) : BaseViewModel(app
             .observeOn(Schedulers.computation())
             .map {
                 it.aliases = it.aliases?.replace("\n", ", ")
-                it.description = it.description?.format(getApplication<Application>().packageName) ?: ""
-                it
+                val description = it.description?.format(getApplication<Application>().packageName) ?: SpannableString("")
+                SummaryVN(it, description)
             }
             .observeOn(AndroidSchedulers.mainThread())
             .doFinally {
@@ -45,3 +47,8 @@ class SummaryViewModel constructor(application: Application) : BaseViewModel(app
         private const val DISPOSABLE_VN = "DISPOSABLE_VN"
     }
 }
+
+data class SummaryVN(
+    val vn: VN,
+    val description: Spanned
+)

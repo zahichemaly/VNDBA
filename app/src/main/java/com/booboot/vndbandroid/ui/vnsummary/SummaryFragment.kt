@@ -8,7 +8,6 @@ import android.view.View
 import androidx.asynclayoutinflater.view.AsyncLayoutInflater
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
-import androidx.core.text.HtmlCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
@@ -16,7 +15,6 @@ import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.openURL
 import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.model.vndb.Links
-import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndbandroid.LANGUAGES
 import com.booboot.vndbandroid.model.vndbandroid.PLATFORMS
 import com.booboot.vndbandroid.model.vndbandroid.Vote
@@ -42,9 +40,9 @@ class SummaryFragment : BaseFragment() {
         viewModel.loadVn(vnId, false)
     }
 
-    private fun showVn(vn: VN?) {
-        if (vn == null) return
+    private fun showVn(summaryVN: SummaryVN?) {
         val context = context ?: return
+        val vn = summaryVN?.vn ?: return
 
         title.text = vn.title
         originalTitle.text = vn.original
@@ -53,7 +51,7 @@ class SummaryFragment : BaseFragment() {
         aliases.toggle(vn.aliases?.isNotEmpty() == true)
 
         description.movementMethod = LinkMovementMethod.getInstance()
-        description.text = HtmlCompat.fromHtml(vn.description ?: "", HtmlCompat.FROM_HTML_MODE_COMPACT)
+        description.text = summaryVN.description
         description.toggle(description.text.isNotEmpty())
 
         val asyncInflater = AsyncLayoutInflater(context)
