@@ -2,7 +2,7 @@
 <resources>
 
     <style name="AppTheme.Light" parent="Base.AppTheme.Light">
-        <!-- API >= 23 light theme attributes -->
-        <item name="android:windowLightStatusBar">true</item>
+        <!-- API >= 27 light theme attributes -->
+        <item name="android:navigationBarColor">?attr/colorPrimaryDark</item>
     </style>
 </resources>

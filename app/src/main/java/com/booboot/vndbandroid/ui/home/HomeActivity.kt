@@ -19,6 +19,7 @@ import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.api.VNDBServer
 import com.booboot.vndbandroid.extensions.Track
+import com.booboot.vndbandroid.extensions.setLightStatusAndNavigation
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.repository.AccountRepository
@@ -46,6 +47,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
         (application as App).appComponent.inject(this)
+        setLightStatusAndNavigation()
 
         setSupportActionBar(toolbar)
 

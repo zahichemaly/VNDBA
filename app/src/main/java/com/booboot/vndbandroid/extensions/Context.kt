@@ -3,10 +3,13 @@ package com.booboot.vndbandroid.extensions
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.net.Uri
+import android.os.Build
 import android.util.TypedValue
+import android.view.View
 import androidx.annotation.AttrRes
 import androidx.annotation.DrawableRes
 import androidx.browser.customtabs.CustomTabsIntent
@@ -16,6 +19,22 @@ import com.booboot.vndbandroid.model.vndbandroid.Preferences
 
 inline fun <reified A : Activity> Context.startActivity(configIntent: Intent.() -> Unit = {}) {
     startActivity(Intent(this, A::class.java).apply(configIntent))
+}
+
+/**
+ * Sets the light status and navigation bar when in Day mode.
+ * Resets the status and navigation to default (dark) when in Night mode.
+ * Cannot use conditional styles for this as there is an Android bug: when switching from Day to Night mode,
+ * Android isn't able to reset these flags. Hence the programmatical reset.
+ */
+fun Activity.setLightStatusAndNavigation() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        window.decorView.systemUiVisibility = when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+            Configuration.UI_MODE_NIGHT_UNDEFINED, Configuration.UI_MODE_NIGHT_NO -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR else View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            else -> 0
+        }
+    }
 }
 
 fun Context.getBitmap(@DrawableRes drawableRes: Int): Bitmap? {
