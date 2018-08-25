@@ -15,9 +15,6 @@ import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.home_tabs_fragment.*
 
-/**
- * Created by od on 13/03/2016.
- */
 class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener {
     override val layout: Int = R.layout.home_tabs_fragment
     private lateinit var viewModel: HomeTabsViewModel
@@ -30,15 +27,18 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
-
         type = arguments?.getInt(LIST_TYPE_ARG) ?: VNLIST
+        return rootView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        viewPager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabLayout))
+        tabLayout.addOnTabSelectedListener(this)
 
         viewModel = ViewModelProviders.of(this).get(HomeTabsViewModel::class.java)
         viewModel.titlesData.observe(this, Observer { showTitles(it) })
         viewModel.errorData.observe(this, Observer { showError(it) })
         update(false)
-
-        return rootView
     }
 
     fun update(force: Boolean = true) = viewModel.getTabTitles(type, force)
@@ -52,13 +52,7 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener {
         if (tabLayoutEmpty) { // INIT
             adapter = HomeTabsAdapter(childFragmentManager, tabLayout.tabCount, type)
             viewPager.adapter = adapter
-            viewPager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabLayout))
-            tabLayout.addOnTabSelectedListener(this)
-
-            if (currentPage >= 0)
-                viewPager.currentItem = currentPage
-            else
-                currentPage = 0
+            if (currentPage >= 0) viewPager.currentItem = currentPage
         }
     }
 
@@ -67,9 +61,9 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener {
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        inflater?.inflate(R.menu.vn_list_fragment, menu)
-        menu?.findItem(R.id.action_filter)?.isVisible = true
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.home_tabs_fragment, menu)
+        menu.findItem(R.id.action_filter)?.isVisible = true
     }
 
     override fun onTabSelected(tab: TabLayout.Tab) {
@@ -88,6 +82,6 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener {
         const val VOTELIST = 2
         const val WISHLIST = 3
 
-        var currentPage = -1
+        var currentPage = 0
     }
 }

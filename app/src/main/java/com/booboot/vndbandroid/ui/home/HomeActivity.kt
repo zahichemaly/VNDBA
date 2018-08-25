@@ -1,13 +1,10 @@
 package com.booboot.vndbandroid.ui.home
 
-import android.app.SearchManager
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.SearchView
@@ -40,7 +37,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     @Inject lateinit var accountRepository: AccountRepository
 
     var searchView: SearchView? = null
-    private var savedFilter: String? = null
+    var savedFilter: String = ""
     var selectedItem: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,12 +61,6 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
             navigationView.setNavigationItemSelectedListener(this)
 
-            //            navigationView.menu.findItem(R.id.accountTitle).setTitle(SettingsManager.getUsername(this))
-
-//            val header = navigationView.getHeaderView(0)
-//            val headerBackground = header.findViewById<ImageView>(R.id.headerBackground)
-            //            Picasso.get().load(Theme.THEMES.get(SettingsManager.getTheme(this)).getWallpaper()).transform(BlurIfDemoTransform(this)).into(headerBackground)
-
             var shouldSync = true
             intent.extras?.apply {
                 shouldSync = getBoolean(SHOULD_SYNC, true)
@@ -77,7 +68,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             }
             savedInstanceState?.apply {
                 selectedItem = getInt(SELECTED_ITEM)
-                savedFilter = getString(SAVED_FILTER_STATE)
+                savedFilter = getString(SAVED_FILTER_STATE) ?: ""
             }
 
             viewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
@@ -125,7 +116,6 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     private fun showResult(result: AccountItems?) {
         if (result == null) return
-//        Logger.log(result.toString())
         val currentFragment = supportFragmentManager.findFragmentByTag(TAG_FRAGMENT)
         when (currentFragment) {
             is HomeTabsFragment -> {
@@ -198,9 +188,13 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         menuInflater.inflate(R.menu.main_activity, menu)
 
         /* Filter */
-        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
         searchView = menu.findItem(R.id.action_filter).actionView as SearchView
-        searchView?.setSearchableInfo(searchManager.getSearchableInfo(componentName))
+
+        if (savedFilter.isNotEmpty()) {
+            searchView?.isIconified = false
+            searchView?.setQuery(savedFilter, true)
+        }
+
         searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 return false
@@ -216,10 +210,6 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             }
         })
 
-        if (savedFilter?.isNotEmpty() == true) {
-            searchView?.isIconified = false
-            searchView?.setQuery(savedFilter, true)
-        }
         searchView?.clearFocus()
 
         return true

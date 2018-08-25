@@ -10,9 +10,6 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.progress_bar.*
 import kotlinx.android.synthetic.main.vn_list_fragment.*
 
-/**
- * Created by od on 13/03/2016.
- */
 abstract class BaseFragment : Fragment() {
     abstract val layout: Int
     lateinit var rootView: View

@@ -15,7 +15,6 @@ import com.booboot.vndbandroid.factory.VNCardFactory
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.ui.base.BaseFragment
-import com.booboot.vndbandroid.ui.home.HomeActivity
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment.Companion.VNLIST
 import com.booboot.vndbandroid.ui.vndetails.VNDetailsActivity
@@ -57,7 +56,7 @@ class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, (Vi
 
     private fun showVns(accountItems: AccountItems?) {
         if (accountItems == null) return
-        adapter.filterString = (activity as HomeActivity).searchView?.query?.toString() ?: ""
+        adapter.filterString = home()?.savedFilter ?: ""
         adapter.items = accountItems
     }
 
