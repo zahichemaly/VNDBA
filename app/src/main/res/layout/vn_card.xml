@@ -89,8 +89,8 @@
                     android:background="@drawable/rounded_primary_background"
                     android:gravity="center"
                     android:elevation="8dp"
-                    android:text="-"
-                    android:textColor="@color/white"
+                    tools:text="-"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     tools:targetApi="lollipop"/>
@@ -107,8 +107,8 @@
                     android:layout_height="40dp"
                     android:background="@drawable/rounded_primary_background"
                     android:gravity="center"
-                    android:text="-"
-                    android:textColor="@color/white"
+                    tools:text="-"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     tools:targetApi="lollipop"/>
@@ -125,8 +125,8 @@
                     android:layout_height="40dp"
                     android:background="@drawable/rounded_primary_background"
                     android:gravity="center"
-                    android:text="-"
-                    android:textColor="@color/white"
+                    tools:text="-"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     tools:targetApi="lollipop"/>
