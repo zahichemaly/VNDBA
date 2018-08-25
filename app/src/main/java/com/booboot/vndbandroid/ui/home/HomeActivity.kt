@@ -8,9 +8,9 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
-import android.widget.SearchView
 import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.widget.SearchView
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -201,7 +201,6 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
         searchView = menu.findItem(R.id.action_filter).actionView as SearchView
         searchView?.setSearchableInfo(searchManager.getSearchableInfo(componentName))
-        searchView?.queryHint = getString(R.string.action_filter_hint)
         searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 return false
@@ -222,10 +221,6 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             searchView?.setQuery(savedFilter, true)
         }
         searchView?.clearFocus()
-
-        val searchIconId = searchView?.context?.resources?.getIdentifier("android:id/search_button", null, null)
-        val searchIcon = searchView?.findViewById<ImageView>(searchIconId ?: 0)
-        searchIcon?.setImageResource(R.drawable.ic_filter_list_24dp)
 
         return true
     }
