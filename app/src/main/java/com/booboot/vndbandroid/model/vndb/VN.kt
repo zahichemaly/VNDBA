@@ -20,7 +20,7 @@ data class VN(
     var image: String? = null,
     var image_nsfw: Boolean = false,
     var anime: List<Anime> = emptyList(),
-    var relations: List<VNRelation> = emptyList(),
+    var relations: List<Relation> = emptyList(),
     @JvmSuppressWildcards var tags: List<List<Float>> = emptyList(),
     var popularity: Float = 0f,
     var rating: Float = 0f,
@@ -58,5 +58,5 @@ data class VN(
         else -> R.color.red
     }
 
-    fun isComplete(): Boolean = screens.isNotEmpty() && tags.isNotEmpty()
+    fun isComplete(): Boolean = screens.isNotEmpty() || tags.isNotEmpty() || relations.isNotEmpty()
 }

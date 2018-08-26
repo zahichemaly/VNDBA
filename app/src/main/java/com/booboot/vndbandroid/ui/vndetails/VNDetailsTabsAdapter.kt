@@ -5,19 +5,17 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import com.booboot.vndbandroid.model.vndb.VN
+import com.booboot.vndbandroid.ui.vnrelations.RelationsFragment
 import com.booboot.vndbandroid.ui.vnsummary.SummaryFragment
 import com.booboot.vndbandroid.ui.vntags.TagsFragment
 
-/**
- * Created by od on 13/03/2016.
- */
 class VNDetailsTabsAdapter(fm: FragmentManager?) : FragmentStatePagerAdapter(fm) {
     private var numOfTabs = 0
     var vn: VN? = null
         set(value) {
             field = value
             // TODO compute numOfTabs with vn (e.g. "Releases" tab may not exist if the VN has no releases, so numOfTabs depends on vn)
-            numOfTabs = 5
+            numOfTabs = tabs.size
             notifyDataSetChanged()
         }
 
@@ -28,6 +26,7 @@ class VNDetailsTabsAdapter(fm: FragmentManager?) : FragmentStatePagerAdapter(fm)
         val fragment = when (position) {
             0 -> SummaryFragment()
             1 -> TagsFragment()
+            2 -> RelationsFragment()
             else -> Fragment()
         }
 
@@ -37,6 +36,6 @@ class VNDetailsTabsAdapter(fm: FragmentManager?) : FragmentStatePagerAdapter(fm)
 
     override fun getCount(): Int = numOfTabs
 
-    val tabs = listOf("Summary", "Tags", "Characters", "Releases", "Staff")
+    private val tabs = listOf("Summary", "Tags", "Relations", "Characters", "Releases", "Staff")
     override fun getPageTitle(position: Int): CharSequence? = tabs[position]
 }

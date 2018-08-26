@@ -6,6 +6,7 @@ import com.booboot.vndbandroid.ui.hometabs.HomeTabsViewModel
 import com.booboot.vndbandroid.ui.login.LoginViewModel
 import com.booboot.vndbandroid.ui.vndetails.VNDetailsViewModel
 import com.booboot.vndbandroid.ui.vnlist.VNListViewModel
+import com.booboot.vndbandroid.ui.vnrelations.RelationsViewModel
 import com.booboot.vndbandroid.ui.vnsummary.SummaryViewModel
 import com.booboot.vndbandroid.ui.vntags.TagsViewModel
 import dagger.Component
@@ -28,4 +29,5 @@ interface AppComponent {
     fun inject(vnDetailsViewModel: VNDetailsViewModel)
     fun inject(tagsViewModel: TagsViewModel)
     fun inject(summaryViewModel: SummaryViewModel)
+    fun inject(relationsViewModel: RelationsViewModel)
 }

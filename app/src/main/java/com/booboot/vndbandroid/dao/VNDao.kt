@@ -28,6 +28,8 @@ class VNDao() {
     lateinit var tags: ToMany<VNTagDao>
     lateinit var screens: ToMany<ScreenDao>
     lateinit var links: ToOne<LinksDao>
+    lateinit var anime: ToMany<AnimeDao>
+    lateinit var relations: ToMany<RelationDao>
 
     constructor(vn: VN, boxStore: BoxStore) : this() {
         id = vn.id
@@ -49,11 +51,15 @@ class VNDao() {
         vn.platforms.forEach { platforms.add(PlatformDao(it.hashCode().toLong(), it)) }
         vn.tags.forEach { tags.add(VNTagDao(it)) }
         vn.screens.forEach { screens.add(ScreenDao(it)) }
+        vn.anime.forEach { anime.add(AnimeDao(it)) }
+        vn.relations.forEach { relations.add(RelationDao(it)) }
         links.target = LinksDao(vn.links)
 
         boxStore.boxFor<LanguagaDao>().put(languages)
         boxStore.boxFor<OriginalLanguagaDao>().put(orig_lang)
         boxStore.boxFor<PlatformDao>().put(platforms)
+        boxStore.boxFor<AnimeDao>().put(anime)
+        boxStore.boxFor<RelationDao>().put(relations)
     }
 
     fun toBo(fetchAll: Boolean = false): VN = VN(
@@ -77,6 +83,8 @@ class VNDao() {
             tags = this@VNDao.tags.map { it.toBo() }
             screens = this@VNDao.screens.map { it.toBo() }
             links = this@VNDao.links.target.toBo()
+            anime = this@VNDao.anime.map { it.toBo() }
+            relations = this@VNDao.relations.map { it.toBo() }
         }
     }
 }

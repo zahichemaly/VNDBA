@@ -43,7 +43,7 @@ class VNRepository @Inject constructor(var boxStore: BoxStore, var vndbServer: V
             .fetchFromMemory { items[id] }
             .fetchFromDatabase { boxStore.get<VNDao, VN> { it.get(id).toBo(true) } }
             .fetchFromNetwork { dbVn ->
-                var flags = "screens,tags"
+                var flags = "screens,tags,anime,relations"
                 if (dbVn == null) flags += ",basic,details,stats"
 
                 val apiVn = vndbServer.get<VN>("vn", flags, "(id = $id)", Options(results = 1), type())
@@ -52,6 +52,8 @@ class VNRepository @Inject constructor(var boxStore: BoxStore, var vndbServer: V
 
                 dbVn?.screens = apiVn.screens
                 dbVn?.tags = apiVn.tags
+                dbVn?.anime = apiVn.anime
+                dbVn?.relations = apiVn.relations
                 dbVn ?: apiVn
             }
             .isEmpty { !it.isComplete() }

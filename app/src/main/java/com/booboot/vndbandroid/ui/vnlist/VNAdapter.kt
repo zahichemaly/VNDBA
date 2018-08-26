@@ -12,9 +12,6 @@ import com.booboot.vndbandroid.diff.VNDiffCallback
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndb.VN
 
-/**
- * Created by od on 22/11/2016.
- */
 class VNAdapter(
     private val onVnClicked: (View, VN) -> Unit,
     private val showFullDate: Boolean = false,
