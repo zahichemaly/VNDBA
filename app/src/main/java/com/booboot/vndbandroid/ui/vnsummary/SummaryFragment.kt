@@ -41,81 +41,86 @@ class SummaryFragment : BaseFragment() {
     }
 
     private fun showVn(summaryVN: SummaryVN?) {
-        val context = context ?: return
-        val vn = summaryVN?.vn ?: return
+        context?.let { ctx ->
+            val vn = summaryVN?.vn ?: return
 
-        title.text = vn.title
-        originalTitle.text = vn.original
-        originalTitle.toggle(vn.original?.isNotEmpty() == true)
-        aliases.text = vn.aliases
-        aliases.toggle(vn.aliases?.isNotEmpty() == true)
+            title.text = vn.title
+            originalTitle.text = vn.original
+            originalTitle.toggle(vn.original?.isNotEmpty() == true)
+            aliases.text = vn.aliases
+            aliases.toggle(vn.aliases?.isNotEmpty() == true)
 
-        description.movementMethod = LinkMovementMethod.getInstance()
-        description.text = summaryVN.description
-        description.toggle(description.text.isNotEmpty())
+            description.movementMethod = LinkMovementMethod.getInstance()
+            description.text = summaryVN.description
+            description.toggle(description.text.isNotEmpty())
 
-        val asyncInflater = AsyncLayoutInflater(context)
-        platforms.removeAllViews()
-        vn.platforms.forEach {
-            asyncInflater.inflate(R.layout.platform_tag, platforms) { view, _, _ ->
-                val platform = PLATFORMS[it] ?: return@inflate
-                view.tagBackground.setCardBackgroundColor(ContextCompat.getColor(context, platform.color))
-                view.tagText.text = platform.text
-                platforms.addView(view)
+            val asyncInflater = AsyncLayoutInflater(ctx)
+            platforms.removeAllViews()
+            vn.platforms.forEach {
+                asyncInflater.inflate(R.layout.platform_tag, platforms) { view, _, _ ->
+                    context?.let { ctx ->
+                        val platform = PLATFORMS[it] ?: return@inflate
+                        view.tagBackground.setCardBackgroundColor(ContextCompat.getColor(ctx, platform.color))
+                        view.tagText.text = platform.text
+                        platforms.addView(view)
+                    }
+                }
             }
-        }
 
-        languages.removeAllViews()
-        vn.languages.forEach {
-            asyncInflater.inflate(R.layout.language_tag, languages) { view, _, _ ->
-                val language = LANGUAGES[it] ?: return@inflate
-                val chip = view as Chip
-                chip.text = language.text
-                chip.chipIcon = VectorDrawableCompat.create(resources, language.flag, context.theme)
-                languages.addView(chip)
+            languages.removeAllViews()
+            vn.languages.forEach {
+                asyncInflater.inflate(R.layout.language_tag, languages) { view, _, _ ->
+                    context?.let { ctx ->
+                        val language = LANGUAGES[it] ?: return@inflate
+                        val chip = view as Chip
+                        chip.text = language.text
+                        chip.chipIcon = VectorDrawableCompat.create(ctx.resources, language.flag, ctx.theme)
+                        languages.addView(chip)
+                    }
+                }
             }
-        }
 
-        val white = ContextCompat.getColor(context, R.color.white)
-        length.apply {
-            icon.setImageResource(R.drawable.ic_access_time_black_48dp)
-            title.text = vn.lengthString()
-            value.text = vn.lengthInHours()
-            value.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
-        }
-        released.apply {
-            icon.setImageResource(R.drawable.ic_event_black_48dp)
-            title.setText(R.string.released_on)
-            value.text = Utils.formatDateMedium(context, vn.released)
-            value.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
-        }
-        with(popularity) {
-            this as CardView
-            setCardBackgroundColor(ContextCompat.getColor(context, vn.popularityColor()))
-            icon.setImageResource(R.drawable.ic_whatshot_black_48dp)
-            title.setText(R.string.popularity)
-            value.text = String.format(getString(R.string.percent), vn.popularity)
-            icon.imageTintList = ColorStateList.valueOf(white)
-            title.setTextColor(white)
-            value.setTextColor(white)
-        }
-        rating.apply {
-            this as CardView
-            setCardBackgroundColor(ContextCompat.getColor(context, Vote.getColor(vn.rating)))
-            icon.setImageResource(R.drawable.ic_trending_up_black_48dp)
-            title.text = String.format(getString(R.string.x_votes), vn.votecount)
-            value.text = String.format("%.2f", vn.rating)
-            icon.imageTintList = ColorStateList.valueOf(white)
-            title.setTextColor(white)
-            value.setTextColor(white)
-        }
+            val white = ContextCompat.getColor(ctx, R.color.white)
+            length.apply {
+                icon.setImageResource(R.drawable.ic_access_time_black_48dp)
+                title.text = vn.lengthString()
+                value.text = vn.lengthInHours()
+                value.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+            }
+            released.apply {
+                icon.setImageResource(R.drawable.ic_event_black_48dp)
+                title.setText(R.string.released_on)
+                value.text = Utils.formatDateMedium(context, vn.released)
+                value.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+            }
+            with(popularity) {
+                this as CardView
+                setCardBackgroundColor(ContextCompat.getColor(context, vn.popularityColor()))
+                icon.setImageResource(R.drawable.ic_whatshot_black_48dp)
+                title.setText(R.string.popularity)
+                value.text = String.format(getString(R.string.percent), vn.popularity)
+                icon.imageTintList = ColorStateList.valueOf(white)
+                title.setTextColor(white)
+                value.setTextColor(white)
+            }
+            rating.apply {
+                this as CardView
+                setCardBackgroundColor(ContextCompat.getColor(context, Vote.getColor(vn.rating)))
+                icon.setImageResource(R.drawable.ic_trending_up_black_48dp)
+                title.text = String.format(getString(R.string.x_votes), vn.votecount)
+                value.text = String.format("%.2f", vn.rating)
+                icon.imageTintList = ColorStateList.valueOf(white)
+                title.setTextColor(white)
+                value.setTextColor(white)
+            }
 
-        wikipediaButton.toggle(vn.links.wikipedia?.isNotEmpty() == true)
-        renaiButton.toggle(vn.links.renai?.isNotEmpty() == true)
-        encubedButton.toggle(vn.links.encubed?.isNotEmpty() == true)
+            wikipediaButton.toggle(vn.links.wikipedia?.isNotEmpty() == true)
+            renaiButton.toggle(vn.links.renai?.isNotEmpty() == true)
+            encubedButton.toggle(vn.links.encubed?.isNotEmpty() == true)
 
-        wikipediaButton.setOnClickListener { context.openURL(Links.WIKIPEDIA + vn.links.wikipedia) }
-        renaiButton.setOnClickListener { context.openURL(Links.RENAI + vn.links.renai) }
-        encubedButton.setOnClickListener { context.openURL(Links.ENCUBED + vn.links.encubed) }
+            wikipediaButton.setOnClickListener { ctx.openURL(Links.WIKIPEDIA + vn.links.wikipedia) }
+            renaiButton.setOnClickListener { ctx.openURL(Links.RENAI + vn.links.renai) }
+            encubedButton.setOnClickListener { ctx.openURL(Links.ENCUBED + vn.links.encubed) }
+        }
     }
 }
