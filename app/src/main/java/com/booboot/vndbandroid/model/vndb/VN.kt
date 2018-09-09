@@ -2,6 +2,8 @@ package com.booboot.vndbandroid.model.vndb
 
 import androidx.annotation.ColorRes
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.model.vndbandroid.ApiFlags
+import com.booboot.vndbandroid.model.vndbandroid.FLAGS_NOT_EXISTS
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
@@ -26,7 +28,8 @@ data class VN(
     var rating: Float = 0f,
     var votecount: Int = 0,
     var screens: List<Screen> = emptyList(),
-    var staff: List<VnStaff> = emptyList()
+    var staff: List<VnStaff> = emptyList(),
+    @ApiFlags var flags: Int = FLAGS_NOT_EXISTS
 ) {
     fun lengthFull(): String = lengthString() + " (" + lengthInHours() + ")"
 
@@ -57,6 +60,4 @@ data class VN(
         popularity >= 1 -> R.color.orange
         else -> R.color.red
     }
-
-    fun isComplete(): Boolean = screens.isNotEmpty() || tags.isNotEmpty() || relations.isNotEmpty()
 }

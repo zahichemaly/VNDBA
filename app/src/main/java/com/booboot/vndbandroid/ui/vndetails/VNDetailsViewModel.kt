@@ -23,16 +23,16 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
         if (disposables.contains(DISPOSABLE_VN)) return
 
         disposables[DISPOSABLE_VN] = vnRepository.getItem(vnId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { loadingData.value = true }
-                .doFinally {
-                    loadingData.value = false
-                    disposables.remove(DISPOSABLE_VN)
-                }
-                .subscribe({
-                    vnData.value = it
-                }, ::onError)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { loadingData.value = true }
+            .doFinally {
+                loadingData.value = false
+                disposables.remove(DISPOSABLE_VN)
+            }
+            .subscribe({
+                vnData.value = it
+            }, ::onError)
     }
 
     companion object {

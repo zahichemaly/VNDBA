@@ -1,12 +1,16 @@
 package com.booboot.vndbandroid.dao
 
 import com.booboot.vndbandroid.model.vndb.VN
+import com.booboot.vndbandroid.model.vndbandroid.ApiFlags
+import com.booboot.vndbandroid.model.vndbandroid.FLAGS_DETAILS
+import com.booboot.vndbandroid.model.vndbandroid.FLAGS_FULL
 import io.objectbox.BoxStore
 import io.objectbox.annotation.Entity
 import io.objectbox.annotation.Id
 import io.objectbox.kotlin.boxFor
 import io.objectbox.relation.ToMany
 import io.objectbox.relation.ToOne
+import kotlin.math.min
 
 @Entity
 class VNDao() {
@@ -22,6 +26,7 @@ class VNDao() {
     var popularity: Float = 0f
     var rating: Float = 0f
     var votecount: Int = 0
+    var flags: Int = 0
     lateinit var languages: ToMany<LanguagaDao>
     lateinit var orig_lang: ToMany<OriginalLanguagaDao>
     lateinit var platforms: ToMany<PlatformDao>
@@ -44,6 +49,7 @@ class VNDao() {
         popularity = vn.popularity
         rating = vn.rating
         votecount = vn.votecount
+        flags = vn.flags
 
         boxStore.boxFor<VNDao>().attach(this)
         vn.languages.forEach { languages.add(LanguagaDao(it.hashCode().toLong(), it)) }
@@ -62,7 +68,7 @@ class VNDao() {
         boxStore.boxFor<RelationDao>().put(relations)
     }
 
-    fun toBo(fetchAll: Boolean = false): VN = VN(
+    fun toBo(@ApiFlags content: Int = FLAGS_DETAILS): VN = VN(
         id,
         title,
         original,
@@ -74,9 +80,10 @@ class VNDao() {
         image_nsfw = image_nsfw,
         popularity = popularity,
         rating = rating,
-        votecount = votecount
+        votecount = votecount,
+        flags = min(flags, FLAGS_DETAILS)
     ).apply {
-        if (fetchAll) {
+        if (content == FLAGS_FULL) {
             languages = this@VNDao.languages.map { it.value }
             orig_lang = this@VNDao.orig_lang.map { it.value }
             platforms = this@VNDao.platforms.map { it.value }
@@ -85,6 +92,7 @@ class VNDao() {
             links = this@VNDao.links.target.toBo()
             anime = this@VNDao.anime.map { it.toBo() }
             relations = this@VNDao.relations.map { it.toBo() }
+            flags = min(this@VNDao.flags, FLAGS_FULL)
         }
     }
 }

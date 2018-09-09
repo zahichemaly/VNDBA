@@ -23,8 +23,8 @@ abstract class ListRepository<T : AccountItem> : Repository<T>() {
             .get { emptyMap() }
     }.subscribeOn(Schedulers.newThread())
 
-    override fun setItems(items: List<T>): Completable = Completable.fromAction {
-        this.items = items.associateBy { it.vn }.toMutableMap()
-        addItemsToDB(items)
+    override fun setItems(items: Map<Long, T>): Completable = Completable.fromAction {
+        this.items = items.toMutableMap()
+        addItemsToDB(items.values.toList())
     }
 }

@@ -1,20 +1,18 @@
 package com.booboot.vndbandroid.ui.base
 
 import android.app.Application
-import android.text.TextUtils
 import androidx.lifecycle.MutableLiveData
 import com.booboot.vndbandroid.api.VNDBServer
 import com.booboot.vndbandroid.extensions.completableTransaction
 import com.booboot.vndbandroid.extensions.leaveIfEmpty
 import com.booboot.vndbandroid.model.vndb.AccountItems
-import com.booboot.vndbandroid.model.vndb.Options
-import com.booboot.vndbandroid.model.vndb.Results
 import com.booboot.vndbandroid.model.vndb.Tag
 import com.booboot.vndbandroid.model.vndb.Trait
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndb.Vnlist
 import com.booboot.vndbandroid.model.vndb.Votelist
 import com.booboot.vndbandroid.model.vndb.Wishlist
+import com.booboot.vndbandroid.model.vndbandroid.FLAGS_DETAILS
 import com.booboot.vndbandroid.model.vndbandroid.SyncData
 import com.booboot.vndbandroid.repository.AccountRepository
 import com.booboot.vndbandroid.repository.CachePolicy
@@ -25,7 +23,6 @@ import com.booboot.vndbandroid.repository.VnlistRepository
 import com.booboot.vndbandroid.repository.VotelistRepository
 import com.booboot.vndbandroid.repository.WishlistRepository
 import com.booboot.vndbandroid.util.EmptyMaybeException
-import com.booboot.vndbandroid.util.type
 import io.objectbox.BoxStore
 import io.reactivex.Maybe
 import io.reactivex.Single
@@ -59,7 +56,7 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
                 AccountItems(vni, vti, wsi)
             })
             .observeOn(Schedulers.io())
-            .flatMapMaybe<Results<VN>> { _items: AccountItems ->
+            .flatMapMaybe<Map<Long, VN>> { _items: AccountItems ->
                 items = _items
 
                 val allIds = _items.vnlist.keys
@@ -83,15 +80,11 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
                     items.wishlist != oldItems.wishlist
 
                 when {
-                    allIds.isEmpty() -> Maybe.just(Results()) // empty account
+                    allIds.isEmpty() -> Maybe.just(emptyMap()) // empty account
                     newIds.isNotEmpty() -> { // should send get vn
-                        val mergedIdsString = TextUtils.join(",", newIds)
-                        val numberOfPages = Math.ceil(newIds.size * 1.0 / 25).toInt()
-
-                        vndbServer.get<VN>("vn", "basic,details,stats", "(id = [$mergedIdsString])",
-                            Options(fetchAllPages = true, numberOfPages = numberOfPages), type()).toMaybe()
+                        vnRepository.getItems(newIds, FLAGS_DETAILS, CachePolicy(false)).toMaybe()
                     }
-                    haveListsChanged -> Maybe.just(Results()) // no new VNs but status of existing VNs have changed
+                    haveListsChanged -> Maybe.just(emptyMap()) // no new VNs but status of existing VNs have changed
                     else -> Maybe.empty() // nothing new: skipping DB update with an empty result
                 }
             }
@@ -99,10 +92,10 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
             .observeOn(Schedulers.io())
             .flatMapCompletable {
                 boxStore.completableTransaction(
-                    vnlistRepository.setItems(items.vnlist.values.toList()),
-                    votelistRepository.setItems(items.votelist.values.toList()),
-                    wishlistRepository.setItems(items.wishlist.values.toList()),
-                    vnRepository.setItems(it.items)
+                    vnlistRepository.setItems(items.vnlist),
+                    votelistRepository.setItems(items.votelist),
+                    wishlistRepository.setItems(items.wishlist),
+                    vnRepository.setItems(it)
                 )
                 // TODO DB startup clean (in a new flatmap, must make sure the above transaction has completed before)
             }

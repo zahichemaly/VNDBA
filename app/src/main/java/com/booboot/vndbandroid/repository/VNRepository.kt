@@ -1,11 +1,16 @@
 package com.booboot.vndbandroid.repository
 
+import android.text.TextUtils
 import com.booboot.vndbandroid.api.VNDBServer
 import com.booboot.vndbandroid.dao.VNDao
 import com.booboot.vndbandroid.extensions.get
 import com.booboot.vndbandroid.extensions.save
 import com.booboot.vndbandroid.model.vndb.Options
 import com.booboot.vndbandroid.model.vndb.VN
+import com.booboot.vndbandroid.model.vndbandroid.FLAGS_BASIC
+import com.booboot.vndbandroid.model.vndbandroid.FLAGS_DETAILS
+import com.booboot.vndbandroid.model.vndbandroid.FLAGS_FULL
+import com.booboot.vndbandroid.model.vndbandroid.FLAGS_NOT_EXISTS
 import com.booboot.vndbandroid.util.type
 import com.squareup.moshi.Moshi
 import io.objectbox.BoxStore
@@ -26,39 +31,92 @@ class VNRepository @Inject constructor(var boxStore: BoxStore, var vndbServer: V
             .get()
     }
 
-    override fun getItems(ids: List<Long>): Single<Map<Long, VN>> = Single.fromCallable {
-        if (items.isEmpty()) {
-            boxStore.get<VNDao, Map<Long, VN>> { it.get(ids).map { it.toBo() }.associateByTo(items) { it.id } }
-        }
-        items.filterKeys { it in ids }
+    override fun getItems(ids: Set<Long>, flags: Int, cachePolicy: CachePolicy<Map<Long, VN>>): Single<Map<Long, VN>> = Single.fromCallable {
+        cachePolicy
+            .fetchFromMemory { items }
+            .fetchFromDatabase {
+                boxStore.get<VNDao, Map<Long, VN>> { it.get(ids).map { it.toBo(flags) }.associateByTo(items) { it.id } }
+            }
+            .fetchFromNetwork {
+                val dbVns = it?.toMutableMap() ?: mutableMapOf()
+                val flagsList = linkedSetOf<String>()
+                val newIds = linkedSetOf<Long>()
+
+                ids.forEach {
+                    val dbFlags = dbVns[it]?.flags ?: FLAGS_NOT_EXISTS
+                    if (FLAGS_BASIC in (dbFlags + 1)..flags) {
+                        newIds.add(it)
+                        flagsList.add("basic")
+                    }
+                    if (FLAGS_DETAILS in (dbFlags + 1)..flags) {
+                        newIds.add(it)
+                        flagsList.add("details")
+                    }
+                    if (FLAGS_FULL in (dbFlags + 1)..flags) {
+                        newIds.add(it)
+                        flagsList.addAll(listOf("stats", "screens", "tags", "anime", "relations"))
+                    }
+                }
+
+                val mergedIdsString = TextUtils.join(",", newIds)
+                val numberOfPages = Math.ceil(newIds.size * 1.0 / 25).toInt()
+
+                val apiVns = vndbServer.get<VN>("vn", TextUtils.join(",", flagsList), "(id = [$mergedIdsString])",
+                    Options(fetchAllPages = true, numberOfPages = numberOfPages), type())
+                    .blockingGet()
+                    .items
+
+                apiVns.forEach {
+                    val dbFlags = dbVns[it.id]?.flags ?: FLAGS_NOT_EXISTS
+
+                    if (FLAGS_BASIC in (dbFlags + 1)..flags) {
+                        dbVns[it.id] = it
+                    } else {
+                        if (FLAGS_DETAILS in (dbFlags + 1)..flags) {
+                            dbVns[it.id]?.aliases = it.aliases
+                            dbVns[it.id]?.length = it.length
+                            dbVns[it.id]?.description = it.description
+                            dbVns[it.id]?.links = it.links
+                            dbVns[it.id]?.image = it.image
+                            dbVns[it.id]?.image_nsfw = it.image_nsfw
+                        }
+                        if (FLAGS_FULL in (dbFlags + 1)..flags) {
+                            dbVns[it.id]?.popularity = it.popularity
+                            dbVns[it.id]?.rating = it.rating
+                            dbVns[it.id]?.votecount = it.votecount
+                            dbVns[it.id]?.screens = it.screens
+                            dbVns[it.id]?.tags = it.tags
+                            dbVns[it.id]?.anime = it.anime
+                            dbVns[it.id]?.relations = it.relations
+                        }
+                    }
+
+                    dbVns[it.id]?.flags = flags
+                }
+                dbVns
+            }
+            .isEmpty { cache ->
+                ids.any {
+                    if (it !in cache) true
+                    else {
+                        val dbFlags = cache[it]?.flags ?: FLAGS_NOT_EXISTS
+                        FLAGS_BASIC in (dbFlags + 1)..flags ||
+                            FLAGS_DETAILS in (dbFlags + 1)..flags ||
+                            FLAGS_FULL in (dbFlags + 1)..flags
+                    }
+                }
+            }
+            .putInMemory { if (cachePolicy.enabled) items.putAll(it) }
+            .putInDatabase { if (cachePolicy.enabled) boxStore.save { it.map { VNDao(it.value, boxStore) } } }
+            .get()
     }
 
-    override fun setItems(items: List<VN>): Completable = Completable.fromAction {
-        items.associateByTo(this.items) { it.id }
-        boxStore.save { items.map { VNDao(it, boxStore) } }
+    override fun setItems(items: Map<Long, VN>): Completable = Completable.fromAction {
+        this.items.putAll(items)
+        boxStore.save { items.map { VNDao(it.value, boxStore) } }
     }
 
     override fun getItem(id: Long, cachePolicy: CachePolicy<VN>): Single<VN> = Single.fromCallable {
-        cachePolicy
-            .fetchFromMemory { items[id] }
-            .fetchFromDatabase { boxStore.get<VNDao, VN> { it.get(id).toBo(true) } }
-            .fetchFromNetwork { dbVn ->
-                var flags = "screens,tags,anime,relations"
-                if (dbVn == null) flags += ",basic,details,stats"
-
-                val apiVn = vndbServer.get<VN>("vn", flags, "(id = $id)", Options(results = 1), type())
-                    .blockingGet()
-                    .items[0]
-
-                dbVn?.screens = apiVn.screens
-                dbVn?.tags = apiVn.tags
-                dbVn?.anime = apiVn.anime
-                dbVn?.relations = apiVn.relations
-                dbVn ?: apiVn
-            }
-            .isEmpty { !it.isComplete() }
-            .putInMemory { items[id] = it }
-            .putInDatabase { boxStore.save { listOf(VNDao(it, boxStore)) } }
-            .get()
+        getItems(setOf(id), FLAGS_FULL, cachePolicy.copy()).blockingGet()[id]
     }
 }
