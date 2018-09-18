@@ -14,3 +14,5 @@ images/
 app/fabric.properties
 app/release/output.json
 gradle.properties
+*.jks
+fastlane/report.xml
