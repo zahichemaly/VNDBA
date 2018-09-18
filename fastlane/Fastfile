@@ -1,0 +1,116 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:android)
+
+platform :android do
+    lane :build do |options|
+        begin
+            version_code = gradle_property('VERSION_CODE')
+            version_name = gradle_property('VERSION_NAME')
+        rescue
+            version_code = ""
+            version_name = ""
+        end
+
+        begin
+            fields = [{
+                        :name => "Version name",
+                        :value => blank(version_name) ? "Not found" : version_name,
+                        :inline => true
+                    }, {
+                        :name => "Version code",
+                        :value => blank(version_code) ? "Not found" : version_code,
+                        :inline => true
+                    }, {
+                        :name => "Branch",
+                        :value => blank(ENV["CI_COMMIT_REF_NAME"]) ? "Not found" : ENV["CI_COMMIT_REF_NAME"],
+                        :inline => true
+                    }, {
+                        :name => "Commit",
+                        :value => blank(ENV["CI_COMMIT_TITLE"]) ? "Not found" : "[" + ENV["CI_COMMIT_TITLE"] + "](" + ENV["CI_PROJECT_URL"] + "/commit/" + ENV["CI_COMMIT_SHA"] + ")",
+                        :inline => true
+            }]
+
+            discord("Starting build :rocket:", "", ENV["CI_JOB_URL"], fields)
+            gradle(task: "assembleRelease")
+            discord("Build successful ! :thumbsup:", "", ENV["CI_JOB_URL"], fields)
+        rescue => exception
+            discord("Build failed. :x:", "```\n" + exception.to_s + "```", ENV["CI_JOB_URL"], fields)
+        end
+    end
+
+    def blank(value)
+        value !~ /[^[:space:]]/
+    end
+
+    desc "Deploy a new version to the Google Play"
+    lane :deploy do
+        upload_to_play_store
+    end
+
+    def gradle_properties
+        if blank(ENV["ANDROID_GRADLE_PROPERTIES"])
+            ENV["ANDROID_GRADLE_PROPERTIES"] = sh("cd .. && ./gradlew properties -q", log: false)
+        end
+        ENV["ANDROID_GRADLE_PROPERTIES"]
+    end
+
+    def gradle_property(property_name)
+        properties = gradle_properties()
+        sh("echo '#{properties}' | grep '#{property_name}:' | awk '{print $2}' | tr -d '[:space:]'", log: false)
+    end
+
+    def get_aapt_properties(apk)
+        sh("aapt dump badging ../#{apk} | sed '/^package/ !d' | tr -d '[:space:]'", log: false)
+    end
+
+    def get_aapt_property(properties, property_name)
+        sh("echo \"#{properties}\" | sed 's/.*#{property_name}=.\\([a-zA-Z0-9\\.]*\\).*/\\1/g' | tr -d '[:space:]'", log: false)
+    end
+
+    def discord(title = "title", message = "message", url = "", fields = [])
+        fastlane_require 'net/http'
+        fastlane_require 'uri'
+        fastlane_require 'json'
+
+        if blank(url)
+            url = "https://gitlab.com/thomas.herbeth/VNDB-Android/pipelines"
+        end
+
+        webhook_url = URI.parse(gradle_property('FASTLANE_DISCORD_WEBHOOK'))
+        avatar = "https://gitlab.com/uploads/-/system/group/avatar/6543/logo-extra-whitespace.png"
+
+        request = Net::HTTP::Post.new(webhook_url.to_s)
+        request.content_type = 'application/json'
+
+        request.body = {
+            :embeds => [{
+                            :title => title,
+                            :description => message,
+                            :url => url,
+                            :color => 0xfc6d26,
+                            :thumbnail => { :url => avatar },
+                            :fields => fields
+            }],
+            :username => "Gitlab CI",
+            :avatar_url => avatar
+        }.to_json
+
+        Net::HTTP.start(webhook_url.host, webhook_url.port, use_ssl: webhook_url.scheme == 'https') { |http|
+            http.request(request)
+        }
+    end
+end
