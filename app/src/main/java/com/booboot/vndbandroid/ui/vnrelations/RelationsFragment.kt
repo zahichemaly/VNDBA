@@ -14,7 +14,7 @@ import com.booboot.vndbandroid.util.GridAutofitLayoutManager
 import com.booboot.vndbandroid.util.Pixels
 import kotlinx.android.synthetic.main.relations_fragment.*
 
-class RelationsFragment : BaseFragment(), (Anime?, Relation?) -> Unit {
+class RelationsFragment : BaseFragment(), (Anime) -> Unit, (Relation, VN?) -> Unit {
     override val layout: Int = R.layout.relations_fragment
     private lateinit var viewModel: RelationsViewModel
     private lateinit var adapter: RelationsAdapter
@@ -22,24 +22,26 @@ class RelationsFragment : BaseFragment(), (Anime?, Relation?) -> Unit {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         context?.let {
             recyclerView.layoutManager = GridAutofitLayoutManager(it, Pixels.px(300))
-            adapter = RelationsAdapter(this)
+            adapter = RelationsAdapter(this, this)
             recyclerView.adapter = adapter
 
             val vnId = arguments?.getLong(VNDetailsActivity.EXTRA_VN_ID) ?: 0
             viewModel = ViewModelProviders.of(this).get(RelationsViewModel::class.java)
-            viewModel.vnData.observe(this, Observer { showVn(it) })
+            viewModel.vnData.observe(this, Observer { showRelations(it) })
             viewModel.errorData.observe(this, Observer { showError(it) })
             viewModel.loadVn(vnId, false)
         }
     }
 
-    private fun showVn(vn: VN?) {
-        vn ?: return
-        adapter.anime = vn.anime
-        adapter.relations = vn.relations
+    private fun showRelations(vnWithRelations: VNWithRelations?) {
+        vnWithRelations ?: return
+        adapter.anime = vnWithRelations.vn.anime
+        adapter.vnWithRelations = vnWithRelations
     }
 
-    override fun invoke(anime: Anime?, relation: Relation?) {
-        // TODO
+    override fun invoke(anime: Anime) {
+    }
+
+    override fun invoke(relation: Relation, vn: VN?) {
     }
 }

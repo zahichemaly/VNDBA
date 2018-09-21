@@ -8,9 +8,7 @@ import com.booboot.vndbandroid.ui.vnlist.VNAdapter
 import com.booboot.vndbandroid.util.GridAutofitLayoutManager
 import com.booboot.vndbandroid.util.Pixels
 
-/**
- * Created by od on 17/04/2016.
- */
+// TODO remove
 object VNCardFactory {
     fun setupList(context: Context?, vnList: RecyclerView, adapter: VNAdapter) {
         if (context != null) {

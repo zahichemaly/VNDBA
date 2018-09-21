@@ -31,10 +31,7 @@ class AccountRepository @Inject constructor(
             })
             .observeOn(Schedulers.newThread())
             .flatMap {
-                vnRepository.getItems(
-                    ids = it.vnlist.keys.union(it.votelist.keys).union(it.wishlist.keys),
-                    flags = FLAGS_DETAILS
-                )
+                vnRepository.getItems(it.vnlist.keys.union(it.votelist.keys).union(it.wishlist.keys), FLAGS_DETAILS)
             }
             .map {
                 items.vns = it

@@ -2,34 +2,30 @@ package com.booboot.vndbandroid.ui.vnrelations
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import com.booboot.vndbandroid.R
-import com.booboot.vndbandroid.model.vndb.Anime
 import com.booboot.vndbandroid.model.vndb.RELATIONS
 import com.booboot.vndbandroid.model.vndb.Relation
-import kotlinx.android.synthetic.main.relation_item.view.*
+import com.booboot.vndbandroid.model.vndb.VN
+import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.vn_card.view.*
 
-class RelationHolder(itemView: View, private val onClick: (Anime?, Relation?) -> Unit) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
-    private var anime: Anime? = null
+class RelationHolder(itemView: View, private val onClick: (Relation, VN?) -> Unit) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
     private var relation: Relation? = null
+    private var vn: VN? = null
 
     init {
         itemView.cardView.setOnClickListener(this)
     }
 
-    fun onBind(anime: Anime?, relation: Relation?) = with(itemView) {
-        this@RelationHolder.anime = anime
+    fun onBind(relation: Relation, vn: VN?) = with(itemView) {
         this@RelationHolder.relation = relation
+        this@RelationHolder.vn = vn
 
-        anime?.let {
-            title.text = it.title_romaji
-            subtitle.text = String.format("%s%s%s", it.type, context.getString(R.string.bullet), it.year)
-        } ?: relation?.let {
-            title.text = it.title
-            subtitle.text = RELATIONS[it.relation]
-        }
+        title.text = relation.title
+        subtitle.text = RELATIONS[relation.relation]
+        Picasso.get().load(vn?.image).into(image)
     }
 
     override fun onClick(v: View?) {
-        onClick(anime, relation)
+        relation?.let { onClick(it, vn) }
     }
 }
