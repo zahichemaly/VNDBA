@@ -33,7 +33,7 @@ class RelationsAdapter(private val onAnimeClicked: (Anime) -> Unit, private val 
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is AnimeHolder) {
-            holder.onBind(vn.anime[position])
+            holder.onBind(vn.anime[position], vn)
         } else if (holder is RelationHolder) {
             val relation = vn.relations[position - vn.anime.size]
             holder.onBind(
