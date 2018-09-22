@@ -1,4 +1,4 @@
-package com.booboot.vndbandroid.receiver
+package com.booboot.vndbandroid.service
 
 import android.app.IntentService
 import android.app.NotificationManager

@@ -1,8 +1,8 @@
 package com.booboot.vndbandroid
 
 import android.content.Context
-import android.content.IntentFilter
 import android.net.ConnectivityManager
+import android.net.NetworkRequest
 import android.os.Looper
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDexApplication
@@ -13,7 +13,7 @@ import com.booboot.vndbandroid.di.AppModule
 import com.booboot.vndbandroid.di.DaggerAppComponent
 import com.booboot.vndbandroid.extensions.log
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
-import com.booboot.vndbandroid.receiver.ConnectionReceiver
+import com.booboot.vndbandroid.service.ConnectionReceiver
 import com.booboot.vndbandroid.util.Notifications
 import com.chibatching.kotpref.Kotpref
 import com.crashlytics.android.Crashlytics
@@ -44,8 +44,8 @@ class App : MultiDexApplication() {
         AppCompatDelegate.setDefaultNightMode(Preferences.nightMode)
         Notifications.createNotificationChannels(this)
 
-        val connectionReceiver = ConnectionReceiver()
-        registerReceiver(connectionReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
+        connectivityManager?.registerNetworkCallback(NetworkRequest.Builder().build(), ConnectionReceiver())
 
         /* Prevents RxJava from crashing the app when there is an exception and let all onError() handle them */
         RxJavaPlugins.setErrorHandler { it.log() }

@@ -54,7 +54,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".receiver.ScreenshotNotificationService" />
+        <service android:name=".service.ScreenshotNotificationService" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

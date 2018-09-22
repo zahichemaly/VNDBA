@@ -19,7 +19,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.model.vndbandroid.FileAction
-import com.booboot.vndbandroid.receiver.ScreenshotNotificationService
+import com.booboot.vndbandroid.service.ScreenshotNotificationService
 import com.booboot.vndbandroid.ui.base.BaseActivity
 import com.booboot.vndbandroid.util.Notifications
 import kotlinx.android.synthetic.main.slideshow_activity.*
