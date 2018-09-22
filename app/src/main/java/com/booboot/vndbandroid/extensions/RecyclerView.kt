@@ -1,40 +1,21 @@
 package com.booboot.vndbandroid.extensions
 
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import android.view.MotionEvent
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-fun RecyclerView.disallowVerticalScrollIntercepts() {
-    var x1 = 0f
-    var x2: Float
-    var y1 = 0f
-    var y2: Float
-    var dx: Float
-    var dy: Float
-    setOnTouchListener({ v, event ->
-        val action = event.action
-        when (action) {
-            MotionEvent.ACTION_DOWN -> {
-                x1 = event.x
-                y1 = event.y
-            }
+fun RecyclerView.hideOnBottom(fab: FloatingActionButton?) {
+    addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            if (dy > 0) {
+                val visibleItemCount = recyclerView.layoutManager?.childCount ?: 0
+                val totalItemCount = recyclerView.layoutManager?.itemCount ?: 0
+                val pastVisiblesItems = (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
 
-            MotionEvent.ACTION_MOVE -> {
-                x2 = event.x
-                y2 = event.y
-                dx = x2 - x1
-                dy = y2 - y1
-
-                if (Math.abs(dx) > Math.abs(dy)) {
-                    v.parent.requestDisallowInterceptTouchEvent(true)
-                }
-            }
-
-            MotionEvent.ACTION_UP -> {
-                v.parent.requestDisallowInterceptTouchEvent(false)
+                fab?.toggle(visibleItemCount + pastVisiblesItems < totalItemCount)
+            } else {
+                fab?.toggle(true)
             }
         }
-
-        v.onTouchEvent(event)
-        true
     })
 }

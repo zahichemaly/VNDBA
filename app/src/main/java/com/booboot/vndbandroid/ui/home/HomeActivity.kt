@@ -17,6 +17,7 @@ import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.api.VNDBServer
 import com.booboot.vndbandroid.extensions.Track
 import com.booboot.vndbandroid.extensions.setLightStatusAndNavigation
+import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.repository.AccountRepository
@@ -168,7 +169,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         fragment.arguments = args
         supportFragmentManager.beginTransaction().replace(R.id.fragment_container, fragment, TAG_FRAGMENT).addToBackStack(null).commit()
         drawer?.closeDrawer(GravityCompat.START)
-        toggleFloatingSearchButton(id != R.id.nav_preferences)
+        floatingSearchButton.toggle(id != R.id.nav_preferences)
         enableToolbarScroll(id in listOf(R.id.nav_vnlist, R.id.nav_votelist, R.id.nav_wishlist))
 
         return true
@@ -234,8 +235,6 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         val params = toolbar?.layoutParams as AppBarLayout.LayoutParams
         params.scrollFlags = if (enabled) AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS else 0
     }
-
-    fun toggleFloatingSearchButton(show: Boolean) = if (show) floatingSearchButton.show() else floatingSearchButton.hide()
 
     override fun onBackPressed() {
         if (drawer != null && drawer.isDrawerOpen(GravityCompat.START)) {
