@@ -87,7 +87,7 @@ class VNDao() {
             languages = this@VNDao.languages.map { it.value }
             orig_lang = this@VNDao.orig_lang.map { it.value }
             platforms = this@VNDao.platforms.map { it.value }
-            tags = this@VNDao.tags.map { it.toBo() }
+            tags = this@VNDao.tags.distinctBy { it.tagId }.map { it.toBo() }
             screens = this@VNDao.screens.map { it.toBo() }
             links = this@VNDao.links.target.toBo()
             anime = this@VNDao.anime.map { it.toBo() }
