@@ -1,6 +1,7 @@
 package com.booboot.vndbandroid.ui.vnrelations
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.booboot.vndbandroid.R
@@ -8,7 +9,7 @@ import com.booboot.vndbandroid.model.vndb.Anime
 import com.booboot.vndbandroid.model.vndb.Relation
 import com.booboot.vndbandroid.model.vndb.VN
 
-class RelationsAdapter(private val onAnimeClicked: (Anime) -> Unit, private val onRelationClicked: (Relation, VN?) -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class RelationsAdapter(private val onAnimeClicked: (Anime) -> Unit, private val onRelationClicked: (View, Relation, VN?) -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     var relationsData: RelationsData = RelationsData()
         set(value) {
             vn = value.items.vns[value.vnId] ?: return

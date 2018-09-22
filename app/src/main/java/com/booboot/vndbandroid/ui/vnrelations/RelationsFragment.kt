@@ -5,7 +5,10 @@ import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.extensions.openURL
+import com.booboot.vndbandroid.extensions.openVN
 import com.booboot.vndbandroid.model.vndb.Anime
+import com.booboot.vndbandroid.model.vndb.Links
 import com.booboot.vndbandroid.model.vndb.Relation
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.ui.base.BaseFragment
@@ -13,8 +16,9 @@ import com.booboot.vndbandroid.ui.vndetails.VNDetailsActivity
 import com.booboot.vndbandroid.util.GridAutofitLayoutManager
 import com.booboot.vndbandroid.util.Pixels
 import kotlinx.android.synthetic.main.relations_fragment.*
+import kotlinx.android.synthetic.main.vn_card.view.*
 
-class RelationsFragment : BaseFragment(), (Anime) -> Unit, (Relation, VN?) -> Unit {
+class RelationsFragment : BaseFragment(), (Anime) -> Unit, (View, Relation, VN?) -> Unit {
     override val layout: Int = R.layout.relations_fragment
     private lateinit var viewModel: RelationsViewModel
     private lateinit var adapter: RelationsAdapter
@@ -39,8 +43,12 @@ class RelationsFragment : BaseFragment(), (Anime) -> Unit, (Relation, VN?) -> Un
     }
 
     override fun invoke(anime: Anime) {
+        context?.openURL(Links.ANIDB + anime.id)
     }
 
-    override fun invoke(relation: Relation, vn: VN?) {
+    override fun invoke(view: View, relation: Relation, vn: VN?) {
+        vn?.let {
+            activity?.openVN(it, view.image)
+        }
     }
 }

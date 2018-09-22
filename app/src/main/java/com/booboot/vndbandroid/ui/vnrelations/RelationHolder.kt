@@ -14,7 +14,7 @@ import com.booboot.vndbandroid.model.vndbandroid.Vote
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.vn_card.view.*
 
-class RelationHolder(itemView: View, private val onClick: (Relation, VN?) -> Unit) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+class RelationHolder(itemView: View, private val onClick: (View, Relation, VN?) -> Unit) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
     private var relation: Relation? = null
     private var vn: VN? = null
 
@@ -35,7 +35,7 @@ class RelationHolder(itemView: View, private val onClick: (Relation, VN?) -> Uni
         votesButton.text = Vote.toShortString(votelist?.vote)
     }
 
-    override fun onClick(v: View?) {
-        relation?.let { onClick(it, vn) }
+    override fun onClick(view: View) {
+        relation?.let { onClick(view, it, vn) }
     }
 }
