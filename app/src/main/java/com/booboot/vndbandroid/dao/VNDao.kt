@@ -27,8 +27,8 @@ class VNDao() {
     var rating: Float = 0f
     var votecount: Int = 0
     var flags: Int = 0
-    lateinit var languages: ToMany<LanguagaDao>
-    lateinit var orig_lang: ToMany<OriginalLanguagaDao>
+    lateinit var languages: ToMany<LanguageDao>
+    lateinit var orig_lang: ToMany<OriginalLanguageDao>
     lateinit var platforms: ToMany<PlatformDao>
     lateinit var tags: ToMany<VNTagDao>
     lateinit var screens: ToMany<ScreenDao>
@@ -52,18 +52,20 @@ class VNDao() {
         flags = vn.flags
 
         boxStore.boxFor<VNDao>().attach(this)
-        vn.languages.forEach { languages.add(LanguagaDao(it.hashCode().toLong(), it)) }
-        vn.orig_lang.forEach { orig_lang.add(OriginalLanguagaDao(it.hashCode().toLong(), it)) }
+        vn.languages.forEach { languages.add(LanguageDao(it.hashCode().toLong(), it)) }
+        vn.orig_lang.forEach { orig_lang.add(OriginalLanguageDao(it.hashCode().toLong(), it)) }
         vn.platforms.forEach { platforms.add(PlatformDao(it.hashCode().toLong(), it)) }
-        vn.tags.forEach { tags.add(VNTagDao(it)) }
+        vn.tags.forEach { tags.add(VNTagDao(it, vn)) }
         vn.screens.forEach { screens.add(ScreenDao(it)) }
         vn.anime.forEach { anime.add(AnimeDao(it)) }
         vn.relations.forEach { relations.add(RelationDao(it)) }
         links.target = LinksDao(vn.links)
 
-        boxStore.boxFor<LanguagaDao>().put(languages)
-        boxStore.boxFor<OriginalLanguagaDao>().put(orig_lang)
+        boxStore.boxFor<LanguageDao>().put(languages)
+        boxStore.boxFor<OriginalLanguageDao>().put(orig_lang)
         boxStore.boxFor<PlatformDao>().put(platforms)
+        boxStore.boxFor<VNTagDao>().put(tags)
+        boxStore.boxFor<ScreenDao>().put(screens)
         boxStore.boxFor<AnimeDao>().put(anime)
         boxStore.boxFor<RelationDao>().put(relations)
     }
@@ -87,7 +89,7 @@ class VNDao() {
             languages = this@VNDao.languages.map { it.value }
             orig_lang = this@VNDao.orig_lang.map { it.value }
             platforms = this@VNDao.platforms.map { it.value }
-            tags = this@VNDao.tags.distinctBy { it.tagId }.map { it.toBo() }
+            tags = this@VNDao.tags.map { it.toBo() }
             screens = this@VNDao.screens.map { it.toBo() }
             links = this@VNDao.links.target.toBo()
             anime = this@VNDao.anime.map { it.toBo() }
@@ -98,13 +100,13 @@ class VNDao() {
 }
 
 @Entity
-data class LanguagaDao(
+data class LanguageDao(
     @Id(assignable = true) var id: Long = 0,
     var value: String = ""
 )
 
 @Entity
-data class OriginalLanguagaDao(
+data class OriginalLanguageDao(
     @Id(assignable = true) var id: Long = 0,
     var value: String = ""
 )

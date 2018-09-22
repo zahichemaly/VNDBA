@@ -6,7 +6,7 @@ import io.objectbox.annotation.Id
 
 @Entity
 class ScreenDao() {
-    @Id var id: Long = 0
+    @Id(assignable = true) var id: Long = 0
     var image: String = ""
     var rid: Int = 0
     var nsfw: Boolean = false
@@ -14,6 +14,7 @@ class ScreenDao() {
     var width: Int = 0
 
     constructor(screen: Screen) : this() {
+        id = screen.image.hashCode().toLong()
         image = screen.image
         rid = screen.rid
         nsfw = screen.nsfw
