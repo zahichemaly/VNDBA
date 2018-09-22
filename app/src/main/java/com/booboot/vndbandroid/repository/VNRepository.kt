@@ -35,7 +35,7 @@ class VNRepository @Inject constructor(var boxStore: BoxStore, var vndbServer: V
         cachePolicy
             .fetchFromMemory { items }
             .fetchFromDatabase {
-                boxStore.get<VNDao, Map<Long, VN>> { it.get(ids).map { it.toBo(flags) }.associateByTo(items) { it.id } }
+                boxStore.get<VNDao, Map<Long, VN>> { it.get(ids).map { it.toBo(flags) }.associateBy { it.id } }
             }
             .fetchFromNetwork {
                 val dbVns = it?.toMutableMap() ?: mutableMapOf()
@@ -106,8 +106,18 @@ class VNRepository @Inject constructor(var boxStore: BoxStore, var vndbServer: V
                     }
                 }
             }
-            .putInMemory { if (cachePolicy.enabled) items.putAll(it) }
-            .putInDatabase { if (cachePolicy.enabled) boxStore.save { it.map { VNDao(it.value, boxStore) } } }
+            .putInMemory {
+                if (cachePolicy.enabled) items.putAll(it.filter { it.value.flags > items[it.key]?.flags ?: FLAGS_NOT_EXISTS })
+            }
+            .putInDatabase {
+                if (cachePolicy.enabled) boxStore.save {
+                    it.mapNotNull {
+                        if (it.value.flags > items[it.key]?.flags ?: FLAGS_NOT_EXISTS)
+                            VNDao(it.value, boxStore)
+                        else null
+                    }
+                }
+            }
             .get()
     }
 
