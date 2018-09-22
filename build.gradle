@@ -34,8 +34,8 @@ allprojects {
 }
 
 ext {
-    androidx_version = '1.0.0-rc02'
-    architecture_components_version = '2.0.0-rc01'
+    androidx_version = '1.0.0'
+    architecture_components_version = '2.0.0'
     arch_components_version = '1.1.1'
     retrofit_version = '2.4.0'
     rxjava_version = '2.2.0'
