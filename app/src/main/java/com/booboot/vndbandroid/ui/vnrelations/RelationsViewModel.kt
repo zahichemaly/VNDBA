@@ -3,8 +3,10 @@ package com.booboot.vndbandroid.ui.vnrelations
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import com.booboot.vndbandroid.App
+import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndbandroid.FLAGS_DETAILS
+import com.booboot.vndbandroid.repository.AccountRepository
 import com.booboot.vndbandroid.repository.VNRepository
 import com.booboot.vndbandroid.ui.base.BaseViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -13,7 +15,8 @@ import javax.inject.Inject
 
 class RelationsViewModel constructor(application: Application) : BaseViewModel(application) {
     @Inject lateinit var vnRepository: VNRepository
-    val vnData: MutableLiveData<VNWithRelations> = MutableLiveData()
+    @Inject lateinit var accountRepository: AccountRepository
+    val vnData: MutableLiveData<RelationsData> = MutableLiveData()
 
     init {
         (application as App).appComponent.inject(this)
@@ -23,21 +26,22 @@ class RelationsViewModel constructor(application: Application) : BaseViewModel(a
         if (!force && vnData.value != null) return
         if (disposables.contains(DISPOSABLE_VN)) return
 
-        var vn = VN()
-        disposables[DISPOSABLE_VN] = vnRepository.getItem(vnId)
+        var items = AccountItems()
+        disposables[DISPOSABLE_VN] = accountRepository.getItems()
             .subscribeOn(Schedulers.newThread())
             .doOnSubscribe { loadingData.value = true }
             .observeOn(Schedulers.newThread())
             .flatMap {
-                vn = it
-                vnRepository.getItems(it.relations.mapTo(hashSetOf()) { it.id }, FLAGS_DETAILS)
+                items = it
+                val vn = it.vns[vnId] ?: throw Throwable("VN not found.")
+                vnRepository.getItems(vn.relations.mapTo(hashSetOf()) { it.id }, FLAGS_DETAILS)
             }
             .observeOn(AndroidSchedulers.mainThread())
             .doFinally {
                 loadingData.value = false
                 disposables.remove(DISPOSABLE_VN)
             }
-            .subscribe({ vnData.value = VNWithRelations(vn, it) }, ::onError)
+            .subscribe({ vnData.value = RelationsData(vnId, items, it) }, ::onError)
     }
 
     companion object {
@@ -45,7 +49,8 @@ class RelationsViewModel constructor(application: Application) : BaseViewModel(a
     }
 }
 
-data class VNWithRelations(
-    val vn: VN = VN(),
+data class RelationsData(
+    val vnId: Long = 0,
+    val items: AccountItems = AccountItems(),
     val relations: Map<Long, VN> = emptyMap()
 )

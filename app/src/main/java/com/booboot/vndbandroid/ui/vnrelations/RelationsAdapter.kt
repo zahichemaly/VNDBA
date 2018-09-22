@@ -9,18 +9,15 @@ import com.booboot.vndbandroid.model.vndb.Relation
 import com.booboot.vndbandroid.model.vndb.VN
 
 class RelationsAdapter(private val onAnimeClicked: (Anime) -> Unit, private val onRelationClicked: (Relation, VN?) -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    var anime: List<Anime> = emptyList()
+    var relationsData: RelationsData = RelationsData()
         set(value) {
+            vn = value.items.vns[value.vnId] ?: return
             field = value
             notifyDataSetChanged()
         }
-    var vnWithRelations: VNWithRelations = VNWithRelations()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
+    private var vn: VN = VN()
 
-    override fun getItemViewType(position: Int) = if (position < anime.size) {
+    override fun getItemViewType(position: Int) = if (position < vn.anime.size) {
         R.layout.anime_card
     } else {
         R.layout.vn_card
@@ -36,12 +33,18 @@ class RelationsAdapter(private val onAnimeClicked: (Anime) -> Unit, private val 
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is AnimeHolder) {
-            holder.onBind(anime[position])
+            holder.onBind(vn.anime[position])
         } else if (holder is RelationHolder) {
-            val relation = vnWithRelations.vn.relations[position - anime.size]
-            holder.onBind(relation, vnWithRelations.relations[relation.id])
+            val relation = vn.relations[position - vn.anime.size]
+            holder.onBind(
+                relation,
+                relationsData.relations[relation.id],
+                relationsData.items.vnlist[relation.id],
+                relationsData.items.votelist[relation.id],
+                relationsData.items.wishlist[relation.id]
+            )
         }
     }
 
-    override fun getItemCount() = vnWithRelations.vn.relations.size + anime.size
+    override fun getItemCount() = vn.relations.size + vn.anime.size
 }

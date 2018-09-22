@@ -33,10 +33,9 @@ class RelationsFragment : BaseFragment(), (Anime) -> Unit, (Relation, VN?) -> Un
         }
     }
 
-    private fun showRelations(vnWithRelations: VNWithRelations?) {
-        vnWithRelations ?: return
-        adapter.anime = vnWithRelations.vn.anime
-        adapter.vnWithRelations = vnWithRelations
+    private fun showRelations(relationsData: RelationsData?) {
+        relationsData ?: return
+        adapter.relationsData = relationsData
     }
 
     override fun invoke(anime: Anime) {
