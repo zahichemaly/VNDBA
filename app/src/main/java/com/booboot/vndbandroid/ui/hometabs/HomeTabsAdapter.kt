@@ -4,18 +4,12 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
-import android.view.ViewGroup
 import com.booboot.vndbandroid.model.vndbandroid.Priority
 import com.booboot.vndbandroid.model.vndbandroid.Status
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment.Companion.TAB_VALUE_ARG
 import com.booboot.vndbandroid.ui.vnlist.VNListFragment
 
-/**
- * Created by od on 13/03/2016.
- */
 class HomeTabsAdapter(fm: FragmentManager?, private val numOfTabs: Int, private val type: Int) : FragmentStatePagerAdapter(fm) {
-    val registeredFragments = mutableMapOf<Int, Fragment>()
-
     override fun getItem(position: Int): Fragment {
         val args = Bundle()
         val tab = VNListFragment()
@@ -41,15 +35,4 @@ class HomeTabsAdapter(fm: FragmentManager?, private val numOfTabs: Int, private 
     }
 
     override fun getCount(): Int = numOfTabs
-
-    override fun instantiateItem(container: ViewGroup, position: Int): Any {
-        val fragment = super.instantiateItem(container, position) as Fragment
-        registeredFragments[position] = fragment
-        return fragment
-    }
-
-    override fun destroyItem(container: ViewGroup, position: Int, any: Any) {
-        registeredFragments.remove(position)
-        super.destroyItem(container, position, any)
-    }
 }

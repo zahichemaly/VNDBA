@@ -9,6 +9,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 
 class HomeViewModel constructor(application: Application) : StartupSyncViewModel(application) {
     val accountData: MutableLiveData<AccountItems> = MutableLiveData()
+    val filterData: MutableLiveData<String> = MutableLiveData()
 
     init {
         (application as App).appComponent.inject(this)

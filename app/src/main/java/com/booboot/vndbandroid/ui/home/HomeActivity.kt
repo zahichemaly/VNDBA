@@ -22,24 +22,22 @@ import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.repository.AccountRepository
 import com.booboot.vndbandroid.ui.base.BaseActivity
-import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment
 import com.booboot.vndbandroid.ui.login.LoginActivity
 import com.booboot.vndbandroid.ui.preferences.PreferencesFragment
-import com.booboot.vndbandroid.ui.vnlist.VNListFragment
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.main_activity.*
 import javax.inject.Inject
 
-class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
-    private lateinit var viewModel: HomeViewModel
+class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, SearchView.OnQueryTextListener {
+    lateinit var viewModel: HomeViewModel
     @Inject lateinit var accountRepository: AccountRepository
 
-    var searchView: SearchView? = null
+    private var searchView: SearchView? = null
     var savedFilter: String = ""
-    var selectedItem: Int = 0
+    private var selectedItem: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,7 +72,6 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
             viewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
             viewModel.loadingData.observe(this, Observer { showLoading(it) })
-            viewModel.syncAccountData.observe(this, Observer { showResult(it) })
             viewModel.accountData.observe(this, Observer { updateMenuCounters(it) })
             viewModel.errorData.observe(this, Observer { showError(it) })
 
@@ -100,31 +97,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         return super.onOptionsItemSelected(item)
     }
 
-    override fun showLoading(show: Boolean?) {
-        if (show == null) return
-
-        val currentFragment = supportFragmentManager.findFragmentByTag(TAG_FRAGMENT)
-        when (currentFragment) {
-            is HomeTabsFragment -> currentFragment.registeredFragments.values.forEach { (it as? VNListFragment)?.showLoading(show) }
-            is BaseFragment -> currentFragment.showLoading(show)
-            else -> super.showLoading(show)
-        }
-    }
-
-    fun isLoading() = viewModel.loadingData.value == true
-
     fun startupSync() = viewModel.startupSync()
-
-    private fun showResult(result: AccountItems?) {
-        if (result == null) return
-        val currentFragment = supportFragmentManager.findFragmentByTag(TAG_FRAGMENT)
-        when (currentFragment) {
-            is HomeTabsFragment -> {
-                currentFragment.update()
-                currentFragment.registeredFragments.values.forEach { (it as? VNListFragment)?.update() }
-            }
-        }
-    }
 
     private fun updateMenuCounters(accountItems: AccountItems?) {
         if (accountItems == null) return
@@ -196,23 +169,20 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             searchView?.setQuery(savedFilter, true)
         }
 
-        searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String): Boolean {
-                return false
-            }
-
-            override fun onQueryTextChange(search: String): Boolean {
-                savedFilter = search
-                val currentFragment = supportFragmentManager.findFragmentByTag(TAG_FRAGMENT) as? HomeTabsFragment
-                    ?: return true
-
-                currentFragment.registeredFragments.values.forEach { (it as? VNListFragment)?.filter(search) }
-                return true
-            }
-        })
-
+        searchView?.setOnQueryTextListener(this)
         searchView?.clearFocus()
 
+        return true
+    }
+
+    override fun onQueryTextSubmit(query: String): Boolean {
+        return false
+    }
+
+    override fun onQueryTextChange(search: String): Boolean {
+        savedFilter = search
+        viewModel.filterData.value = search
+        viewModel.filterData.value = null
         return true
     }
 

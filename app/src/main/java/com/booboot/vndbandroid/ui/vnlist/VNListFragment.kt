@@ -38,6 +38,9 @@ class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, (Vi
         viewModel = ViewModelProviders.of(this).get(VNListViewModel::class.java)
         viewModel.accountData.observe(this, Observer { showVns(it) })
         viewModel.errorData.observe(this, Observer { showError(it) })
+        home()?.viewModel?.loadingData?.observe(this, Observer { showLoading(it) })
+        home()?.viewModel?.syncAccountData?.observe(this, Observer { update() })
+        home()?.viewModel?.filterData?.observe(this, Observer { it?.let { filter(it) } })
         update(false)
 
         return rootView
@@ -54,7 +57,6 @@ class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, (Vi
 
         refreshLayout.setOnRefreshListener(this)
         refreshLayout.setColorSchemeColors(context.getThemeColor(R.attr.colorAccent))
-        showLoading(home()?.isLoading() == true)
     }
 
     private fun showVns(accountItems: AccountItems?) {

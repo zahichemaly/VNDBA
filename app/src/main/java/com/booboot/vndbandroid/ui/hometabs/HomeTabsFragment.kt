@@ -6,7 +6,6 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
@@ -22,9 +21,6 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener {
     private var type: Int = 0
     private var adapter: HomeTabsAdapter? = null
 
-    val registeredFragments: Map<Int, Fragment>
-        get() = adapter?.registeredFragments ?: emptyMap()
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
         type = arguments?.getInt(LIST_TYPE_ARG) ?: VNLIST
@@ -38,6 +34,8 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener {
         viewModel = ViewModelProviders.of(this).get(HomeTabsViewModel::class.java)
         viewModel.titlesData.observe(this, Observer { showTitles(it) })
         viewModel.errorData.observe(this, Observer { showError(it) })
+        viewModel.loadingData.observe(this, Observer { showLoading(it) })
+        home()?.viewModel?.syncAccountData?.observe(this, Observer { update() })
         update(false)
     }
 
