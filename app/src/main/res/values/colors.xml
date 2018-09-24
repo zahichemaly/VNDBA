@@ -22,6 +22,10 @@
     <color name="orange">#FF6D00</color>
     <color name="red">#DD2C00</color>
 
+    <!-- Material 2.0 tag colors -->
+    <color name="materialLightRed">#fdeae6</color>
+    <color name="materialRed">#e8351e</color>
+
     <!-- DayNight colors -->
     <color name="cardDividerColor">@color/light_gray</color>
     <color name="tabBackgroundColor">@color/transparentWhite</color>
