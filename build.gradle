@@ -16,7 +16,11 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.0'
+        if (isCI()) {
+            classpath 'com.android.tools.build:gradle:3.2.0-beta04'
+        } else {
+            classpath 'com.android.tools.build:gradle:3.2.0'
+        }
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'io.fabric.tools:gradle:1.25.4'
         classpath "io.objectbox:objectbox-gradle-plugin:$objectbox_version"
