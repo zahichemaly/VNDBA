@@ -5,19 +5,18 @@ import android.graphics.Bitmap
 
 import com.squareup.picasso.Transformation
 
-class BlurIfDemoTransform(private val context: Context) : Transformation {
-    override fun transform(bitmap: Bitmap): Bitmap {
-        if (!DEMO) return bitmap
+class DarkBlurTransform(private val context: Context, private val blur: Boolean) : Transformation {
+    override fun transform(bitmap: Bitmap): Bitmap = if (blur || DEMO) {
         val res = BitmapTransformation.darkBlur(context, bitmap)
         bitmap.recycle()
-        return res
-    }
+        res
+    } else bitmap
 
     override fun key(): String {
         return "darkblur"
     }
 
     companion object {
-        private val DEMO = false
+        private const val DEMO = false
     }
 }

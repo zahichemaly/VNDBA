@@ -3,6 +3,7 @@ package com.booboot.vndbandroid.ui.vnlist
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndb.Vnlist
 import com.booboot.vndbandroid.model.vndb.Votelist
@@ -12,7 +13,7 @@ import com.booboot.vndbandroid.model.vndbandroid.Priority
 import com.booboot.vndbandroid.model.vndbandroid.Status
 import com.booboot.vndbandroid.model.vndbandroid.Vote
 import com.booboot.vndbandroid.util.Utils
-import com.booboot.vndbandroid.util.image.BlurIfDemoTransform
+import com.booboot.vndbandroid.util.image.DarkBlurTransform
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.vn_card.view.*
 
@@ -54,10 +55,9 @@ class VNHolder(itemView: View, private val onVnClicked: (View, VN) -> Unit) : Re
         else
             subtitleText.append(Utils.getDate(vn.released, true))
 
-        if (vn.image_nsfw && !Preferences.nsfw)
-            image.setImageResource(R.drawable.ic_nsfw)
-        else
-            Picasso.get().load(vn.image).transform(BlurIfDemoTransform(context)).into(image)
+        val nsfw = vn.image_nsfw && !Preferences.nsfw
+        Picasso.get().load(vn.image).transform(DarkBlurTransform(context, nsfw)).into(image)
+        nsfwTag.toggle(nsfw)
 
         title.text = titleText
         subtitle.text = subtitleText
