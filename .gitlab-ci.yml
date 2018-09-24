@@ -4,7 +4,7 @@ stages:
 
 variables:
   ANDROID_COMPILE_SDK: "28"
-  ANDROID_BUILD_TOOLS: "28.0.2"
+  ANDROID_BUILD_TOOLS: "28.0.3"
 
 cache:
   paths:
