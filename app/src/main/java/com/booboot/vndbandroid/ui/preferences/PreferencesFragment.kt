@@ -1,5 +1,6 @@
 package com.booboot.vndbandroid.ui.preferences
 
+import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.ListPreference
@@ -8,9 +9,10 @@ import androidx.preference.PreferenceFragmentCompat
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 
-
 class PreferencesFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeListener {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+        preferenceManager.sharedPreferencesName = Preferences.kotprefName
+        preferenceManager.sharedPreferencesMode = Context.MODE_PRIVATE
         addPreferencesFromResource(R.xml.app_preferences)
 
         for (i in 0 until preferenceScreen.preferenceCount) {
