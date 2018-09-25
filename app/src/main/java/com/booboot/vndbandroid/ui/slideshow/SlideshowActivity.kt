@@ -18,6 +18,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.model.vndb.Screen
 import com.booboot.vndbandroid.model.vndbandroid.FileAction
 import com.booboot.vndbandroid.service.ScreenshotNotificationService
 import com.booboot.vndbandroid.ui.base.BaseActivity
@@ -26,10 +27,10 @@ import kotlinx.android.synthetic.main.slideshow_activity.*
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 
-
 class SlideshowActivity : BaseActivity(), ViewPager.OnPageChangeListener {
     private lateinit var viewModel: SlideshowViewModel
 
+    @Suppress("UNCHECKED_CAST")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.slideshow_activity)
@@ -38,13 +39,13 @@ class SlideshowActivity : BaseActivity(), ViewPager.OnPageChangeListener {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val position = intent.getIntExtra(INDEX_ARG, 0)
-        val images = intent.getCharSequenceArrayListExtra(IMAGES_ARG)
+        val images = intent.getSerializableExtra(IMAGES_ARG) as? List<Screen> ?: return
 
         val slideshowAdapter = SlideshowAdapter(this, scaleType = ImageView.ScaleType.FIT_CENTER)
         slideshow.adapter = slideshowAdapter
         slideshow.addOnPageChangeListener(this)
 
-        slideshowAdapter.images = images.map { it.toString() }
+        slideshowAdapter.images = images
         slideshow.currentItem = position
         onPageSelected(position)
 

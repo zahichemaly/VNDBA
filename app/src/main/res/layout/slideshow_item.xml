@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.github.chrisbanes.photoview.PhotoView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.github.chrisbanes.photoview.PhotoView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:adjustViewBounds="true"
         android:fitsSystemWindows="true"
-        tools:src="@tools:sample/backgrounds/scenic"
-        tools:showIn="@layout/vn_details_activity"
         android:scaleType="centerCrop"
-        app:layout_collapseMode="pin"/>
+        app:layout_collapseMode="pin"
+        tools:showIn="@layout/vn_details_activity"
+        tools:src="@tools:sample/backgrounds/scenic" />
+
+    <include layout="@layout/nsfw_tag" />
+
+</RelativeLayout>

@@ -15,6 +15,7 @@ import com.booboot.vndbandroid.model.vndbandroid.Status
 import com.booboot.vndbandroid.model.vndbandroid.Vote
 import com.booboot.vndbandroid.util.image.DarkBlurTransform
 import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.nsfw_tag.view.*
 import kotlinx.android.synthetic.main.vn_card.view.*
 
 class RelationHolder(itemView: View, private val onClick: (View, Relation, VN?) -> Unit) : RecyclerView.ViewHolder(itemView), View.OnClickListener {

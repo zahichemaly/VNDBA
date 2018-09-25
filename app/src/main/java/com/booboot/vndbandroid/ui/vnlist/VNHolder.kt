@@ -15,6 +15,7 @@ import com.booboot.vndbandroid.model.vndbandroid.Vote
 import com.booboot.vndbandroid.util.Utils
 import com.booboot.vndbandroid.util.image.DarkBlurTransform
 import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.nsfw_tag.view.*
 import kotlinx.android.synthetic.main.vn_card.view.*
 
 class VNHolder(itemView: View, private val onVnClicked: (View, VN) -> Unit) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
@@ -56,7 +57,8 @@ class VNHolder(itemView: View, private val onVnClicked: (View, VN) -> Unit) : Re
             subtitleText.append(Utils.getDate(vn.released, true))
 
         val nsfw = vn.image_nsfw && !Preferences.nsfw
-        Picasso.get().load(vn.image).transform(DarkBlurTransform(context, nsfw)).into(image)
+        val picasso = if (nsfw) Picasso.get().load(R.drawable.nsfw_background) else Picasso.get().load(vn.image)
+        picasso.transform(DarkBlurTransform(context, nsfw)).into(image)
         nsfwTag.toggle(nsfw)
 
         title.text = titleText

@@ -31,28 +31,7 @@
                 android:scaleType="centerCrop"
                 tools:src="@tools:sample/backgrounds/scenic" />
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/nsfwTag"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:visibility="visible"
-                app:cardBackgroundColor="@color/materialLightRed"
-                app:contentPaddingBottom="4dp"
-                app:contentPaddingLeft="20dp"
-                app:contentPaddingRight="20dp"
-                app:contentPaddingTop="4dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="@string/nsfw"
-                    android:textAllCaps="true"
-                    android:textColor="@color/materialRed"
-                    android:textSize="16sp" />
-            </androidx.cardview.widget.CardView>
-
+            <include layout="@layout/nsfw_tag" />
         </RelativeLayout>
 
         <LinearLayout

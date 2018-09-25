@@ -8,12 +8,13 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.setStatusBarThemeForCollapsingToolbar
+import com.booboot.vndbandroid.model.vndb.Screen
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.ui.base.BaseActivity
 import com.booboot.vndbandroid.ui.slideshow.SlideshowActivity
 import com.booboot.vndbandroid.ui.slideshow.SlideshowAdapter
-import com.booboot.vndbandroid.util.Logger
 import kotlinx.android.synthetic.main.vn_details_activity.*
+import java.io.Serializable
 
 class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener {
     private lateinit var viewModel: VNDetailsViewModel
@@ -40,7 +41,9 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener {
 
         slideshowAdapter = SlideshowAdapter(this, this, scaleType = ImageView.ScaleType.CENTER_CROP)
         slideshow.adapter = slideshowAdapter
-        if (vnImage != null) slideshowAdapter.images = mutableListOf(vnImage)
+        vnImage?.let {
+            slideshowAdapter.images = mutableListOf(Screen(image = it, nsfw = vnImageNsfw))
+        }
 
         viewModel = ViewModelProviders.of(this).get(VNDetailsViewModel::class.java)
         viewModel.loadingData.observe(this, Observer { showLoading(it) })
@@ -57,21 +60,21 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener {
     }
 
     private fun showVn(vn: VN?) {
-        if (vn == null) return
+        vn ?: return
         supportActionBar?.title = vn.title
 
-        val screens = if (vn.image != null) mutableListOf(vn.image!!) else mutableListOf()
-        screens.addAll(vn.screens.map { it.image })
-        slideshowAdapter.images = screens.toList()
+        val screens = vn.image?.let { mutableListOf(Screen(image = it, nsfw = vn.image_nsfw)) } ?: mutableListOf()
+        screens.addAll(vn.screens)
+        slideshowAdapter.images = screens
         numberOfImages.text = String.format("x%d", screens.size)
 
         tabsAdapter.vn = vn
     }
 
-    override fun onImageClicked(position: Int, images: List<String>) {
+    override fun onImageClicked(position: Int, images: List<Screen>) {
         val intent = Intent(this, SlideshowActivity::class.java)
         intent.putExtra(SlideshowActivity.INDEX_ARG, position)
-        intent.putCharSequenceArrayListExtra(SlideshowActivity.IMAGES_ARG, ArrayList(images))
+        intent.putExtra(SlideshowActivity.IMAGES_ARG, images as Serializable)
         startActivity(intent)
     }
 
