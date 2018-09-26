@@ -19,13 +19,20 @@
         android:orientation="horizontal"
         tools:showIn="@layout/vn_card">
 
-        <ImageView
-            android:id="@+id/image"
-            android:layout_width="108dp"
-            android:layout_height="150dp"
-            android:contentDescription="@null"
-            android:scaleType="centerCrop"
-            tools:src="@tools:sample/backgrounds/scenic" />
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/image"
+                android:layout_width="108dp"
+                android:layout_height="150dp"
+                android:contentDescription="@null"
+                android:scaleType="centerCrop"
+                tools:src="@tools:sample/backgrounds/scenic" />
+
+            <include layout="@layout/nsfw_tag" />
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"

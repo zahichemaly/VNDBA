@@ -3,6 +3,7 @@ package com.booboot.vndbandroid.ui.vnlist
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.extensions.showNsfwImage
 import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndb.Vnlist
@@ -56,10 +57,7 @@ class VNHolder(itemView: View, private val onVnClicked: (View, VN) -> Unit) : Re
         else
             subtitleText.append(Utils.getDate(vn.released, true))
 
-        val nsfw = vn.image_nsfw && !Preferences.nsfw
-        val picasso = if (nsfw) Picasso.get().load(R.drawable.nsfw_background) else Picasso.get().load(vn.image)
-        picasso.transform(DarkBlurTransform(context, nsfw)).into(image)
-        nsfwTag.toggle(nsfw)
+        image.showNsfwImage(vn.image, vn.image_nsfw, nsfwTag)
 
         title.text = titleText
         subtitle.text = subtitleText

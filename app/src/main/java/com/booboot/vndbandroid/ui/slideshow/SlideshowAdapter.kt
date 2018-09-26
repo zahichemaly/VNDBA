@@ -8,11 +8,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.viewpager.widget.PagerAdapter
 import com.booboot.vndbandroid.R
-import com.booboot.vndbandroid.extensions.toggle
+import com.booboot.vndbandroid.extensions.showNsfwImage
 import com.booboot.vndbandroid.model.vndb.Screen
-import com.booboot.vndbandroid.model.vndbandroid.Preferences
-import com.booboot.vndbandroid.util.image.DarkBlurTransform
-import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.nsfw_tag.view.*
 import kotlinx.android.synthetic.main.slideshow_item.view.*
 
@@ -41,10 +38,7 @@ internal class SlideshowAdapter(
             imageView.scaleType = scaleType
             imageView.tag = position
 
-            val nsfw = images[position].nsfw && !Preferences.nsfw
-            val picasso = if (nsfw) Picasso.get().load(R.drawable.nsfw_background) else Picasso.get().load(images[position].image)
-            picasso.transform(DarkBlurTransform(container.context, nsfw)).into(imageView)
-            nsfwTag.toggle(nsfw)
+            imageView.showNsfwImage(images[position].image, images[position].nsfw, nsfwTag)
             nsfwText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
 
             imageView.setOnClickListener {
