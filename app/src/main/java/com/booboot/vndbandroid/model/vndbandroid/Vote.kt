@@ -16,7 +16,8 @@ object Vote {
     fun toString(vote: Int) =
         if (vote < 1) DEFAULT else toShortString(vote) + " (" + getName(outOf10(vote)) + ")"
 
-    fun toShortString(vote: Int?): String = if (vote != null) VOTE_FORMAT.format(outOf10(vote)) else App.context.getString(R.string.dash)
+    fun toShortString(vote: Int?, defaultValue: String? = App.context.getString(R.string.dash)): String? =
+        if (vote != null) VOTE_FORMAT.format(outOf10(vote)) else defaultValue
 
     fun isValid(vote: String?): Boolean {
         if (vote == null) return false

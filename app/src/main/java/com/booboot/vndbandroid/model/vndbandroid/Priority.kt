@@ -11,12 +11,12 @@ object Priority {
     const val DEFAULT = "Add to my wishlist"
     val ALL = listOf(HIGH, MEDIUM, LOW, BLACKLIST)
 
-    fun toString(priority: Int) = when (priority) {
+    fun toString(priority: Int?) = when (priority) {
         0 -> "High"
         1 -> "Medium"
         2 -> "Low"
         3 -> "Blacklist"
-        else -> DEFAULT
+        else -> null
     }
 
     fun toShortString(priority: Int?): String = when (priority) {

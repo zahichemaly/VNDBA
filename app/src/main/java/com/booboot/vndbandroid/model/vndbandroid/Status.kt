@@ -12,13 +12,13 @@ object Status {
     const val DEFAULT = "Add to my VN list"
     val ALL = listOf(PLAYING, FINISHED, STALLED, DROPPED, UNKNOWN)
 
-    fun toString(status: Int) = when (status) {
+    fun toString(status: Int?) = when (status) {
         0 -> "Unknown"
         1 -> "Playing"
         2 -> "Finished"
         3 -> "Stalled"
         4 -> "Dropped"
-        else -> DEFAULT
+        else -> null
     }
 
     fun toShortString(status: Int?): String = when (status) {

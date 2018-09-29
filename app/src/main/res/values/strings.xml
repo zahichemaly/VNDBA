@@ -83,4 +83,6 @@
     <string name="renai">Ren\'Ai</string>
     <string name="anime">Anime</string>
     <string name="nsfw">NSFW</string>
+    <string name="add_to_your_lists">Add to your lists</string>
+    <string name="edit_your_lists">Edit your lists</string>
 </resources>
