@@ -3,6 +3,7 @@ package com.booboot.vndbandroid.ui.vndetails
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import android.widget.ImageView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -13,13 +14,16 @@ import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.ui.base.BaseActivity
 import com.booboot.vndbandroid.ui.slideshow.SlideshowActivity
 import com.booboot.vndbandroid.ui.slideshow.SlideshowAdapter
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.vn_details_activity.*
+import kotlinx.android.synthetic.main.vn_details_bottom_sheet.*
 import java.io.Serializable
 
-class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener {
+class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener, View.OnClickListener {
     private lateinit var viewModel: VNDetailsViewModel
     private lateinit var slideshowAdapter: SlideshowAdapter
     private lateinit var tabsAdapter: VNDetailsTabsAdapter
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +49,10 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener {
             slideshowAdapter.images = mutableListOf(Screen(image = it, nsfw = vnImageNsfw))
         }
 
+        /* Bottom sheet */
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
+        bottomSheetHeader.setOnClickListener(this)
+
         viewModel = ViewModelProviders.of(this).get(VNDetailsViewModel::class.java)
         viewModel.loadingData.observe(this, Observer { showLoading(it) })
         viewModel.vnData.observe(this, Observer { showVn(it) })
@@ -69,6 +77,12 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener {
         numberOfImages.text = String.format("x%d", screens.size)
 
         tabsAdapter.vn = vn
+    }
+
+    override fun onClick(v: View) {
+        when (v.id) {
+            R.id.bottomSheetHeader -> bottomSheetBehavior.toggle()
+        }
     }
 
     override fun onImageClicked(position: Int, images: List<Screen>) {
