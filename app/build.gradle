@@ -65,7 +65,7 @@ dependencies {
     implementation "com.google.android.material:material:$androidx_version"
     implementation "androidx.browser:browser:$androidx_version"
     implementation 'com.google.android:flexbox:1.1.0'
-    implementation 'pub.devrel:easypermissions:1.2.0'
+    implementation 'pub.devrel:easypermissions:2.0.0'
 
     implementation "androidx.lifecycle:lifecycle-extensions:$architecture_components_version"
     kapt "androidx.lifecycle:lifecycle-compiler:$architecture_components_version"
