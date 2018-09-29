@@ -13,6 +13,7 @@
     <color name="buttonPressed">#E5E5E5</color>
     <color name="transparentBlack">#46000000</color>
     <color name="transparentWhite">#78ffffff</color>
+    <color name="transparent80White">#cdffffff</color>
 
     <!-- Grading colors -->
     <color name="green">#64DD17</color>

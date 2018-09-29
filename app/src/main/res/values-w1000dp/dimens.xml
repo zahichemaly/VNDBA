@@ -1,0 +1,5 @@
+<resources>
+    <dimen name="app_bar_height">300dp</dimen>
+    <dimen name="activity_horizontal_margin">96dp</dimen>
+    <dimen name="bottom_sheet_margin">250dp</dimen>
+</resources>
