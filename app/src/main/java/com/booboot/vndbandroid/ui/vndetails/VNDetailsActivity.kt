@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
@@ -112,6 +113,8 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener, View.OnClic
         textStatus.toggle(status != null)
         iconWishlist.toggle(priority != null)
         textWishlist.toggle(priority != null)
+
+        votesButton.background = ContextCompat.getDrawable(this, Vote.getDrawableColor10(items.votelist[vnId]?.vote))
     }
 
     override fun onClick(v: View) {
