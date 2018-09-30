@@ -20,6 +20,10 @@
         android:layout_width="0dp"
         android:layout_height="64dp"
         android:background="?attr/colorAccent"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:theme="@style/AppTheme.Light"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
