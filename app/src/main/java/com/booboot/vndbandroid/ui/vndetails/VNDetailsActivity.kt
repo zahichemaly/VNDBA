@@ -8,6 +8,7 @@ import android.widget.ImageView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.extensions.onStateChanged
 import com.booboot.vndbandroid.extensions.setStatusBarThemeForCollapsingToolbar
 import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.model.vndb.AccountItems
@@ -58,6 +59,10 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener, View.OnClic
         /* Bottom sheet */
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
         bottomSheetHeader.setOnClickListener(this)
+        bottomSheetBehavior.onStateChanged(
+            { iconArrow.setImageResource(R.drawable.ic_keyboard_arrow_down_white_24dp) },
+            { iconArrow.setImageResource(R.drawable.ic_keyboard_arrow_up_white_24dp) }
+        )
 
         viewModel = ViewModelProviders.of(this).get(VNDetailsViewModel::class.java)
         viewModel.loadingData.observe(this, Observer { showLoading(it) })
