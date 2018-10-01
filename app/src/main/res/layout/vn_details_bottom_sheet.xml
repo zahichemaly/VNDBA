@@ -5,12 +5,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bottomSheet"
     android:layout_width="match_parent"
-    android:layout_height="340dp"
+    android:layout_height="wrap_content"
     android:layout_marginStart="@dimen/bottom_sheet_margin"
     android:layout_marginEnd="@dimen/bottom_sheet_margin"
     android:background="?attr/colorPrimary"
     android:elevation="4dp"
     android:orientation="vertical"
+    android:paddingBottom="16dp"
     app:behavior_hideable="false"
     app:behavior_peekHeight="64dp"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
@@ -123,4 +124,109 @@
         app:layout_constraintTop_toTopOf="@id/bottomSheetHeader"
         tools:text="8" />
 
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iconContentStatus"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bottomSheetHeader"
+        app:srcCompat="@drawable/ic_list_black_48dp"
+        app:tint="?android:attr/textColorPrimary" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="@string/status"
+        android:textColor="?android:attr/textColorPrimary"
+        app:layout_constraintBottom_toBottomOf="@id/iconContentStatus"
+        app:layout_constraintStart_toEndOf="@id/iconContentStatus"
+        app:layout_constraintTop_toTopOf="@id/iconContentStatus" />
+
+    <com.google.android.flexbox.FlexboxLayout
+        android:id="@+id/flexboxStatus"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        app:dividerDrawable="@drawable/flexbox_divider_8dp"
+        app:flexWrap="wrap"
+        app:layout_constraintEnd_toStartOf="@id/buttonRemoveStatus"
+        app:layout_constraintStart_toStartOf="@id/iconContentStatus"
+        app:layout_constraintTop_toBottomOf="@id/iconContentStatus"
+        app:showDividerVertical="middle">
+
+        <!-- Select button = remove style, remove textColor and add app:backgroundTint=<corresponding color> -->
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="@string/playing"
+            android:textAllCaps="false"
+            android:textColor="@color/playing"
+            android:textSize="12sp"
+            app:rippleColor="@color/playing"
+            app:strokeColor="@color/playing" />
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="@string/finished"
+            android:textAllCaps="false"
+            android:textColor="@color/finished"
+            android:textSize="12sp"
+            app:rippleColor="@color/finished"
+            app:strokeColor="@color/finished" />
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="@string/stalled"
+            android:textAllCaps="false"
+            android:textColor="@color/stalled"
+            android:textSize="12sp"
+            app:rippleColor="@color/stalled"
+            app:strokeColor="@color/stalled" />
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="@string/dropped"
+            android:textAllCaps="false"
+            android:textColor="@color/dropped"
+            android:textSize="12sp"
+            app:rippleColor="@color/dropped"
+            app:strokeColor="@color/dropped" />
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="@string/unknown"
+            android:textAllCaps="false"
+            android:textColor="@color/unknown"
+            android:textSize="12sp"
+            app:rippleColor="@color/unknown"
+            app:strokeColor="@color/unknown" />
+    </com.google.android.flexbox.FlexboxLayout>
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/buttonRemoveStatus"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginEnd="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="6dp"
+        app:layout_constraintBottom_toBottomOf="@id/flexboxStatus"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/flexboxStatus"
+        app:srcCompat="@drawable/ic_delete_forever_black_24dp"
+        app:tint="?android:attr/textColorPrimary" />
 </androidx.constraintlayout.widget.ConstraintLayout>

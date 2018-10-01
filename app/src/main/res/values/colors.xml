@@ -23,6 +23,13 @@
     <color name="orange">#FF6D00</color>
     <color name="red">#DD2C00</color>
 
+    <!-- Status colors -->
+    <color name="playing">#00C853</color>
+    <color name="finished">#2979FF</color>
+    <color name="stalled">#FFC400</color>
+    <color name="dropped">#DD2C00</color>
+    <color name="unknown">#9E9E9E</color>
+
     <!-- Material 2.0 tag colors -->
     <color name="materialLightRed">#fdeae6</color>
     <color name="materialRed">#e8351e</color>
