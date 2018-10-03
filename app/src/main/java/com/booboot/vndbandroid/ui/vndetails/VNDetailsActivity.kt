@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -21,6 +22,7 @@ import com.booboot.vndbandroid.model.vndbandroid.Vote
 import com.booboot.vndbandroid.ui.base.BaseActivity
 import com.booboot.vndbandroid.ui.slideshow.SlideshowActivity
 import com.booboot.vndbandroid.ui.slideshow.SlideshowAdapter
+import com.booboot.vndbandroid.util.StopFocusStealingAppBarBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.vn_details_activity.*
 import kotlinx.android.synthetic.main.vn_details_bottom_sheet.*
@@ -64,6 +66,7 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener, View.OnClic
             { iconArrow.setImageResource(R.drawable.ic_keyboard_arrow_down_white_24dp) },
             { iconArrow.setImageResource(R.drawable.ic_keyboard_arrow_up_white_24dp) }
         )
+        (appBarLayout.layoutParams as? CoordinatorLayout.LayoutParams)?.behavior = StopFocusStealingAppBarBehavior(bottomSheet)
 
         viewModel = ViewModelProviders.of(this).get(VNDetailsViewModel::class.java)
         viewModel.loadingData.observe(this, Observer { showLoading(it) })
