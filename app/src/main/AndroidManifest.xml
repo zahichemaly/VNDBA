@@ -34,7 +34,8 @@
 
         <activity
             android:name=".ui.vndetails.VNDetailsActivity"
-            android:theme="@style/SplashScreen" />
+            android:theme="@style/SplashScreen"
+            android:windowSoftInputMode="adjustPan" />
 
         <activity
             android:name=".ui.slideshow.SlideshowActivity"
