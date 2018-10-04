@@ -5,12 +5,14 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.onStateChanged
+import com.booboot.vndbandroid.extensions.preventLineBreak
 import com.booboot.vndbandroid.extensions.setStatusBarThemeForCollapsingToolbar
 import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.model.vndb.AccountItems
@@ -67,6 +69,7 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener, View.OnClic
             { iconArrow.setImageResource(R.drawable.ic_keyboard_arrow_up_white_24dp) }
         )
         (appBarLayout.layoutParams as? CoordinatorLayout.LayoutParams)?.behavior = StopFocusStealingAppBarBehavior(bottomSheet)
+        textNotes.preventLineBreak()
 
         viewModel = ViewModelProviders.of(this).get(VNDetailsViewModel::class.java)
         viewModel.loadingData.observe(this, Observer { showLoading(it) })
@@ -99,9 +102,13 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener, View.OnClic
     private fun showAccount(items: AccountItems?) {
         items ?: return
 
-        val status = Status.toString(items.vnlist[vnId]?.status)
-        val priority = Priority.toString(items.wishlist[vnId]?.priority)
-        val vote = Vote.toShortString(items.votelist[vnId]?.vote, null)
+        val vnlist = items.vnlist[vnId]
+        val wishlist = items.wishlist[vnId]
+        val votelist = items.votelist[vnId]
+
+        val status = Status.toString(vnlist?.status)
+        val priority = Priority.toString(wishlist?.priority)
+        val vote = Vote.toShortString(votelist?.vote, null)
 
         textAddToList.text = when {
             status == null && priority == null && vote == null -> getString(R.string.add_to_your_lists)
@@ -117,7 +124,9 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener, View.OnClic
         iconWishlist.toggle(priority != null)
         textWishlist.toggle(priority != null)
 
-        votesButton.background = ContextCompat.getDrawable(this, Vote.getDrawableColor10(items.votelist[vnId]?.vote))
+        votesButton.background = ContextCompat.getDrawable(this, Vote.getDrawableColor10(votelist?.vote))
+
+        textNotes.setText(vnlist?.notes, TextView.BufferType.EDITABLE)
     }
 
     override fun onClick(v: View) {

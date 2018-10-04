@@ -133,16 +133,20 @@
             app:layout_constraintTop_toTopOf="@id/bottomSheetHeader"
             tools:text="8" />
 
-        <!--<androidx.core.widget.NestedScrollView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginTop="16dp"-->
-        <!--android:fillViewport="true"-->
-        <!--app:layout_constraintTop_toBottomOf="@id/bottomSheetHeader">-->
-        <!---->
-        <!--<androidx.constraintlayout.widget.ConstraintLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content">-->
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/textNotes"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:hint="@string/add_notes"
+            android:textSize="13sp"
+            android:textStyle="italic"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/bottomSheetHeader"
+            tools:text="Notes here which are going to be very long notes on multiple lines." />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/iconContentStatus"
@@ -151,7 +155,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/bottomSheetHeader"
+            app:layout_constraintTop_toBottomOf="@id/textNotes"
             app:srcCompat="@drawable/ic_list_black_48dp"
             app:tint="?android:attr/textColorPrimary" />
 
@@ -392,7 +396,7 @@
                 android:hint="@string/custom_vote"
                 android:inputType="numberDecimal"
                 android:maxLines="1"
-                android:textSize="14sp"
+                android:textSize="13sp"
                 app:layout_constraintStart_toStartOf="@id/iconContentStatus"
                 app:layout_constraintTop_toBottomOf="@id/flexboxVote" />
 
@@ -514,8 +518,6 @@
             app:layout_constraintTop_toTopOf="@id/flexboxWishlist"
             app:srcCompat="@drawable/ic_delete_forever_black_24dp"
             app:tint="?android:attr/textColorPrimary" />
-
-        <!--</androidx.constraintlayout.widget.ConstraintLayout>-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>
