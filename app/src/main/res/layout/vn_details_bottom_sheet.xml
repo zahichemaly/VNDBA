@@ -182,8 +182,8 @@
             app:layout_constraintTop_toBottomOf="@id/iconContentStatus"
             app:showDividerVertical="middle">
 
-            <!-- Select button = remove style, remove textColor and add app:backgroundTint=<corresponding color> -->
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonPlaying"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
@@ -288,7 +288,6 @@
             app:layout_constraintTop_toBottomOf="@id/iconContentVote"
             app:showDividerVertical="middle">
 
-            <!-- Select button = remove style, remove textColor and add app:backgroundTint=<corresponding color> -->
             <com.google.android.material.button.MaterialButton
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="40dp"
@@ -458,7 +457,6 @@
             app:layout_constraintTop_toBottomOf="@id/iconContentWishlist"
             app:showDividerVertical="middle">
 
-            <!-- Select button = remove style, remove textColor and add app:backgroundTint=<corresponding color> -->
             <com.google.android.material.button.MaterialButton
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
