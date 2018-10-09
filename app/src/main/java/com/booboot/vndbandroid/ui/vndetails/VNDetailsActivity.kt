@@ -37,6 +37,8 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener, View.OnClic
     private lateinit var tabsAdapter: VNDetailsTabsAdapter
     private var vnId: Long = 0
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
+    private val votelistViews by lazy { listOf(iconContentVote, textContentVote, flexboxVote, buttonRemoveVote) }
+    private val wishlistViews by lazy { listOf(iconContentWishlist, textContentWishlist, flexboxWishlist, buttonRemoveWishlist) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -148,6 +150,9 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener, View.OnClic
         buttonWishlistMedium.selectIf(wishlist?.priority == Priority.MEDIUM)
         buttonWishlistLow.selectIf(wishlist?.priority == Priority.LOW)
         buttonWishlistBlacklist.selectIf(wishlist?.priority == Priority.BLACKLIST)
+
+        votelistViews.forEach { it?.toggle(wishlist == null) }
+        wishlistViews.forEach { it?.toggle(votelist == null) }
     }
 
     override fun onClick(v: View) {

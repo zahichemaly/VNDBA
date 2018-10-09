@@ -270,6 +270,7 @@
             app:tint="?android:attr/textColorPrimary" />
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/textContentVote"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -453,6 +454,7 @@
             app:tint="?android:attr/textColorPrimary" />
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/textContentWishlist"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
