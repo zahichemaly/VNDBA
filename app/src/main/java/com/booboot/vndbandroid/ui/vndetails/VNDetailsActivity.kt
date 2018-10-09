@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.onStateChanged
 import com.booboot.vndbandroid.extensions.preventLineBreak
+import com.booboot.vndbandroid.extensions.selectIf
 import com.booboot.vndbandroid.extensions.setStatusBarThemeForCollapsingToolbar
 import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.model.vndb.AccountItems
@@ -127,6 +128,26 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener, View.OnClic
         votesButton.background = ContextCompat.getDrawable(this, Vote.getDrawableColor10(votelist?.vote))
 
         textNotes.setText(vnlist?.notes, TextView.BufferType.EDITABLE)
+        buttonPlaying.selectIf(vnlist?.status == Status.PLAYING)
+        buttonFinished.selectIf(vnlist?.status == Status.FINISHED)
+        buttonStalled.selectIf(vnlist?.status == Status.STALLED)
+        buttonDropped.selectIf(vnlist?.status == Status.DROPPED)
+        buttonUnknown.selectIf(vnlist?.status == Status.UNKNOWN)
+        buttonVote1.selectIf(votelist?.vote == 10)
+        buttonVote2.selectIf(votelist?.vote == 20)
+        buttonVote3.selectIf(votelist?.vote == 30)
+        buttonVote4.selectIf(votelist?.vote == 40)
+        buttonVote5.selectIf(votelist?.vote == 50)
+        buttonVote6.selectIf(votelist?.vote == 60)
+        buttonVote7.selectIf(votelist?.vote == 70)
+        buttonVote8.selectIf(votelist?.vote == 80)
+        buttonVote9.selectIf(votelist?.vote == 90)
+        buttonVote10.selectIf(votelist?.vote == 100)
+        inputCustomVote.setText(if (votelist?.vote?.rem(10) == 0) null else Vote.toShortString(votelist?.vote, null))
+        buttonWishlistHigh.selectIf(wishlist?.priority == Priority.HIGH)
+        buttonWishlistMedium.selectIf(wishlist?.priority == Priority.MEDIUM)
+        buttonWishlistLow.selectIf(wishlist?.priority == Priority.LOW)
+        buttonWishlistBlacklist.selectIf(wishlist?.priority == Priority.BLACKLIST)
     }
 
     override fun onClick(v: View) {

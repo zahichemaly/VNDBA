@@ -6,6 +6,8 @@ import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.util.Pixels
 import com.google.android.material.button.MaterialButton
 
+fun MaterialButton.selectIf(select: Boolean) = if (select) select() else unselect()
+
 fun MaterialButton.select() = apply {
     setTextColor(ContextCompat.getColor(context, R.color.white))
     backgroundTintList = strokeColor

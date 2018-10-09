@@ -195,6 +195,7 @@
                 app:strokeColor="@color/playing" />
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonFinished"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
@@ -206,6 +207,7 @@
                 app:strokeColor="@color/finished" />
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonStalled"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
@@ -217,6 +219,7 @@
                 app:strokeColor="@color/stalled" />
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonDropped"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
@@ -228,6 +231,7 @@
                 app:strokeColor="@color/dropped" />
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonUnknown"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
@@ -289,6 +293,7 @@
             app:showDividerVertical="middle">
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonVote1"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="40dp"
                 android:layout_height="50dp"
@@ -299,6 +304,7 @@
                 app:strokeColor="?attr/colorAccent" />
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonVote2"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="40dp"
                 android:layout_height="50dp"
@@ -309,6 +315,7 @@
                 app:strokeColor="?attr/colorAccent" />
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonVote3"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="40dp"
                 android:layout_height="50dp"
@@ -319,6 +326,7 @@
                 app:strokeColor="?attr/colorAccent" />
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonVote4"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="40dp"
                 android:layout_height="50dp"
@@ -329,6 +337,7 @@
                 app:strokeColor="?attr/colorAccent" />
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonVote5"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="40dp"
                 android:layout_height="50dp"
@@ -339,6 +348,7 @@
                 app:strokeColor="?attr/colorAccent" />
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonVote6"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="40dp"
                 android:layout_height="50dp"
@@ -349,6 +359,7 @@
                 app:strokeColor="?attr/colorAccent" />
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonVote7"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="40dp"
                 android:layout_height="50dp"
@@ -359,6 +370,7 @@
                 app:strokeColor="?attr/colorAccent" />
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonVote8"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="40dp"
                 android:layout_height="50dp"
@@ -369,6 +381,7 @@
                 app:strokeColor="?attr/colorAccent" />
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonVote9"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="40dp"
                 android:layout_height="50dp"
@@ -379,6 +392,7 @@
                 app:strokeColor="?attr/colorAccent" />
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonVote10"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="40dp"
                 android:layout_height="50dp"
@@ -390,14 +404,18 @@
                 app:strokeColor="?attr/colorAccent" />
 
             <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/inputCustomVote"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:hint="@string/custom_vote"
                 android:inputType="numberDecimal"
                 android:maxLines="1"
+                android:textAlignment="center"
                 android:textSize="13sp"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@id/iconContentStatus"
-                app:layout_constraintTop_toBottomOf="@id/flexboxVote" />
+                app:layout_constraintTop_toBottomOf="@id/flexboxVote"
+                tools:text="7.5" />
 
         </com.google.android.flexbox.FlexboxLayout>
 
@@ -458,6 +476,7 @@
             app:showDividerVertical="middle">
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonWishlistHigh"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
@@ -469,6 +488,7 @@
                 app:strokeColor="@color/playing" />
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonWishlistMedium"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
@@ -480,6 +500,7 @@
                 app:strokeColor="@color/stalled" />
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonWishlistLow"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
@@ -491,6 +512,7 @@
                 app:strokeColor="@color/dropped" />
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonWishlistBlacklist"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
