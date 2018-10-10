@@ -3,6 +3,8 @@ package com.booboot.vndbandroid.ui.vndetails
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import com.booboot.vndbandroid.App
+import com.booboot.vndbandroid.extensions.minus
+import com.booboot.vndbandroid.extensions.plus
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.repository.AccountRepository
@@ -29,9 +31,9 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
         disposables[DISPOSABLE_VN] = vnRepository.getItem(vnId)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe { loadingData.value = true }
+            .doOnSubscribe { loadingData.plus() }
             .doFinally {
-                loadingData.value = false
+                loadingData.minus()
                 disposables.remove(DISPOSABLE_VN)
             }
             .subscribe({

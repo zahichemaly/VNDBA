@@ -3,6 +3,8 @@ package com.booboot.vndbandroid.ui.home
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import com.booboot.vndbandroid.App
+import com.booboot.vndbandroid.extensions.minus
+import com.booboot.vndbandroid.extensions.plus
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.ui.base.StartupSyncViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -20,9 +22,9 @@ class HomeViewModel constructor(application: Application) : StartupSyncViewModel
 
         disposables[DISPOSABLE_STARTUP_SYNC] = startupSyncSingle { accountData.value = it }
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe { loadingData.value = true }
+            .doOnSubscribe { loadingData.plus() }
             .doFinally {
-                loadingData.value = false
+                loadingData.minus()
                 disposables.remove(DISPOSABLE_STARTUP_SYNC)
             }
             .subscribe({}, ::onError)

@@ -3,6 +3,8 @@ package com.booboot.vndbandroid.ui.slideshow
 import android.app.Application
 import android.graphics.Bitmap
 import androidx.lifecycle.MutableLiveData
+import com.booboot.vndbandroid.extensions.minus
+import com.booboot.vndbandroid.extensions.plus
 import com.booboot.vndbandroid.model.vndbandroid.FileAction
 import com.booboot.vndbandroid.ui.base.BaseViewModel
 import io.reactivex.Single
@@ -31,9 +33,9 @@ class SlideshowViewModel constructor(application: Application) : BaseViewModel(a
         }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe { loadingData.value = true }
+            .doOnSubscribe { loadingData.plus() }
             .doFinally {
-                loadingData.value = false
+                loadingData.minus()
                 disposables.remove(DISPOSABLE_DOWNLOAD_SCREENSHOT)
             }
             .subscribe({

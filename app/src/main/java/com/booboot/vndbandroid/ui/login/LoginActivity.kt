@@ -49,10 +49,10 @@ class LoginActivity : BaseActivity() {
         }
     }
 
-    override fun showLoading(show: Boolean?) {
-        super.showLoading(show)
-        if (show == null) return
-        enableButtons(!show)
+    override fun showLoading(loading: Int?) {
+        super.showLoading(loading)
+        if (loading == null) return
+        enableButtons(loading <= 0)
     }
 
     private fun showResult(result: SyncData?) {
