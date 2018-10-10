@@ -39,6 +39,11 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener, View.OnClic
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
     private val votelistViews by lazy { listOf(iconContentVote, textContentVote, flexboxVote, buttonRemoveVote) }
     private val wishlistViews by lazy { listOf(iconContentWishlist, textContentWishlist, flexboxWishlist, buttonRemoveWishlist) }
+    private val bottomSheetButtons by lazy {
+        listOf(textNotes as View, buttonPlaying, buttonFinished, buttonStalled, buttonDropped, buttonUnknown, buttonRemoveStatus,
+            buttonVote1, buttonVote2, buttonVote3, buttonVote4, buttonVote5, buttonVote6, buttonVote7, buttonVote8, buttonVote9, buttonVote10, inputCustomVote, buttonRemoveVote,
+            buttonWishlistHigh, buttonWishlistMedium, buttonWishlistLow, buttonWishlistBlacklist, buttonRemoveWishlist)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,6 +78,7 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener, View.OnClic
         )
         (appBarLayout.layoutParams as? CoordinatorLayout.LayoutParams)?.behavior = StopFocusStealingAppBarBehavior(bottomSheet)
         textNotes.preventLineBreak()
+        bottomSheetButtons.forEach { it.setOnClickListener(this@VNDetailsActivity) }
 
         viewModel = ViewModelProviders.of(this).get(VNDetailsViewModel::class.java)
         viewModel.loadingData.observe(this, Observer { showLoading(it) })
@@ -153,6 +159,12 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener, View.OnClic
 
         votelistViews.forEach { it?.toggle(wishlist == null) }
         wishlistViews.forEach { it?.toggle(votelist == null) }
+    }
+
+    override fun showLoading(loading: Int?) {
+        super.showLoading(loading)
+        if (loading == null) return
+        bottomSheetButtons.forEach { it.isEnabled = loading <= 0 }
     }
 
     override fun onClick(v: View) {
