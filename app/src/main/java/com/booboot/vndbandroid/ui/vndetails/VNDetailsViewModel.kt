@@ -7,9 +7,14 @@ import com.booboot.vndbandroid.extensions.minus
 import com.booboot.vndbandroid.extensions.plus
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndb.VN
+import com.booboot.vndbandroid.model.vndb.Vnlist
 import com.booboot.vndbandroid.repository.AccountRepository
 import com.booboot.vndbandroid.repository.VNRepository
+import com.booboot.vndbandroid.repository.VnlistRepository
+import com.booboot.vndbandroid.repository.VotelistRepository
+import com.booboot.vndbandroid.repository.WishlistRepository
 import com.booboot.vndbandroid.ui.base.BaseViewModel
+import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
@@ -17,6 +22,10 @@ import javax.inject.Inject
 class VNDetailsViewModel constructor(application: Application) : BaseViewModel(application) {
     @Inject lateinit var vnRepository: VNRepository
     @Inject lateinit var accountRepository: AccountRepository
+    @Inject lateinit var vnlistRepository: VnlistRepository
+    @Inject lateinit var votelistRepository: VotelistRepository
+    @Inject lateinit var wishlistRepository: WishlistRepository
+
     val vnData: MutableLiveData<VN> = MutableLiveData()
     val accountData: MutableLiveData<AccountItems> = MutableLiveData()
 
@@ -50,6 +59,22 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
             .doFinally { disposables.remove(DISPOSABLE_ACCOUNT) }
             .subscribe({ accountData.value = it }, ::onError)
     }
+
+    fun setVnlist(vnlist: Vnlist) {
+        if (accountData.value?.vnlist?.get(vnData.value?.id) == vnlist) return
+        vnlistRepository.setItem(vnlist).setAndSubscribe()
+    }
+
+    fun removeVnlist(vnlist: Vnlist) {
+        if (accountData.value?.vnlist?.get(vnData.value?.id) == null) return
+        vnlistRepository.deleteItem(vnlist).setAndSubscribe()
+    }
+
+    private fun Completable.setAndSubscribe() = subscribeOn(Schedulers.io())
+        .observeOn(Schedulers.io())
+        .andThen(accountRepository.getItems())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe({ accountData.value = it }, ::onError)
 
     companion object {
         private const val DISPOSABLE_VN = "DISPOSABLE_VN"

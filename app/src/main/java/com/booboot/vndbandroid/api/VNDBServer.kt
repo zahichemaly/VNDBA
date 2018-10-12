@@ -6,7 +6,6 @@ import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.log
 import com.booboot.vndbandroid.model.vndb.DbStats
 import com.booboot.vndbandroid.model.vndb.Error
-import com.booboot.vndbandroid.model.vndb.Fields
 import com.booboot.vndbandroid.model.vndb.Login
 import com.booboot.vndbandroid.model.vndb.Options
 import com.booboot.vndbandroid.model.vndb.Response
@@ -107,12 +106,15 @@ class VNDBServer @Inject constructor(private val moshi: Moshi) {
         }
     }
 
-    fun set(type: String, id: Int, fields: Fields): Completable {
-        val command = "set $type $id " + moshi.adapter(Fields::class.java).toJson(fields)
+    fun <T> set(type: String, id: Long, fields: T?, resultClass: TypeReference<T>): Completable {
+        var command = "set $type $id "
+        fields?.let {
+            command += moshi.adapter<T>(resultClass.type).serializeNulls().toJson(fields)
+        }
 
-        return Single.fromCallable<Response<Void>> {
-            sendCommand(command, resultClass = type())
-        }.flatMapCompletable { Completable.complete() }
+        return Completable.fromAction {
+            sendCommand(command, resultClass = type<Void>())
+        }.doOnError { VNDBServer.close(Options().socketIndex) }
     }
 
     @Suppress("unused")

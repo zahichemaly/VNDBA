@@ -19,6 +19,7 @@ import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndb.Screen
 import com.booboot.vndbandroid.model.vndb.VN
+import com.booboot.vndbandroid.model.vndb.Vnlist
 import com.booboot.vndbandroid.model.vndbandroid.Priority
 import com.booboot.vndbandroid.model.vndbandroid.Status
 import com.booboot.vndbandroid.model.vndbandroid.Vote
@@ -168,8 +169,21 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener, View.OnClic
     }
 
     override fun onClick(v: View) {
+        if (vnId <= 0) return
+        val items = viewModel.accountData.value ?: return
+        val vnlist = items.vnlist[vnId]
+        val wishlist = items.wishlist[vnId]
+        val votelist = items.votelist[vnId]
+
         when (v.id) {
             R.id.bottomSheetHeader -> bottomSheetBehavior.toggle()
+
+            R.id.buttonPlaying -> viewModel.setVnlist(vnlist?.copy(status = Status.PLAYING) ?: Vnlist(vn = vnId, status = Status.PLAYING))
+            R.id.buttonFinished -> viewModel.setVnlist(vnlist?.copy(status = Status.FINISHED) ?: Vnlist(vn = vnId, status = Status.FINISHED))
+            R.id.buttonStalled -> viewModel.setVnlist(vnlist?.copy(status = Status.STALLED) ?: Vnlist(vn = vnId, status = Status.STALLED))
+            R.id.buttonDropped -> viewModel.setVnlist(vnlist?.copy(status = Status.DROPPED) ?: Vnlist(vn = vnId, status = Status.DROPPED))
+            R.id.buttonUnknown -> viewModel.setVnlist(vnlist?.copy(status = Status.UNKNOWN) ?: Vnlist(vn = vnId, status = Status.UNKNOWN))
+            R.id.buttonRemoveStatus -> viewModel.removeVnlist(vnlist ?: Vnlist(vnId))
         }
     }
 
