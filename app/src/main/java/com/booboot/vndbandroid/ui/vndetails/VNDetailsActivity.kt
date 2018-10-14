@@ -92,7 +92,7 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener, View.OnClic
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            android.R.id.home -> supportFinishAfterTransition()
+            android.R.id.home -> finish()
         }
         return super.onOptionsItemSelected(item)
     }
