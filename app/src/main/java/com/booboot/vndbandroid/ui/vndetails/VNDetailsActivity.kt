@@ -21,6 +21,7 @@ import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndb.Screen
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndb.Vnlist
+import com.booboot.vndbandroid.model.vndb.Votelist
 import com.booboot.vndbandroid.model.vndbandroid.Priority
 import com.booboot.vndbandroid.model.vndbandroid.Status
 import com.booboot.vndbandroid.model.vndbandroid.Vote
@@ -175,8 +176,8 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener, View.OnClic
         if (vnId <= 0) return
         val items = viewModel.accountData.value ?: return
         val vnlist = items.vnlist[vnId]
-        val wishlist = items.wishlist[vnId]
         val votelist = items.votelist[vnId]
+        val wishlist = items.wishlist[vnId]
 
         when (view.id) {
             R.id.bottomSheetHeader -> bottomSheetBehavior.toggle()
@@ -187,6 +188,18 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener, View.OnClic
             R.id.buttonDropped -> viewModel.setVnlist(vnlist?.copy(status = Status.DROPPED) ?: Vnlist(vn = vnId, status = Status.DROPPED))
             R.id.buttonUnknown -> viewModel.setVnlist(vnlist?.copy(status = Status.UNKNOWN) ?: Vnlist(vn = vnId, status = Status.UNKNOWN))
             R.id.buttonRemoveStatus -> viewModel.removeVnlist(vnlist ?: Vnlist(vnId))
+
+            R.id.buttonVote1 -> viewModel.setVotelist(votelist?.copy(vote = 10) ?: Votelist(vn = vnId, vote = 10))
+            R.id.buttonVote2 -> viewModel.setVotelist(votelist?.copy(vote = 20) ?: Votelist(vn = vnId, vote = 20))
+            R.id.buttonVote3 -> viewModel.setVotelist(votelist?.copy(vote = 30) ?: Votelist(vn = vnId, vote = 30))
+            R.id.buttonVote4 -> viewModel.setVotelist(votelist?.copy(vote = 40) ?: Votelist(vn = vnId, vote = 40))
+            R.id.buttonVote5 -> viewModel.setVotelist(votelist?.copy(vote = 50) ?: Votelist(vn = vnId, vote = 50))
+            R.id.buttonVote6 -> viewModel.setVotelist(votelist?.copy(vote = 60) ?: Votelist(vn = vnId, vote = 60))
+            R.id.buttonVote7 -> viewModel.setVotelist(votelist?.copy(vote = 70) ?: Votelist(vn = vnId, vote = 70))
+            R.id.buttonVote8 -> viewModel.setVotelist(votelist?.copy(vote = 80) ?: Votelist(vn = vnId, vote = 80))
+            R.id.buttonVote9 -> viewModel.setVotelist(votelist?.copy(vote = 90) ?: Votelist(vn = vnId, vote = 90))
+            R.id.buttonVote10 -> viewModel.setVotelist(votelist?.copy(vote = 100) ?: Votelist(vn = vnId, vote = 100))
+            R.id.buttonRemoveVote -> viewModel.removeVotelist(votelist ?: Votelist(vnId))
         }
     }
 

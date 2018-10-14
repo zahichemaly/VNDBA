@@ -8,6 +8,7 @@ import com.booboot.vndbandroid.extensions.plus
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndb.Vnlist
+import com.booboot.vndbandroid.model.vndb.Votelist
 import com.booboot.vndbandroid.repository.AccountRepository
 import com.booboot.vndbandroid.repository.VNRepository
 import com.booboot.vndbandroid.repository.VnlistRepository
@@ -65,9 +66,19 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
         vnlistRepository.setItem(vnlist).setAndSubscribe()
     }
 
+    fun setVotelist(votelist: Votelist) {
+        if (accountData.value?.votelist?.get(vnData.value?.id) == votelist) return
+        votelistRepository.setItem(votelist).setAndSubscribe()
+    }
+
     fun removeVnlist(vnlist: Vnlist) {
         if (accountData.value?.vnlist?.get(vnData.value?.id) == null) return
         vnlistRepository.deleteItem(vnlist).setAndSubscribe()
+    }
+
+    fun removeVotelist(votelist: Votelist) {
+        if (accountData.value?.votelist?.get(vnData.value?.id) == null) return
+        votelistRepository.deleteItem(votelist).setAndSubscribe()
     }
 
     private fun Completable.setAndSubscribe() = subscribeOn(Schedulers.io())
