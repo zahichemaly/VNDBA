@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.onStateChanged
+import com.booboot.vndbandroid.extensions.onSubmitListener
 import com.booboot.vndbandroid.extensions.preventLineBreak
 import com.booboot.vndbandroid.extensions.selectIf
 import com.booboot.vndbandroid.extensions.setStatusBarThemeForCollapsingToolbar
@@ -32,7 +33,7 @@ import kotlinx.android.synthetic.main.vn_details_activity.*
 import kotlinx.android.synthetic.main.vn_details_bottom_sheet.*
 import java.io.Serializable
 
-class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener, View.OnClickListener {
+class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener, View.OnClickListener, View.OnFocusChangeListener {
     private lateinit var viewModel: VNDetailsViewModel
     private lateinit var slideshowAdapter: SlideshowAdapter
     private lateinit var tabsAdapter: VNDetailsTabsAdapter
@@ -80,6 +81,8 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener, View.OnClic
         (appBarLayout.layoutParams as? CoordinatorLayout.LayoutParams)?.behavior = StopFocusStealingAppBarBehavior(bottomSheet)
         textNotes.preventLineBreak()
         bottomSheetButtons.forEach { it.setOnClickListener(this@VNDetailsActivity) }
+        textNotes.onFocusChangeListener = this
+        textNotes.onSubmitListener { textNotes.clearFocus() }
 
         viewModel = ViewModelProviders.of(this).get(VNDetailsViewModel::class.java)
         viewModel.loadingData.observe(this, Observer { showLoading(it) })
@@ -168,14 +171,14 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener, View.OnClic
         bottomSheetButtons.forEach { it.isEnabled = loading <= 0 }
     }
 
-    override fun onClick(v: View) {
+    override fun onClick(view: View) {
         if (vnId <= 0) return
         val items = viewModel.accountData.value ?: return
         val vnlist = items.vnlist[vnId]
         val wishlist = items.wishlist[vnId]
         val votelist = items.votelist[vnId]
 
-        when (v.id) {
+        when (view.id) {
             R.id.bottomSheetHeader -> bottomSheetBehavior.toggle()
 
             R.id.buttonPlaying -> viewModel.setVnlist(vnlist?.copy(status = Status.PLAYING) ?: Vnlist(vn = vnId, status = Status.PLAYING))
@@ -184,6 +187,16 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener, View.OnClic
             R.id.buttonDropped -> viewModel.setVnlist(vnlist?.copy(status = Status.DROPPED) ?: Vnlist(vn = vnId, status = Status.DROPPED))
             R.id.buttonUnknown -> viewModel.setVnlist(vnlist?.copy(status = Status.UNKNOWN) ?: Vnlist(vn = vnId, status = Status.UNKNOWN))
             R.id.buttonRemoveStatus -> viewModel.removeVnlist(vnlist ?: Vnlist(vnId))
+        }
+    }
+
+    override fun onFocusChange(view: View, hasFocus: Boolean) {
+        if (hasFocus || vnId <= 0) return
+        val items = viewModel.accountData.value ?: return
+        val vnlist = items.vnlist[vnId]
+
+        when (view.id) {
+            R.id.textNotes -> viewModel.setVnlist(vnlist?.copy(notes = textNotes.text.toString()) ?: Vnlist(vn = vnId, notes = textNotes.text.toString()))
         }
     }
 
