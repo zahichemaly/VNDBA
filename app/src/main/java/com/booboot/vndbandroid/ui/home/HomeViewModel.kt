@@ -30,14 +30,17 @@ class HomeViewModel constructor(application: Application) : StartupSyncViewModel
             .subscribe({}, ::onError)
     }
 
-    fun getVns(force: Boolean = true) {
+    fun getVns(force: Boolean = true, toSyncData: Boolean = false) {
         if (!force && accountData.value != null) return
         if (disposables.contains(DISPOSABLE_GET_VNS)) return
 
         disposables[DISPOSABLE_GET_VNS] = accountRepository.getItems()
             .observeOn(AndroidSchedulers.mainThread())
             .doFinally { disposables.remove(DISPOSABLE_GET_VNS) }
-            .subscribe({ accountData.value = it }, ::onError)
+            .subscribe({
+                if (toSyncData) syncAccountData.value = it
+                else accountData.value = it
+            }, ::onError)
     }
 
     companion object {
