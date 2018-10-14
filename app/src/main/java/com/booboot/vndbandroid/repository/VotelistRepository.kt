@@ -27,14 +27,14 @@ class VotelistRepository @Inject constructor(var boxStore: BoxStore, var vndbSer
         .get<Votelist>("votelist", "basic", "(uid = 0)", Options(results = 100, fetchAllPages = true, socketIndex = 1), type())
         .blockingGet()
 
-    fun setItem(votelist: Votelist) = Completable.fromAction {
+    fun setItem(votelist: Votelist): Completable = Completable.fromAction {
         vndbServer.set("votelist", votelist.vn, votelist, type()).blockingAwait()
         items[votelist.vn] = votelist
         boxStore.save { listOf(VotelistDao(votelist)) }
         EventReceiver.send(EVENT_VNLIST_CHANGED)
     }
 
-    fun deleteItem(votelist: Votelist) = Completable.fromAction {
+    fun deleteItem(votelist: Votelist): Completable = Completable.fromAction {
         vndbServer.set<Vnlist>("votelist", votelist.vn, null, type()).blockingAwait()
         items.remove(votelist.vn)
         boxStore.boxFor<VotelistDao>().remove(votelist.vn)

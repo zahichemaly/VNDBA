@@ -22,6 +22,7 @@ import com.booboot.vndbandroid.model.vndb.Screen
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndb.Vnlist
 import com.booboot.vndbandroid.model.vndb.Votelist
+import com.booboot.vndbandroid.model.vndb.Wishlist
 import com.booboot.vndbandroid.model.vndbandroid.Priority
 import com.booboot.vndbandroid.model.vndbandroid.Status
 import com.booboot.vndbandroid.model.vndbandroid.Vote
@@ -200,6 +201,12 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener, View.OnClic
             R.id.buttonVote9 -> viewModel.setVotelist(votelist?.copy(vote = 90) ?: Votelist(vn = vnId, vote = 90))
             R.id.buttonVote10 -> viewModel.setVotelist(votelist?.copy(vote = 100) ?: Votelist(vn = vnId, vote = 100))
             R.id.buttonRemoveVote -> viewModel.removeVotelist(votelist ?: Votelist(vnId))
+
+            R.id.buttonWishlistHigh -> viewModel.setWishlist(wishlist?.copy(priority = Priority.HIGH) ?: Wishlist(vn = vnId, priority = Priority.HIGH))
+            R.id.buttonWishlistMedium -> viewModel.setWishlist(wishlist?.copy(priority = Priority.MEDIUM) ?: Wishlist(vn = vnId, priority = Priority.MEDIUM))
+            R.id.buttonWishlistLow -> viewModel.setWishlist(wishlist?.copy(priority = Priority.LOW) ?: Wishlist(vn = vnId, priority = Priority.LOW))
+            R.id.buttonWishlistBlacklist -> viewModel.setWishlist(wishlist?.copy(priority = Priority.BLACKLIST) ?: Wishlist(vn = vnId, priority = Priority.BLACKLIST))
+            R.id.buttonRemoveWishlist -> viewModel.removeWishlist(wishlist ?: Wishlist(vnId))
         }
     }
 

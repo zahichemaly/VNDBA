@@ -26,14 +26,14 @@ open class VnlistRepository @Inject constructor(var boxStore: BoxStore, var vndb
         .get<Vnlist>("vnlist", "basic", "(uid = 0)", Options(results = 100, fetchAllPages = true), type())
         .blockingGet()
 
-    fun setItem(vnlist: Vnlist) = Completable.fromAction {
+    fun setItem(vnlist: Vnlist): Completable = Completable.fromAction {
         vndbServer.set("vnlist", vnlist.vn, vnlist, type()).blockingAwait()
         items[vnlist.vn] = vnlist
         boxStore.save { listOf(VnlistDao(vnlist)) }
         EventReceiver.send(EVENT_VNLIST_CHANGED)
     }
 
-    fun deleteItem(vnlist: Vnlist) = Completable.fromAction {
+    fun deleteItem(vnlist: Vnlist): Completable = Completable.fromAction {
         vndbServer.set<Vnlist>("vnlist", vnlist.vn, null, type()).blockingAwait()
         items.remove(vnlist.vn)
         boxStore.boxFor<VnlistDao>().remove(vnlist.vn)
