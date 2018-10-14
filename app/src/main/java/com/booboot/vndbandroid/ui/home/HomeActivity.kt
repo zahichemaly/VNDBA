@@ -73,10 +73,11 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             viewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
             viewModel.loadingData.observe(this, Observer { showLoading(it) })
             viewModel.accountData.observe(this, Observer { updateMenuCounters(it) })
+            viewModel.syncAccountData.observe(this, Observer { updateMenuCounters(it) })
             viewModel.errorData.observe(this, Observer { showError(it) })
 
             floatingSearchButton.setOnClickListener(this)
-            viewModel.getVns(false)
+            viewModel.getVns()
 
             val oldFragment = supportFragmentManager.findFragmentByTag(TAG_FRAGMENT)
 
