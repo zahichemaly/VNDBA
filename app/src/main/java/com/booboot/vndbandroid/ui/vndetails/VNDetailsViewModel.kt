@@ -58,7 +58,11 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
 
         disposables[DISPOSABLE_ACCOUNT] = accountRepository.getItems()
             .observeOn(AndroidSchedulers.mainThread())
-            .doFinally { disposables.remove(DISPOSABLE_ACCOUNT) }
+            .doOnSubscribe { loadingData.plus() }
+            .doFinally {
+                loadingData.minus()
+                disposables.remove(DISPOSABLE_ACCOUNT)
+            }
             .subscribe({ accountData.value = it }, ::onError)
     }
 
@@ -93,9 +97,11 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
     }
 
     private fun Completable.setAndSubscribe() = subscribeOn(Schedulers.io())
+        .doOnSubscribe { loadingData.plus() }
         .observeOn(Schedulers.io())
         .andThen(accountRepository.getItems())
         .observeOn(AndroidSchedulers.mainThread())
+        .doFinally { loadingData.minus() }
         .subscribe({ accountData.value = it }, ::onError)
 
     companion object {
