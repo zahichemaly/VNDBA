@@ -72,8 +72,12 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
     }
 
     fun setVotelist(votelist: Votelist) {
-        if (accountData.value?.votelist?.get(vnData.value?.id) == votelist) return
-        votelistRepository.setItem(votelist).setAndSubscribe()
+        if (accountData.value?.votelist?.get(vnData.value?.id) == votelist) {
+            /* In case the user inputs "8.0" as a vote, still refreshes the UI so the custom vote EditText is cleared */
+            accountData.value = accountData.value
+        } else {
+            votelistRepository.setItem(votelist).setAndSubscribe()
+        }
     }
 
     fun setWishlist(wishlist: Wishlist) {
@@ -94,6 +98,27 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
     fun removeWishlist(wishlist: Wishlist) {
         if (accountData.value?.wishlist?.get(vnData.value?.id) == null) return
         wishlistRepository.deleteItem(wishlist).setAndSubscribe()
+    }
+
+    fun setCustomVote(voteText: String?) {
+        if (voteText == null) return
+        val vnId = vnData.value?.id ?: return
+        val votelist = accountData.value?.votelist?.get(vnId)
+
+        if (voteText.isEmpty()) {
+            if (votelist != null && votelist.vote > 0) {
+                removeVotelist(votelist)
+            }
+            return
+        }
+
+        val vote = voteText.toFloatOrNull()?.let {
+            Math.round(it * 10)
+        } ?: return onError(Throwable("The vote must be a number with one decimal digit (e.g. 8.3)."))
+
+        if (vote < 10 || vote > 100) return onError(Throwable("The vote must be between 1 and 10."))
+
+        setVotelist(votelist?.copy(vote = vote) ?: Votelist(vn = vnId, vote = vote))
     }
 
     private fun Completable.setAndSubscribe() = subscribeOn(Schedulers.io())

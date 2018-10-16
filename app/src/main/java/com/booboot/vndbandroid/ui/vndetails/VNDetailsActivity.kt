@@ -84,7 +84,9 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener, View.OnClic
         textNotes.preventLineBreak()
         bottomSheetButtons.forEach { it.setOnClickListener(this@VNDetailsActivity) }
         textNotes.onFocusChangeListener = this
+        inputCustomVote.onFocusChangeListener = this
         textNotes.onSubmitListener { textNotes.clearFocus() }
+        inputCustomVote.onSubmitListener { inputCustomVote.clearFocus() }
 
         viewModel = ViewModelProviders.of(this).get(VNDetailsViewModel::class.java)
         viewModel.loadingData.observe(this, Observer { showLoading(it) })
@@ -217,6 +219,7 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener, View.OnClic
 
         when (view.id) {
             R.id.textNotes -> viewModel.setVnlist(vnlist?.copy(notes = textNotes.text.toString()) ?: Vnlist(vn = vnId, notes = textNotes.text.toString()))
+            R.id.inputCustomVote -> viewModel.setCustomVote(inputCustomVote.text.toString())
         }
     }
 
