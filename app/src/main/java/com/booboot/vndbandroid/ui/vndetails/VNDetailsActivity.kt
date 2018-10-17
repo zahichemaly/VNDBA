@@ -20,9 +20,6 @@ import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndb.Screen
 import com.booboot.vndbandroid.model.vndb.VN
-import com.booboot.vndbandroid.model.vndb.Vnlist
-import com.booboot.vndbandroid.model.vndb.Votelist
-import com.booboot.vndbandroid.model.vndb.Wishlist
 import com.booboot.vndbandroid.model.vndbandroid.Priority
 import com.booboot.vndbandroid.model.vndbandroid.Status
 import com.booboot.vndbandroid.model.vndbandroid.Vote
@@ -176,49 +173,41 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener, View.OnClic
     }
 
     override fun onClick(view: View) {
-        if (vnId <= 0) return
-        val items = viewModel.accountData.value ?: return
-        val vnlist = items.vnlist[vnId]
-        val votelist = items.votelist[vnId]
-        val wishlist = items.wishlist[vnId]
-
         when (view.id) {
             R.id.bottomSheetHeader -> bottomSheetBehavior.toggle()
 
-            R.id.buttonPlaying -> viewModel.setVnlist(vnlist?.copy(status = Status.PLAYING) ?: Vnlist(vn = vnId, status = Status.PLAYING))
-            R.id.buttonFinished -> viewModel.setVnlist(vnlist?.copy(status = Status.FINISHED) ?: Vnlist(vn = vnId, status = Status.FINISHED))
-            R.id.buttonStalled -> viewModel.setVnlist(vnlist?.copy(status = Status.STALLED) ?: Vnlist(vn = vnId, status = Status.STALLED))
-            R.id.buttonDropped -> viewModel.setVnlist(vnlist?.copy(status = Status.DROPPED) ?: Vnlist(vn = vnId, status = Status.DROPPED))
-            R.id.buttonUnknown -> viewModel.setVnlist(vnlist?.copy(status = Status.UNKNOWN) ?: Vnlist(vn = vnId, status = Status.UNKNOWN))
-            R.id.buttonRemoveStatus -> viewModel.removeVnlist(vnlist ?: Vnlist(vnId))
+            R.id.buttonPlaying -> viewModel.setStatus(Status.PLAYING)
+            R.id.buttonFinished -> viewModel.setStatus(Status.FINISHED)
+            R.id.buttonStalled -> viewModel.setStatus(Status.STALLED)
+            R.id.buttonDropped -> viewModel.setStatus(Status.DROPPED)
+            R.id.buttonUnknown -> viewModel.setStatus(Status.UNKNOWN)
+            R.id.buttonRemoveStatus -> viewModel.removeVnlist()
 
-            R.id.buttonVote1 -> viewModel.setVotelist(votelist?.copy(vote = 10) ?: Votelist(vn = vnId, vote = 10))
-            R.id.buttonVote2 -> viewModel.setVotelist(votelist?.copy(vote = 20) ?: Votelist(vn = vnId, vote = 20))
-            R.id.buttonVote3 -> viewModel.setVotelist(votelist?.copy(vote = 30) ?: Votelist(vn = vnId, vote = 30))
-            R.id.buttonVote4 -> viewModel.setVotelist(votelist?.copy(vote = 40) ?: Votelist(vn = vnId, vote = 40))
-            R.id.buttonVote5 -> viewModel.setVotelist(votelist?.copy(vote = 50) ?: Votelist(vn = vnId, vote = 50))
-            R.id.buttonVote6 -> viewModel.setVotelist(votelist?.copy(vote = 60) ?: Votelist(vn = vnId, vote = 60))
-            R.id.buttonVote7 -> viewModel.setVotelist(votelist?.copy(vote = 70) ?: Votelist(vn = vnId, vote = 70))
-            R.id.buttonVote8 -> viewModel.setVotelist(votelist?.copy(vote = 80) ?: Votelist(vn = vnId, vote = 80))
-            R.id.buttonVote9 -> viewModel.setVotelist(votelist?.copy(vote = 90) ?: Votelist(vn = vnId, vote = 90))
-            R.id.buttonVote10 -> viewModel.setVotelist(votelist?.copy(vote = 100) ?: Votelist(vn = vnId, vote = 100))
-            R.id.buttonRemoveVote -> viewModel.removeVotelist(votelist ?: Votelist(vnId))
+            R.id.buttonVote1 -> viewModel.setVote(10)
+            R.id.buttonVote2 -> viewModel.setVote(20)
+            R.id.buttonVote3 -> viewModel.setVote(30)
+            R.id.buttonVote4 -> viewModel.setVote(40)
+            R.id.buttonVote5 -> viewModel.setVote(50)
+            R.id.buttonVote6 -> viewModel.setVote(60)
+            R.id.buttonVote7 -> viewModel.setVote(70)
+            R.id.buttonVote8 -> viewModel.setVote(80)
+            R.id.buttonVote9 -> viewModel.setVote(90)
+            R.id.buttonVote10 -> viewModel.setVote(100)
+            R.id.buttonRemoveVote -> viewModel.removeVotelist()
 
-            R.id.buttonWishlistHigh -> viewModel.setWishlist(wishlist?.copy(priority = Priority.HIGH) ?: Wishlist(vn = vnId, priority = Priority.HIGH))
-            R.id.buttonWishlistMedium -> viewModel.setWishlist(wishlist?.copy(priority = Priority.MEDIUM) ?: Wishlist(vn = vnId, priority = Priority.MEDIUM))
-            R.id.buttonWishlistLow -> viewModel.setWishlist(wishlist?.copy(priority = Priority.LOW) ?: Wishlist(vn = vnId, priority = Priority.LOW))
-            R.id.buttonWishlistBlacklist -> viewModel.setWishlist(wishlist?.copy(priority = Priority.BLACKLIST) ?: Wishlist(vn = vnId, priority = Priority.BLACKLIST))
-            R.id.buttonRemoveWishlist -> viewModel.removeWishlist(wishlist ?: Wishlist(vnId))
+            R.id.buttonWishlistHigh -> viewModel.setPriority(Priority.HIGH)
+            R.id.buttonWishlistMedium -> viewModel.setPriority(Priority.MEDIUM)
+            R.id.buttonWishlistLow -> viewModel.setPriority(Priority.LOW)
+            R.id.buttonWishlistBlacklist -> viewModel.setPriority(Priority.BLACKLIST)
+            R.id.buttonRemoveWishlist -> viewModel.removeWishlist()
         }
     }
 
     override fun onFocusChange(view: View, hasFocus: Boolean) {
-        if (hasFocus || vnId <= 0) return
-        val items = viewModel.accountData.value ?: return
-        val vnlist = items.vnlist[vnId]
+        if (hasFocus) return
 
         when (view.id) {
-            R.id.textNotes -> viewModel.setVnlist(vnlist?.copy(notes = textNotes.text.toString()) ?: Vnlist(vn = vnId, notes = textNotes.text.toString()))
+            R.id.textNotes -> viewModel.setNotes(textNotes.text.toString())
             R.id.inputCustomVote -> viewModel.setCustomVote(inputCustomVote.text.toString())
         }
     }
