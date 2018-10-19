@@ -20,7 +20,9 @@ import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndb.Screen
 import com.booboot.vndbandroid.model.vndb.VN
+import com.booboot.vndbandroid.model.vndbandroid.EXTRA_ERROR_MESSAGE
 import com.booboot.vndbandroid.model.vndbandroid.Priority
+import com.booboot.vndbandroid.model.vndbandroid.RESULT_ERROR
 import com.booboot.vndbandroid.model.vndbandroid.Status
 import com.booboot.vndbandroid.model.vndbandroid.Vote
 import com.booboot.vndbandroid.ui.base.BaseActivity
@@ -90,6 +92,7 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener, View.OnClic
         viewModel.vnData.observe(this, Observer { showVn(it) })
         viewModel.accountData.observe(this, Observer { showAccount(it) })
         viewModel.errorData.observe(this, Observer { showError(it) })
+        viewModel.initErrorData.observe(this, Observer { onInitError(it) })
         viewModel.loadVn(vnId, false)
         viewModel.loadAccount(false)
     }
@@ -170,6 +173,14 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener, View.OnClic
         super.showLoading(loading)
         if (loading == null) return
         bottomSheetButtons.forEach { it.isEnabled = loading <= 0 }
+    }
+
+    private fun onInitError(message: String?) {
+        message ?: return
+        setResult(RESULT_ERROR, Intent().apply {
+            putExtra(EXTRA_ERROR_MESSAGE, message)
+        })
+        finish()
     }
 
     override fun onClick(view: View) {

@@ -30,6 +30,7 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
 
     val vnData: MutableLiveData<VN> = MutableLiveData()
     val accountData: MutableLiveData<AccountItems> = MutableLiveData()
+    val initErrorData: MutableLiveData<String> = MutableLiveData()
 
     init {
         (application as App).appComponent.inject(this)
@@ -47,9 +48,7 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
                 loadingData.minus()
                 disposables.remove(DISPOSABLE_VN)
             }
-            .subscribe({
-                vnData.value = it
-            }, ::onError)
+            .subscribe({ vnData.value = it }, { onError(it, initErrorData) })
     }
 
     fun loadAccount(force: Boolean = true) {
@@ -63,7 +62,7 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
                 loadingData.minus()
                 disposables.remove(DISPOSABLE_ACCOUNT)
             }
-            .subscribe({ accountData.value = it }, ::onError)
+            .subscribe({ accountData.value = it }, { onError(it, initErrorData) })
     }
 
     fun setNotes(notes: String) {

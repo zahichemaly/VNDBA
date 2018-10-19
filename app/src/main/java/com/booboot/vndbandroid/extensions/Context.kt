@@ -46,7 +46,7 @@ fun Activity.openVN(vn: VN, transitionView: View) {
     intent.putExtra(VNDetailsActivity.EXTRA_VN_ID, vn.id)
     intent.putExtra(VNDetailsActivity.EXTRA_SHARED_ELEMENT_COVER, vn.image)
     intent.putExtra(VNDetailsActivity.EXTRA_SHARED_ELEMENT_COVER_NSFW, vn.image_nsfw)
-    startActivity(intent, options.toBundle())
+    startActivityForResult(intent, 0, options.toBundle())
 }
 
 fun Context.getBitmap(@DrawableRes drawableRes: Int): Bitmap? {

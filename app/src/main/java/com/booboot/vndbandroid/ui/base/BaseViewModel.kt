@@ -14,6 +14,10 @@ abstract class BaseViewModel constructor(application: Application) : AndroidView
     val disposables: MutableMap<String, Disposable> = mutableMapOf()
 
     fun onError(throwable: Throwable) {
+        onError(throwable, errorData)
+    }
+
+    fun onError(throwable: Throwable, errorData: MutableLiveData<String>) {
         if (throwable is EmptyMaybeException) return
         throwable.log()
 
