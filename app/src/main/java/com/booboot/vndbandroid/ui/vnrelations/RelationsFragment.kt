@@ -11,6 +11,8 @@ import com.booboot.vndbandroid.model.vndb.Anime
 import com.booboot.vndbandroid.model.vndb.Links
 import com.booboot.vndbandroid.model.vndb.Relation
 import com.booboot.vndbandroid.model.vndb.VN
+import com.booboot.vndbandroid.model.vndbandroid.EVENT_VNLIST_CHANGED
+import com.booboot.vndbandroid.service.EventReceiver
 import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.booboot.vndbandroid.ui.vndetails.VNDetailsActivity
 import com.booboot.vndbandroid.util.GridAutofitLayoutManager
@@ -34,6 +36,10 @@ class RelationsFragment : BaseFragment(), (Anime) -> Unit, (View, Relation, VN?)
             viewModel.vnData.observe(this, Observer { showRelations(it) })
             viewModel.errorData.observe(this, Observer { showError(it) })
             viewModel.loadVn(vnId, false)
+
+            EventReceiver(this).observe(mapOf(
+                EVENT_VNLIST_CHANGED to { viewModel.loadVn(vnId, true) }
+            ))
         }
     }
 

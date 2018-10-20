@@ -25,10 +25,10 @@ abstract class BaseFragment : Fragment() {
         Snackbar.make(view, message, Snackbar.LENGTH_LONG).show()
     }
 
-    open fun showLoading(show: Boolean?) {
-        if (show == null) return
-        progressBar?.visibility = if (show) View.VISIBLE else View.GONE
-        refreshLayout?.isRefreshing = show
+    open fun showLoading(loading: Int?) {
+        if (loading == null) return
+        progressBar?.visibility = if (loading > 0) View.VISIBLE else View.GONE
+        refreshLayout?.isRefreshing = loading > 0
     }
 
     fun home() = (activity as? HomeActivity?)

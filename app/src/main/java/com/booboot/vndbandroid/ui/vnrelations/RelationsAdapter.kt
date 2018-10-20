@@ -3,26 +3,45 @@ package com.booboot.vndbandroid.ui.vnrelations
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.diff.RelationsDiffCallback
+import com.booboot.vndbandroid.extensions.log
 import com.booboot.vndbandroid.model.vndb.Anime
 import com.booboot.vndbandroid.model.vndb.Relation
 import com.booboot.vndbandroid.model.vndb.VN
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 
 class RelationsAdapter(private val onAnimeClicked: (Anime) -> Unit, private val onRelationClicked: (View, Relation, VN?) -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private var vn: VN = VN()
+    private var disposable: Disposable? = null
     var relationsData: RelationsData = RelationsData()
         set(value) {
-            vn = value.items.vns[value.vnId] ?: return
-            field = value
-            notifyDataSetChanged()
+            disposable?.dispose()
+            disposable = Single.fromCallable {
+                val diffCallback = RelationsDiffCallback(field, value)
+                val diffResult = DiffUtil.calculateDiff(diffCallback)
+                Pair(diffCallback, diffResult)
+            }
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    vn = it.first.newVn ?: return@subscribe
+                    field = value
+                    it.second.dispatchUpdatesTo(this)
+                }, {
+                    it.log()
+                    vn = value.items.vns[value.vnId] ?: return@subscribe
+                    field = value
+                    notifyDataSetChanged()
+                })
         }
-    private var vn: VN = VN()
 
-    override fun getItemViewType(position: Int) = if (position < vn.anime.size) {
-        R.layout.anime_card
-    } else {
-        R.layout.vn_card
-    }
+    override fun getItemViewType(position: Int) = RelationsDiffCallback.getItemViewType(position, vn)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(viewType, parent, false)

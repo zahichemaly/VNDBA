@@ -3,6 +3,8 @@ package com.booboot.vndbandroid.ui.vnrelations
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import com.booboot.vndbandroid.App
+import com.booboot.vndbandroid.extensions.minus
+import com.booboot.vndbandroid.extensions.plus
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndbandroid.FLAGS_DETAILS
@@ -29,16 +31,16 @@ class RelationsViewModel constructor(application: Application) : BaseViewModel(a
         var items = AccountItems()
         disposables[DISPOSABLE_VN] = accountRepository.getItems()
             .subscribeOn(Schedulers.newThread())
-            .doOnSubscribe { loadingData.value = true }
+            .doOnSubscribe { loadingData.plus() }
             .observeOn(Schedulers.newThread())
             .flatMap {
-                items = it
+                items = it.deepCopy()
                 val vn = it.vns[vnId] ?: throw Throwable("VN not found.")
                 vnRepository.getItems(vn.relations.mapTo(hashSetOf()) { it.id }, FLAGS_DETAILS)
             }
             .observeOn(AndroidSchedulers.mainThread())
             .doFinally {
-                loadingData.value = false
+                loadingData.minus()
                 disposables.remove(DISPOSABLE_VN)
             }
             .subscribe({ vnData.value = RelationsData(vnId, items, it) }, ::onError)

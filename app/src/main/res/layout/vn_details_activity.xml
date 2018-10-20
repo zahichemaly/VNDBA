@@ -116,4 +116,6 @@
             android:layout_height="match_parent" />
 
     </androidx.cardview.widget.CardView>
+
+    <include layout="@layout/vn_details_bottom_sheet" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

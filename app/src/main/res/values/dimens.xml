@@ -5,7 +5,9 @@
     <dimen name="activity_vertical_margin">0dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="card_corner_radius">5dp</dimen>
-    <dimen name="app_bar_height">250dp</dimen>
+    <dimen name="app_bar_height">200dp</dimen>
     <dimen name="text_margin">16dp</dimen>
     <dimen name="tabLayoutHeight">48dp</dimen>
+    <dimen name="bottom_sheet_margin">0dp</dimen>
+    <dimen name="bottom_sheet_peek">64dp</dimen>
 </resources>

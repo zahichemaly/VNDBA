@@ -19,8 +19,10 @@ import com.booboot.vndbandroid.extensions.Track
 import com.booboot.vndbandroid.extensions.setLightStatusAndNavigation
 import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.model.vndb.AccountItems
+import com.booboot.vndbandroid.model.vndbandroid.EVENT_VNLIST_CHANGED
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.repository.AccountRepository
+import com.booboot.vndbandroid.service.EventReceiver
 import com.booboot.vndbandroid.ui.base.BaseActivity
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment
 import com.booboot.vndbandroid.ui.login.LoginActivity
@@ -73,10 +75,11 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             viewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
             viewModel.loadingData.observe(this, Observer { showLoading(it) })
             viewModel.accountData.observe(this, Observer { updateMenuCounters(it) })
+            viewModel.syncAccountData.observe(this, Observer { updateMenuCounters(it) })
             viewModel.errorData.observe(this, Observer { showError(it) })
 
             floatingSearchButton.setOnClickListener(this)
-            viewModel.getVns(false)
+            viewModel.getVns()
 
             val oldFragment = supportFragmentManager.findFragmentByTag(TAG_FRAGMENT)
 
@@ -87,6 +90,10 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             } else {
                 enableToolbarScroll(oldFragment is HomeTabsFragment)
             }
+
+            EventReceiver(this).observe(mapOf(
+                EVENT_VNLIST_CHANGED to { viewModel.getVns(toSyncData = true) }
+            ))
         }
     }
 

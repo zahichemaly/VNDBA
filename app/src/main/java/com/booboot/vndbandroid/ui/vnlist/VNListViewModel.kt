@@ -40,7 +40,9 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
                         else -> true
                     }
                 }
-                cache
+
+                /* #122 : to make DiffUtil work in the Adapter, the items must be deep copied here so the contents can be identified as different when changed from inside the app */
+                cache.deepCopy()
             }
             .observeOn(AndroidSchedulers.mainThread())
             .doFinally { disposables.remove(DISPOSABLE_GET_VN) }

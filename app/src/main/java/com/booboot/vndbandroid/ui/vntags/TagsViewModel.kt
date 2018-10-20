@@ -3,6 +3,8 @@ package com.booboot.vndbandroid.ui.vntags
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import com.booboot.vndbandroid.App
+import com.booboot.vndbandroid.extensions.minus
+import com.booboot.vndbandroid.extensions.plus
 import com.booboot.vndbandroid.model.vndb.Tag
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndbandroid.Genre
@@ -40,7 +42,7 @@ class TagsViewModel constructor(application: Application) : BaseViewModel(applic
         })
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe { loadingData.value = true }
+            .doOnSubscribe { loadingData.plus() }
             .observeOn(Schedulers.computation())
             .map { vnAndTags ->
                 val sortedTags = vnAndTags.vn.tags.sortedByDescending { it[1].toInt() }.mapNotNull { tagInfo ->
@@ -56,7 +58,7 @@ class TagsViewModel constructor(application: Application) : BaseViewModel(applic
             }
             .observeOn(AndroidSchedulers.mainThread())
             .doFinally {
-                loadingData.value = false
+                loadingData.minus()
                 disposables.remove(DISPOSABLE_LOAD_TAGS)
             }
             .subscribe({

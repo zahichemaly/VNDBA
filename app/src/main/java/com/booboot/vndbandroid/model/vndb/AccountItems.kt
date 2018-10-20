@@ -35,4 +35,12 @@ data class AccountItems(
             this[it.value.priority] = this[it.value.priority]?.plus(1) ?: 1
         }
     }
+
+    fun deepCopy() = copy(vnlist = vnlist.toMutableMap().apply {
+        forEach { (id, vnlist) -> put(id, vnlist.copy()) }
+    }, votelist = votelist.toMutableMap().apply {
+        forEach { (id, votelist) -> put(id, votelist.copy()) }
+    }, wishlist = wishlist.toMutableMap().apply {
+        forEach { (id, wishlist) -> put(id, wishlist.copy()) }
+    })
 }

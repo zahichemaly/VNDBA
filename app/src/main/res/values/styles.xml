@@ -4,6 +4,7 @@
         <!-- light theme attributes -->
         <item name="colorPrimary">@color/white</item>
         <item name="colorPrimaryDark">@color/white</item>
+        <item name="colorAccent">@color/colorPrimaryDark</item>
         <item name="themeName">light</item>
         <item name="android:navigationBarColor">#424242</item>
     </style>
@@ -17,6 +18,7 @@
         <!-- dark theme attributes -->
         <item name="colorPrimary">#424242</item>
         <item name="colorPrimaryDark">#303030</item>
+        <item name="colorAccent">@color/colorPrimaryDark</item>
         <item name="android:navigationBarColor">?attr/colorPrimaryDark</item>
         <item name="themeName">dark</item>
     </style>
@@ -27,8 +29,6 @@
 
     <style name="AppTheme.DayNight" parent="Base.AppTheme.DayNight">
         <!-- light/dark theme independent attributes -->
-        <item name="colorAccent">@color/colorPrimaryDark</item>
-
         <item name="android:windowAllowEnterTransitionOverlap" tools:targetApi="lollipop">true</item>
         <item name="android:windowAllowReturnTransitionOverlap" tools:targetApi="lollipop">true</item>
         <item name="android:windowContentTransitions" tools:targetApi="lollipop">true</item>
