@@ -14,7 +14,7 @@
     android:fillViewport="true"
     android:focusable="true"
     app:behavior_hideable="false"
-    app:behavior_peekHeight="64dp"
+    app:behavior_peekHeight="@dimen/bottom_sheet_peek"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -28,7 +28,7 @@
         <View
             android:id="@+id/bottomSheetHeader"
             android:layout_width="0dp"
-            android:layout_height="64dp"
+            android:layout_height="@dimen/bottom_sheet_peek"
             android:background="?attr/colorAccent"
             android:clickable="true"
             android:focusable="true"

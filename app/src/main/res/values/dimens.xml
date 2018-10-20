@@ -9,4 +9,5 @@
     <dimen name="text_margin">16dp</dimen>
     <dimen name="tabLayoutHeight">48dp</dimen>
     <dimen name="bottom_sheet_margin">0dp</dimen>
+    <dimen name="bottom_sheet_peek">64dp</dimen>
 </resources>

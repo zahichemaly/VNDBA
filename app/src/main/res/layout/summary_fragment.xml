@@ -6,8 +6,10 @@
     android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clipToPadding="false"
     android:fillViewport="true"
-    android:gravity="start">
+    android:gravity="start"
+    android:paddingBottom="@dimen/bottom_sheet_peek">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -110,7 +112,6 @@
                 android:id="@+id/wikipediaButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
                 android:drawableStart="@drawable/ic_wikipedia"
                 android:drawablePadding="8dp"
                 android:paddingStart="20dp"
@@ -123,7 +124,6 @@
                 android:id="@+id/renaiButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
                 android:drawablePadding="8dp"
                 android:paddingStart="20dp"
                 android:paddingEnd="20dp"
@@ -135,7 +135,6 @@
                 android:id="@+id/encubedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
                 android:drawablePadding="8dp"
                 android:paddingStart="20dp"
                 android:paddingEnd="20dp"
