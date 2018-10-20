@@ -1,11 +1,9 @@
 package com.booboot.vndbandroid.extensions
 
 import android.os.Build
-import android.util.TypedValue
 import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
-import com.booboot.vndbandroid.R
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 
@@ -13,9 +11,7 @@ fun AppBarLayout.setStatusBarThemeForCollapsingToolbar(activity: AppCompatActivi
     addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { _, offset ->
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return@OnOffsetChangedListener
 
-        val themeName = TypedValue()
-        activity.theme.resolveAttribute(R.attr.themeName, themeName, true)
-        if (themeName.string != "light") return@OnOffsetChangedListener
+        if (activity.dayNightTheme() != "light") return@OnOffsetChangedListener
 
         if (collapsingToolbar.height + offset < collapsingToolbar.scrimVisibleHeightTrigger) {
             /* Toolbar is collapsing: removing the status bar's translucence and adding the light flag */

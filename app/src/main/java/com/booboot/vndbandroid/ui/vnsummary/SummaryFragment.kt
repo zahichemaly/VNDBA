@@ -12,6 +12,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.extensions.adjustAlpha
+import com.booboot.vndbandroid.extensions.darken
+import com.booboot.vndbandroid.extensions.dayNightTheme
 import com.booboot.vndbandroid.extensions.openURL
 import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.model.vndb.Links
@@ -60,8 +63,10 @@ class SummaryFragment : BaseFragment() {
                 asyncInflater.inflate(R.layout.platform_tag, platforms) { view, _, _ ->
                     context?.let { ctx ->
                         val platform = PLATFORMS[it] ?: return@inflate
-                        view.tagBackground.setCardBackgroundColor(ContextCompat.getColor(ctx, platform.color))
                         view.tagText.text = platform.text
+                        val color = ContextCompat.getColor(ctx, platform.color)
+                        view.tagText.setTextColor(if (ctx.dayNightTheme() == "light") color.darken() else color)
+                        view.tagText.setBackgroundColor(color.adjustAlpha(0.157f))
                         platforms.addView(view)
                     }
                 }

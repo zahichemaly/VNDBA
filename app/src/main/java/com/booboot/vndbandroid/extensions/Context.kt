@@ -89,3 +89,9 @@ fun Context.getThemeColorState(@AttrRes resid: Int): Int {
     arr.recycle()
     return primaryColor
 }
+
+fun Context.dayNightTheme(): String {
+    val themeName = TypedValue()
+    theme.resolveAttribute(R.attr.themeName, themeName, true)
+    return themeName.string.toString()
+}
