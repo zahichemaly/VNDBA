@@ -1,9 +1,8 @@
 package com.booboot.vndbandroid.ui.vntags
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
@@ -12,6 +11,7 @@ import com.booboot.vndbandroid.model.vndbandroid.VNTag
 import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.booboot.vndbandroid.ui.vndetails.VNDetailsActivity
 import com.google.android.flexbox.AlignItems
+import com.google.android.flexbox.FlexboxItemDecoration
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import kotlinx.android.synthetic.main.tags_fragment.*
@@ -22,11 +22,15 @@ class TagsFragment : BaseFragment(), TagsAdapter.Callback {
     private lateinit var tagsAdapter: TagsAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        if (activity == null) return
+        val activity = activity ?: return
 
         val flexbox = FlexboxLayoutManager(context)
         flexbox.alignItems = AlignItems.FLEX_START
         flexbox.justifyContent = JustifyContent.CENTER
+        val itemDecoration = FlexboxItemDecoration(activity)
+        itemDecoration.setDrawable(ContextCompat.getDrawable(activity, R.drawable.flexbox_divider_8dp))
+        itemDecoration.setOrientation(FlexboxItemDecoration.BOTH)
+        recyclerView.addItemDecoration(itemDecoration)
 
         recyclerView.layoutManager = flexbox
         tagsAdapter = TagsAdapter(this)

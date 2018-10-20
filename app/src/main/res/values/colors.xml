@@ -16,12 +16,12 @@
     <color name="transparent80White">#cdffffff</color>
 
     <!-- Grading colors -->
-    <color name="green">#64DD17</color>
+    <color name="green">@color/playing</color>
     <color name="lightGreen">#AEEA00</color>
-    <color name="yellow">#fdcd32</color>
+    <color name="yellow">@color/stalled</color>
     <color name="lightOrange">#FFAB00</color>
     <color name="orange">#FF6D00</color>
-    <color name="red">#DD2C00</color>
+    <color name="red">@color/dropped</color>
 
     <!-- Status colors -->
     <color name="playing">#00C853</color>

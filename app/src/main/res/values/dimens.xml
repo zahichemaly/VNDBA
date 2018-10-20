@@ -10,4 +10,5 @@
     <dimen name="tabLayoutHeight">48dp</dimen>
     <dimen name="bottom_sheet_margin">0dp</dimen>
     <dimen name="bottom_sheet_peek">64dp</dimen>
+    <dimen name="bottom_sheet_peek_with_margin">72dp</dimen>
 </resources>

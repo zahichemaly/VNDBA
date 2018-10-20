@@ -1,5 +1,6 @@
 package com.booboot.vndbandroid.model.vndb
 
+import androidx.annotation.ColorInt
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.R
 import com.squareup.moshi.JsonClass
@@ -49,13 +50,13 @@ data class Tag(
         fun checkSpoilerLevel(authorizedLevel: Int, actualLevel: Int): Boolean =
             if (authorizedLevel == 2) true else actualLevel <= authorizedLevel
 
-        fun getScoreImage(tag: List<Number>): Int = tag[1].toFloat().let {
+        fun getScoreColor(tag: List<Number>): Int = tag[1].toFloat().let {
             when {
-                it >= 2 -> R.drawable.rounded_green_background
-                it >= 1 -> R.drawable.rounded_light_green_background
-                it >= 0.5 -> R.drawable.rounded_yellow_background
-                it >= 0.1 -> R.drawable.rounded_orange_background
-                else -> R.drawable.rounded_red_background
+                it >= 2 -> R.color.green
+                it >= 1 -> R.color.lightGreen
+                it >= 0.5 -> R.color.yellow
+                it >= 0.1 -> R.color.orange
+                else -> R.color.red
             }
         }
 
