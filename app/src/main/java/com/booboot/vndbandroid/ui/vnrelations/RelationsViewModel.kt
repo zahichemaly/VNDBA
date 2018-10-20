@@ -34,7 +34,7 @@ class RelationsViewModel constructor(application: Application) : BaseViewModel(a
             .doOnSubscribe { loadingData.plus() }
             .observeOn(Schedulers.newThread())
             .flatMap {
-                items = it
+                items = it.deepCopy()
                 val vn = it.vns[vnId] ?: throw Throwable("VN not found.")
                 vnRepository.getItems(vn.relations.mapTo(hashSetOf()) { it.id }, FLAGS_DETAILS)
             }
