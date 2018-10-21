@@ -50,11 +50,11 @@ class VNRepository @Inject constructor(var boxStore: BoxStore, var vndbServer: V
                     }
                     if (FLAGS_DETAILS in (dbFlags + 1)..flags) {
                         newIds.add(it)
-                        flagsList.add("details")
+                        flagsList.addAll(listOf("details", "stats"))
                     }
                     if (FLAGS_FULL in (dbFlags + 1)..flags) {
                         newIds.add(it)
-                        flagsList.addAll(listOf("stats", "screens", "tags", "anime", "relations"))
+                        flagsList.addAll(listOf("screens", "tags", "anime", "relations"))
                     }
                 }
 
@@ -79,11 +79,11 @@ class VNRepository @Inject constructor(var boxStore: BoxStore, var vndbServer: V
                             dbVns[it.id]?.links = it.links
                             dbVns[it.id]?.image = it.image
                             dbVns[it.id]?.image_nsfw = it.image_nsfw
-                        }
-                        if (FLAGS_FULL in (dbFlags + 1)..flags) {
                             dbVns[it.id]?.popularity = it.popularity
                             dbVns[it.id]?.rating = it.rating
                             dbVns[it.id]?.votecount = it.votecount
+                        }
+                        if (FLAGS_FULL in (dbFlags + 1)..flags) {
                             dbVns[it.id]?.screens = it.screens
                             dbVns[it.id]?.tags = it.tags
                             dbVns[it.id]?.anime = it.anime
