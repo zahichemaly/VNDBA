@@ -3,6 +3,7 @@ package com.booboot.vndbandroid.extensions
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -82,12 +83,12 @@ fun Context.getThemeColor(resid: Int): Int {
     return colorAttribute.data
 }
 
-fun Context.getThemeColorState(@AttrRes resid: Int): Int {
+fun Context.getThemeColorState(@AttrRes resid: Int): ColorStateList? {
     val data = getThemeColor(resid)
     val arr = obtainStyledAttributes(data, intArrayOf(resid))
-    val primaryColor = arr.getColor(0, -1)
+    val color = arr.getColorStateList(0)
     arr.recycle()
-    return primaryColor
+    return color
 }
 
 fun Context.dayNightTheme(): String {

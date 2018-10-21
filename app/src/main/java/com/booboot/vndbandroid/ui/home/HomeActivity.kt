@@ -17,11 +17,20 @@ import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.api.VNDBServer
 import com.booboot.vndbandroid.extensions.Track
 import com.booboot.vndbandroid.extensions.reset
+import com.booboot.vndbandroid.extensions.selectIf
 import com.booboot.vndbandroid.extensions.setLightStatusAndNavigation
 import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndbandroid.EVENT_VNLIST_CHANGED
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
+import com.booboot.vndbandroid.model.vndbandroid.SORT_ID
+import com.booboot.vndbandroid.model.vndbandroid.SORT_LENGTH
+import com.booboot.vndbandroid.model.vndbandroid.SORT_POPULARITY
+import com.booboot.vndbandroid.model.vndbandroid.SORT_PRIORITY
+import com.booboot.vndbandroid.model.vndbandroid.SORT_RATING
+import com.booboot.vndbandroid.model.vndbandroid.SORT_RELEASE_DATE
+import com.booboot.vndbandroid.model.vndbandroid.SORT_STATUS
+import com.booboot.vndbandroid.model.vndbandroid.SORT_VOTE
 import com.booboot.vndbandroid.repository.AccountRepository
 import com.booboot.vndbandroid.service.EventReceiver
 import com.booboot.vndbandroid.ui.base.BaseActivity
@@ -79,8 +88,8 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
             viewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
             viewModel.loadingData.observe(this, Observer { showLoading(it) })
-            viewModel.accountData.observe(this, Observer { updateMenuCounters(it) })
-            viewModel.syncAccountData.observe(this, Observer { updateMenuCounters(it) })
+            viewModel.accountData.observe(this, Observer { showAccount(it) })
+            viewModel.syncAccountData.observe(this, Observer { showAccount(it) })
             viewModel.errorData.observe(this, Observer { showError(it, viewModel.errorData) })
 
             floatingSearchButton.setOnClickListener(this)
@@ -115,13 +124,23 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         viewModel.syncAccountData.value = viewModel.accountData.value
     }
 
-    private fun updateMenuCounters(accountItems: AccountItems?) {
+    private fun showAccount(accountItems: AccountItems?) {
         accountItems ?: return
+        viewModel.syncAccountData.reset()
+
         Track.tag(accountItems)
         setMenuCounter(R.id.nav_vnlist, accountItems.vnlist.size)
         setMenuCounter(R.id.nav_wishlist, accountItems.wishlist.size)
         setMenuCounter(R.id.nav_votelist, accountItems.votelist.size)
-        viewModel.syncAccountData.reset()
+
+        buttonSortID.selectIf(Preferences.sort == SORT_ID)
+        buttonSortReleaseDate.selectIf(Preferences.sort == SORT_RELEASE_DATE)
+        buttonSortLength.selectIf(Preferences.sort == SORT_LENGTH)
+        buttonSortPopularity.selectIf(Preferences.sort == SORT_POPULARITY)
+        buttonSortRating.selectIf(Preferences.sort == SORT_RATING)
+        buttonSortStatus.selectIf(Preferences.sort == SORT_STATUS)
+        buttonSortVote.selectIf(Preferences.sort == SORT_VOTE)
+        buttonSortPriority.selectIf(Preferences.sort == SORT_PRIORITY)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean = goToFragment(item.itemId)

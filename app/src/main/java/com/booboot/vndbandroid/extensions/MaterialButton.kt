@@ -9,9 +9,14 @@ import com.google.android.material.button.MaterialButton
 fun MaterialButton.selectIf(select: Boolean) = if (select) select() else unselect()
 
 fun MaterialButton.select() = apply {
-    setTextColor(ContextCompat.getColor(context, R.color.white))
+    val textColorPrimary = context.getThemeColorState(android.R.attr.textColorPrimary)
+    if (strokeColor == textColorPrimary) {
+        setTextColor(context.getThemeColorState(android.R.attr.windowBackground))
+    } else {
+        setTextColor(ContextCompat.getColor(context, R.color.white))
+    }
     backgroundTintList = strokeColor
-    elevation = Pixels.px(2).toFloat()
+    elevation = Pixels.px(3).toFloat()
 }
 
 fun MaterialButton.unselect() = apply {
