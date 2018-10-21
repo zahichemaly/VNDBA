@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
+import com.booboot.vndbandroid.extensions.reset
 import com.booboot.vndbandroid.ui.home.HomeActivity
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.progress_bar.*
@@ -19,14 +21,15 @@ abstract class BaseFragment : Fragment() {
         return rootView
     }
 
-    fun showError(message: String?) {
-        if (message == null) return
+    fun showError(message: String?, liveData: MutableLiveData<String>? = null) {
+        message ?: return
         val view = activity?.findViewById<View>(android.R.id.content) ?: return
         Snackbar.make(view, message, Snackbar.LENGTH_LONG).show()
+        liveData?.reset()
     }
 
     open fun showLoading(loading: Int?) {
-        if (loading == null) return
+        loading ?: return
         progressBar?.visibility = if (loading > 0) View.VISIBLE else View.GONE
         refreshLayout?.isRefreshing = loading > 0
     }

@@ -65,9 +65,9 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
 
         viewModel = ViewModelProviders.of(this).get(HomeTabsViewModel::class.java)
         viewModel.titlesData.observe(this, Observer { showTitles(it) })
-        viewModel.errorData.observe(this, Observer { showError(it) })
+        viewModel.errorData.observe(this, Observer { showError(it, viewModel.errorData) })
         viewModel.loadingData.observe(this, Observer { showLoading(it) })
-        home()?.viewModel?.syncAccountData?.observe(this, Observer { update() })
+        home()?.viewModel?.syncAccountData?.observe(this, Observer { it?.let { update() } })
         update(false)
     }
 
@@ -115,7 +115,6 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
             R.id.buttonSortVote -> Preferences.sort = SORT_VOTE
             R.id.buttonSortPriority -> Preferences.sort = SORT_PRIORITY
         }
-
 
         if (view in sortBottomSheetButtons) {
             home()?.updateSyncAccountData()

@@ -39,7 +39,7 @@ class TagsFragment : BaseFragment(), TagsAdapter.Callback {
         val vnId = arguments?.getLong(VNDetailsActivity.EXTRA_VN_ID) ?: 0
 
         viewModel = ViewModelProviders.of(this).get(TagsViewModel::class.java)
-        viewModel.errorData.observe(this, Observer { showError(it) })
+        viewModel.errorData.observe(this, Observer { showError(it, viewModel.errorData) })
         viewModel.tagsData.observe(this, Observer { showTags(it) })
         viewModel.tagsData.value?.let {
             /* [IMPORTANT] Filling the tags adapter immediately. When the fragment is recreated, if we let the ViewModel observer call this method,

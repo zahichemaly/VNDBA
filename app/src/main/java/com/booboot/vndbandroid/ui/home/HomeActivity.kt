@@ -16,6 +16,7 @@ import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.api.VNDBServer
 import com.booboot.vndbandroid.extensions.Track
+import com.booboot.vndbandroid.extensions.reset
 import com.booboot.vndbandroid.extensions.setLightStatusAndNavigation
 import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.model.vndb.AccountItems
@@ -80,7 +81,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             viewModel.loadingData.observe(this, Observer { showLoading(it) })
             viewModel.accountData.observe(this, Observer { updateMenuCounters(it) })
             viewModel.syncAccountData.observe(this, Observer { updateMenuCounters(it) })
-            viewModel.errorData.observe(this, Observer { showError(it) })
+            viewModel.errorData.observe(this, Observer { showError(it, viewModel.errorData) })
 
             floatingSearchButton.setOnClickListener(this)
             viewModel.getVns()
@@ -110,14 +111,17 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     fun startupSync() = viewModel.startupSync()
 
-    fun updateSyncAccountData() = viewModel.updateSyncAccountData()
+    fun updateSyncAccountData() {
+        viewModel.syncAccountData.value = viewModel.accountData.value
+    }
 
     private fun updateMenuCounters(accountItems: AccountItems?) {
-        if (accountItems == null) return
+        accountItems ?: return
         Track.tag(accountItems)
         setMenuCounter(R.id.nav_vnlist, accountItems.vnlist.size)
         setMenuCounter(R.id.nav_wishlist, accountItems.wishlist.size)
         setMenuCounter(R.id.nav_votelist, accountItems.votelist.size)
+        viewModel.syncAccountData.reset()
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean = goToFragment(item.itemId)
@@ -195,7 +199,6 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     override fun onQueryTextChange(search: String): Boolean {
         savedFilter = search
         viewModel.filterData.value = search
-        viewModel.filterData.value = null
         return true
     }
 
@@ -208,8 +211,8 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     private fun setMenuCounter(itemId: Int, count: Int) {
-        if (navigationView != null) {
-            val view = navigationView.menu.findItem(itemId).actionView as TextView
+        navigationView?.let {
+            val view = it.menu.findItem(itemId).actionView as TextView
             view.text = if (count > 0) count.toString() else null
         }
     }

@@ -34,7 +34,7 @@ class RelationsFragment : BaseFragment(), (Anime) -> Unit, (View, Relation, VN?)
             val vnId = arguments?.getLong(VNDetailsActivity.EXTRA_VN_ID) ?: 0
             viewModel = ViewModelProviders.of(this).get(RelationsViewModel::class.java)
             viewModel.vnData.observe(this, Observer { showRelations(it) })
-            viewModel.errorData.observe(this, Observer { showError(it) })
+            viewModel.errorData.observe(this, Observer { showError(it, viewModel.errorData) })
             viewModel.loadVn(vnId, false)
 
             EventReceiver(this).observe(mapOf(

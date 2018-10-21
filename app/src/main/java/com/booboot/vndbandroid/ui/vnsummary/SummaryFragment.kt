@@ -39,7 +39,7 @@ class SummaryFragment : BaseFragment() {
         val vnId = arguments?.getLong(VNDetailsActivity.EXTRA_VN_ID) ?: 0
         viewModel = ViewModelProviders.of(this).get(SummaryViewModel::class.java)
         viewModel.vnData.observe(this, Observer { showVn(it) })
-        viewModel.errorData.observe(this, Observer { showError(it) })
+        viewModel.errorData.observe(this, Observer { showError(it, viewModel.errorData) })
         viewModel.loadVn(vnId, false)
     }
 

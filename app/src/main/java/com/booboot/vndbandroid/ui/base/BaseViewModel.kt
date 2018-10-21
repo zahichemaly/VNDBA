@@ -22,6 +22,5 @@ abstract class BaseViewModel constructor(application: Application) : AndroidView
         throwable.log()
 
         errorData.value = throwable.errorMessage()
-        errorData.value = null
     }
 }

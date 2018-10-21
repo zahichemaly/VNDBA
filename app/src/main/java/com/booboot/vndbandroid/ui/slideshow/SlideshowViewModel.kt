@@ -38,10 +38,7 @@ class SlideshowViewModel constructor(application: Application) : BaseViewModel(a
                 loadingData.minus()
                 disposables.remove(DISPOSABLE_DOWNLOAD_SCREENSHOT)
             }
-            .subscribe({
-                fileData.value = FileAction(it, bitmap!!, action)
-                fileData.value = null
-            }, ::onError)
+            .subscribe({ fileData.value = FileAction(it, bitmap!!, action) }, ::onError)
     }
 
     companion object {

@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.format
 import com.booboot.vndbandroid.extensions.hideKeyboard
+import com.booboot.vndbandroid.extensions.reset
 import com.booboot.vndbandroid.extensions.startActivity
 import com.booboot.vndbandroid.model.vndb.Links
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
@@ -40,7 +41,7 @@ class LoginActivity : BaseActivity() {
         viewModel = ViewModelProviders.of(this).get(LoginViewModel::class.java)
         viewModel.loadingData.observe(this, Observer { showLoading(it) })
         viewModel.syncData.observe(this, Observer { showResult(it) })
-        viewModel.errorData.observe(this, Observer { showError(it) })
+        viewModel.errorData.observe(this, Observer { showError(it, viewModel.errorData) })
     }
 
     private fun enableButtons(enabled: Boolean) {
@@ -56,7 +57,8 @@ class LoginActivity : BaseActivity() {
     }
 
     private fun showResult(result: SyncData?) {
-        if (result == null) return
+        result ?: return
+        viewModel.syncData.reset()
         startActivity<HomeActivity> {
             putExtra(HomeActivity.SHOULD_SYNC, false)
         }
