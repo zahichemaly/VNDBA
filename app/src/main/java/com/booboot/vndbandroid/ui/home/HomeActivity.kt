@@ -240,7 +240,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putInt(SELECTED_ITEM, selectedItem)
-        outState.putString(SAVED_FILTER_STATE, searchView?.query.toString())
+        outState.putString(SAVED_FILTER_STATE, searchView?.query?.toString() ?: "")
         super.onSaveInstanceState(outState)
     }
 
