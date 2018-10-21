@@ -28,9 +28,11 @@ import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment
 import com.booboot.vndbandroid.ui.login.LoginActivity
 import com.booboot.vndbandroid.ui.preferences.PreferencesFragment
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.main_activity.*
+import kotlinx.android.synthetic.main.vn_list_sort_bottom_sheet.*
 import javax.inject.Inject
 
 class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, SearchView.OnQueryTextListener {
@@ -40,6 +42,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private var searchView: SearchView? = null
     var savedFilter: String = ""
     private var selectedItem: Int = 0
+    private lateinit var sortBottomSheetBehavior: BottomSheetBehavior<View>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,6 +64,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             toggle.syncState()
 
             navigationView.setNavigationItemSelectedListener(this)
+            sortBottomSheetBehavior = BottomSheetBehavior.from(sortBottomSheet)
 
             var shouldSync = true
             intent.extras?.apply {
@@ -216,6 +220,8 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     override fun onBackPressed() {
         if (drawer != null && drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START)
+        } else if (sortBottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
+            sortBottomSheetBehavior.toggle()
         } else if (searchView?.isIconified == false) {
             searchView?.isIconified = true
         } else {

@@ -16,15 +16,15 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:title=" "
-            android:background="?attr/colorPrimary"/>
+            android:background="?attr/colorPrimary"
+            app:title=" " />
     </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/floatingSearchButton"
@@ -33,5 +33,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_search_white_48dp"
-        android:tint="@color/white"/>
+        android:tint="@color/white" />
+
+    <include layout="@layout/vn_list_sort_bottom_sheet" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

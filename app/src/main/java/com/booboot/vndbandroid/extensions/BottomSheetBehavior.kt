@@ -5,13 +5,14 @@ import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 
 fun BottomSheetBehavior<*>.toggle() {
+    val closedState = if (isHideable) BottomSheetBehavior.STATE_HIDDEN else BottomSheetBehavior.STATE_COLLAPSED
     state = when (state) {
-        BottomSheetBehavior.STATE_COLLAPSED -> BottomSheetBehavior.STATE_EXPANDED
-        else -> BottomSheetBehavior.STATE_COLLAPSED
+        closedState -> BottomSheetBehavior.STATE_EXPANDED
+        else -> closedState
     }
 }
 
-fun BottomSheetBehavior<*>.onStateChanged(onCollapsed: () -> Unit, onExpanded: () -> Unit) =
+fun BottomSheetBehavior<*>.onStateChanged(onCollapsed: () -> Unit = {}, onHidden: () -> Unit = {}, onExpanded: () -> Unit = {}) =
     setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
         override fun onSlide(bottomSheet: View, slideOffset: Float) {
         }
@@ -20,6 +21,7 @@ fun BottomSheetBehavior<*>.onStateChanged(onCollapsed: () -> Unit, onExpanded: (
         override fun onStateChanged(bottomSheet: View, newState: Int) {
             when (newState) {
                 BottomSheetBehavior.STATE_COLLAPSED -> onCollapsed()
+                BottomSheetBehavior.STATE_HIDDEN -> onHidden()
                 else -> onExpanded()
             }
         }

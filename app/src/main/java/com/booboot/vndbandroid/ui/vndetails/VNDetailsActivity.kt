@@ -76,8 +76,8 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener, View.OnClic
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
         bottomSheetHeader.setOnClickListener(this)
         bottomSheetBehavior.onStateChanged(
-            { iconArrow.setImageResource(R.drawable.ic_keyboard_arrow_down_white_24dp) },
-            { iconArrow.setImageResource(R.drawable.ic_keyboard_arrow_up_white_24dp) }
+            onCollapsed = { iconArrow.setImageResource(R.drawable.ic_keyboard_arrow_down_white_24dp) },
+            onExpanded = { iconArrow.setImageResource(R.drawable.ic_keyboard_arrow_up_white_24dp) }
         )
         (appBarLayout.layoutParams as? CoordinatorLayout.LayoutParams)?.behavior = StopFocusStealingAppBarBehavior(bottomSheet)
         textNotes.preventLineBreak()
