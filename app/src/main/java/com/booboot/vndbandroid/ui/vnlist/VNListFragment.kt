@@ -46,10 +46,11 @@ class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, (Vi
         return rootView
     }
 
-    fun update(force: Boolean = true) = viewModel.getVns(listType, tabValue, force)
+    private fun update(force: Boolean = true) = viewModel.getVns(listType, tabValue, force)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val context = context ?: return
+
         adapter = VNAdapter(this)
         vnList.layoutManager = GridAutofitLayoutManager(context, Pixels.px(300))
         vnList.adapter = adapter

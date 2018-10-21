@@ -110,6 +110,8 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     fun startupSync() = viewModel.startupSync()
 
+    fun updateSyncAccountData() = viewModel.updateSyncAccountData()
+
     private fun updateMenuCounters(accountItems: AccountItems?) {
         if (accountItems == null) return
         Track.tag(accountItems)

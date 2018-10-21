@@ -105,8 +105,7 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
                 /* This Single is going to be zipped with other independent and longer Singles: sending a UI update now to be as fast as possible */
                 /* During login, don't use this LiveData because we always need account data + tags + traits before proceeding! Home only needs account data though so can use this LiveData. */
                 doOnAccountSuccess(it)
-                syncAccountData.value = it
-                syncAccountData.value = null
+                updateSyncAccountData(it)
             }
             .onErrorResumeNext {
                 /* If leaveIfEmpty(), sync should continue anyway and still update tags and traits, without going in the above doOnSuccess, hence returning an empty result only now */
@@ -139,5 +138,10 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
                 syncData.value = it
                 syncData.value = null
             }
+    }
+
+    fun updateSyncAccountData(items: AccountItems? = syncAccountData.value) {
+        syncAccountData.value = items
+        syncAccountData.value = null
     }
 }

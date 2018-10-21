@@ -12,4 +12,6 @@ object Preferences : KotprefModel() {
     var useCustomTabs by booleanPref(key = context.getString(R.string.pref_key_browser))
     var nsfw by booleanPref(key = context.getString(R.string.pref_key_nsfw))
     var nightMode by intPref(AppCompatDelegate.MODE_NIGHT_YES, key = "NIGHT_MODE")
+    var sort by intPref(key = "SORT", default = SORT_ID)
+    var reverseSort by booleanPref(key = "REVERSE_SORT", default = false)
 }

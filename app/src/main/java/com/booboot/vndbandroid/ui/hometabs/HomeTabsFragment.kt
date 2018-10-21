@@ -13,6 +13,15 @@ import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.onStateChanged
 import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.extensions.updateTabs
+import com.booboot.vndbandroid.model.vndbandroid.Preferences
+import com.booboot.vndbandroid.model.vndbandroid.SORT_ID
+import com.booboot.vndbandroid.model.vndbandroid.SORT_LENGTH
+import com.booboot.vndbandroid.model.vndbandroid.SORT_POPULARITY
+import com.booboot.vndbandroid.model.vndbandroid.SORT_PRIORITY
+import com.booboot.vndbandroid.model.vndbandroid.SORT_RATING
+import com.booboot.vndbandroid.model.vndbandroid.SORT_RELEASE_DATE
+import com.booboot.vndbandroid.model.vndbandroid.SORT_STATUS
+import com.booboot.vndbandroid.model.vndbandroid.SORT_VOTE
 import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.tabs.TabLayout
@@ -27,6 +36,11 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
 
     private var type: Int = 0
     private var adapter: HomeTabsAdapter? = null
+    private val sortBottomSheetButtons by lazy {
+        activity?.let {
+            listOf(it.buttonSortID, it.buttonSortReleaseDate, it.buttonSortLength, it.buttonSortPopularity, it.buttonSortRating, it.buttonSortStatus, it.buttonSortVote, it.buttonSortPriority)
+        } ?: emptyList<View>()
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
@@ -47,6 +61,7 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
             onExpanded = { activity.floatingSearchButton.hide() }
         )
         activity.sortBottomSheetHeader.setOnClickListener(this)
+        sortBottomSheetButtons.forEach { it.setOnClickListener(this) }
 
         viewModel = ViewModelProviders.of(this).get(HomeTabsViewModel::class.java)
         viewModel.titlesData.observe(this, Observer { showTitles(it) })
@@ -91,6 +106,19 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
     override fun onClick(view: View) {
         when (view.id) {
             R.id.sortBottomSheetHeader -> sortBottomSheetBehavior.toggle()
+            R.id.buttonSortID -> Preferences.sort = SORT_ID
+            R.id.buttonSortReleaseDate -> Preferences.sort = SORT_RELEASE_DATE
+            R.id.buttonSortLength -> Preferences.sort = SORT_LENGTH
+            R.id.buttonSortPopularity -> Preferences.sort = SORT_POPULARITY
+            R.id.buttonSortRating -> Preferences.sort = SORT_RATING
+            R.id.buttonSortStatus -> Preferences.sort = SORT_STATUS
+            R.id.buttonSortVote -> Preferences.sort = SORT_VOTE
+            R.id.buttonSortPriority -> Preferences.sort = SORT_PRIORITY
+        }
+
+
+        if (view in sortBottomSheetButtons) {
+            home()?.updateSyncAccountData()
         }
     }
 

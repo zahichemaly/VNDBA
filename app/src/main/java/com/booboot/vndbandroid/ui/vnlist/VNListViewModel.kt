@@ -4,6 +4,15 @@ import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.model.vndb.AccountItems
+import com.booboot.vndbandroid.model.vndbandroid.Preferences
+import com.booboot.vndbandroid.model.vndbandroid.SORT_LENGTH
+import com.booboot.vndbandroid.model.vndbandroid.SORT_POPULARITY
+import com.booboot.vndbandroid.model.vndbandroid.SORT_PRIORITY
+import com.booboot.vndbandroid.model.vndbandroid.SORT_RATING
+import com.booboot.vndbandroid.model.vndbandroid.SORT_RELEASE_DATE
+import com.booboot.vndbandroid.model.vndbandroid.SORT_STATUS
+import com.booboot.vndbandroid.model.vndbandroid.SORT_TITLE
+import com.booboot.vndbandroid.model.vndbandroid.SORT_VOTE
 import com.booboot.vndbandroid.repository.AccountRepository
 import com.booboot.vndbandroid.ui.base.BaseViewModel
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment.Companion.VNLIST
@@ -32,14 +41,29 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
                 val votelist = cache.votelist.filterValues { it.vote / 10 == tabValue || it.vote / 10 == tabValue - 1 }
                 val wishlist = cache.wishlist.filterValues { it.priority == tabValue }
 
-                cache.vns = cache.vns.filterKeys {
+                val sortedVns = cache.vns.filterKeys {
                     when (listType) {
                         VNLIST -> it in vnlist
                         VOTELIST -> it in votelist
                         WISHLIST -> it in wishlist
                         else -> true
                     }
-                }
+                }.toList().sortedWith(compareBy { (id, vn) ->
+                    when (Preferences.sort) {
+                        SORT_TITLE -> vn.title
+                        SORT_RELEASE_DATE -> vn.released
+                        SORT_LENGTH -> vn.length
+                        SORT_POPULARITY -> vn.popularity
+                        SORT_RATING -> vn.rating
+                        SORT_STATUS -> cache.vnlist[id]?.status
+                        SORT_VOTE -> cache.votelist[id]?.vote
+                        SORT_PRIORITY -> cache.wishlist[id]?.priority
+                        else -> id
+                    }
+                })
+
+                if (Preferences.reverseSort) sortedVns.reversed()
+                cache.vns = sortedVns.toMap()
 
                 /* #122 : to make DiffUtil work in the Adapter, the items must be deep copied here so the contents can be identified as different when changed from inside the app */
                 cache.deepCopy()
