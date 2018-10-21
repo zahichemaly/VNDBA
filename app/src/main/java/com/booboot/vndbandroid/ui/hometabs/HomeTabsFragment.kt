@@ -130,6 +130,11 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
 
     override fun onTabReselected(tab: TabLayout.Tab) {}
 
+    override fun onDestroyView() {
+        sortBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        super.onDestroyView()
+    }
+
     companion object {
         const val LIST_TYPE_ARG = "LIST_TYPE_ARG"
         const val TAB_VALUE_ARG = "TAB_VALUE_ARG"
