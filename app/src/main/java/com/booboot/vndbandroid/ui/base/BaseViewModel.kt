@@ -23,4 +23,8 @@ abstract class BaseViewModel constructor(application: Application) : AndroidView
 
         errorData.value = throwable.errorMessage()
     }
+
+    override fun onCleared() {
+        disposables.forEach { it.value.dispose() }
+    }
 }
