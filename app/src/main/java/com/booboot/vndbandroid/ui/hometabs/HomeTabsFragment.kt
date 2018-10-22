@@ -56,7 +56,6 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
         sortBottomSheetBehavior = BottomSheetBehavior.from(activity.sortBottomSheet)
         sortBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
         sortBottomSheetBehavior.onStateChanged(
-            onCollapsed = { sortBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN },
             onHidden = { activity.floatingSearchButton.show() },
             onExpanded = { activity.floatingSearchButton.hide() }
         )

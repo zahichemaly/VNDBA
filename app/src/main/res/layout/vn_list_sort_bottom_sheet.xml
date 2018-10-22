@@ -9,11 +9,12 @@
     android:layout_marginEnd="@dimen/bottom_sheet_margin"
     android:background="?attr/colorPrimary"
     android:clickable="true"
-    android:elevation="6dp"
+    android:elevation="4dp"
     android:fillViewport="true"
     android:focusable="true"
     app:behavior_hideable="true"
     app:behavior_peekHeight="0dp"
+    app:behavior_skipCollapsed="true"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
     <androidx.constraintlayout.widget.ConstraintLayout
