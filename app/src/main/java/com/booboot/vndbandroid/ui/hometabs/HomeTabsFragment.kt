@@ -38,7 +38,7 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
     private var adapter: HomeTabsAdapter? = null
     private val sortBottomSheetButtons by lazy {
         activity?.let {
-            listOf(it.buttonSortID, it.buttonSortReleaseDate, it.buttonSortLength, it.buttonSortPopularity, it.buttonSortRating, it.buttonSortStatus, it.buttonSortVote, it.buttonSortPriority)
+            listOf(it.buttonReverseSort, it.buttonSortID, it.buttonSortReleaseDate, it.buttonSortLength, it.buttonSortPopularity, it.buttonSortRating, it.buttonSortStatus, it.buttonSortVote, it.buttonSortPriority)
         } ?: emptyList<View>()
     }
 
@@ -84,6 +84,7 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
 
     private fun showSort() {
         viewModel.sortData.reset()
+        home()?.buttonReverseSort?.selectIf(Preferences.reverseSort)
         home()?.buttonSortID?.selectIf(Preferences.sort == SORT_ID)
         home()?.buttonSortReleaseDate?.selectIf(Preferences.sort == SORT_RELEASE_DATE)
         home()?.buttonSortLength?.selectIf(Preferences.sort == SORT_LENGTH)
@@ -114,6 +115,7 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
     override fun onClick(view: View) {
         when (view.id) {
             R.id.sortBottomSheetHeader -> sortBottomSheetBehavior.toggle()
+            R.id.buttonReverseSort -> viewModel.reverseSort()
             R.id.buttonSortID -> viewModel.setSort(SORT_ID)
             R.id.buttonSortReleaseDate -> viewModel.setSort(SORT_RELEASE_DATE)
             R.id.buttonSortLength -> viewModel.setSort(SORT_LENGTH)

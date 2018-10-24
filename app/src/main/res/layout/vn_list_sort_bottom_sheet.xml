@@ -55,12 +55,32 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:text="@string/sort_vns_by"
             android:textColor="@color/transparent80White"
             app:layout_constraintBottom_toBottomOf="@id/sortBottomSheetHeader"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/buttonReverseSort"
             app:layout_constraintStart_toEndOf="@id/iconClose"
             app:layout_constraintTop_toTopOf="@id/sortBottomSheetHeader" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonReverseSort"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="42dp"
+            android:layout_marginEnd="12dp"
+            android:text="@string/reverse_order"
+            android:textAllCaps="false"
+            android:textColor="@color/dark_blue"
+            android:textSize="12sp"
+            app:icon="@drawable/ic_swap_vert_white_48dp"
+            app:iconSize="22dp"
+            app:iconTint="@color/dark_blue"
+            app:layout_constraintBottom_toBottomOf="@id/sortBottomSheetHeader"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/sortBottomSheetHeader"
+            app:rippleColor="@color/dark_blue"
+            app:strokeColor="@color/dark_blue" />
 
         <com.google.android.flexbox.FlexboxLayout
             android:id="@+id/flexboxStatus"

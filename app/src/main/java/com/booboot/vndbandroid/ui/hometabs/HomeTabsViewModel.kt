@@ -71,6 +71,11 @@ class HomeTabsViewModel constructor(application: Application) : BaseViewModel(ap
         sortData.value = Preferences
     }
 
+    fun reverseSort() {
+        Preferences.reverseSort = !Preferences.reverseSort
+        sortData.value = Preferences
+    }
+
     companion object {
         private const val DISPOSABLE_TAB_TITLES = "DISPOSABLE_TAB_TITLES"
     }
