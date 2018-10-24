@@ -12,6 +12,7 @@ import android.os.Build
 import android.util.TypedValue
 import android.view.View
 import androidx.annotation.AttrRes
+import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.app.ActivityOptionsCompat
@@ -89,6 +90,11 @@ fun Context.getThemeColorState(@AttrRes resid: Int): ColorStateList? {
     val color = arr.getColorStateList(0)
     arr.recycle()
     return color
+}
+
+@ColorInt
+fun Context.getThemeColorStateEnabled(@AttrRes resid: Int): Int {
+    return getThemeColorState(resid)?.getColorForState(IntArray(android.R.attr.state_selected), -1) ?: -1
 }
 
 fun Context.dayNightTheme(): String {

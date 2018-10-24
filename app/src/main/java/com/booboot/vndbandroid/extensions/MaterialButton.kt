@@ -10,17 +10,21 @@ fun MaterialButton.selectIf(select: Boolean) = if (select) select() else unselec
 
 fun MaterialButton.select() = apply {
     val textColorPrimary = context.getThemeColorState(android.R.attr.textColorPrimary)
-    if (strokeColor == textColorPrimary) {
-        setTextColor(context.getThemeColorState(android.R.attr.windowBackground))
+    val newTextColor = if (strokeColor == textColorPrimary) {
+        context.getThemeColorStateEnabled(android.R.attr.windowBackground)
     } else {
-        setTextColor(ContextCompat.getColor(context, R.color.white))
+        ContextCompat.getColor(context, R.color.white)
     }
+
+    setTextColor(newTextColor)
+    iconTint = ColorStateList.valueOf(newTextColor)
     backgroundTintList = strokeColor
     elevation = Pixels.px(3).toFloat()
 }
 
 fun MaterialButton.unselect() = apply {
     setTextColor(strokeColor)
+    iconTint = strokeColor
     backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, android.R.color.transparent))
     elevation = Pixels.px(0).toFloat()
 }
