@@ -42,6 +42,7 @@ class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, (Vi
         home()?.viewModel?.loadingData?.observe(this, Observer { showLoading(it) })
         home()?.viewModel?.syncAccountData?.observe(this, Observer { it?.let { update() } })
         home()?.viewModel?.filterData?.observe(this, Observer { filter(it) })
+        homeTabs()?.viewModel?.sortData?.observe(this, Observer { it?.let { update() } })
         update(false)
 
         return rootView
@@ -80,4 +81,6 @@ class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, (Vi
     override fun onRefresh() {
         home()?.startupSync()
     }
+
+    private fun homeTabs() = parentFragment as? HomeTabsFragment?
 }

@@ -10,7 +10,8 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
-import com.booboot.vndbandroid.extensions.onStateChanged
+import com.booboot.vndbandroid.extensions.reset
+import com.booboot.vndbandroid.extensions.selectIf
 import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.extensions.updateTabs
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
@@ -25,14 +26,13 @@ import com.booboot.vndbandroid.model.vndbandroid.SORT_VOTE
 import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.tabs.TabLayout
-import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.home_tabs_fragment.*
 import kotlinx.android.synthetic.main.vn_list_sort_bottom_sheet.*
 
 class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.OnClickListener {
     override val layout: Int = R.layout.home_tabs_fragment
-    private lateinit var viewModel: HomeTabsViewModel
-    private lateinit var sortBottomSheetBehavior: BottomSheetBehavior<View>
+    lateinit var viewModel: HomeTabsViewModel
+    lateinit var sortBottomSheetBehavior: BottomSheetBehavior<View>
 
     private var type: Int = 0
     private var adapter: HomeTabsAdapter? = null
@@ -60,6 +60,7 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
 
         viewModel = ViewModelProviders.of(this).get(HomeTabsViewModel::class.java)
         viewModel.titlesData.observe(this, Observer { showTitles(it) })
+        viewModel.sortData.observe(this, Observer { showSort() })
         viewModel.errorData.observe(this, Observer { showError(it, viewModel.errorData) })
         viewModel.loadingData.observe(this, Observer { showLoading(it) })
         home()?.viewModel?.syncAccountData?.observe(this, Observer { it?.let { update() } })
@@ -79,6 +80,18 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
             viewPager.adapter = adapter
             if (currentPage >= 0) viewPager.currentItem = currentPage
         }
+    }
+
+    private fun showSort() {
+        viewModel.sortData.reset()
+        home()?.buttonSortID?.selectIf(Preferences.sort == SORT_ID)
+        home()?.buttonSortReleaseDate?.selectIf(Preferences.sort == SORT_RELEASE_DATE)
+        home()?.buttonSortLength?.selectIf(Preferences.sort == SORT_LENGTH)
+        home()?.buttonSortPopularity?.selectIf(Preferences.sort == SORT_POPULARITY)
+        home()?.buttonSortRating?.selectIf(Preferences.sort == SORT_RATING)
+        home()?.buttonSortStatus?.selectIf(Preferences.sort == SORT_STATUS)
+        home()?.buttonSortVote?.selectIf(Preferences.sort == SORT_VOTE)
+        home()?.buttonSortPriority?.selectIf(Preferences.sort == SORT_PRIORITY)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,18 +114,14 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
     override fun onClick(view: View) {
         when (view.id) {
             R.id.sortBottomSheetHeader -> sortBottomSheetBehavior.toggle()
-            R.id.buttonSortID -> Preferences.sort = SORT_ID
-            R.id.buttonSortReleaseDate -> Preferences.sort = SORT_RELEASE_DATE
-            R.id.buttonSortLength -> Preferences.sort = SORT_LENGTH
-            R.id.buttonSortPopularity -> Preferences.sort = SORT_POPULARITY
-            R.id.buttonSortRating -> Preferences.sort = SORT_RATING
-            R.id.buttonSortStatus -> Preferences.sort = SORT_STATUS
-            R.id.buttonSortVote -> Preferences.sort = SORT_VOTE
-            R.id.buttonSortPriority -> Preferences.sort = SORT_PRIORITY
-        }
-
-        if (view in sortBottomSheetButtons) {
-            home()?.updateSyncAccountData()
+            R.id.buttonSortID -> viewModel.setSort(SORT_ID)
+            R.id.buttonSortReleaseDate -> viewModel.setSort(SORT_RELEASE_DATE)
+            R.id.buttonSortLength -> viewModel.setSort(SORT_LENGTH)
+            R.id.buttonSortPopularity -> viewModel.setSort(SORT_POPULARITY)
+            R.id.buttonSortRating -> viewModel.setSort(SORT_RATING)
+            R.id.buttonSortStatus -> viewModel.setSort(SORT_STATUS)
+            R.id.buttonSortVote -> viewModel.setSort(SORT_VOTE)
+            R.id.buttonSortPriority -> viewModel.setSort(SORT_PRIORITY)
         }
     }
 

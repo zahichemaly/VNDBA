@@ -17,20 +17,11 @@ import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.api.VNDBServer
 import com.booboot.vndbandroid.extensions.Track
 import com.booboot.vndbandroid.extensions.reset
-import com.booboot.vndbandroid.extensions.selectIf
 import com.booboot.vndbandroid.extensions.setLightStatusAndNavigation
 import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndbandroid.EVENT_VNLIST_CHANGED
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
-import com.booboot.vndbandroid.model.vndbandroid.SORT_ID
-import com.booboot.vndbandroid.model.vndbandroid.SORT_LENGTH
-import com.booboot.vndbandroid.model.vndbandroid.SORT_POPULARITY
-import com.booboot.vndbandroid.model.vndbandroid.SORT_PRIORITY
-import com.booboot.vndbandroid.model.vndbandroid.SORT_RATING
-import com.booboot.vndbandroid.model.vndbandroid.SORT_RELEASE_DATE
-import com.booboot.vndbandroid.model.vndbandroid.SORT_STATUS
-import com.booboot.vndbandroid.model.vndbandroid.SORT_VOTE
 import com.booboot.vndbandroid.repository.AccountRepository
 import com.booboot.vndbandroid.service.EventReceiver
 import com.booboot.vndbandroid.ui.base.BaseActivity
@@ -42,7 +33,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.main_activity.*
-import kotlinx.android.synthetic.main.vn_list_sort_bottom_sheet.*
 import javax.inject.Inject
 
 class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, SearchView.OnQueryTextListener {
@@ -52,7 +42,6 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private var searchView: SearchView? = null
     var savedFilter: String = ""
     private var selectedItem: Int = 0
-    private lateinit var sortBottomSheetBehavior: BottomSheetBehavior<View>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,7 +63,6 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             toggle.syncState()
 
             navigationView.setNavigationItemSelectedListener(this)
-            sortBottomSheetBehavior = BottomSheetBehavior.from(sortBottomSheet)
 
             var shouldSync = true
             intent.extras?.apply {
@@ -120,10 +108,6 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     fun startupSync() = viewModel.startupSync()
 
-    fun updateSyncAccountData() {
-        viewModel.syncAccountData.value = viewModel.accountData.value
-    }
-
     private fun showAccount(accountItems: AccountItems?) {
         accountItems ?: return
         viewModel.syncAccountData.reset()
@@ -132,15 +116,6 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         setMenuCounter(R.id.nav_vnlist, accountItems.vnlist.size)
         setMenuCounter(R.id.nav_wishlist, accountItems.wishlist.size)
         setMenuCounter(R.id.nav_votelist, accountItems.votelist.size)
-
-        buttonSortID.selectIf(Preferences.sort == SORT_ID)
-        buttonSortReleaseDate.selectIf(Preferences.sort == SORT_RELEASE_DATE)
-        buttonSortLength.selectIf(Preferences.sort == SORT_LENGTH)
-        buttonSortPopularity.selectIf(Preferences.sort == SORT_POPULARITY)
-        buttonSortRating.selectIf(Preferences.sort == SORT_RATING)
-        buttonSortStatus.selectIf(Preferences.sort == SORT_STATUS)
-        buttonSortVote.selectIf(Preferences.sort == SORT_VOTE)
-        buttonSortPriority.selectIf(Preferences.sort == SORT_PRIORITY)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean = goToFragment(item.itemId)
@@ -244,17 +219,25 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     override fun onBackPressed() {
         if (drawer != null && drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START)
-        } else if (sortBottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
-            sortBottomSheetBehavior.toggle()
-        } else if (searchView?.isIconified == false) {
-            searchView?.isIconified = true
-        } else {
-            /* Going back to home screen (don't use super.onBackPressed() because it would redirect to the LoginActivity underneath) */
-            val startMain = Intent(Intent.ACTION_MAIN)
-            startMain.addCategory(Intent.CATEGORY_HOME)
-            startMain.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            startActivity(startMain)
+            return
         }
+
+        val fragment = supportFragmentManager.findFragmentByTag(TAG_FRAGMENT)
+        if (fragment is HomeTabsFragment && fragment.sortBottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
+            fragment.sortBottomSheetBehavior.toggle()
+            return
+        }
+
+        if (searchView?.isIconified == false) {
+            searchView?.isIconified = true
+            return
+        }
+
+        /* Going back to home screen (don't use super.onBackPressed() because it would redirect to the LoginActivity underneath) */
+        val startMain = Intent(Intent.ACTION_MAIN)
+        startMain.addCategory(Intent.CATEGORY_HOME)
+        startMain.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(startMain)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

@@ -3,7 +3,9 @@ package com.booboot.vndbandroid.ui.hometabs
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import com.booboot.vndbandroid.App
+import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.model.vndbandroid.Priority
+import com.booboot.vndbandroid.model.vndbandroid.SortOptions
 import com.booboot.vndbandroid.model.vndbandroid.Status
 import com.booboot.vndbandroid.repository.AccountRepository
 import com.booboot.vndbandroid.ui.base.BaseViewModel
@@ -13,6 +15,7 @@ import javax.inject.Inject
 class HomeTabsViewModel constructor(application: Application) : BaseViewModel(application) {
     @Inject lateinit var accountRepository: AccountRepository
     val titlesData: MutableLiveData<List<String>> = MutableLiveData()
+    val sortData: MutableLiveData<Preferences> = MutableLiveData()
 
     init {
         (application as App).appComponent.inject(this)
@@ -59,7 +62,13 @@ class HomeTabsViewModel constructor(application: Application) : BaseViewModel(ap
                 }
 
                 titlesData.value = titles
+                sortData.value = Preferences
             }, ::onError)
+    }
+
+    fun setSort(@SortOptions sort: Int) {
+        Preferences.sort = sort
+        sortData.value = Preferences
     }
 
     companion object {
