@@ -28,7 +28,7 @@ class SummaryViewModel constructor(application: Application) : BaseViewModel(app
         if (disposables.contains(DISPOSABLE_VN)) return
 
         disposables[DISPOSABLE_VN] = vnRepository.getItem(vnId)
-            .subscribeOn(Schedulers.newThread())
+            .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe { loadingData.plus() }
             .observeOn(Schedulers.computation())

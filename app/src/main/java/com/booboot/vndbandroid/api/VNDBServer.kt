@@ -82,7 +82,7 @@ class VNDBServer @Inject constructor(private val moshi: Moshi) {
                 Single.fromCallable<Response<Results<T>>> {
                     val threadOptions = options.copy(page = index + 1, socketIndex = socketIndex)
                     sendCommand(command + moshi.adapter(Options::class.java).toJson(threadOptions), threadOptions, resultClass)
-                }.doOnError { VNDBServer.close(socketIndex) }.subscribeOn(Schedulers.newThread())
+                }.doOnError { VNDBServer.close(socketIndex) }.subscribeOn(Schedulers.io())
             }
 
             Single.merge(observables).collect({ Results<T>() }, { results, response ->
@@ -102,7 +102,7 @@ class VNDBServer @Inject constructor(private val moshi: Moshi) {
                 results
             }
                 .doOnError { VNDBServer.close(options.socketIndex) }
-                .subscribeOn(Schedulers.newThread())
+                .subscribeOn(Schedulers.io())
         }
     }
 
@@ -135,7 +135,7 @@ class VNDBServer @Inject constructor(private val moshi: Moshi) {
                 val input = InputStreamReader(socket.inputStream)
 
                 do {
-                    if (BuildConfig.DEBUG) Logger.log(query)
+                    if (BuildConfig.DEBUG) Logger.log(query + " ON " + Thread.currentThread().id)
                     if (input.ready()) while (input.read() > -1);
                     output.flush()
                     output.write(query.toByteArray(charset("UTF-8")))

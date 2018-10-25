@@ -29,7 +29,7 @@ class AccountRepository @Inject constructor(
                 items = AccountItems(vni, vti, wsi)
                 items
             })
-            .observeOn(Schedulers.newThread())
+            .observeOn(Schedulers.io())
             .flatMap {
                 vnRepository.getItems(it.vnlist.keys.union(it.votelist.keys).union(it.wishlist.keys), FLAGS_DETAILS)
             }

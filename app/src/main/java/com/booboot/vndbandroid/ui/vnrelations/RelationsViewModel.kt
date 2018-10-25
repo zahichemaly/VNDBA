@@ -30,9 +30,9 @@ class RelationsViewModel constructor(application: Application) : BaseViewModel(a
 
         var items = AccountItems()
         disposables[DISPOSABLE_VN] = accountRepository.getItems()
-            .subscribeOn(Schedulers.newThread())
+            .subscribeOn(Schedulers.io())
             .doOnSubscribe { loadingData.plus() }
-            .observeOn(Schedulers.newThread())
+            .observeOn(Schedulers.io())
             .flatMap {
                 items = it.deepCopy()
                 val vn = it.vns[vnId] ?: throw Throwable("VN not found.")

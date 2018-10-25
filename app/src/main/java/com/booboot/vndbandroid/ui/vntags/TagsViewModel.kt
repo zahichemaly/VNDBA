@@ -34,8 +34,8 @@ class TagsViewModel constructor(application: Application) : BaseViewModel(applic
         if (!force && tagsData.value != null) return
         if (disposables.contains(DISPOSABLE_LOAD_TAGS)) return
 
-        val vnObservable = vnRepository.getItem(vnId).subscribeOn(Schedulers.newThread())
-        val tagsObservable = tagsRepository.getItems().subscribeOn(Schedulers.newThread())
+        val vnObservable = vnRepository.getItem(vnId).subscribeOn(Schedulers.io())
+        val tagsObservable = tagsRepository.getItems().subscribeOn(Schedulers.io())
 
         disposables[DISPOSABLE_LOAD_TAGS] = Single.zip(vnObservable, tagsObservable, BiFunction<VN, Map<Long, Tag>, VNAndTags> { vn, tags ->
             VNAndTags(vn, tags)

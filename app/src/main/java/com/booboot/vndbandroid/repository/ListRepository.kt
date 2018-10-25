@@ -21,7 +21,7 @@ abstract class ListRepository<T : AccountItem> : Repository<T>() {
             .putInMemory { if (cachePolicy.enabled) items = it.toMutableMap() }
             .putInDatabase { if (cachePolicy.enabled) addItemsToDB(it.values.toList()) }
             .get { emptyMap() }
-    }.subscribeOn(Schedulers.newThread())
+    }.subscribeOn(Schedulers.io())
 
     override fun setItems(items: Map<Long, T>): Completable = Completable.fromAction {
         this.items = items.toMutableMap()

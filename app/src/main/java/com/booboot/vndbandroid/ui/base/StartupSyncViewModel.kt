@@ -115,14 +115,14 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
 
         val tagsSingle = tagsRepository
             .getItems(CachePolicy(true))
-            .subscribeOn(Schedulers.newThread())
+            .subscribeOn(Schedulers.io())
             .onErrorResumeNext {
                 pendingError = it
                 Single.just(emptyMap())
             }
         val traitsSingle = traitsRepository
             .getItems(CachePolicy(true))
-            .subscribeOn(Schedulers.newThread())
+            .subscribeOn(Schedulers.io())
             .onErrorResumeNext {
                 pendingError = it
                 Single.just(emptyMap())
@@ -132,7 +132,7 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
             pendingError?.let { throw it }
             SyncData(accountItems, tags, traits)
         })
-            .subscribeOn(Schedulers.newThread())
+            .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSuccess { syncData.value = it }
     }
