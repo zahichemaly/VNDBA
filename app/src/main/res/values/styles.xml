@@ -3,7 +3,7 @@
     <style name="Base.AppTheme.Light" parent="Theme.MaterialComponents.Light">
         <!-- light theme attributes -->
         <item name="colorPrimary">@color/white</item>
-        <item name="colorPrimaryDark">@color/white</item>
+        <item name="colorPrimaryDark">#fafafa</item>
         <item name="colorAccent">@color/colorPrimaryDark</item>
         <item name="themeName">light</item>
         <item name="android:navigationBarColor">#424242</item>
