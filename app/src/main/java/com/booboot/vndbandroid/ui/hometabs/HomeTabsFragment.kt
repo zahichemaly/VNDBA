@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
-import com.booboot.vndbandroid.extensions.reset
+import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.selectIf
 import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.extensions.updateTabs
@@ -61,7 +61,7 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
         viewModel = ViewModelProviders.of(this).get(HomeTabsViewModel::class.java)
         viewModel.titlesData.observe(this, Observer { showTitles(it) })
         viewModel.sortData.observe(this, Observer { showSort() })
-        viewModel.errorData.observe(this, Observer { showError(it, viewModel.errorData) })
+        viewModel.errorData.observeOnce(this, ::showError)
         viewModel.loadingData.observe(this, Observer { showLoading(it) })
         home()?.viewModel?.syncAccountData?.observe(this, Observer { it?.let { update() } })
         update(false)
@@ -83,7 +83,6 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
     }
 
     private fun showSort() {
-        viewModel.sortData.reset()
         home()?.buttonReverseSort?.selectIf(Preferences.reverseSort)
         home()?.buttonSortID?.selectIf(Preferences.sort == SORT_ID)
         home()?.buttonSortReleaseDate?.selectIf(Preferences.sort == SORT_RELEASE_DATE)

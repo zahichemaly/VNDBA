@@ -15,6 +15,7 @@ import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.adjustAlpha
 import com.booboot.vndbandroid.extensions.darken
 import com.booboot.vndbandroid.extensions.dayNightTheme
+import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.openURL
 import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.model.vndb.Links
@@ -39,7 +40,7 @@ class SummaryFragment : BaseFragment() {
         val vnId = arguments?.getLong(VNDetailsActivity.EXTRA_VN_ID) ?: 0
         viewModel = ViewModelProviders.of(this).get(SummaryViewModel::class.java)
         viewModel.vnData.observe(this, Observer { showVn(it) })
-        viewModel.errorData.observe(this, Observer { showError(it, viewModel.errorData) })
+        viewModel.errorData.observeOnce(this, ::showError)
         viewModel.loadVn(vnId, false)
     }
 

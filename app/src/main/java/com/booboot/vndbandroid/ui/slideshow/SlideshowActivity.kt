@@ -18,7 +18,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
 import com.booboot.vndbandroid.R
-import com.booboot.vndbandroid.extensions.reset
+import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.model.vndb.Screen
 import com.booboot.vndbandroid.model.vndbandroid.FileAction
 import com.booboot.vndbandroid.service.ScreenshotNotificationService
@@ -51,9 +51,9 @@ class SlideshowActivity : BaseActivity(), ViewPager.OnPageChangeListener {
         onPageSelected(position)
 
         viewModel = ViewModelProviders.of(this).get(SlideshowViewModel::class.java)
-        viewModel.errorData.observe(this, Observer { showError(it, viewModel.errorData) })
+        viewModel.errorData.observeOnce(this, ::showError)
         viewModel.loadingData.observe(this, Observer { showLoading(it) })
-        viewModel.fileData.observe(this, Observer { launchActionForImage(it) })
+        viewModel.fileData.observeOnce(this, ::launchActionForImage)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -103,7 +103,6 @@ class SlideshowActivity : BaseActivity(), ViewPager.OnPageChangeListener {
 
     private fun launchActionForImage(fileAction: FileAction?) {
         fileAction ?: return
-        viewModel.fileData.reset()
 
         MediaScannerConnection.scanFile(applicationContext, arrayOf(fileAction.file.absolutePath), null) { _, _ ->
             val uri = FileProvider.getUriForFile(applicationContext, applicationContext.packageName + ".fileprovider", fileAction.file)

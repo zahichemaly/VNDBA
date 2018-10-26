@@ -16,7 +16,7 @@ import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.api.VNDBServer
 import com.booboot.vndbandroid.extensions.Track
-import com.booboot.vndbandroid.extensions.reset
+import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.setLightStatusAndNavigation
 import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.model.vndb.AccountItems
@@ -77,8 +77,8 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             viewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
             viewModel.loadingData.observe(this, Observer { showLoading(it) })
             viewModel.accountData.observe(this, Observer { showAccount(it) })
-            viewModel.syncAccountData.observe(this, Observer { showAccount(it) })
-            viewModel.errorData.observe(this, Observer { showError(it, viewModel.errorData) })
+            viewModel.syncAccountData.observeOnce(this, ::showAccount)
+            viewModel.errorData.observeOnce(this, ::showError)
 
             floatingSearchButton.setOnClickListener(this)
             viewModel.getVns()
@@ -110,7 +110,6 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     private fun showAccount(accountItems: AccountItems?) {
         accountItems ?: return
-        viewModel.syncAccountData.reset()
 
         Track.tag(accountItems)
         setMenuCounter(R.id.nav_vnlist, accountItems.vnlist.size)

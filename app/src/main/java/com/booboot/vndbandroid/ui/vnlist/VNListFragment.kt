@@ -10,8 +10,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.getThemeColor
 import com.booboot.vndbandroid.extensions.hideOnBottom
+import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.openVN
-import com.booboot.vndbandroid.extensions.reset
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.ui.base.BaseFragment
@@ -38,11 +38,11 @@ class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, (Vi
 
         viewModel = ViewModelProviders.of(this).get(VNListViewModel::class.java)
         viewModel.accountData.observe(this, Observer { showVns(it) })
-        viewModel.errorData.observe(this, Observer { showError(it, viewModel.errorData) })
+        viewModel.errorData.observeOnce(this, ::showError)
         home()?.viewModel?.loadingData?.observe(this, Observer { showLoading(it) })
         home()?.viewModel?.syncAccountData?.observe(this, Observer { it?.let { update() } })
-        home()?.viewModel?.filterData?.observe(this, Observer { filter(it) })
-        homeTabs()?.viewModel?.sortData?.observe(this, Observer { it?.let { update() } })
+        home()?.viewModel?.filterData?.observeOnce(this, ::filter)
+        homeTabs()?.viewModel?.sortData?.observeOnce(this) { update() }
         update(false)
 
         return rootView
@@ -71,7 +71,6 @@ class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, (Vi
     private fun filter(search: CharSequence?) {
         search ?: return
         adapter.filter.filter(search)
-        home()?.viewModel?.filterData?.reset()
     }
 
     override fun invoke(itemView: View, vn: VN) {

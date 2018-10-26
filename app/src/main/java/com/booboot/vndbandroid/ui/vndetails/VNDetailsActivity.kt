@@ -11,10 +11,10 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.onStateChanged
 import com.booboot.vndbandroid.extensions.onSubmitListener
 import com.booboot.vndbandroid.extensions.preventLineBreak
-import com.booboot.vndbandroid.extensions.reset
 import com.booboot.vndbandroid.extensions.selectIf
 import com.booboot.vndbandroid.extensions.setStatusBarThemeForCollapsingToolbar
 import com.booboot.vndbandroid.extensions.toggle
@@ -92,8 +92,8 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener, View.OnClic
         viewModel.loadingData.observe(this, Observer { showLoading(it) })
         viewModel.vnData.observe(this, Observer { showVn(it) })
         viewModel.accountData.observe(this, Observer { showAccount(it) })
-        viewModel.errorData.observe(this, Observer { showError(it, viewModel.errorData) })
-        viewModel.initErrorData.observe(this, Observer { onInitError(it) })
+        viewModel.errorData.observeOnce(this, ::showError)
+        viewModel.initErrorData.observeOnce(this, ::onInitError)
         viewModel.loadVn(vnId, false)
         viewModel.loadAccount(false)
     }
@@ -180,13 +180,12 @@ class VNDetailsActivity : BaseActivity(), SlideshowAdapter.Listener, View.OnClic
 
     override fun showLoading(loading: Int?) {
         super.showLoading(loading)
-        if (loading == null) return
+        loading ?: return
         bottomSheetButtons.forEach { it.isEnabled = loading <= 0 }
     }
 
     private fun onInitError(message: String?) {
         message ?: return
-        viewModel.initErrorData.reset()
         setResult(RESULT_ERROR, Intent().apply {
             putExtra(EXTRA_ERROR_MESSAGE, message)
         })

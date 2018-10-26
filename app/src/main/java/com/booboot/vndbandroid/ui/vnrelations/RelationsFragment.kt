@@ -5,6 +5,7 @@ import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.openURL
 import com.booboot.vndbandroid.extensions.openVN
 import com.booboot.vndbandroid.model.vndb.Anime
@@ -34,7 +35,7 @@ class RelationsFragment : BaseFragment(), (Anime) -> Unit, (View, Relation, VN?)
             val vnId = arguments?.getLong(VNDetailsActivity.EXTRA_VN_ID) ?: 0
             viewModel = ViewModelProviders.of(this).get(RelationsViewModel::class.java)
             viewModel.vnData.observe(this, Observer { showRelations(it) })
-            viewModel.errorData.observe(this, Observer { showError(it, viewModel.errorData) })
+            viewModel.errorData.observeOnce(this, ::showError)
             viewModel.loadVn(vnId, false)
 
             EventReceiver(this).observe(mapOf(
