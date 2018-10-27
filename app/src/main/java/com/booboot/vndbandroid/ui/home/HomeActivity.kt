@@ -6,7 +6,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
-import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
@@ -28,10 +27,8 @@ import com.booboot.vndbandroid.ui.base.BaseActivity
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment
 import com.booboot.vndbandroid.ui.login.LoginActivity
 import com.booboot.vndbandroid.ui.preferences.PreferencesFragment
-import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.navigation.NavigationView
-import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.main_activity.*
 import javax.inject.Inject
 
@@ -49,19 +46,12 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         (application as App).appComponent.inject(this)
         setLightStatusAndNavigation()
 
-        setSupportActionBar(toolbar)
 
         if (!Preferences.loggedIn) {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
             finish()
         } else {
-            val toggle = ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-            if (drawer != null) {
-                drawer.addDrawerListener(toggle)
-            }
-            toggle.syncState()
-
             navigationView.setNavigationItemSelectedListener(this)
 
             var shouldSync = true
@@ -79,8 +69,6 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             viewModel.accountData.observe(this, Observer { showAccount(it) })
             viewModel.syncAccountData.observeOnce(this, ::showAccount)
             viewModel.errorData.observeOnce(this, ::showError)
-
-            floatingSearchButton.setOnClickListener(this)
             viewModel.getVns()
 
             val oldFragment = supportFragmentManager.findFragmentByTag(TAG_FRAGMENT)
@@ -89,8 +77,6 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 navigationView.menu.getItem(0).isChecked = true
                 onNavigationItemSelected(navigationView.menu.getItem(0))
                 if (shouldSync) viewModel.startupSync()
-            } else {
-                enableToolbarScroll(oldFragment is HomeTabsFragment)
             }
 
             EventReceiver(this).observe(mapOf(
@@ -152,8 +138,6 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         fragment.arguments = args
         supportFragmentManager.beginTransaction().replace(R.id.fragment_container, fragment, TAG_FRAGMENT).addToBackStack(null).commit()
         drawer?.closeDrawer(GravityCompat.START)
-        floatingSearchButton.toggle(id != R.id.nav_preferences)
-        enableToolbarScroll(id in listOf(R.id.nav_vnlist, R.id.nav_votelist, R.id.nav_wishlist))
 
         return true
     }
@@ -208,11 +192,6 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             val view = it.menu.findItem(itemId).actionView as TextView
             view.text = if (count > 0) count.toString() else null
         }
-    }
-
-    fun enableToolbarScroll(enabled: Boolean) {
-        val params = toolbar?.layoutParams as AppBarLayout.LayoutParams
-        params.scrollFlags = if (enabled) AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS else 0
     }
 
     override fun onBackPressed() {

@@ -19,7 +19,7 @@ import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment.Companion.VNLIST
 import com.booboot.vndbandroid.util.GridAutofitLayoutManager
 import com.booboot.vndbandroid.util.Pixels
-import kotlinx.android.synthetic.main.app_bar_main.*
+import kotlinx.android.synthetic.main.home_tabs_fragment.*
 import kotlinx.android.synthetic.main.vn_card.view.*
 import kotlinx.android.synthetic.main.vn_list_fragment.*
 
@@ -56,7 +56,7 @@ class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, (Vi
         adapter = VNAdapter(this)
         vnList.layoutManager = GridAutofitLayoutManager(context, Pixels.px(300))
         vnList.adapter = adapter
-        vnList.hideOnBottom(home()?.floatingSearchButton)
+        vnList.hideOnBottom(homeTabs()?.floatingSearchButton)
 
         refreshLayout.setOnRefreshListener(this)
         refreshLayout.setColorSchemeColors(context.getThemeColor(R.attr.colorAccent))
