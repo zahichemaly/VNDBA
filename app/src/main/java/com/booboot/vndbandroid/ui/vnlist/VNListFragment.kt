@@ -10,6 +10,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.getThemeColor
 import com.booboot.vndbandroid.extensions.hideOnBottom
+import com.booboot.vndbandroid.extensions.home
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.openVN
 import com.booboot.vndbandroid.model.vndb.AccountItems
@@ -63,7 +64,7 @@ class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, (Vi
     }
 
     private fun showVns(accountItems: AccountItems?) {
-        if (accountItems == null) return
+        accountItems ?: return
         adapter.filterString = home()?.savedFilter ?: ""
         adapter.items = accountItems
     }

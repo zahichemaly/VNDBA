@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.booboot.vndbandroid.ui.home.HomeActivity
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.progress_bar.*
 import kotlinx.android.synthetic.main.vn_list_fragment.*
@@ -30,6 +29,4 @@ abstract class BaseFragment : Fragment() {
         progressBar?.visibility = if (loading > 0) View.VISIBLE else View.GONE
         refreshLayout?.isRefreshing = loading > 0
     }
-
-    fun home() = (activity as? HomeActivity?)
 }

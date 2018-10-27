@@ -2,14 +2,21 @@ package com.booboot.vndbandroid.ui.preferences
 
 import android.content.Context
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.extensions.setupToolbar
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 
 class PreferencesFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeListener {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupToolbar()
+    }
+
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         preferenceManager.sharedPreferencesName = Preferences.kotprefName
         preferenceManager.sharedPreferencesMode = Context.MODE_PRIVATE

@@ -7,12 +7,13 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.extensions.home
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.selectIf
+import com.booboot.vndbandroid.extensions.setupToolbar
 import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.extensions.updateTabs
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
@@ -28,7 +29,6 @@ import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.home_tabs_fragment.*
-import kotlinx.android.synthetic.main.main_activity.*
 import kotlinx.android.synthetic.main.vn_list_sort_bottom_sheet.*
 
 class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.OnClickListener {
@@ -54,15 +54,9 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val activity = activity ?: return
+        activity ?: return
 
-        home()?.setSupportActionBar(toolbar)
-        val drawerToggle = ActionBarDrawerToggle(activity, home()?.drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-        if (home()?.drawer != null) {
-            home()?.drawer?.addDrawerListener(drawerToggle)
-        }
-        drawerToggle.syncState()
-
+        setupToolbar()
         floatingSearchButton.setOnClickListener(this)
 
         viewPager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabLayout))
