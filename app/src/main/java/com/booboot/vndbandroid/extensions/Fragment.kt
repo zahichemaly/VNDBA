@@ -11,9 +11,8 @@ fun Fragment.home() = activity as? HomeActivity?
 
 fun Fragment.setupToolbar() {
     home()?.setSupportActionBar(toolbar)
-    val drawerToggle = ActionBarDrawerToggle(activity, home()?.drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-    if (home()?.drawer != null) {
-        home()?.drawer?.addDrawerListener(drawerToggle)
+    ActionBarDrawerToggle(activity, home()?.drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close).apply {
+        home()?.drawer?.addDrawerListener(this)
+        syncState()
     }
-    drawerToggle.syncState()
 }
