@@ -99,7 +99,12 @@
                 android:fitsSystemWindows="true"
                 app:layout_collapseMode="pin"
                 app:tabGravity="fill"
-                app:tabMode="scrollable" />
+                app:tabIndicatorColor="?attr/colorAccent"
+                app:tabIndicatorFullWidth="false"
+                app:tabMode="scrollable"
+                app:tabTextAppearance="@style/Tab"
+                app:tabTextColor="@color/tab_text_color"
+                app:tabUnboundedRipple="true" />
 
             <include layout="@layout/progress_bar" />
         </com.google.android.material.appbar.CollapsingToolbarLayout>
