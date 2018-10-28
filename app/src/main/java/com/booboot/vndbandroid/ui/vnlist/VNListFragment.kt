@@ -10,6 +10,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.getThemeColor
 import com.booboot.vndbandroid.extensions.hideOnBottom
+import com.booboot.vndbandroid.extensions.home
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.openVN
 import com.booboot.vndbandroid.model.vndb.AccountItems
@@ -19,7 +20,7 @@ import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment.Companion.VNLIST
 import com.booboot.vndbandroid.util.GridAutofitLayoutManager
 import com.booboot.vndbandroid.util.Pixels
-import kotlinx.android.synthetic.main.app_bar_main.*
+import kotlinx.android.synthetic.main.home_tabs_fragment.*
 import kotlinx.android.synthetic.main.vn_card.view.*
 import kotlinx.android.synthetic.main.vn_list_fragment.*
 
@@ -56,14 +57,14 @@ class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, (Vi
         adapter = VNAdapter(this)
         vnList.layoutManager = GridAutofitLayoutManager(context, Pixels.px(300))
         vnList.adapter = adapter
-        vnList.hideOnBottom(home()?.floatingSearchButton)
+        vnList.hideOnBottom(homeTabs()?.floatingSearchButton)
 
         refreshLayout.setOnRefreshListener(this)
         refreshLayout.setColorSchemeColors(context.getThemeColor(R.attr.colorAccent))
     }
 
     private fun showVns(accountItems: AccountItems?) {
-        if (accountItems == null) return
+        accountItems ?: return
         adapter.filterString = home()?.savedFilter ?: ""
         adapter.items = accountItems
     }

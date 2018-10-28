@@ -10,8 +10,10 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.extensions.home
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.selectIf
+import com.booboot.vndbandroid.extensions.setupToolbar
 import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.extensions.updateTabs
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
@@ -37,9 +39,12 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
     private var type: Int = 0
     private var adapter: HomeTabsAdapter? = null
     private val sortBottomSheetButtons by lazy {
-        activity?.let {
-            listOf(it.buttonReverseSort, it.buttonSortID, it.buttonSortReleaseDate, it.buttonSortLength, it.buttonSortPopularity, it.buttonSortRating, it.buttonSortStatus, it.buttonSortVote, it.buttonSortPriority)
-        } ?: emptyList<View>()
+        listOf(buttonReverseSort, buttonSortID, buttonSortReleaseDate, buttonSortLength, buttonSortPopularity, buttonSortRating, buttonSortStatus, buttonSortVote, buttonSortPriority)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -49,13 +54,17 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val activity = activity ?: return
+        activity ?: return
+
+        setupToolbar()
+        floatingSearchButton.setOnClickListener(this)
+
         viewPager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabLayout))
         tabLayout.addOnTabSelectedListener(this)
 
-        sortBottomSheetBehavior = BottomSheetBehavior.from(activity.sortBottomSheet)
+        sortBottomSheetBehavior = BottomSheetBehavior.from(sortBottomSheet)
         sortBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-        activity.sortBottomSheetHeader.setOnClickListener(this)
+        sortBottomSheetHeader.setOnClickListener(this)
         sortBottomSheetButtons.forEach { it.setOnClickListener(this) }
 
         viewModel = ViewModelProviders.of(this).get(HomeTabsViewModel::class.java)
@@ -65,6 +74,11 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
         viewModel.loadingData.observe(this, Observer { showLoading(it) })
         home()?.viewModel?.syncAccountData?.observe(this, Observer { it?.let { update() } })
         update(false)
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        sortBottomSheetBehavior.state = savedInstanceState?.getInt(SORT_BOTTOM_SHEET_STATE) ?: BottomSheetBehavior.STATE_HIDDEN
     }
 
     private fun update(force: Boolean = true) = viewModel.getTabTitles(type, force)
@@ -83,20 +97,15 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
     }
 
     private fun showSort() {
-        home()?.buttonReverseSort?.selectIf(Preferences.reverseSort)
-        home()?.buttonSortID?.selectIf(Preferences.sort == SORT_ID)
-        home()?.buttonSortReleaseDate?.selectIf(Preferences.sort == SORT_RELEASE_DATE)
-        home()?.buttonSortLength?.selectIf(Preferences.sort == SORT_LENGTH)
-        home()?.buttonSortPopularity?.selectIf(Preferences.sort == SORT_POPULARITY)
-        home()?.buttonSortRating?.selectIf(Preferences.sort == SORT_RATING)
-        home()?.buttonSortStatus?.selectIf(Preferences.sort == SORT_STATUS)
-        home()?.buttonSortVote?.selectIf(Preferences.sort == SORT_VOTE)
-        home()?.buttonSortPriority?.selectIf(Preferences.sort == SORT_PRIORITY)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
+        buttonReverseSort?.selectIf(Preferences.reverseSort)
+        buttonSortID?.selectIf(Preferences.sort == SORT_ID)
+        buttonSortReleaseDate?.selectIf(Preferences.sort == SORT_RELEASE_DATE)
+        buttonSortLength?.selectIf(Preferences.sort == SORT_LENGTH)
+        buttonSortPopularity?.selectIf(Preferences.sort == SORT_POPULARITY)
+        buttonSortRating?.selectIf(Preferences.sort == SORT_RATING)
+        buttonSortStatus?.selectIf(Preferences.sort == SORT_STATUS)
+        buttonSortVote?.selectIf(Preferences.sort == SORT_VOTE)
+        buttonSortPriority?.selectIf(Preferences.sort == SORT_PRIORITY)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -135,14 +144,15 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
 
     override fun onTabReselected(tab: TabLayout.Tab) {}
 
-    override fun onDestroyView() {
-        sortBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-        super.onDestroyView()
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putInt(SORT_BOTTOM_SHEET_STATE, sortBottomSheetBehavior.state)
+        super.onSaveInstanceState(outState)
     }
 
     companion object {
         const val LIST_TYPE_ARG = "LIST_TYPE_ARG"
         const val TAB_VALUE_ARG = "TAB_VALUE_ARG"
+        const val SORT_BOTTOM_SHEET_STATE = "SORT_BOTTOM_SHEET_STATE"
         const val VNLIST = 1
         const val VOTELIST = 2
         const val WISHLIST = 3

@@ -2,7 +2,6 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -10,14 +9,26 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?android:attr/windowBackground"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:title=" " />
+
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?android:attr/windowBackground"
             app:tabGravity="fill"
+            app:tabIndicatorColor="?attr/colorAccent"
+            app:tabIndicatorFullWidth="false"
             app:tabMode="scrollable"
-            tools:targetApi="lollipop" />
+            app:tabTextAppearance="@style/Tab"
+            app:tabTextColor="@color/tab_text_color"
+            app:tabUnboundedRipple="true" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.viewpager.widget.ViewPager
@@ -25,4 +36,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingSearchButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/ic_search_white_48dp"
+        android:tint="@color/white" />
+
+    <include layout="@layout/vn_list_sort_bottom_sheet" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
