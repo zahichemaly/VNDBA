@@ -46,7 +46,6 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         (application as App).appComponent.inject(this)
         setLightStatusAndNavigation()
 
-
         if (!Preferences.loggedIn) {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
