@@ -71,16 +71,16 @@
             android:layout_marginEnd="12dp"
             android:text="@string/reverse_order"
             android:textAllCaps="false"
-            android:textColor="@color/dark_blue"
+            android:textColor="@color/colorAccentDark"
             android:textSize="12sp"
             app:icon="@drawable/ic_swap_vert_white_48dp"
             app:iconSize="22dp"
-            app:iconTint="@color/dark_blue"
+            app:iconTint="@color/colorAccentDark"
             app:layout_constraintBottom_toBottomOf="@id/sortBottomSheetHeader"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/sortBottomSheetHeader"
-            app:rippleColor="@color/dark_blue"
-            app:strokeColor="@color/dark_blue" />
+            app:rippleColor="@color/colorAccentDark"
+            app:strokeColor="@color/colorAccentDark" />
 
         <com.google.android.flexbox.FlexboxLayout
             android:id="@+id/flexboxStatus"
