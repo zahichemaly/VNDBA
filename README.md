@@ -1,6 +1,6 @@
-Gitlab is now the official supported repository for this project. Issues and merge requests must be submitted at https://gitlab.com/thomas.herbeth/VNDB-Android
+Gitlab is now the official supported repository for this project. Issues and merge requests must be submitted at https://gitlab.com/thomas.herbeth/VNDBA
 
-# VNDB Android <img src="https://puu.sh/yVLHw/52006c86c3.png" height="50" align="right"/><a href="https://play.google.com/store/apps/details?id=com.booboot.vndbandroid"><img src="http://image.noelshack.com/fichiers/2017/12/1490206761-google-play-badge.png" height="50" align="right"/></a>
+# VNDBA <img src="https://puu.sh/yVLHw/52006c86c3.png" height="50" align="right"/><a href="https://play.google.com/store/apps/details?id=com.booboot.vndbandroid"><img src="http://image.noelshack.com/fichiers/2017/12/1490206761-google-play-badge.png" height="50" align="right"/></a>
 
 This project is an open-source Android client for the Visual Novel Database (VNDB - https://vndb.org/). The purpose of this app is to relate information on visual novels and enable you to keep track of and mark the visual novels you played. You'll need a VNDB.org account to use this app.
 
@@ -47,7 +47,7 @@ We're trying to keep the required permissions to a minimum. Here are the current
 
 ### License
 ```
-VNDB Android ‒ Android client for the Visual Novel Database (VNDB - https://vndb.org/)
+VNDBA ‒ Android client for the Visual Novel Database (VNDB - https://vndb.org/)
 Copyright (C) 2016-2019  Thomas Herbeth
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
