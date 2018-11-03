@@ -20,6 +20,7 @@ import com.booboot.vndbandroid.extensions.setLightStatusAndNavigation
 import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndbandroid.EVENT_VNLIST_CHANGED
+import com.booboot.vndbandroid.model.vndbandroid.NOT_SET
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.repository.AccountRepository
 import com.booboot.vndbandroid.service.EventReceiver
@@ -46,7 +47,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         (application as App).appComponent.inject(this)
         setLightStatusAndNavigation()
 
-        if (!Preferences.loggedIn) {
+        if (!Preferences.loggedIn || Preferences.gdprCrashlytics == NOT_SET) {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
             finish()

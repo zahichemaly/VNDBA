@@ -34,8 +34,6 @@ class LoginViewModel constructor(application: Application) : StartupSyncViewMode
             .subscribe({ Preferences.loggedIn = true }, ::onError)
     }
 
-    fun loginOk() = syncData.value != null
-
     fun loginError() = errorData.value != null
 
     companion object {

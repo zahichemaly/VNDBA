@@ -10,14 +10,17 @@ import com.booboot.vndbandroid.extensions.openURL
 import com.booboot.vndbandroid.extensions.startActivity
 import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.model.vndb.Links
+import com.booboot.vndbandroid.model.vndbandroid.NO
+import com.booboot.vndbandroid.model.vndbandroid.NOT_SET
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.model.vndbandroid.SyncData
+import com.booboot.vndbandroid.model.vndbandroid.YES
 import com.booboot.vndbandroid.ui.base.BaseActivity
 import com.booboot.vndbandroid.ui.home.HomeActivity
 import com.booboot.vndbandroid.ui.vnengine.Step
 import com.booboot.vndbandroid.ui.vnengine.VnEngine
 import kotlinx.android.synthetic.main.login_activity.*
-import kotlinx.android.synthetic.main.login_signin.*
+import kotlinx.android.synthetic.main.login_consent.*
 import kotlinx.android.synthetic.main.login_signin.view.*
 
 class LoginActivity : BaseActivity() {
@@ -35,25 +38,68 @@ class LoginActivity : BaseActivity() {
         viewModel.syncData.observe(this, Observer { showResult(it) })
         viewModel.errorData.observe(this, Observer { showError(it) })
 
-        errorStep = Step(
-            R.drawable.street001_day,
-            R.drawable.yuki_sad,
-            R.string.yuki_vndba_guide,
-            String.format(getString(R.string.login_step_error), getString(R.string.generic_error)),
-            skipOnTap = false,
-            showIf = { viewModel.loginError() },
-            customLayout = R.layout.login_signin,
-            onShow = { setupLogin(it) }
-        )
-
-        loadingStep = Step(R.drawable.street001_day, R.drawable.yuki_dokidoki, R.string.yuki_vndba_guide, getString(R.string.login_step_9), skipOnTap = false, showIf = { viewModel.loadingData.value ?: 0 > 0 })
-
         vnEngine = VnEngine(layoutInflater, background, yuki, yukiName, textYuki, customLayout, listOf(
-            Step(R.drawable.street001_day, R.drawable.yuki_default, R.string.yuki_vndba_guide, getString(R.string.login_step_1)),
-            Step(R.drawable.street001_day, R.drawable.yuki_hesitant, R.string.yuki_vndba_guide, getString(R.string.login_step_2), skipOnTap = false, customLayout = R.layout.login_signin, onShow = { setupLogin(it) }),
-            loadingStep,
-            Step(R.drawable.street001_day, R.drawable.yuki_happy, R.string.yuki_vndba_guide, getString(R.string.login_step_10), showIf = { viewModel.loginOk() }, skipOnTap = false, onShow = { goToHome() }),
-            errorStep
+            Step(
+                R.drawable.street001_day,
+                R.drawable.yuki_default,
+                R.string.yuki_vndba_guide,
+                getString(R.string.login_step_welcome),
+                showIf = { !Preferences.loggedIn }
+            ),
+            Step(
+                R.drawable.street001_day,
+                R.drawable.yuki_hesitant,
+                R.string.yuki_vndba_guide,
+                getString(R.string.login_step_signin),
+                showIf = { !Preferences.loggedIn },
+                skipOnTap = false,
+                customLayout = R.layout.login_signin,
+                onShow = { setupLogin(it) }
+            ),
+            Step(
+                R.drawable.street001_day,
+                R.drawable.yuki_dokidoki,
+                R.string.yuki_vndba_guide,
+                getString(R.string.login_step_gdpr),
+                showIf = { Preferences.gdprCrashlytics == NOT_SET },
+                skipOnTap = false,
+                customLayout = R.layout.login_consent,
+                onShow = { setupGdpr() }
+            ),
+            Step(
+                R.drawable.street001_day,
+                R.drawable.yuki_default,
+                R.string.yuki_vndba_guide,
+                getString(R.string.login_step_onboarding),
+                showIf = { !Preferences.loginHelpSeen },
+                customLayout = R.layout.login_help,
+                onShow = { Preferences.loginHelpSeen = true }
+            ),
+            Step(
+                R.drawable.street001_day,
+                R.drawable.yuki_dokidoki,
+                R.string.yuki_vndba_guide,
+                getString(R.string.login_step_loading),
+                skipOnTap = false,
+                showIf = { viewModel.loadingData.value ?: 0 > 0 }
+            ).apply { loadingStep = this },
+            Step(
+                R.drawable.street001_day,
+                R.drawable.yuki_happy,
+                R.string.yuki_vndba_guide,
+                getString(R.string.login_step_ok),
+                showIf = { Preferences.loggedIn }
+            ),
+            Step(
+                R.drawable.street001_day,
+                R.drawable.yuki_sad,
+                R.string.yuki_vndba_guide,
+                String.format(getString(R.string.login_step_error), getString(R.string.generic_error)),
+                skipOnTap = false,
+                showIf = { viewModel.loginError() },
+                customLayout = R.layout.login_signin,
+                onShow = { setupLogin(it) }
+            ).apply { errorStep = this }
         ), ::goToHome)
         vnEngine.stepIndex = viewModel.stepIndex
         vnEngine.show()
@@ -75,9 +121,23 @@ class LoginActivity : BaseActivity() {
         signupButton?.setOnClickListener { openURL(Links.VNDB_REGISTER) }
     }
 
+    private fun setupGdpr() {
+        buttonNo?.setOnClickListener {
+            Preferences.gdprCrashlytics = NO
+            vnEngine.nextStep()
+        }
+        buttonYes?.setOnClickListener {
+            Preferences.gdprCrashlytics = YES
+            vnEngine.nextStep()
+        }
+        buttonMoreInfo?.setOnClickListener { openURL(Links.PRIVACY_POLICY) }
+    }
+
     private fun enableButtons(enabled: Boolean) {
-        listOfNotNull(loginUsername as View?, loginPassword, loginButton).forEach {
-            it.isEnabled = enabled
+        with(customLayout) {
+            listOfNotNull(loginUsername as View?, loginPassword, loginButton).forEach {
+                it.isEnabled = enabled
+            }
         }
     }
 

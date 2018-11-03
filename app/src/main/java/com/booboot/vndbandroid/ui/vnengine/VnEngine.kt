@@ -38,10 +38,14 @@ class VnEngine(
                 customContainer.addView(customView)
                 step.onShow(customView)
             } else {
+                customContainer.removeAllViews()
                 step.onShow(background)
             }
 
-            background.setOnClickListener { if (step.skipOnTap) nextStep() }
+            val onNext = { if (step.skipOnTap) nextStep() }
+            customContainer.setOnClickListener { onNext() }
+            text.setOnClickListener { onNext() }
+            background.setOnClickListener { onNext() }
         } else {
             nextStep()
         }

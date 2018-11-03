@@ -14,4 +14,6 @@ object Preferences : KotprefModel() {
     var nightMode by intPref(AppCompatDelegate.MODE_NIGHT_YES, key = "NIGHT_MODE")
     var sort by intPref(key = "SORT", default = SORT_ID)
     var reverseSort by booleanPref(key = "REVERSE_SORT", default = false)
+    var gdprCrashlytics by intPref(key = "GDPR_CRASHLYTICS", default = NOT_SET)
+    var loginHelpSeen by booleanPref(key = "LOGIN_HELP_SEEN", default = false)
 }
