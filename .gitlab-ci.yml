@@ -7,13 +7,6 @@ variables:
   ANDROID_COMPILE_SDK: "28"
   ANDROID_BUILD_TOOLS: "28.0.3"
 
-cache:
-  paths:
-    - .gradle/wrapper
-    - .gradle/caches
-    - .apt/
-    - .gem/
-
 image: openjdk:8-jdk
 
 ### Deploy
@@ -30,6 +23,12 @@ pages:
   stage: build
   tags:
     - docker
+  cache:
+    paths:
+    - .gradle/wrapper
+    - .gradle/caches
+    - .apt/
+    - .gem/
   before_script:
     # Configuring apt chaching
     - export APT_DIR=$CI_PROJECT_DIR/.apt && export APT_STATE_LISTS=$APT_DIR/lists && export APT_CACHE_ARCHIVES=$APT_DIR/archives
