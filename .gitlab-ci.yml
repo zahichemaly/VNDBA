@@ -1,4 +1,5 @@
 stages:
+  - deploy
   - build
   - test
 
@@ -15,57 +16,65 @@ cache:
 
 image: openjdk:8-jdk
 
-before_script:
-  # Configuring apt chaching
-  - export APT_DIR=$CI_PROJECT_DIR/.apt && export APT_STATE_LISTS=$APT_DIR/lists && export APT_CACHE_ARCHIVES=$APT_DIR/archives
-  - printf "dir::state::lists    ${APT_STATE_LISTS};\ndir::cache::archives    ${APT_CACHE_ARCHIVES};\n" > /etc/apt/apt.conf
-  - mkdir -p "${APT_STATE_LISTS}/partial" && mkdir -p "${APT_CACHE_ARCHIVES}/partial"
-  - apt-get update -y && apt-get install -y -qq wget tar unzip lib32stdc++6 lib32z1 git rsync ruby-full build-essential g++ > /dev/null
-
-  # Setting environment variables
-  - export ANDROID_HOME=$CI_PROJECT_DIR/.android-sdk
-  - export GRADLE_USER_HOME=`pwd`/.gradle
-  - export LC_ALL=fr_FR.UTF-8
-  - export LANG=fr_FR.UTF-8
-  - export FASTLANE_DISABLE_OUTPUT_FORMAT=1
-  - export PATH=${PATH}:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/emulator:${ANDROID_HOME}/bin
-
-  # Installing Android SDK
-  - mkdir -p ~/.android/
-  - touch ~/.android/repositories.cfg
-  - wget --quiet --output-document=android-sdk.zip https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip
-  - unzip -q android-sdk.zip -d $ANDROID_HOME
-  - mkdir $ANDROID_HOME/licenses
-  - echo "d56f5187479451eabf01fb78af6dfcb131a6481e" > $ANDROID_HOME/licenses/android-sdk-license &&
-    echo "84831b9409646a918e30573bab4c9c91346d8abd" > $ANDROID_HOME/licenses/android-sdk-preview-license
-
-  - sdkmanager --update > /dev/null
-  - sdkmanager "platforms;android-${ANDROID_COMPILE_SDK}" "build-tools;${ANDROID_BUILD_TOOLS}" "extras;google;m2repository" "extras;android;m2repository" > /dev/null
-  - chmod +x ./gradlew
-
-  # Setting environment variables
-  - export ANDROID_LATEST_BUILD_TOOLS=$(ls -r ${ANDROID_HOME}/build-tools|head -1)
-  - export PATH=${PATH}:$ANDROID_HOME/build-tools/$ANDROID_LATEST_BUILD_TOOLS
-
-  # Cloning private files
-  - GITLAB_BASE_URL=`echo $CI_REPOSITORY_URL | sed "s;\/*$CI_PROJECT_PATH.*;;"`
-  - PRIVATE_REPO_URL="$GITLAB_BASE_URL/thomas.herbeth/VNDBA-private.git"
-  - PRIVATE_DIR="private"
-  - git clone $PRIVATE_REPO_URL $PRIVATE_DIR
-  - rm -rf $PRIVATE_DIR/.git
-  - rsync -a $PRIVATE_DIR/* . > /dev/null
-  - rm -rf $PRIVATE_DIR
-
-  # Installing Fastlane
-  - gem install bundler --no-ri --no-rdoc > /dev/null
-  - bundle install --path .gem > /dev/null
-  - bundle update fastlane > /dev/null
+### Deploy
+pages:
+  stage: deploy
+  script:
+    - echo 'Deploying Gitlab Pages...'
+  artifacts:
+    paths:
+    - public
 
 ### Build
 .build_template: &build_template
   stage: build
   tags:
     - docker
+  before_script:
+    # Configuring apt chaching
+    - export APT_DIR=$CI_PROJECT_DIR/.apt && export APT_STATE_LISTS=$APT_DIR/lists && export APT_CACHE_ARCHIVES=$APT_DIR/archives
+    - printf "dir::state::lists    ${APT_STATE_LISTS};\ndir::cache::archives    ${APT_CACHE_ARCHIVES};\n" > /etc/apt/apt.conf
+    - mkdir -p "${APT_STATE_LISTS}/partial" && mkdir -p "${APT_CACHE_ARCHIVES}/partial"
+    - apt-get update -y && apt-get install -y -qq wget tar unzip lib32stdc++6 lib32z1 git rsync ruby-full build-essential g++ > /dev/null
+
+    # Setting environment variables
+    - export ANDROID_HOME=$CI_PROJECT_DIR/.android-sdk
+    - export GRADLE_USER_HOME=`pwd`/.gradle
+    - export LC_ALL=fr_FR.UTF-8
+    - export LANG=fr_FR.UTF-8
+    - export FASTLANE_DISABLE_OUTPUT_FORMAT=1
+    - export PATH=${PATH}:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/emulator:${ANDROID_HOME}/bin
+
+    # Installing Android SDK
+    - mkdir -p ~/.android/
+    - touch ~/.android/repositories.cfg
+    - wget --quiet --output-document=android-sdk.zip https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip
+    - unzip -q android-sdk.zip -d $ANDROID_HOME
+    - mkdir $ANDROID_HOME/licenses
+    - echo "d56f5187479451eabf01fb78af6dfcb131a6481e" > $ANDROID_HOME/licenses/android-sdk-license &&
+      echo "84831b9409646a918e30573bab4c9c91346d8abd" > $ANDROID_HOME/licenses/android-sdk-preview-license
+
+    - sdkmanager --update > /dev/null
+    - sdkmanager "platforms;android-${ANDROID_COMPILE_SDK}" "build-tools;${ANDROID_BUILD_TOOLS}" "extras;google;m2repository" "extras;android;m2repository" > /dev/null
+    - chmod +x ./gradlew
+
+    # Setting environment variables
+    - export ANDROID_LATEST_BUILD_TOOLS=$(ls -r ${ANDROID_HOME}/build-tools|head -1)
+    - export PATH=${PATH}:$ANDROID_HOME/build-tools/$ANDROID_LATEST_BUILD_TOOLS
+
+    # Cloning private files
+    - GITLAB_BASE_URL=`echo $CI_REPOSITORY_URL | sed "s;\/*$CI_PROJECT_PATH.*;;"`
+    - PRIVATE_REPO_URL="$GITLAB_BASE_URL/thomas.herbeth/VNDBA-private.git"
+    - PRIVATE_DIR="private"
+    - git clone $PRIVATE_REPO_URL $PRIVATE_DIR
+    - rm -rf $PRIVATE_DIR/.git
+    - rsync -a $PRIVATE_DIR/* . > /dev/null
+    - rm -rf $PRIVATE_DIR
+
+    # Installing Fastlane
+    - gem install bundler --no-ri --no-rdoc > /dev/null
+    - bundle install --path .gem > /dev/null
+    - bundle update fastlane > /dev/null
 
 build:
   <<: *build_template
