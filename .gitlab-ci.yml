@@ -12,6 +12,8 @@ image: openjdk:8-jdk
 ### Deploy
 pages:
   stage: deploy
+  tags:
+    - docker
   script:
     - echo 'Deploying Gitlab Pages...'
   artifacts:
