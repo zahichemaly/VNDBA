@@ -5,7 +5,6 @@ import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.api.VNDBServer
 import com.booboot.vndbandroid.extensions.minus
 import com.booboot.vndbandroid.extensions.plus
-import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.ui.base.StartupSyncViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -31,7 +30,7 @@ class LoginViewModel constructor(application: Application) : StartupSyncViewMode
                 loadingData.minus()
                 disposables.remove(DISPOSABLE_LOGIN)
             }
-            .subscribe({ Preferences.loggedIn = true }, ::onError)
+            .subscribe({ }, ::onError)
     }
 
     fun loginError() = errorData.value != null
