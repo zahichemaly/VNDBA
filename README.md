@@ -1,6 +1,6 @@
-Gitlab is now the official supported repository for this project. Issues and merge requests must be submitted at https://gitlab.com/thomas.herbeth/VNDBA
+Gitlab is now the official supported repository for this project. Issues and merge requests must be submitted at https://gitlab.com/thomas_herbeth/VNDBA
 
-# VNDBA <img src="https://puu.sh/yVLHw/52006c86c3.png" height="50" align="right"/><a href="https://play.google.com/store/apps/details?id=com.booboot.vndbandroid"><img src="http://image.noelshack.com/fichiers/2017/12/1490206761-google-play-badge.png" height="50" align="right"/></a>
+# VNDBA <img src="http://image.noelshack.com/fichiers/2018/44/7/1541340096-ic-launcher-web.png" height="50" align="right"/><a href="https://play.google.com/store/apps/details?id=com.booboot.vndbandroid"><img src="http://image.noelshack.com/fichiers/2017/12/1490206761-google-play-badge.png" height="50" align="right"/></a>
 
 This project is an open-source Android client for the Visual Novel Database (VNDB - https://vndb.org/). The purpose of this app is to relate information on visual novels and enable you to keep track of and mark the visual novels you played. You'll need a VNDB.org account to use this app.
 
@@ -37,12 +37,12 @@ We're trying to keep the required permissions to a minimum. Here are the current
 
 ### Screenshots
 <p align="center">
-  <img src="http://image.noelshack.com/fichiers/2017/01/1483793022-6-1.png" width="40%"/>
-  <img src="http://image.noelshack.com/fichiers/2017/01/1483793017-6-2.png" width="40%"/>
-  <img src="http://image.noelshack.com/fichiers/2017/01/1483793023-6-3.png" width="40%"/>
-  <img src="http://image.noelshack.com/fichiers/2017/01/1483793018-6-4.png" width="40%"/>
-  <img src="http://image.noelshack.com/fichiers/2017/01/1483793019-6-5.png" width="40%"/>
-  <img src="http://image.noelshack.com/fichiers/2017/01/1483793022-6-6.png" width="40%"/>
+  <img src="http://image.noelshack.com/fichiers/2017/01/1483793022-6-1.png" width="35%"/>
+  <img src="http://image.noelshack.com/fichiers/2017/01/1483793017-6-2.png" width="35%"/>
+  <img src="http://image.noelshack.com/fichiers/2017/01/1483793023-6-3.png" width="35%"/>
+  <img src="http://image.noelshack.com/fichiers/2017/01/1483793018-6-4.png" width="35%"/>
+  <img src="http://image.noelshack.com/fichiers/2017/01/1483793019-6-5.png" width="35%"/>
+  <img src="http://image.noelshack.com/fichiers/2017/01/1483793022-6-6.png" width="35%"/>
 </p>
 
 ### License
