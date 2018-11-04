@@ -42,7 +42,12 @@ class VnEngine(
                 step.onShow(background)
             }
 
-            val onNext = { if (step.skipOnTap) nextStep() }
+            val onNext = {
+                if (step.skipOnTap) {
+                    nextStep()
+                    step.onNext()
+                }
+            }
             customContainer.setOnClickListener { onNext() }
             text.setOnClickListener { onNext() }
             background.setOnClickListener { onNext() }
@@ -67,5 +72,6 @@ data class Step(
     val skipOnTap: Boolean = true,
     val showIf: () -> Boolean = { true },
     @LayoutRes val customLayout: Int = 0,
-    val onShow: (View) -> Unit = {}
+    val onShow: (View) -> Unit = {},
+    val onNext: () -> Unit = {}
 )

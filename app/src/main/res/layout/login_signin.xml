@@ -47,7 +47,7 @@
                 android:id="@+id/loginPassword"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:imeOptions="actionNext"
+                android:imeOptions="actionDone"
                 android:inputType="textPassword"
                 tools:text="Password" />
         </com.google.android.material.textfield.TextInputLayout>

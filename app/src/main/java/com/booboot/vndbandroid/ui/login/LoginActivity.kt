@@ -73,7 +73,7 @@ class LoginActivity : BaseActivity() {
                 getString(R.string.login_step_onboarding),
                 showIf = { !Preferences.loginHelpSeen },
                 customLayout = R.layout.login_help,
-                onShow = { Preferences.loginHelpSeen = true }
+                onNext = { Preferences.loginHelpSeen = true }
             ),
             Step(
                 R.drawable.street001_day,
