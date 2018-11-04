@@ -12,17 +12,18 @@ data class Links(
     var anidb: String? = null
 ) {
     companion object {
-        val WIKIPEDIA = "https://en.wikipedia.org/wiki/"
-        val ENCUBED = "http://novelnews.net/tag/"
-        val RENAI = "http://renai.us/game/"
-        val ANIDB = "https://anidb.net/perl-bin/animedb.pl?show=anime&aid="
-        val VNDB = "https://vndb.org"
-        val VNDB_REGISTER = "$VNDB/u/register"
-        val VNDB_PAGE = "$VNDB/v"
-        val VNDB_API = "$VNDB/api/"
-        val GITHUB = "https://github.com/herbeth1u/VNDB-Android"
-        val PLAY_STORE = "https://play.google.com/store/apps/details?id=com.booboot.vndbandroid"
-        val VNSTAT = "https://vnstat.net/"
-        val EMAIL = "vndba.app@gmail.com"
+        const val WIKIPEDIA = "https://en.wikipedia.org/wiki/"
+        const val ENCUBED = "http://novelnews.net/tag/"
+        const val RENAI = "http://renai.us/game/"
+        const val ANIDB = "https://anidb.net/perl-bin/animedb.pl?show=anime&aid="
+        const val VNDB = "https://vndb.org"
+        const val VNDB_REGISTER = "$VNDB/u/register"
+        const val VNDB_PAGE = "$VNDB/v"
+        const val VNDB_API = "$VNDB/api/"
+        const val GITHUB = "https://github.com/herbeth1u/VNDB-Android"
+        const val PLAY_STORE = "https://play.google.com/store/apps/details?id=com.booboot.vndbandroid"
+        const val VNSTAT = "https://vnstat.net/"
+        const val EMAIL = "vndba.app@gmail.com"
+        const val PRIVACY_POLICY = "https://thomas_herbeth.gitlab.io/VNDBA/privacy"
     }
 }

@@ -9,8 +9,11 @@ import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.ui.base.StartupSyncViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import java.util.concurrent.atomic.AtomicInteger
 
 class LoginViewModel constructor(application: Application) : StartupSyncViewModel(application) {
+    val stepIndex: AtomicInteger = AtomicInteger(0)
+
     init {
         (application as App).appComponent.inject(this)
     }
@@ -30,6 +33,8 @@ class LoginViewModel constructor(application: Application) : StartupSyncViewMode
             }
             .subscribe({ Preferences.loggedIn = true }, ::onError)
     }
+
+    fun loginError() = errorData.value != null
 
     companion object {
         private const val DISPOSABLE_LOGIN = "DISPOSABLE_LOGIN"

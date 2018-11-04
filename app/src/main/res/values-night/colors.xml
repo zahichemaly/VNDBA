@@ -3,4 +3,5 @@
     <!-- DayNight colors -->
     <color name="cardDividerColor">@color/medium_gray</color>
     <color name="tabBackgroundColor">@color/transparentBlack</color>
+    <color name="transparent80Primary">@color/transparent80Black</color>
 </resources>

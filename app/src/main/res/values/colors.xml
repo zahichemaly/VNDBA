@@ -10,6 +10,7 @@
     <color name="medium_gray">#646464</color>
     <color name="buttonPressed">#E5E5E5</color>
     <color name="transparentBlack">#70000000</color>
+    <color name="transparent80Black">#cd000000</color>
     <color name="transparentWhite">#78ffffff</color>
     <color name="transparent80White">#cdffffff</color>
 
@@ -35,6 +36,7 @@
     <!-- DayNight colors -->
     <color name="cardDividerColor">@color/light_gray</color>
     <color name="tabBackgroundColor">@color/transparentWhite</color>
+    <color name="transparent80Primary">@color/transparent80White</color>
 
     <!-- Platform colors -->
     <color name="android">#7ccc4e</color>
