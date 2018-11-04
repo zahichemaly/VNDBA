@@ -15,7 +15,7 @@ class VnEngine(
     private val background: AppCompatImageView,
     private val character: AppCompatImageView,
     private val characterName: AppCompatTextView,
-    private val text: AppCompatTextView,
+    private val text: Typewriter,
     private val customContainer: ViewGroup,
     private val steps: List<Step>,
     private val onFinish: () -> Unit
@@ -31,7 +31,7 @@ class VnEngine(
             background.setImageResource(step.background)
             character.setImageResource(step.character)
             characterName.setText(step.characterName)
-            text.text = step.text
+            text.animateText(step.text)
             customContainer.removeAllViews()
             if (step.customLayout > 0) {
                 val customView = layoutInflater.inflate(step.customLayout, customContainer, false)

@@ -53,10 +53,11 @@
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/yukiName"
             android:layout_width="match_parent"
+            android:textStyle="bold"
             android:layout_height="wrap_content"
             android:textColor="?android:attr/textColorPrimary"
             android:textSize="16sp"
-            tools:text="Yuki" />
+            tools:text="@string/yuki_vndba_guide" />
 
     </androidx.cardview.widget.CardView>
 
@@ -81,9 +82,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="12dp">
+                android:padding="16dp">
 
-                <androidx.appcompat.widget.AppCompatTextView
+                <com.booboot.vndbandroid.ui.vnengine.Typewriter
                     android:id="@+id/textYuki"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
