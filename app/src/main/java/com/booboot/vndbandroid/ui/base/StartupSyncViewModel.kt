@@ -13,6 +13,7 @@ import com.booboot.vndbandroid.model.vndb.Vnlist
 import com.booboot.vndbandroid.model.vndb.Votelist
 import com.booboot.vndbandroid.model.vndb.Wishlist
 import com.booboot.vndbandroid.model.vndbandroid.FLAGS_DETAILS
+import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.model.vndbandroid.SyncData
 import com.booboot.vndbandroid.repository.AccountRepository
 import com.booboot.vndbandroid.repository.CachePolicy
@@ -134,6 +135,9 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
         })
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnSuccess { syncData.value = it }
+            .doOnSuccess {
+                Preferences.loggedIn = true
+                syncData.value = it
+            }
     }
 }
