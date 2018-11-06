@@ -13,6 +13,7 @@ import com.booboot.vndbandroid.di.AppModule
 import com.booboot.vndbandroid.di.DaggerAppComponent
 import com.booboot.vndbandroid.extensions.log
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
+import com.booboot.vndbandroid.model.vndbandroid.YES
 import com.booboot.vndbandroid.service.ConnectionReceiver
 import com.booboot.vndbandroid.util.Notifications
 import com.chibatching.kotpref.Kotpref
@@ -37,12 +38,13 @@ class App : MultiDexApplication() {
             .errorDrawable(R.mipmap.ic_launcher)
             .apply()
 
-        val core = CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build()
-        Fabric.with(this, Crashlytics.Builder().core(core).build())
-
-        PreferenceManager.setDefaultValues(this, Preferences.kotprefName, Context.MODE_PRIVATE, R.xml.app_preferences, false)
+        PreferenceManager.setDefaultValues(this, Preferences.kotprefName, Context.MODE_PRIVATE, R.xml.app_preferences, Preferences.shouldResetPreferences)
+        Preferences.shouldResetPreferences = false
         AppCompatDelegate.setDefaultNightMode(Preferences.nightMode)
         Notifications.createNotificationChannels(this)
+
+        val core = CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG || Preferences.gdprCrashlytics != YES).build()
+        Fabric.with(this, Crashlytics.Builder().core(core).build())
 
         val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
         connectivityManager?.registerNetworkCallback(NetworkRequest.Builder().build(), ConnectionReceiver())

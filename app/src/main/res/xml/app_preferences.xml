@@ -3,52 +3,58 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <ListPreference
-        android:defaultValue="2"
+        android:defaultValue="-1"
         android:entries="@array/night_mode_titles"
         android:entryValues="@array/night_mode_values"
         android:key="@string/pref_key_night_mode"
-        android:summary="%s"
-        app:iconSpaceReserved="false"
         android:negativeButtonText="@null"
         android:positiveButtonText="@null"
-        android:title="Dark mode"/>
+        android:summary="%s"
+        android:title="Dark mode"
+        app:iconSpaceReserved="false" />
 
     <ListPreference
         android:defaultValue="0"
         android:entries="@array/spoiler_pref_titles"
         android:entryValues="@array/spoiler_pref_values"
         android:key="@string/pref_key_spoiler"
-        android:summary="%s"
-        app:iconSpaceReserved="false"
         android:negativeButtonText="@null"
         android:positiveButtonText="@null"
-        android:title="Default spoiler level"/>
+        android:summary="%s"
+        android:title="Default spoiler level"
+        app:iconSpaceReserved="false" />
 
     <SwitchPreference
         android:defaultValue="true"
-        app:iconSpaceReserved="false"
         android:key="@string/pref_key_spoiler_completed"
         android:summary="Enable all spoilers for a VN if its status is &quot;Finished&quot;"
-        android:title="Spoil me if finished"/>
+        android:title="Spoil me if finished"
+        app:iconSpaceReserved="false" />
 
     <SwitchPreference
         android:defaultValue="false"
         android:key="@string/pref_key_nsfw"
-        app:iconSpaceReserved="false"
         android:summary=""
-        android:title="Always show NSFW content"/>
+        android:title="Always show NSFW content"
+        app:iconSpaceReserved="false" />
 
     <SwitchPreference
         android:defaultValue="true"
-        app:iconSpaceReserved="false"
         android:key="@string/pref_key_browser"
         android:summary="Clicking on links to external websites (like Wikipedia) opens these links inside the app (requires Chrome)"
-        android:title="In-app browser"/>
+        android:title="In-app browser"
+        app:iconSpaceReserved="false" />
 
     <SwitchPreference
-        app:iconSpaceReserved="false"
         android:defaultValue="true"
         android:key="@string/pref_key_cover_background"
         android:summary="Show the VN cover in the background (in the VN details page)"
-        android:title="Show the VN's background"/>
+        android:title="Show the VN's background"
+        app:iconSpaceReserved="false" />
+
+    <SwitchPreference
+        android:key="@string/pref_key_gdpr_crashlytics"
+        android:summary="When the app crashes, send info to the developers to help fix the bug."
+        android:title="Send crash reports"
+        app:iconSpaceReserved="false" />
 </PreferenceScreen>

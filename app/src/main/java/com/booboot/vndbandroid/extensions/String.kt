@@ -14,3 +14,5 @@ fun String.format(urlScheme: String): Spanned {
 
     return HtmlCompat.fromHtml(formatted, HtmlCompat.FROM_HTML_MODE_COMPACT)
 }
+
+fun String.toBooleanOrFalse(): Boolean = this == "1" || equals("true", true)

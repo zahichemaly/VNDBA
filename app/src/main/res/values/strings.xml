@@ -6,7 +6,6 @@
     <string name="action_search">Search</string>
     <string name="action_filter">Filter</string>
     <string name="search_hint">Search on VNDB…</string>
-    <string name="pref_key_theme">theme_selection</string>
     <string name="close">Close</string>
     <string name="my_account">My account</string>
     <string name="my_visual_novel_list">My Visual Novel list</string>
@@ -17,10 +16,7 @@
     <string name="logout">Logout</string>
     <string name="action_sort">Sort</string>
     <string name="view_on_vndb_org">View on VNDB.org</string>
-    <string name="pref_key_spoiler">spoiler</string>
     <string name="set_spoiler_level_for_this_vn">Set spoiler level for this VN</string>
-    <string name="pref_key_spoiler_completed">spoiler_completed</string>
-    <string name="pref_key_nsfw" translatable="false">NSFW</string>
     <string name="rankings">Rankings</string>
     <string name="top">Top</string>
     <string name="popular">Popular</string>
@@ -35,7 +31,6 @@
     <string name="about">About</string>
     <string name="customactivityoncrash_error_activity_error_occurred_explanation">An unexpected error occurred.\nSorry for the inconvenience.\nThe error details have been sent to us and we\'ll take a look as soon as possible!</string>
     <string name="sign_up_text">Don\'t have a VNDB account yet?</string>
-    <string name="pref_key_browser" translatable="false">IN_APP_BROWSER</string>
     <string name="action_send">Send</string>
     <string name="feedback">Feedback</string>
     <string name="send_a_feedback">Send a feedback</string>
@@ -48,7 +43,6 @@
     <string name="recommendations_private_warning">We haven\'t found your recommendations… Don\'t forget to make your lists public (by unchecking \"Don\'t allow other people to see my visual novel list\" in your VNDB.org\'s preferences), then refresh this page (it can take up to 48 hours to get effective so don\'t worry)!</string>
     <string name="bullet">" • "</string>
     <string name="dash">" - "</string>
-    <string name="pref_key_cover_background">cover_background</string>
     <string name="action_options">Options</string>
     <string name="voice_actor">Voice Actor</string>
     <string name="password">Password</string>
@@ -73,7 +67,6 @@
     <string name="dark_mode_automatic_subtitle">Changes automatically based on the time of day.</string>
     <string name="dark_mode">Dark mode</string>
     <string name="dark_mode_system_subtitle">Matches Android system\'s settings.</string>
-    <string name="pref_key_night_mode" translatable="false">NIGHT_MODE_STRING</string>
     <string name="percent" translatable="false">%.1f%%</string>
     <string name="x_votes">%d votes</string>
     <string name="popularity">Popularity</string>
