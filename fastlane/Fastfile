@@ -63,14 +63,14 @@ platform :android do
 
     def gradle_properties
         if blank(ENV["ANDROID_GRADLE_PROPERTIES"])
-            ENV["ANDROID_GRADLE_PROPERTIES"] = sh("cd .. && ./gradlew properties -q", log: true)
+            ENV["ANDROID_GRADLE_PROPERTIES"] = sh("cd .. && ./gradlew properties -q", log: false)
         end
         ENV["ANDROID_GRADLE_PROPERTIES"]
     end
 
     def gradle_property(property_name)
         properties = gradle_properties()
-        sh("echo '#{properties}' | grep '#{property_name}:' | awk '{print $2}' | tr -d '[:space:]'", log: true)
+        sh("echo '#{properties}' | grep '#{property_name}:' | awk '{print $2}' | tr -d '[:space:]'", log: false)
     end
 
     def get_aapt_properties(apk)
