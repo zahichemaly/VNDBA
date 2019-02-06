@@ -52,8 +52,7 @@ pages:
     - wget --quiet --output-document=android-sdk.zip https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip
     - unzip -q android-sdk.zip -d $ANDROID_HOME
     - mkdir $ANDROID_HOME/licenses
-    - yes | sdkmanager --licenses > /dev/null
-    - sdkmanager --update > /dev/null
+    - yes | sdkmanager --licenses && sdkmanager --update
     - sdkmanager "platforms;android-${ANDROID_COMPILE_SDK}" "build-tools;${ANDROID_BUILD_TOOLS}" "extras;google;m2repository" "extras;android;m2repository" > /dev/null
     - chmod +x ./gradlew
 
