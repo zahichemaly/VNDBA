@@ -49,7 +49,9 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
-        type = arguments?.getInt(LIST_TYPE_ARG) ?: VNLIST
+        arguments?.let { arguments ->
+            type = HomeTabsFragmentArgs.fromBundle(arguments).listType
+        }
         return rootView
     }
 
@@ -57,8 +59,8 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
         activity ?: return
 
         setupToolbar()
-        floatingSearchButton.setOnClickListener(this)
 
+        floatingSearchButton.setOnClickListener(this)
         viewPager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabLayout))
         tabLayout.addOnTabSelectedListener(this)
 

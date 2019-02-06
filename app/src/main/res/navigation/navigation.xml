@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@id/vnlistFragment">
+
+    <fragment
+        android:id="@+id/vnlistFragment"
+        android:name="com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment"
+        android:label="@string/my_visual_novel_list"
+        tools:layout="@layout/home_tabs_fragment">
+        <argument
+            android:name="listType"
+            android:defaultValue="1"
+            app:argType="integer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/votelistFragment"
+        android:name="com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment"
+        android:label="@string/my_votes"
+        tools:layout="@layout/home_tabs_fragment">
+        <argument
+            android:name="listType"
+            android:defaultValue="2"
+            app:argType="integer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/wishlistFragment"
+        android:name="com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment"
+        android:label="@string/my_wishlist"
+        tools:layout="@layout/home_tabs_fragment">
+        <argument
+            android:name="listType"
+            android:defaultValue="3"
+            app:argType="integer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/preferencesFragment"
+        android:name="com.booboot.vndbandroid.ui.preferences.PreferencesFragment"
+        android:label="PreferencesFragment"
+        tools:layout="@layout/preferences_fragment" />
+</navigation>

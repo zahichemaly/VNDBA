@@ -8,13 +8,16 @@ import android.view.View
 import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.GravityCompat
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.booboot.vndbandroid.App
+import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
+import androidx.navigation.ui.setupWithNavController
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.api.VNDBServer
 import com.booboot.vndbandroid.extensions.Track
+import com.booboot.vndbandroid.extensions.isTopLevel
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.setLightStatusAndNavigation
 import com.booboot.vndbandroid.extensions.toggle
@@ -22,29 +25,22 @@ import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndbandroid.EVENT_VNLIST_CHANGED
 import com.booboot.vndbandroid.model.vndbandroid.NOT_SET
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
-import com.booboot.vndbandroid.repository.AccountRepository
 import com.booboot.vndbandroid.service.EventReceiver
 import com.booboot.vndbandroid.ui.base.BaseActivity
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment
 import com.booboot.vndbandroid.ui.login.LoginActivity
-import com.booboot.vndbandroid.ui.preferences.PreferencesFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.navigation.NavigationView
-import kotlinx.android.synthetic.main.main_activity.*
-import javax.inject.Inject
+import kotlinx.android.synthetic.main.home_activity.*
 
-class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, SearchView.OnQueryTextListener {
+class HomeActivity : BaseActivity(), View.OnClickListener, SearchView.OnQueryTextListener {
     lateinit var viewModel: HomeViewModel
-    @Inject lateinit var accountRepository: AccountRepository
 
     private var searchView: SearchView? = null
     var savedFilter: String = ""
-    private var selectedItem: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.main_activity)
-        (application as App).appComponent.inject(this)
+        setContentView(R.layout.home_activity)
         setLightStatusAndNavigation()
 
         if (!Preferences.loggedIn || Preferences.gdprCrashlytics == NOT_SET) {
@@ -52,7 +48,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             startActivity(intent)
             finish()
         } else {
-            navigationView.setNavigationItemSelectedListener(this)
+            navigationView.setupWithNavController(findNavController(R.id.navHost))
 
             var shouldSync = true
             intent.extras?.apply {
@@ -60,7 +56,6 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 remove(SHOULD_SYNC)
             }
             savedInstanceState?.apply {
-                selectedItem = getInt(SELECTED_ITEM)
                 savedFilter = getString(SAVED_FILTER_STATE) ?: ""
             }
 
@@ -71,11 +66,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             viewModel.errorData.observeOnce(this, ::showError)
             viewModel.getVns()
 
-            val oldFragment = supportFragmentManager.findFragmentByTag(TAG_FRAGMENT)
-
-            if (oldFragment == null) {
-                navigationView.menu.getItem(0).isChecked = true
-                onNavigationItemSelected(navigationView.menu.getItem(0))
+            if (supportFragmentManager.primaryNavigationFragment == null) {
                 if (shouldSync) viewModel.startupSync()
             }
 
@@ -98,62 +89,23 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         accountItems ?: return
 
         Track.tag(accountItems)
-        setMenuCounter(R.id.nav_vnlist, accountItems.vnlist.size)
-        setMenuCounter(R.id.nav_wishlist, accountItems.wishlist.size)
-        setMenuCounter(R.id.nav_votelist, accountItems.votelist.size)
+        setMenuCounter(R.id.vnlistFragment, accountItems.vnlist.size)
+        setMenuCounter(R.id.votelistFragment, accountItems.wishlist.size)
+        setMenuCounter(R.id.wishlistFragment, accountItems.votelist.size)
     }
 
-    override fun onNavigationItemSelected(item: MenuItem): Boolean = goToFragment(item.itemId)
-
-    fun goToFragment(id: Int): Boolean {
-        val args = Bundle()
-        selectedItem = id
-
-        val fragment: Fragment = when (id) {
-            R.id.nav_vnlist -> {
-                args.putInt(HomeTabsFragment.LIST_TYPE_ARG, HomeTabsFragment.VNLIST)
-                HomeTabsFragment()
-            }
-            R.id.nav_votelist -> {
-                args.putInt(HomeTabsFragment.LIST_TYPE_ARG, HomeTabsFragment.VOTELIST)
-                HomeTabsFragment()
-            }
-            R.id.nav_wishlist -> {
-                args.putInt(HomeTabsFragment.LIST_TYPE_ARG, HomeTabsFragment.WISHLIST)
-                HomeTabsFragment()
-            }
-            R.id.nav_preferences -> PreferencesFragment()
-            //            R.id.nav_stats -> DatabaseStatisticsFragment()
-            //            R.id.nav_top -> RankingTopFragment()
-            //            R.id.nav_popular -> RankingPopularFragment()
-            //            R.id.nav_most_voted -> RankingMostVotedFragment()
-            //            R.id.nav_newly_released -> RankingNewlyReleasedFragment()
-            //            R.id.nav_newly_added -> RankingNewlyAddedFragment()
-            //            R.id.nav_recommendations -> RecommendationsFragment()
-            //            R.id.nav_about -> AboutFragment()
-            R.id.nav_logout -> return logout()
-            else -> null
-        } ?: return false
-
-        fragment.arguments = args
-        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, fragment, TAG_FRAGMENT).addToBackStack(null).commit()
-        drawer?.closeDrawer(GravityCompat.START)
-
-        return true
-    }
-
+    // TODO make this work with setupWithNavController without opening a Fragment
     private fun logout(): Boolean {
         // TODO clear all
         VNDBServer.closeAll().subscribe()
 
         startActivity(Intent(this, LoginActivity::class.java))
-        selectedItem = 0
         finish()
         return true
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main_activity, menu)
+        menuInflater.inflate(R.menu.home_activity, menu)
 
         /* Filter */
         searchView = menu.findItem(R.id.action_filter).actionView as SearchView
@@ -200,7 +152,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             return
         }
 
-        val fragment = supportFragmentManager.findFragmentByTag(TAG_FRAGMENT)
+        val fragment = supportFragmentManager.primaryNavigationFragment
         if (fragment is HomeTabsFragment && fragment.sortBottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
             fragment.sortBottomSheetBehavior.toggle()
             return
@@ -211,22 +163,24 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             return
         }
 
-        /* Going back to home screen (don't use super.onBackPressed() because it would redirect to the LoginActivity underneath) */
-        val startMain = Intent(Intent.ACTION_MAIN)
-        startMain.addCategory(Intent.CATEGORY_HOME)
-        startMain.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        startActivity(startMain)
+        val topLevelDestinations = AppBarConfiguration.Builder(findNavController(R.id.navHost).graph).setDrawerLayout(drawer).build().topLevelDestinations
+        if (drawer != null && findNavController(R.id.navHost).currentDestination?.isTopLevel(topLevelDestinations) == true) {
+            /* Going back to home screen (don't use super.onBackPressed() because it would kill the app) */
+            val startMain = Intent(Intent.ACTION_MAIN)
+            startMain.addCategory(Intent.CATEGORY_HOME)
+            startMain.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(startMain)
+        } else super.onBackPressed()
     }
 
+    override fun onSupportNavigateUp() = NavigationUI.navigateUp(findNavController(R.id.navHost), drawer)
+
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putInt(SELECTED_ITEM, selectedItem)
         outState.putString(SAVED_FILTER_STATE, searchView?.query?.toString() ?: "")
         super.onSaveInstanceState(outState)
     }
 
     companion object {
-        const val TAG_FRAGMENT = "TAG_FRAGMENT"
-        const val SELECTED_ITEM = "SELECTED_ITEM"
         const val SAVED_FILTER_STATE = "SAVED_FILTER_STATE"
         const val SHOULD_SYNC = "SHOULD_SYNC"
     }

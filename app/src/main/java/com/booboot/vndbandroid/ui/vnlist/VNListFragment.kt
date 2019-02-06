@@ -15,6 +15,7 @@ import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.openVN
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndb.VN
+import com.booboot.vndbandroid.model.vndbandroid.Status
 import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment.Companion.VNLIST
@@ -34,7 +35,7 @@ class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, (Vi
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
 
-        tabValue = arguments?.getInt(HomeTabsFragment.TAB_VALUE_ARG) ?: -1
+        tabValue = arguments?.getInt(HomeTabsFragment.TAB_VALUE_ARG) ?: Status.PLAYING
         listType = arguments?.getInt(HomeTabsFragment.LIST_TYPE_ARG) ?: VNLIST
 
         viewModel = ViewModelProviders.of(this).get(VNListViewModel::class.java)

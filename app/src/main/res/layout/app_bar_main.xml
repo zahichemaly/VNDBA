@@ -7,14 +7,12 @@
     android:layout_height="match_parent"
     tools:context=".ui.home.HomeActivity">
 
-    <FrameLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/fragment_container"
+    <fragment
+        android:id="@+id/navHost"
+        android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:context=".ui.home.HomeActivity" />
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/navigation" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
