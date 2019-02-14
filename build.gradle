@@ -18,9 +18,9 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:3.4.0-beta03'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'io.fabric.tools:gradle:1.26.1'
+        classpath 'io.fabric.tools:gradle:1.27.1'
         classpath "io.objectbox:objectbox-gradle-plugin:$objectbox_version"
-        classpath 'android.arch.navigation:navigation-safe-args-gradle-plugin:1.0.0-beta01'
+        classpath 'android.arch.navigation:navigation-safe-args-gradle-plugin:1.0.0-beta02'
     }
 }
 
@@ -31,15 +31,14 @@ allprojects {
 }
 
 ext {
-    androidx_version = '1.0.0'
-    architecture_components_version = '2.0.0'
+    lifecycle_version = '2.0.0'
     arch_components_version = '1.1.1'
     retrofit_version = '2.4.0'
     rxjava_version = '2.2.0'
     rxandroid_version = '2.1.0'
     dagger_version = '2.17'
     moshi_version = '1.8.0'
-    navigation_version = '1.0.0-beta01'
+    navigation_version = '1.0.0-beta02'
 }
 
 task clean(type: Delete) {
