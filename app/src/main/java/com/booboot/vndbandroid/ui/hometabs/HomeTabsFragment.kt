@@ -47,7 +47,7 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         super.onCreateView(inflater, container, savedInstanceState)
         arguments?.let { arguments ->
             type = HomeTabsFragmentArgs.fromBundle(arguments).listType
@@ -76,6 +76,10 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
         viewModel.loadingData.observe(this, Observer { showLoading(it) })
         home()?.viewModel?.syncAccountData?.observe(this, Observer { it?.let { update() } })
         update(false)
+
+        if (adapter != null) {
+            postponeEnterTransition()
+        }
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {

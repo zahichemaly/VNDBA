@@ -4,8 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.doOnPreDraw
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.getThemeColor
@@ -25,14 +27,14 @@ import kotlinx.android.synthetic.main.home_tabs_fragment.*
 import kotlinx.android.synthetic.main.vn_card.view.*
 import kotlinx.android.synthetic.main.vn_list_fragment.*
 
-class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, (View, VN) -> Unit {
+class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
     override val layout: Int = R.layout.vn_list_fragment
     private lateinit var viewModel: VNListViewModel
     private lateinit var adapter: VNAdapter
     private var tabValue: Int = 0
     private var listType: Int = 0
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         super.onCreateView(inflater, container, savedInstanceState)
 
         tabValue = arguments?.getInt(HomeTabsFragment.TAB_VALUE_ARG) ?: Status.PLAYING
@@ -55,7 +57,7 @@ class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, (Vi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val context = context ?: return
 
-        adapter = VNAdapter(this)
+        adapter = VNAdapter(::onVnClicked)
         vnList.layoutManager = GridAutofitLayoutManager(context, Pixels.px(300))
         vnList.adapter = adapter
         vnList.hideOnBottom(homeTabs()?.floatingSearchButton)
@@ -68,6 +70,10 @@ class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, (Vi
         accountItems ?: return
         adapter.filterString = home()?.savedFilter ?: ""
         adapter.items = accountItems
+
+        vnList.doOnPreDraw {
+            parentFragment?.startPostponedEnterTransition()
+        }
     }
 
     private fun filter(search: CharSequence?) {
@@ -75,8 +81,8 @@ class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener, (Vi
         adapter.filter.filter(search)
     }
 
-    override fun invoke(itemView: View, vn: VN) {
-        activity?.openVN(vn, itemView.image)
+    private fun onVnClicked(itemView: View, vn: VN) {
+        findNavController().openVN(vn, itemView.image)
     }
 
     override fun onRefresh() {

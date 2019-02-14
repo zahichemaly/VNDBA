@@ -44,4 +44,24 @@
         android:name="com.booboot.vndbandroid.ui.preferences.PreferencesFragment"
         android:label="PreferencesFragment"
         tools:layout="@layout/preferences_fragment" />
+
+    <fragment
+        android:id="@+id/vnDetailsFragment"
+        android:name="com.booboot.vndbandroid.ui.vndetails.VNDetailsFragment"
+        tools:layout="@layout/vn_details_fragment">
+        <argument
+            android:name="vnId"
+            app:argType="long" />
+        <argument
+            android:name="vnImage"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="vnImageNsfw"
+            app:argType="boolean" />
+    </fragment>
+
+    <action
+        android:id="@+id/openVN"
+        app:destination="@id/vnDetailsFragment" />
 </navigation>

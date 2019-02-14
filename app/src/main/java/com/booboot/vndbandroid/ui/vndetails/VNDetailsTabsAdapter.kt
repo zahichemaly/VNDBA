@@ -21,7 +21,7 @@ class VNDetailsTabsAdapter(fm: FragmentManager?) : FragmentStatePagerAdapter(fm)
 
     override fun getItem(position: Int): Fragment {
         val args = Bundle()
-        args.putLong(VNDetailsActivity.EXTRA_VN_ID, vn?.id ?: 0)
+        args.putLong(VNDetailsFragment.EXTRA_VN_ID, vn?.id ?: 0)
 
         val fragment = when (position) {
             0 -> SummaryFragment()

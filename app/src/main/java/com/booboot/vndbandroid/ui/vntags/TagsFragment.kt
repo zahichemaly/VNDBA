@@ -10,7 +10,7 @@ import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.model.vndbandroid.VNDetailsTags
 import com.booboot.vndbandroid.model.vndbandroid.VNTag
 import com.booboot.vndbandroid.ui.base.BaseFragment
-import com.booboot.vndbandroid.ui.vndetails.VNDetailsActivity
+import com.booboot.vndbandroid.ui.vndetails.VNDetailsFragment
 import com.google.android.flexbox.AlignItems
 import com.google.android.flexbox.FlexboxItemDecoration
 import com.google.android.flexbox.FlexboxLayoutManager
@@ -37,7 +37,7 @@ class TagsFragment : BaseFragment(), TagsAdapter.Callback {
         tagsAdapter = TagsAdapter(this)
         recyclerView.adapter = tagsAdapter
 
-        val vnId = arguments?.getLong(VNDetailsActivity.EXTRA_VN_ID) ?: 0
+        val vnId = arguments?.getLong(VNDetailsFragment.EXTRA_VN_ID) ?: 0
 
         viewModel = ViewModelProviders.of(this).get(TagsViewModel::class.java)
         viewModel.errorData.observeOnce(this, ::showError)

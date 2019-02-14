@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.openURL
@@ -15,7 +16,7 @@ import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndbandroid.EVENT_VNLIST_CHANGED
 import com.booboot.vndbandroid.service.EventReceiver
 import com.booboot.vndbandroid.ui.base.BaseFragment
-import com.booboot.vndbandroid.ui.vndetails.VNDetailsActivity
+import com.booboot.vndbandroid.ui.vndetails.VNDetailsFragment
 import com.booboot.vndbandroid.util.GridAutofitLayoutManager
 import com.booboot.vndbandroid.util.Pixels
 import kotlinx.android.synthetic.main.relations_fragment.*
@@ -32,7 +33,7 @@ class RelationsFragment : BaseFragment(), (Anime) -> Unit, (View, Relation, VN?)
             adapter = RelationsAdapter(this, this)
             recyclerView.adapter = adapter
 
-            val vnId = arguments?.getLong(VNDetailsActivity.EXTRA_VN_ID) ?: 0
+            val vnId = arguments?.getLong(VNDetailsFragment.EXTRA_VN_ID) ?: 0
             viewModel = ViewModelProviders.of(this).get(RelationsViewModel::class.java)
             viewModel.vnData.observe(this, Observer { showRelations(it) })
             viewModel.errorData.observeOnce(this, ::showError)
@@ -55,7 +56,7 @@ class RelationsFragment : BaseFragment(), (Anime) -> Unit, (View, Relation, VN?)
 
     override fun invoke(view: View, relation: Relation, vn: VN?) {
         vn?.let {
-            activity?.openVN(it, view.image)
+            findNavController().openVN(it, view.image)
         }
     }
 }

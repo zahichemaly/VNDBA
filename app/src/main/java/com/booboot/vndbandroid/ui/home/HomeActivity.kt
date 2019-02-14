@@ -29,6 +29,7 @@ import com.booboot.vndbandroid.service.EventReceiver
 import com.booboot.vndbandroid.ui.base.BaseActivity
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment
 import com.booboot.vndbandroid.ui.login.LoginActivity
+import com.booboot.vndbandroid.ui.vndetails.VNDetailsFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.home_activity.*
 
@@ -153,9 +154,13 @@ class HomeActivity : BaseActivity(), View.OnClickListener, SearchView.OnQueryTex
         }
 
         val fragment = supportFragmentManager.primaryNavigationFragment
-        if (fragment is HomeTabsFragment && fragment.sortBottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
-            fragment.sortBottomSheetBehavior.toggle()
-            return
+        when (fragment) {
+            is HomeTabsFragment -> if (fragment.sortBottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
+                return fragment.sortBottomSheetBehavior.toggle()
+            }
+            is VNDetailsFragment -> if (fragment.bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
+                return fragment.bottomSheetBehavior.toggle()
+            }
         }
 
         if (searchView?.isIconified == false) {

@@ -15,12 +15,9 @@ import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.browser.customtabs.CustomTabsIntent
-import androidx.core.app.ActivityOptionsCompat
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import com.booboot.vndbandroid.R
-import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
-import com.booboot.vndbandroid.ui.vndetails.VNDetailsActivity
 
 inline fun <reified A : Activity> Context.startActivity(configIntent: Intent.() -> Unit = {}) {
     startActivity(Intent(this, A::class.java).apply(configIntent))
@@ -40,15 +37,6 @@ fun Activity.setLightStatusAndNavigation() {
             else -> 0
         }
     }
-}
-
-fun Activity.openVN(vn: VN, transitionView: View) {
-    val options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, transitionView, "slideshow")
-    val intent = Intent(this, VNDetailsActivity::class.java)
-    intent.putExtra(VNDetailsActivity.EXTRA_VN_ID, vn.id)
-    intent.putExtra(VNDetailsActivity.EXTRA_SHARED_ELEMENT_COVER, vn.image)
-    intent.putExtra(VNDetailsActivity.EXTRA_SHARED_ELEMENT_COVER_NSFW, vn.image_nsfw)
-    startActivityForResult(intent, 0, options.toBundle())
 }
 
 fun Context.getBitmap(@DrawableRes drawableRes: Int): Bitmap? {

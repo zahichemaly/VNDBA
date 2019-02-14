@@ -18,7 +18,7 @@ internal class SlideshowAdapter(
     private val listener: Listener? = null,
     private val scaleType: ImageView.ScaleType = ImageView.ScaleType.CENTER_CROP
 ) : PagerAdapter() {
-    private var mLayoutInflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+    private var layoutInflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
     var images: List<Screen> = emptyList()
         set(value) {
             field = value
@@ -34,7 +34,7 @@ internal class SlideshowAdapter(
     override fun isViewFromObject(view: View, any: Any) = view === any
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any =
-        with(mLayoutInflater.inflate(R.layout.slideshow_item, container, false)) {
+        with(layoutInflater.inflate(R.layout.slideshow_item, container, false)) {
             imageView.scaleType = scaleType
             imageView.tag = position
 

@@ -4,18 +4,14 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.showNsfwImage
-import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndb.Vnlist
 import com.booboot.vndbandroid.model.vndb.Votelist
 import com.booboot.vndbandroid.model.vndb.Wishlist
-import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.model.vndbandroid.Priority
 import com.booboot.vndbandroid.model.vndbandroid.Status
 import com.booboot.vndbandroid.model.vndbandroid.Vote
 import com.booboot.vndbandroid.util.Utils
-import com.booboot.vndbandroid.util.image.DarkBlurTransform
-import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.nsfw_tag.view.*
 import kotlinx.android.synthetic.main.vn_card.view.*
 
@@ -57,6 +53,7 @@ class VNHolder(itemView: View, private val onVnClicked: (View, VN) -> Unit) : Re
         else
             subtitleText.append(Utils.getDate(vn.released, true))
 
+        image.transitionName = "slideshow" + vn.id
         image.showNsfwImage(vn.image, vn.image_nsfw, nsfwTag)
 
         title.text = titleText

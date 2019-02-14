@@ -23,7 +23,7 @@ import com.booboot.vndbandroid.model.vndbandroid.LANGUAGES
 import com.booboot.vndbandroid.model.vndbandroid.PLATFORMS
 import com.booboot.vndbandroid.model.vndbandroid.Vote
 import com.booboot.vndbandroid.ui.base.BaseFragment
-import com.booboot.vndbandroid.ui.vndetails.VNDetailsActivity
+import com.booboot.vndbandroid.ui.vndetails.VNDetailsFragment
 import com.booboot.vndbandroid.util.Utils
 import com.google.android.material.chip.Chip
 import kotlinx.android.synthetic.main.info_bubble.view.*
@@ -37,7 +37,7 @@ class SummaryFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if (activity == null) return
 
-        val vnId = arguments?.getLong(VNDetailsActivity.EXTRA_VN_ID) ?: 0
+        val vnId = arguments?.getLong(VNDetailsFragment.EXTRA_VN_ID) ?: 0
         viewModel = ViewModelProviders.of(this).get(SummaryViewModel::class.java)
         viewModel.vnData.observe(this, Observer { showVn(it) })
         viewModel.errorData.observeOnce(this, ::showError)
