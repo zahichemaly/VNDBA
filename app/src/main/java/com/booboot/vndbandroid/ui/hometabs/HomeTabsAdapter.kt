@@ -10,21 +10,19 @@ import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment.Companion.TAB_VALUE_
 import com.booboot.vndbandroid.ui.vnlist.VNListFragment
 
 class HomeTabsAdapter(fm: FragmentManager?, private val numOfTabs: Int, private val type: Int) : FragmentStatePagerAdapter(fm) {
-    override fun getItem(position: Int): Fragment {
-        val args = Bundle()
-        val tab = VNListFragment()
-
-        when (position) {
-            0 -> args.putInt(TAB_VALUE_ARG, getTabValue(Status.PLAYING, 10, Priority.HIGH))
-            1 -> args.putInt(TAB_VALUE_ARG, getTabValue(Status.FINISHED, 8, Priority.MEDIUM))
-            2 -> args.putInt(TAB_VALUE_ARG, getTabValue(Status.STALLED, 6, Priority.LOW))
-            3 -> args.putInt(TAB_VALUE_ARG, getTabValue(Status.DROPPED, 4, Priority.BLACKLIST))
-            4 -> args.putInt(TAB_VALUE_ARG, getTabValue(Status.UNKNOWN, 2, -1))
+    override fun getItem(position: Int): Fragment = VNListFragment().apply {
+        arguments = Bundle().apply {
+            putInt(TAB_VALUE_ARG, getTabValue(position))
+            putInt(HomeTabsFragment.LIST_TYPE_ARG, type)
         }
+    }
 
-        args.putInt(HomeTabsFragment.LIST_TYPE_ARG, type)
-        tab.arguments = args
-        return tab
+    fun getTabValue(position: Int) = when (position) {
+        0 -> getTabValue(Status.PLAYING, 10, Priority.HIGH)
+        1 -> getTabValue(Status.FINISHED, 8, Priority.MEDIUM)
+        2 -> getTabValue(Status.STALLED, 6, Priority.LOW)
+        3 -> getTabValue(Status.DROPPED, 4, Priority.BLACKLIST)
+        else -> getTabValue(Status.UNKNOWN, 2, -1)
     }
 
     private fun getTabValue(vnlistValue: Int, votelistValue: Int, wishlistValue: Int): Int = when (type) {

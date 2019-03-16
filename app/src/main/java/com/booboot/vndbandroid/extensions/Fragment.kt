@@ -3,6 +3,7 @@ package com.booboot.vndbandroid.extensions
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.booboot.vndbandroid.ui.home.HomeActivity
@@ -22,3 +23,5 @@ fun Fragment.setTransparentStatusBar() = activity?.let { activity ->
     val rootParams = view?.layoutParams as? ViewGroup.MarginLayoutParams
     rootParams?.topMargin = activity.statusBarHeight()
 }
+
+fun LifecycleOwner.actualOwner() = (this as? Fragment)?.viewLifecycleOwner ?: this

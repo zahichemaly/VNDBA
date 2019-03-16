@@ -8,13 +8,13 @@ import android.view.View
 import androidx.asynclayoutinflater.view.AsyncLayoutInflater
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.adjustAlpha
 import com.booboot.vndbandroid.extensions.darken
 import com.booboot.vndbandroid.extensions.dayNightTheme
+import com.booboot.vndbandroid.extensions.observe
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.openURL
 import com.booboot.vndbandroid.extensions.toggle
@@ -39,7 +39,7 @@ class SummaryFragment : BaseFragment() {
 
         val vnId = arguments?.getLong(VNDetailsFragment.EXTRA_VN_ID) ?: 0
         viewModel = ViewModelProviders.of(this).get(SummaryViewModel::class.java)
-        viewModel.vnData.observe(this, Observer { showVn(it) })
+        viewModel.summaryData.observe(this, ::showVn)
         viewModel.errorData.observeOnce(this, ::showError)
         viewModel.loadVn(vnId, false)
     }

@@ -19,6 +19,7 @@ import com.booboot.vndbandroid.ui.base.BaseViewModel
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment.Companion.VNLIST
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment.Companion.VOTELIST
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment.Companion.WISHLIST
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
@@ -31,10 +32,11 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
         (application as App).appComponent.inject(this)
     }
 
-    fun getVns(listType: Int, tabValue: Int, force: Boolean = true) {
+    fun getVns(listType: Int, tabValue: Int, accountItems: AccountItems? = null, force: Boolean = true) {
         if (!force && accountData.value != null) return
         if (disposables.contains(DISPOSABLE_GET_VN)) return
 
+        val _accountItems = if (accountItems != null) Single.just(accountItems) else accountRepository.getItems()
         disposables[DISPOSABLE_GET_VN] = accountRepository.getItems()
             .observeOn(Schedulers.computation())
             .map { cache ->

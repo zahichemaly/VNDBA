@@ -4,8 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.doOnPreDraw
-import androidx.lifecycle.Observer
+import androidx.core.view.doOnNextLayout
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -13,6 +12,7 @@ import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.getThemeColor
 import com.booboot.vndbandroid.extensions.hideOnBottom
 import com.booboot.vndbandroid.extensions.home
+import com.booboot.vndbandroid.extensions.observe
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.openVN
 import com.booboot.vndbandroid.model.vndb.AccountItems
@@ -41,18 +41,17 @@ class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
         listType = arguments?.getInt(HomeTabsFragment.LIST_TYPE_ARG) ?: VNLIST
 
         viewModel = ViewModelProviders.of(this).get(VNListViewModel::class.java)
-        viewModel.accountData.observe(this, Observer { showVns(it) })
+        viewModel.accountData.observeOnce(this) { showVns(it) }
         viewModel.errorData.observeOnce(this, ::showError)
-        home()?.viewModel?.loadingData?.observe(this, Observer { showLoading(it) })
-        home()?.viewModel?.syncAccountData?.observe(this, Observer { it?.let { update() } })
+        home()?.viewModel?.loadingData?.observe(this, ::showLoading)
+        home()?.viewModel?.accountData?.observe(this) { update(it) }
         home()?.viewModel?.filterData?.observeOnce(this, ::filter)
         homeTabs()?.viewModel?.sortData?.observeOnce(this) { update() }
-        update(false)
 
         return rootView
     }
 
-    private fun update(force: Boolean = true) = viewModel.getVns(listType, tabValue, force)
+    private fun update(accountItems: AccountItems? = null, force: Boolean = true) = viewModel.getVns(listType, tabValue, accountItems, force)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val context = context ?: return
@@ -66,12 +65,11 @@ class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
         refreshLayout.setColorSchemeColors(context.getThemeColor(R.attr.colorAccent))
     }
 
-    private fun showVns(accountItems: AccountItems?) {
-        accountItems ?: return
+    private fun showVns(accountItems: AccountItems) {
         adapter.filterString = home()?.savedFilter ?: ""
         adapter.items = accountItems
 
-        vnList.doOnPreDraw {
+        vnList.doOnNextLayout {
             parentFragment?.startPostponedEnterTransition()
         }
     }

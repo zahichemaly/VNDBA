@@ -7,11 +7,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.home
+import com.booboot.vndbandroid.extensions.observe
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.onStateChanged
 import com.booboot.vndbandroid.extensions.onSubmitListener
@@ -38,7 +38,7 @@ import java.io.Serializable
 class VNDetailsFragment : BaseFragment(), SlideshowAdapter.Listener, View.OnClickListener, View.OnFocusChangeListener {
     override val layout: Int = R.layout.vn_details_fragment
 
-    private lateinit var viewModel: VNDetailsViewModel
+    lateinit var viewModel: VNDetailsViewModel
     private lateinit var slideshowAdapter: SlideshowAdapter
     private lateinit var tabsAdapter: VNDetailsTabsAdapter
 
@@ -101,13 +101,13 @@ class VNDetailsFragment : BaseFragment(), SlideshowAdapter.Listener, View.OnClic
         slideshow.transitionName = "slideshow$vnId"
 
         viewModel = ViewModelProviders.of(this).get(VNDetailsViewModel::class.java)
-        viewModel.loadingData.observe(this, Observer { showLoading(it) })
-        viewModel.vnData.observe(this, Observer { showVn(it) })
-        viewModel.accountData.observe(this, Observer { showAccount(it) })
+        viewModel.accountData = home()?.viewModel?.accountData ?: return
+        viewModel.loadingData.observe(this, ::showLoading)
+        viewModel.vnData.observe(this, ::showVn)
+        home()?.viewModel?.accountData?.observe(this, ::showAccount)
         viewModel.errorData.observeOnce(this, ::showError)
         viewModel.initErrorData.observeOnce(this, ::onInitError)
         viewModel.loadVn(vnId, false)
-        viewModel.loadAccount(false)
     }
 
     private fun showVn(vn: VN?) {

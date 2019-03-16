@@ -44,7 +44,7 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
     @Inject lateinit var boxStore: BoxStore
 
     private lateinit var items: AccountItems
-    val syncAccountData: MutableLiveData<AccountItems> = MutableLiveData()
+    val accountData: MutableLiveData<AccountItems> = MutableLiveData()
     val syncData: MutableLiveData<SyncData> = MutableLiveData()
 
     protected fun startupSyncSingle(doOnAccountSuccess: (AccountItems) -> Unit = {}): Single<SyncData> {
@@ -105,7 +105,7 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
             .doOnSuccess {
                 /* This Single is going to be zipped with other independent and longer Singles: sending a UI update now to be as fast as possible */
                 /* During login, don't use this LiveData because we always need account data + tags + traits before proceeding! Home only needs account data though so can use this LiveData. */
-                syncAccountData.value = it
+                accountData.value = it
                 doOnAccountSuccess(it)
             }
             .onErrorResumeNext {

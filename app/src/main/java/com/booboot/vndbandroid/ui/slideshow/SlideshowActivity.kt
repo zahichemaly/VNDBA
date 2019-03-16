@@ -14,10 +14,10 @@ import android.view.MenuItem
 import android.widget.ImageView
 import androidx.core.app.NotificationCompat
 import androidx.core.content.FileProvider
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.extensions.observe
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.model.vndb.Screen
 import com.booboot.vndbandroid.model.vndbandroid.FileAction
@@ -52,7 +52,7 @@ class SlideshowActivity : BaseActivity(), ViewPager.OnPageChangeListener {
 
         viewModel = ViewModelProviders.of(this).get(SlideshowViewModel::class.java)
         viewModel.errorData.observeOnce(this, ::showError)
-        viewModel.loadingData.observe(this, Observer { showLoading(it) })
+        viewModel.loadingData.observe(this, ::showLoading)
         viewModel.fileData.observeOnce(this, ::launchActionForImage)
     }
 

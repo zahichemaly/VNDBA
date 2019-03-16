@@ -7,10 +7,10 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.home
+import com.booboot.vndbandroid.extensions.observe
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.selectIf
 import com.booboot.vndbandroid.extensions.setTransparentStatusBar
@@ -38,10 +38,8 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
     lateinit var sortBottomSheetBehavior: BottomSheetBehavior<View>
 
     private var type: Int = 0
-    private var adapter: HomeTabsAdapter? = null
-    private val sortBottomSheetButtons by lazy {
-        listOf(buttonReverseSort, buttonSortID, buttonSortReleaseDate, buttonSortLength, buttonSortPopularity, buttonSortRating, buttonSortStatus, buttonSortVote, buttonSortPriority)
-    }
+    var adapter: HomeTabsAdapter? = null
+    private lateinit var sortBottomSheetButtons: List<View>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,15 +67,18 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
         sortBottomSheetBehavior = BottomSheetBehavior.from(sortBottomSheet)
         sortBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
         sortBottomSheetHeader.setOnClickListener(this)
+
+        sortBottomSheetButtons = listOf(buttonReverseSort, buttonSortID, buttonSortReleaseDate, buttonSortLength, buttonSortPopularity, buttonSortRating, buttonSortStatus, buttonSortVote, buttonSortPriority)
         sortBottomSheetButtons.forEach { it.setOnClickListener(this) }
 
         viewModel = ViewModelProviders.of(this).get(HomeTabsViewModel::class.java)
-        viewModel.titlesData.observe(this, Observer { showTitles(it) })
-        viewModel.sortData.observe(this, Observer { showSort() })
+        viewModel.titlesData.observe(this, ::showTitles)
+        viewModel.sortData.observeOnce(this) { showSort() }
         viewModel.errorData.observeOnce(this, ::showError)
-        viewModel.loadingData.observe(this, Observer { showLoading(it) })
-        home()?.viewModel?.syncAccountData?.observe(this, Observer { it?.let { update() } })
+        viewModel.loadingData.observe(this, ::showLoading)
+        home()?.viewModel?.accountData?.observe(this) { update() }
         update(false)
+        showSort()
 
         if (adapter != null) {
             postponeEnterTransition()

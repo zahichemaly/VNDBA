@@ -29,8 +29,8 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
     @Inject lateinit var wishlistRepository: WishlistRepository
 
     val vnData: MutableLiveData<VN> = MutableLiveData()
-    val accountData: MutableLiveData<AccountItems> = MutableLiveData()
     val initErrorData: MutableLiveData<String> = MutableLiveData()
+    lateinit var accountData: MutableLiveData<AccountItems>
 
     init {
         (application as App).appComponent.inject(this)
@@ -49,20 +49,6 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
                 disposables.remove(DISPOSABLE_VN)
             }
             .subscribe({ vnData.value = it }, { onError(it, initErrorData) })
-    }
-
-    fun loadAccount(force: Boolean = true) {
-        if (!force && accountData.value != null) return
-        if (disposables.contains(DISPOSABLE_ACCOUNT)) return
-
-        disposables[DISPOSABLE_ACCOUNT] = accountRepository.getItems()
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe { loadingData.plus() }
-            .doFinally {
-                loadingData.minus()
-                disposables.remove(DISPOSABLE_ACCOUNT)
-            }
-            .subscribe({ accountData.value = it }, { onError(it, initErrorData) })
     }
 
     fun setNotes(notes: String) {
@@ -148,6 +134,5 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
 
     companion object {
         private const val DISPOSABLE_VN = "DISPOSABLE_VN"
-        private const val DISPOSABLE_ACCOUNT = "DISPOSABLE_ACCOUNT"
     }
 }

@@ -62,7 +62,6 @@ class HomeTabsViewModel constructor(application: Application) : BaseViewModel(ap
                 }
 
                 titlesData.value = titles
-                sortData.value = Preferences
             }, ::onError)
     }
 

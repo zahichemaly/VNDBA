@@ -8,7 +8,6 @@ import android.view.View
 import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.GravityCompat
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -18,6 +17,7 @@ import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.api.VNDBServer
 import com.booboot.vndbandroid.extensions.Track
 import com.booboot.vndbandroid.extensions.isTopLevel
+import com.booboot.vndbandroid.extensions.observe
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.setLightStatusAndNavigation
 import com.booboot.vndbandroid.extensions.toggle
@@ -61,9 +61,8 @@ class HomeActivity : BaseActivity(), View.OnClickListener, SearchView.OnQueryTex
             }
 
             viewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
-            viewModel.loadingData.observe(this, Observer { showLoading(it) })
-            viewModel.accountData.observe(this, Observer { showAccount(it) })
-            viewModel.syncAccountData.observeOnce(this, ::showAccount)
+            viewModel.loadingData.observe(this, ::showLoading)
+            viewModel.accountData.observe(this, ::showAccount)
             viewModel.errorData.observeOnce(this, ::showError)
             viewModel.getVns()
 
@@ -72,7 +71,7 @@ class HomeActivity : BaseActivity(), View.OnClickListener, SearchView.OnQueryTex
             }
 
             EventReceiver(this).observe(mapOf(
-                EVENT_VNLIST_CHANGED to { viewModel.getVns(toSyncData = true) }
+                EVENT_VNLIST_CHANGED to { viewModel.getVns() }
             ))
         }
     }
