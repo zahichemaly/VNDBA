@@ -1,5 +1,7 @@
 package com.booboot.vndbandroid.extensions
 
+import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -13,4 +15,10 @@ fun Fragment.setupToolbar() {
     home()?.setSupportActionBar(toolbar)
     home()?.setupActionBarWithNavController(findNavController(), home()?.drawer)
     toolbar.setNavigationOnClickListener { home()?.onSupportNavigateUp() }
+}
+
+fun Fragment.setTransparentStatusBar() = activity?.let { activity ->
+    activity.window.statusBarColor = ContextCompat.getColor(activity, android.R.color.transparent)
+    val rootParams = view?.layoutParams as? ViewGroup.MarginLayoutParams
+    rootParams?.topMargin = activity.statusBarHeight()
 }

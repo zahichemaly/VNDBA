@@ -11,7 +11,7 @@
     <color name="buttonPressed">#E5E5E5</color>
     <color name="transparentBlack">#70000000</color>
     <color name="transparent80Black">#cd000000</color>
-    <color name="transparentWhite">#78ffffff</color>
+    <color name="transparentWhite">#8CFFFFFF</color>
     <color name="transparent80White">#cdffffff</color>
 
     <!-- Grading colors -->
