@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.doOnNextLayout
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -15,6 +14,7 @@ import com.booboot.vndbandroid.extensions.home
 import com.booboot.vndbandroid.extensions.observe
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.openVN
+import com.booboot.vndbandroid.extensions.startParentEnterTransition
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndbandroid.Status
@@ -68,10 +68,7 @@ class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
     private fun showVns(accountItems: AccountItems) {
         adapter.filterString = home()?.savedFilter ?: ""
         adapter.items = accountItems
-
-        vnList.doOnNextLayout {
-            parentFragment?.startPostponedEnterTransition()
-        }
+        startParentEnterTransition()
     }
 
     private fun filter(search: CharSequence?) {

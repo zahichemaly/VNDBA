@@ -9,6 +9,7 @@ import com.booboot.vndbandroid.extensions.observe
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.openURL
 import com.booboot.vndbandroid.extensions.openVN
+import com.booboot.vndbandroid.extensions.startParentEnterTransition
 import com.booboot.vndbandroid.model.vndb.Anime
 import com.booboot.vndbandroid.model.vndb.Links
 import com.booboot.vndbandroid.model.vndb.Relation
@@ -48,6 +49,7 @@ class RelationsFragment : BaseFragment(), (Anime) -> Unit, (View, Relation, VN?)
     private fun showRelations(relationsData: RelationsData?) {
         relationsData ?: return
         adapter.relationsData = relationsData
+        startParentEnterTransition()
     }
 
     override fun invoke(anime: Anime) {

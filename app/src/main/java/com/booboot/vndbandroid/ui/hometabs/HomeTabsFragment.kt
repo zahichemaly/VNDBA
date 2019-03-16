@@ -13,7 +13,7 @@ import com.booboot.vndbandroid.extensions.home
 import com.booboot.vndbandroid.extensions.observe
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.selectIf
-import com.booboot.vndbandroid.extensions.setTransparentStatusBar
+import com.booboot.vndbandroid.extensions.setupStatusBar
 import com.booboot.vndbandroid.extensions.setupToolbar
 import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.extensions.updateTabs
@@ -57,7 +57,7 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         activity ?: return
 
-        setTransparentStatusBar()
+        setupStatusBar()
         setupToolbar()
 
         floatingSearchButton.setOnClickListener(this)

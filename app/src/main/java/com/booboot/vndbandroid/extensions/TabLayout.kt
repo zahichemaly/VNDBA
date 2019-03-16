@@ -14,3 +14,8 @@ fun TabLayout.updateTabs(titles: List<String>) {
         }
     }
 }
+
+fun TabLayout.replaceOnTabSelectedListener(listener : TabLayout.OnTabSelectedListener) {
+    removeOnTabSelectedListener(listener)
+    addOnTabSelectedListener(listener)
+}

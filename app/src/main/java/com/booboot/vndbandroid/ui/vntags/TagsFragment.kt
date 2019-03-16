@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.observe
 import com.booboot.vndbandroid.extensions.observeOnce
+import com.booboot.vndbandroid.extensions.startParentEnterTransition
 import com.booboot.vndbandroid.model.vndbandroid.VNDetailsTags
 import com.booboot.vndbandroid.model.vndbandroid.VNTag
 import com.booboot.vndbandroid.ui.base.BaseFragment
@@ -55,6 +56,7 @@ class TagsFragment : BaseFragment(), TagsAdapter.Callback {
     private fun showTags(tags: VNDetailsTags?) {
         if (tags == null) return
         tagsAdapter.items = tags
+        startParentEnterTransition()
     }
 
     override fun onTitleClicked(title: String) {

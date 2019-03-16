@@ -3,21 +3,24 @@ package com.booboot.vndbandroid.extensions
 import android.os.Build
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import com.booboot.vndbandroid.R
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 
-fun AppBarLayout.setStatusBarThemeForCollapsingToolbar(activity: AppCompatActivity, collapsingToolbar: CollapsingToolbarLayout, contentView: View) =
+fun AppBarLayout.setStatusBarThemeForCollapsingToolbar(activity: AppCompatActivity, collapsingToolbar: CollapsingToolbarLayout, toolbar: Toolbar, contentView: View) =
     addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { _, offset ->
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return@OnOffsetChangedListener
 
         if (collapsingToolbar.height + offset < collapsingToolbar.scrimVisibleHeightTrigger) {
             /* Toolbar is collapsing: removing the status bar's translucence and adding the light flag */
             activity.window.statusBarColor = ContextCompat.getColor(activity, android.R.color.transparent)
+            toolbar.setBackgroundColor(ContextCompat.getColor(activity, android.R.color.transparent))
         } else {
             /* Toolbar is expanding: adding the status bar's translucence and removing the light flag */
             activity.window.statusBarColor = ContextCompat.getColor(activity, R.color.tabBackgroundColor)
+            toolbar.setBackgroundColor(ContextCompat.getColor(activity, R.color.tabBackgroundColor))
         }
 
         if (activity.dayNightTheme() == "light") {

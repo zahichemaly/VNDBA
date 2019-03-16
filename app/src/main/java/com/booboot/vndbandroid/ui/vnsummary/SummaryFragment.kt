@@ -17,6 +17,7 @@ import com.booboot.vndbandroid.extensions.dayNightTheme
 import com.booboot.vndbandroid.extensions.observe
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.openURL
+import com.booboot.vndbandroid.extensions.startParentEnterTransition
 import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.model.vndb.Links
 import com.booboot.vndbandroid.model.vndbandroid.LANGUAGES
@@ -44,9 +45,9 @@ class SummaryFragment : BaseFragment() {
         viewModel.loadVn(vnId, false)
     }
 
-    private fun showVn(summaryVN: SummaryVN?) {
+    private fun showVn(summaryVN: SummaryVN) {
         context?.let { ctx ->
-            val vn = summaryVN?.vn ?: return
+            val vn = summaryVN.vn
 
             title.text = vn.title
             originalTitle.text = vn.original
@@ -127,6 +128,7 @@ class SummaryFragment : BaseFragment() {
             wikipediaButton.setOnClickListener { ctx.openURL(Links.WIKIPEDIA + vn.links.wikipedia) }
             renaiButton.setOnClickListener { ctx.openURL(Links.RENAI + vn.links.renai) }
             encubedButton.setOnClickListener { ctx.openURL(Links.ENCUBED + vn.links.encubed) }
+            startParentEnterTransition()
         }
     }
 }

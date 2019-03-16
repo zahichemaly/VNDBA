@@ -16,8 +16,10 @@ import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.onStateChanged
 import com.booboot.vndbandroid.extensions.onSubmitListener
 import com.booboot.vndbandroid.extensions.preventLineBreak
+import com.booboot.vndbandroid.extensions.replaceOnTabSelectedListener
 import com.booboot.vndbandroid.extensions.selectIf
 import com.booboot.vndbandroid.extensions.setStatusBarThemeForCollapsingToolbar
+import com.booboot.vndbandroid.extensions.setupStatusBar
 import com.booboot.vndbandroid.extensions.setupToolbar
 import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.model.vndb.AccountItems
@@ -31,16 +33,18 @@ import com.booboot.vndbandroid.ui.slideshow.SlideshowActivity
 import com.booboot.vndbandroid.ui.slideshow.SlideshowAdapter
 import com.booboot.vndbandroid.util.StopFocusStealingAppBarBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.vn_details_bottom_sheet.*
 import kotlinx.android.synthetic.main.vn_details_fragment.*
 import java.io.Serializable
 
-class VNDetailsFragment : BaseFragment(), SlideshowAdapter.Listener, View.OnClickListener, View.OnFocusChangeListener {
+class VNDetailsFragment : BaseFragment(), SlideshowAdapter.Listener, TabLayout.OnTabSelectedListener, View.OnClickListener, View.OnFocusChangeListener {
     override val layout: Int = R.layout.vn_details_fragment
 
     lateinit var viewModel: VNDetailsViewModel
     private lateinit var slideshowAdapter: SlideshowAdapter
     private lateinit var tabsAdapter: VNDetailsTabsAdapter
+    private var currentPage = 0
 
     private var vnId: Long = 0
 
@@ -62,7 +66,9 @@ class VNDetailsFragment : BaseFragment(), SlideshowAdapter.Listener, View.OnClic
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val activity = home() ?: return
 
+        setupStatusBar(true)
         setupToolbar()
+        appBarLayout.setStatusBarThemeForCollapsingToolbar(activity, collapsingToolbar, toolbar, content)
 
         arguments?.let { arguments ->
             vnId = VNDetailsFragmentArgs.fromBundle(arguments).vnId
@@ -80,8 +86,7 @@ class VNDetailsFragment : BaseFragment(), SlideshowAdapter.Listener, View.OnClic
         tabsAdapter = VNDetailsTabsAdapter(childFragmentManager)
         viewPager.adapter = tabsAdapter
         tabLayout.setupWithViewPager(viewPager)
-
-        appBarLayout.setStatusBarThemeForCollapsingToolbar(activity, collapsingToolbar, content)
+        if (currentPage > 0) postponeEnterTransition()
 
         /* Bottom sheet */
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
@@ -120,6 +125,8 @@ class VNDetailsFragment : BaseFragment(), SlideshowAdapter.Listener, View.OnClic
         numberOfImages.text = String.format("x%d", screens.size)
 
         tabsAdapter.vn = vn
+        if (currentPage > 0) viewPager.currentItem = currentPage
+        tabLayout.replaceOnTabSelectedListener(this)
     }
 
     private fun showAccount(items: AccountItems?) {
@@ -180,7 +187,8 @@ class VNDetailsFragment : BaseFragment(), SlideshowAdapter.Listener, View.OnClic
         super.showLoading(loading)
         loading ?: return
         bottomSheetButtons.forEach { it.isEnabled = loading <= 0 }
-        startPostponedEnterTransition()
+
+        if (currentPage <= 0) startPostponedEnterTransition()
     }
 
     private fun onInitError(message: String?) {
@@ -235,6 +243,16 @@ class VNDetailsFragment : BaseFragment(), SlideshowAdapter.Listener, View.OnClic
         intent.putExtra(SlideshowActivity.INDEX_ARG, position)
         intent.putExtra(SlideshowActivity.IMAGES_ARG, images as Serializable)
         startActivity(intent)
+    }
+
+    override fun onTabReselected(tab: TabLayout.Tab) {
+    }
+
+    override fun onTabUnselected(tab: TabLayout.Tab) {
+    }
+
+    override fun onTabSelected(tab: TabLayout.Tab) {
+        currentPage = tab.position
     }
 
     companion object {
