@@ -16,9 +16,9 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.4.0-beta03'
+        classpath 'com.android.tools.build:gradle:3.4.0-rc02'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'io.fabric.tools:gradle:1.27.1'
+        classpath 'io.fabric.tools:gradle:1.28.0'
         classpath "io.objectbox:objectbox-gradle-plugin:$objectbox_version"
         classpath 'android.arch.navigation:navigation-safe-args-gradle-plugin:1.0.0-beta02'
     }
