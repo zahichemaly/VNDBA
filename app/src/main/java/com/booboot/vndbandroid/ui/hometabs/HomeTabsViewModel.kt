@@ -9,6 +9,7 @@ import com.booboot.vndbandroid.model.vndbandroid.SortOptions
 import com.booboot.vndbandroid.model.vndbandroid.Status
 import com.booboot.vndbandroid.repository.AccountRepository
 import com.booboot.vndbandroid.ui.base.BaseViewModel
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import io.reactivex.android.schedulers.AndroidSchedulers
 import javax.inject.Inject
 
@@ -16,6 +17,9 @@ class HomeTabsViewModel constructor(application: Application) : BaseViewModel(ap
     @Inject lateinit var accountRepository: AccountRepository
     val titlesData: MutableLiveData<List<String>> = MutableLiveData()
     val sortData: MutableLiveData<Preferences> = MutableLiveData()
+
+    var currentPage = -1
+    var sortBottomSheetState = BottomSheetBehavior.STATE_HIDDEN
 
     init {
         (application as App).appComponent.inject(this)

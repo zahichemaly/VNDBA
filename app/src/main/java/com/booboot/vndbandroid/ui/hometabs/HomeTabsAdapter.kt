@@ -9,7 +9,13 @@ import com.booboot.vndbandroid.model.vndbandroid.Status
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment.Companion.TAB_VALUE_ARG
 import com.booboot.vndbandroid.ui.vnlist.VNListFragment
 
-class HomeTabsAdapter(fm: FragmentManager?, private val numOfTabs: Int, private val type: Int) : FragmentStatePagerAdapter(fm) {
+class HomeTabsAdapter(fm: FragmentManager?, private val type: Int) : FragmentStatePagerAdapter(fm) {
+    var titles = emptyList<String>()
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
+
     override fun getItem(position: Int): Fragment = VNListFragment().apply {
         arguments = Bundle().apply {
             putInt(TAB_VALUE_ARG, getTabValue(position))
@@ -32,5 +38,7 @@ class HomeTabsAdapter(fm: FragmentManager?, private val numOfTabs: Int, private 
         else -> -1
     }
 
-    override fun getCount(): Int = numOfTabs
+    override fun getCount(): Int = titles.size
+
+    override fun getPageTitle(position: Int): CharSequence? = titles[position]
 }

@@ -12,11 +12,12 @@ import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.home
 import com.booboot.vndbandroid.extensions.observe
 import com.booboot.vndbandroid.extensions.observeOnce
+import com.booboot.vndbandroid.extensions.onStateChanged
+import com.booboot.vndbandroid.extensions.replaceOnTabSelectedListener
 import com.booboot.vndbandroid.extensions.selectIf
 import com.booboot.vndbandroid.extensions.setupStatusBar
 import com.booboot.vndbandroid.extensions.setupToolbar
 import com.booboot.vndbandroid.extensions.toggle
-import com.booboot.vndbandroid.extensions.updateTabs
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.model.vndbandroid.SORT_ID
 import com.booboot.vndbandroid.model.vndbandroid.SORT_LENGTH
@@ -38,7 +39,7 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
     lateinit var sortBottomSheetBehavior: BottomSheetBehavior<View>
 
     private var type: Int = 0
-    var adapter: HomeTabsAdapter? = null
+    private var adapter: HomeTabsAdapter? = null
     private lateinit var sortBottomSheetButtons: List<View>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,49 +61,40 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
         setupStatusBar()
         setupToolbar()
 
-        floatingSearchButton.setOnClickListener(this)
-        viewPager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabLayout))
-        tabLayout.addOnTabSelectedListener(this)
-
-        sortBottomSheetBehavior = BottomSheetBehavior.from(sortBottomSheet)
-        sortBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-        sortBottomSheetHeader.setOnClickListener(this)
-
-        sortBottomSheetButtons = listOf(buttonReverseSort, buttonSortID, buttonSortReleaseDate, buttonSortLength, buttonSortPopularity, buttonSortRating, buttonSortStatus, buttonSortVote, buttonSortPriority)
-        sortBottomSheetButtons.forEach { it.setOnClickListener(this) }
-
         viewModel = ViewModelProviders.of(this).get(HomeTabsViewModel::class.java)
         viewModel.titlesData.observe(this, ::showTitles)
         viewModel.sortData.observeOnce(this) { showSort() }
         viewModel.errorData.observeOnce(this, ::showError)
         viewModel.loadingData.observe(this, ::showLoading)
         home()?.viewModel?.accountData?.observe(this) { update() }
+
+        if (adapter == null) {
+            adapter = HomeTabsAdapter(childFragmentManager, type)
+        }
+        viewPager.adapter = adapter
+        tabLayout.setupWithViewPager(viewPager)
+        tabLayout.removeOnTabSelectedListener(this)
+        if (viewModel.currentPage >= 0) postponeEnterTransition() // TODO better condition here
+
+        sortBottomSheetBehavior = BottomSheetBehavior.from(sortBottomSheet)
+        sortBottomSheetBehavior.state = viewModel.sortBottomSheetState
+        sortBottomSheetBehavior.onStateChanged(onStateChanged = { viewModel.sortBottomSheetState = it })
+        sortBottomSheetHeader.setOnClickListener(this)
+        floatingSearchButton.setOnClickListener(this)
+
+        sortBottomSheetButtons = listOf(buttonReverseSort, buttonSortID, buttonSortReleaseDate, buttonSortLength, buttonSortPopularity, buttonSortRating, buttonSortStatus, buttonSortVote, buttonSortPriority)
+        sortBottomSheetButtons.forEach { it.setOnClickListener(this) }
+
         update(false)
         showSort()
-
-        if (adapter != null) {
-            postponeEnterTransition()
-        }
-    }
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        sortBottomSheetBehavior.state = savedInstanceState?.getInt(SORT_BOTTOM_SHEET_STATE) ?: BottomSheetBehavior.STATE_HIDDEN
     }
 
     private fun update(force: Boolean = true) = viewModel.getTabTitles(type, force)
 
-    private fun showTitles(titles: List<String>?) {
-        if (titles == null) return
-
-        val tabLayoutEmpty = tabLayout.tabCount <= 0
-        tabLayout.updateTabs(titles)
-
-        if (tabLayoutEmpty) { // INIT
-            adapter = HomeTabsAdapter(childFragmentManager, tabLayout.tabCount, type)
-            viewPager.adapter = adapter
-            if (currentPage >= 0) viewPager.currentItem = currentPage
-        }
+    private fun showTitles(titles: List<String>) {
+        adapter?.titles = titles
+        if (viewModel.currentPage >= 0) viewPager.currentItem = viewModel.currentPage
+        tabLayout.replaceOnTabSelectedListener(this)
     }
 
     private fun showSort() {
@@ -145,27 +137,18 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
     }
 
     override fun onTabSelected(tab: TabLayout.Tab) {
-        viewPager.currentItem = tab.position
-        currentPage = tab.position
+        viewModel.currentPage = tab.position
     }
 
     override fun onTabUnselected(tab: TabLayout.Tab) {}
 
     override fun onTabReselected(tab: TabLayout.Tab) {}
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putInt(SORT_BOTTOM_SHEET_STATE, sortBottomSheetBehavior.state)
-        super.onSaveInstanceState(outState)
-    }
-
     companion object {
         const val LIST_TYPE_ARG = "LIST_TYPE_ARG"
         const val TAB_VALUE_ARG = "TAB_VALUE_ARG"
-        const val SORT_BOTTOM_SHEET_STATE = "SORT_BOTTOM_SHEET_STATE"
         const val VNLIST = 1
         const val VOTELIST = 2
         const val WISHLIST = 3
-
-        var currentPage = 0
     }
 }

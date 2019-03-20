@@ -44,7 +44,6 @@ class VNDetailsFragment : BaseFragment(), SlideshowAdapter.Listener, TabLayout.O
     lateinit var viewModel: VNDetailsViewModel
     private lateinit var slideshowAdapter: SlideshowAdapter
     private lateinit var tabsAdapter: VNDetailsTabsAdapter
-    private var currentPage = 0
 
     private var vnId: Long = 0
 
@@ -83,10 +82,18 @@ class VNDetailsFragment : BaseFragment(), SlideshowAdapter.Listener, TabLayout.O
             }
         }
 
+        viewModel = ViewModelProviders.of(this).get(VNDetailsViewModel::class.java)
+        viewModel.accountData = home()?.viewModel?.accountData ?: return
+        viewModel.loadingData.observe(this, ::showLoading)
+        viewModel.vnData.observe(this, ::showVn)
+        home()?.viewModel?.accountData?.observe(this, ::showAccount)
+        viewModel.errorData.observeOnce(this, ::showError)
+        viewModel.initErrorData.observeOnce(this, ::onInitError)
+
         tabsAdapter = VNDetailsTabsAdapter(childFragmentManager)
         viewPager.adapter = tabsAdapter
         tabLayout.setupWithViewPager(viewPager)
-        if (currentPage > 0) postponeEnterTransition()
+        if (viewModel.currentPage >= 0) postponeEnterTransition() // TODO better condition here
 
         /* Bottom sheet */
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
@@ -105,13 +112,6 @@ class VNDetailsFragment : BaseFragment(), SlideshowAdapter.Listener, TabLayout.O
 
         slideshow.transitionName = "slideshow$vnId"
 
-        viewModel = ViewModelProviders.of(this).get(VNDetailsViewModel::class.java)
-        viewModel.accountData = home()?.viewModel?.accountData ?: return
-        viewModel.loadingData.observe(this, ::showLoading)
-        viewModel.vnData.observe(this, ::showVn)
-        home()?.viewModel?.accountData?.observe(this, ::showAccount)
-        viewModel.errorData.observeOnce(this, ::showError)
-        viewModel.initErrorData.observeOnce(this, ::onInitError)
         viewModel.loadVn(vnId, false)
     }
 
@@ -125,7 +125,7 @@ class VNDetailsFragment : BaseFragment(), SlideshowAdapter.Listener, TabLayout.O
         numberOfImages.text = String.format("x%d", screens.size)
 
         tabsAdapter.vn = vn
-        if (currentPage > 0) viewPager.currentItem = currentPage
+        if (viewModel.currentPage >= 0) viewPager.currentItem = viewModel.currentPage
         tabLayout.replaceOnTabSelectedListener(this)
     }
 
@@ -188,7 +188,7 @@ class VNDetailsFragment : BaseFragment(), SlideshowAdapter.Listener, TabLayout.O
         loading ?: return
         bottomSheetButtons.forEach { it.isEnabled = loading <= 0 }
 
-        if (currentPage <= 0) startPostponedEnterTransition()
+        if (viewModel.currentPage < 0) startPostponedEnterTransition() // TODO better condition here
     }
 
     private fun onInitError(message: String?) {
@@ -252,7 +252,7 @@ class VNDetailsFragment : BaseFragment(), SlideshowAdapter.Listener, TabLayout.O
     }
 
     override fun onTabSelected(tab: TabLayout.Tab) {
-        currentPage = tab.position
+        viewModel.currentPage = tab.position
     }
 
     companion object {

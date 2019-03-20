@@ -31,6 +31,7 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
     val vnData: MutableLiveData<VN> = MutableLiveData()
     val initErrorData: MutableLiveData<String> = MutableLiveData()
     lateinit var accountData: MutableLiveData<AccountItems>
+    var currentPage = -1
 
     init {
         (application as App).appComponent.inject(this)

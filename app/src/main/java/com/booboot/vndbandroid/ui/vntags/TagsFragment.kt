@@ -47,14 +47,13 @@ class TagsFragment : BaseFragment(), TagsAdapter.Callback {
             /* [IMPORTANT] Filling the tags adapter immediately. When the fragment is recreated, if we let the ViewModel observer call this method,
             it is only called in onStart(), which is AFTER onViewRestoredState(), which is TOO LATE for the adapter to restore its state.
             So we have to manually call the callback now. */
-            showTags(viewModel.tagsData.value)
+            showTags(it)
         }
 
         viewModel.loadTags(vnId, false)
     }
 
-    private fun showTags(tags: VNDetailsTags?) {
-        if (tags == null) return
+    private fun showTags(tags: VNDetailsTags) {
         tagsAdapter.items = tags
         startParentEnterTransition()
     }
