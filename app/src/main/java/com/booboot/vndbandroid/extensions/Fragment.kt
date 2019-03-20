@@ -33,6 +33,6 @@ fun Fragment.setupStatusBar(drawBehind: Boolean = false) = activity?.let { activ
 
 fun LifecycleOwner.actualOwner() = (this as? Fragment)?.viewLifecycleOwner ?: this
 
-fun Fragment.startParentEnterTransition() = view?.doOnNextLayout {
+fun Fragment.startParentEnterTransition() = view?.post {
     parentFragment?.startPostponedEnterTransition()
 }

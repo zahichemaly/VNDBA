@@ -14,6 +14,8 @@ import com.booboot.vndbandroid.extensions.home
 import com.booboot.vndbandroid.extensions.observe
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.openVN
+import com.booboot.vndbandroid.extensions.restoreState
+import com.booboot.vndbandroid.extensions.saveState
 import com.booboot.vndbandroid.extensions.startParentEnterTransition
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndb.VN
@@ -68,6 +70,10 @@ class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
     private fun showVns(accountItems: AccountItems) {
         adapter.filterString = home()?.savedFilter ?: ""
         adapter.items = accountItems
+
+        vnList.restoreState(viewModel.layoutState) {
+            viewModel.layoutState = null
+        }
         startParentEnterTransition()
     }
 
@@ -82,6 +88,11 @@ class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onRefresh() {
         home()?.startupSync()
+    }
+
+    override fun onPause() {
+        viewModel.layoutState = vnList.saveState()
+        super.onPause()
     }
 
     private fun homeTabs() = parentFragment as? HomeTabsFragment?
