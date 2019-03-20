@@ -152,7 +152,7 @@ class HomeActivity : BaseActivity(), View.OnClickListener, SearchView.OnQueryTex
             return
         }
 
-        val fragment = supportFragmentManager.primaryNavigationFragment
+        val fragment = supportFragmentManager.findFragmentById(R.id.navHost)?.childFragmentManager?.primaryNavigationFragment
         when (fragment) {
             is HomeTabsFragment -> if (fragment.sortBottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
                 return fragment.sortBottomSheetBehavior.toggle()
