@@ -13,6 +13,7 @@ import com.booboot.vndbandroid.extensions.home
 import com.booboot.vndbandroid.extensions.observe
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.onStateChanged
+import com.booboot.vndbandroid.extensions.postponeEnterTransitionIfExists
 import com.booboot.vndbandroid.extensions.replaceOnTabSelectedListener
 import com.booboot.vndbandroid.extensions.selectIf
 import com.booboot.vndbandroid.extensions.setupStatusBar
@@ -74,7 +75,7 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
         viewPager.adapter = adapter
         tabLayout.setupWithViewPager(viewPager)
         tabLayout.removeOnTabSelectedListener(this)
-        if (viewModel.currentPage >= 0) postponeEnterTransition() // TODO better condition here
+        postponeEnterTransitionIfExists(viewModel)
 
         sortBottomSheetBehavior = BottomSheetBehavior.from(sortBottomSheet)
         sortBottomSheetBehavior.state = viewModel.sortBottomSheetState

@@ -83,7 +83,9 @@ class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     private fun onVnClicked(itemView: View, vn: VN) {
-        findNavController().openVN(vn, itemView.image)
+        homeTabs()?.viewModel?.let {
+            findNavController().openVN(vn, itemView.image, it)
+        }
     }
 
     override fun onRefresh() {

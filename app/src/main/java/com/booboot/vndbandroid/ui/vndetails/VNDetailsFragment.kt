@@ -15,6 +15,7 @@ import com.booboot.vndbandroid.extensions.observe
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.onStateChanged
 import com.booboot.vndbandroid.extensions.onSubmitListener
+import com.booboot.vndbandroid.extensions.postponeEnterTransitionIfExists
 import com.booboot.vndbandroid.extensions.preventLineBreak
 import com.booboot.vndbandroid.extensions.replaceOnTabSelectedListener
 import com.booboot.vndbandroid.extensions.selectIf
@@ -59,7 +60,6 @@ class VNDetailsFragment : BaseFragment(), SlideshowAdapter.Listener, TabLayout.O
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        postponeEnterTransition()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -93,7 +93,7 @@ class VNDetailsFragment : BaseFragment(), SlideshowAdapter.Listener, TabLayout.O
         tabsAdapter = VNDetailsTabsAdapter(childFragmentManager)
         viewPager.adapter = tabsAdapter
         tabLayout.setupWithViewPager(viewPager)
-        if (viewModel.currentPage >= 0) postponeEnterTransition() // TODO better condition here
+        postponeEnterTransitionIfExists(viewModel)
 
         /* Bottom sheet */
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
@@ -187,8 +187,6 @@ class VNDetailsFragment : BaseFragment(), SlideshowAdapter.Listener, TabLayout.O
         super.showLoading(loading)
         loading ?: return
         bottomSheetButtons.forEach { it.isEnabled = loading <= 0 }
-
-        if (viewModel.currentPage < 0) startPostponedEnterTransition() // TODO better condition here
     }
 
     private fun onInitError(message: String?) {

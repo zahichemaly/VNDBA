@@ -5,8 +5,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.doOnNextLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ViewModel
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
+import com.booboot.vndbandroid.ui.base.BaseViewModel
 import com.booboot.vndbandroid.ui.home.HomeActivity
 import kotlinx.android.synthetic.main.home_activity.*
 import kotlinx.android.synthetic.main.home_tabs_fragment.*
@@ -35,4 +37,9 @@ fun LifecycleOwner.actualOwner() = (this as? Fragment)?.viewLifecycleOwner ?: th
 
 fun Fragment.startParentEnterTransition() = view?.post {
     parentFragment?.startPostponedEnterTransition()
+}
+
+fun Fragment.postponeEnterTransitionIfExists(viewModel: BaseViewModel) {
+    if (viewModel.hasPendingTransition) postponeEnterTransition()
+    viewModel.hasPendingTransition = false
 }

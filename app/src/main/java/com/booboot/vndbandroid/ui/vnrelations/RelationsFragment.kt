@@ -57,8 +57,9 @@ class RelationsFragment : BaseFragment(), (Anime) -> Unit, (View, Relation, VN?)
     }
 
     override fun invoke(view: View, relation: Relation, vn: VN?) {
-        vn?.let {
-            findNavController().openVN(it, view.image)
+        vn ?: return
+        vnDetailsFragment()?.viewModel?.let {
+            findNavController().openVN(vn, view.image, it)
         }
     }
 }

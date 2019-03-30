@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.transition.TransitionInflater
+import com.booboot.vndbandroid.ui.vndetails.VNDetailsFragment
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.progress_bar.*
 import kotlinx.android.synthetic.main.vn_list_fragment.*
@@ -33,4 +34,6 @@ abstract class BaseFragment : Fragment() {
         progressBar?.visibility = if (loading > 0) View.VISIBLE else View.GONE
         refreshLayout?.isRefreshing = loading > 0
     }
+
+    fun vnDetailsFragment() = parentFragment as? VNDetailsFragment
 }
