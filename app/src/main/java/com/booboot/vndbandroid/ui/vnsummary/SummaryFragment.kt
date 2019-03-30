@@ -69,7 +69,7 @@ class SummaryFragment : BaseFragment() {
                         val color = ContextCompat.getColor(ctx, platform.color)
                         view.tagText.setTextColor(if (ctx.dayNightTheme() == "light") color.darken() else color)
                         view.tagText.setBackgroundColor(color.adjustAlpha(0.157f))
-                        platforms.addView(view)
+                        platforms?.addView(view)
                     }
                 }
             }
@@ -82,7 +82,7 @@ class SummaryFragment : BaseFragment() {
                         val chip = view as Chip
                         chip.text = language.text
                         chip.chipIcon = VectorDrawableCompat.create(ctx.resources, language.flag, ctx.theme)
-                        languages.addView(chip)
+                        languages?.addView(chip)
                     }
                 }
             }
