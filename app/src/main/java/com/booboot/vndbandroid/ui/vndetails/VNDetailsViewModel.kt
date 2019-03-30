@@ -1,6 +1,7 @@
 package com.booboot.vndbandroid.ui.vndetails
 
 import android.app.Application
+import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.extensions.minus
@@ -133,7 +134,19 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
         .doFinally { loadingData.minus() }
         .subscribe({ accountData.value = it }, ::onError)
 
+    override fun restoreState(state: Bundle?) {
+        super.restoreState(state)
+        state ?: return
+        currentPage = state.getInt(CURRENT_PAGE)
+    }
+
+    override fun saveState(state: Bundle) {
+        super.saveState(state)
+        state.putInt(CURRENT_PAGE, currentPage)
+    }
+
     companion object {
         private const val DISPOSABLE_VN = "DISPOSABLE_VN"
+        private const val CURRENT_PAGE = "CURRENT_PAGE"
     }
 }

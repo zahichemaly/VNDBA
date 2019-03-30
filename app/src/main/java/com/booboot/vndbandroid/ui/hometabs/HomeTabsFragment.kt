@@ -34,9 +34,8 @@ import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.home_tabs_fragment.*
 import kotlinx.android.synthetic.main.vn_list_sort_bottom_sheet.*
 
-class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.OnClickListener {
+class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelectedListener, View.OnClickListener {
     override val layout: Int = R.layout.home_tabs_fragment
-    lateinit var viewModel: HomeTabsViewModel
     lateinit var sortBottomSheetBehavior: BottomSheetBehavior<View>
 
     private var type: Int = 0
@@ -63,6 +62,7 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
         setupToolbar()
 
         viewModel = ViewModelProviders.of(this).get(HomeTabsViewModel::class.java)
+        viewModel.restoreState(savedInstanceState)
         viewModel.titlesData.observeOnce(this, ::showTitles)
         viewModel.sortData.observeOnce(this) { showSort() }
         viewModel.errorData.observeOnce(this, ::showError)

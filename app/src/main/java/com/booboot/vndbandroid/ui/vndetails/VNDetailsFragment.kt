@@ -39,10 +39,8 @@ import kotlinx.android.synthetic.main.vn_details_bottom_sheet.*
 import kotlinx.android.synthetic.main.vn_details_fragment.*
 import java.io.Serializable
 
-class VNDetailsFragment : BaseFragment(), SlideshowAdapter.Listener, TabLayout.OnTabSelectedListener, View.OnClickListener, View.OnFocusChangeListener {
+class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), SlideshowAdapter.Listener, TabLayout.OnTabSelectedListener, View.OnClickListener, View.OnFocusChangeListener {
     override val layout: Int = R.layout.vn_details_fragment
-
-    lateinit var viewModel: VNDetailsViewModel
     private lateinit var slideshowAdapter: SlideshowAdapter
     private lateinit var tabsAdapter: VNDetailsTabsAdapter
 
@@ -83,6 +81,7 @@ class VNDetailsFragment : BaseFragment(), SlideshowAdapter.Listener, TabLayout.O
         }
 
         viewModel = ViewModelProviders.of(this).get(VNDetailsViewModel::class.java)
+        viewModel.restoreState(savedInstanceState)
         viewModel.accountData = home()?.viewModel?.accountData ?: return
         viewModel.loadingData.observe(this, ::showLoading)
         viewModel.vnData.observe(this, ::showVn)

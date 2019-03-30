@@ -11,9 +11,10 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.progress_bar.*
 import kotlinx.android.synthetic.main.vn_list_fragment.*
 
-abstract class BaseFragment : Fragment() {
+abstract class BaseFragment<T : BaseViewModel> : Fragment() {
     abstract val layout: Int
     lateinit var rootView: View
+    lateinit var viewModel: T
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
@@ -36,4 +37,9 @@ abstract class BaseFragment : Fragment() {
     }
 
     fun vnDetailsFragment() = parentFragment as? VNDetailsFragment
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        viewModel.saveState(outState)
+    }
 }

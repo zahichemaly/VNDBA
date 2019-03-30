@@ -1,11 +1,10 @@
 package com.booboot.vndbandroid.extensions
 
+import android.graphics.Color
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.core.view.doOnNextLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.ViewModel
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.booboot.vndbandroid.ui.base.BaseViewModel
@@ -23,7 +22,7 @@ fun Fragment.setupToolbar() {
 
 fun Fragment.setupStatusBar(drawBehind: Boolean = false) = activity?.let { activity ->
     val toolbar = if (!drawBehind) {
-        activity.window.statusBarColor = ContextCompat.getColor(activity, android.R.color.transparent)
+        activity.window.statusBarColor = Color.TRANSPARENT
         view
     } else {
         toolbar
@@ -35,7 +34,7 @@ fun Fragment.setupStatusBar(drawBehind: Boolean = false) = activity?.let { activ
 
 fun LifecycleOwner.actualOwner() = (this as? Fragment)?.viewLifecycleOwner ?: this
 
-fun Fragment.startParentEnterTransition() = view?.post {
+fun Fragment.startParentEnterTransition() = view?.doOnNextLayout {
     parentFragment?.startPostponedEnterTransition()
 }
 

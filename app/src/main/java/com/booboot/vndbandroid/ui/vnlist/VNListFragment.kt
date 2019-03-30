@@ -29,9 +29,8 @@ import kotlinx.android.synthetic.main.home_tabs_fragment.*
 import kotlinx.android.synthetic.main.vn_card.view.*
 import kotlinx.android.synthetic.main.vn_list_fragment.*
 
-class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
+class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRefreshListener {
     override val layout: Int = R.layout.vn_list_fragment
-    private lateinit var viewModel: VNListViewModel
     private lateinit var adapter: VNAdapter
     private var tabValue: Int = 0
     private var listType: Int = 0
@@ -43,6 +42,7 @@ class VNListFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
         listType = arguments?.getInt(HomeTabsFragment.LIST_TYPE_ARG) ?: VNLIST
 
         viewModel = ViewModelProviders.of(this).get(VNListViewModel::class.java)
+        viewModel.restoreState(savedInstanceState)
         viewModel.accountData.observeOnce(this) { showVns(it) }
         viewModel.errorData.observeOnce(this, ::showError)
         home()?.viewModel?.loadingData?.observe(this, ::showLoading)

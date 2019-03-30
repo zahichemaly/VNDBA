@@ -16,7 +16,7 @@
     <style name="Base.AppTheme.Dark" parent="Theme.MaterialComponents">
         <!-- dark theme attributes -->
         <item name="colorPrimary">#424242</item>
-        <item name="colorPrimaryDark">#303030</item>
+        <item name="colorPrimaryDark">?android:attr/windowBackground</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:navigationBarColor">?attr/colorPrimaryDark</item>
         <item name="themeName">dark</item>
@@ -39,7 +39,9 @@
         <item name="windowNoTitle">true</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBar">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowTranslucentStatus">false</item>
     </style>
 
     <style name="AppTheme.DayNight.NoActionBar.Translucent">

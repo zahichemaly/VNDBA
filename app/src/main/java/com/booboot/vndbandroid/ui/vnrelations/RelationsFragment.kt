@@ -23,9 +23,8 @@ import com.booboot.vndbandroid.util.Pixels
 import kotlinx.android.synthetic.main.relations_fragment.*
 import kotlinx.android.synthetic.main.vn_card.view.*
 
-class RelationsFragment : BaseFragment(), (Anime) -> Unit, (View, Relation, VN?) -> Unit {
+class RelationsFragment : BaseFragment<RelationsViewModel>(), (Anime) -> Unit, (View, Relation, VN?) -> Unit {
     override val layout: Int = R.layout.relations_fragment
-    private lateinit var viewModel: RelationsViewModel
     private lateinit var adapter: RelationsAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -1,6 +1,7 @@
 package com.booboot.vndbandroid.ui.base
 
 import android.app.Application
+import android.os.Bundle
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.booboot.vndbandroid.extensions.errorMessage
@@ -26,5 +27,18 @@ abstract class BaseViewModel constructor(application: Application) : AndroidView
 
     override fun onCleared() {
         disposables.forEach { it.value.dispose() }
+    }
+
+    open fun restoreState(state: Bundle?) {
+        state ?: return
+        hasPendingTransition = state.getBoolean(HAS_PENDING_TRANSITION)
+    }
+
+    open fun saveState(state: Bundle) {
+        state.putBoolean(HAS_PENDING_TRANSITION, hasPendingTransition)
+    }
+
+    companion object {
+        private const val HAS_PENDING_TRANSITION = "HAS_PENDING_TRANSITION"
     }
 }
