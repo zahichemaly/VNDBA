@@ -63,7 +63,7 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
         setupToolbar()
 
         viewModel = ViewModelProviders.of(this).get(HomeTabsViewModel::class.java)
-        viewModel.titlesData.observe(this, ::showTitles)
+        viewModel.titlesData.observeOnce(this, ::showTitles)
         viewModel.sortData.observeOnce(this) { showSort() }
         viewModel.errorData.observeOnce(this, ::showError)
         viewModel.loadingData.observe(this, ::showLoading)
@@ -86,7 +86,6 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
         sortBottomSheetButtons = listOf(buttonReverseSort, buttonSortID, buttonSortReleaseDate, buttonSortLength, buttonSortPopularity, buttonSortRating, buttonSortStatus, buttonSortVote, buttonSortPriority)
         sortBottomSheetButtons.forEach { it.setOnClickListener(this) }
 
-        update(false)
         showSort()
     }
 
