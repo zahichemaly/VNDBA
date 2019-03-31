@@ -252,6 +252,11 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), SlideshowAdapter.L
         viewModel.currentPage = tab.position
     }
 
+    override fun onDestroyView() {
+        tabLayout?.removeOnTabSelectedListener(this)
+        super.onDestroyView()
+    }
+
     companion object {
         const val EXTRA_VN_ID = "vnId"
     }

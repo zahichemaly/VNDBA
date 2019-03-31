@@ -74,7 +74,6 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
         }
         viewPager.adapter = adapter
         tabLayout.setupWithViewPager(viewPager)
-        tabLayout.removeOnTabSelectedListener(this)
         postponeEnterTransitionIfExists(viewModel)
 
         sortBottomSheetBehavior = BottomSheetBehavior.from(sortBottomSheet)
@@ -143,6 +142,11 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
     override fun onTabUnselected(tab: TabLayout.Tab) {}
 
     override fun onTabReselected(tab: TabLayout.Tab) {}
+
+    override fun onDestroyView() {
+        tabLayout?.removeOnTabSelectedListener(this)
+        super.onDestroyView()
+    }
 
     companion object {
         const val LIST_TYPE_ARG = "LIST_TYPE_ARG"
