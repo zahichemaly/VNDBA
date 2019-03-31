@@ -46,14 +46,14 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
         viewModel.accountData.observeOnce(this) { showVns(it) }
         viewModel.errorData.observeOnce(this, ::showError)
         home()?.viewModel?.loadingData?.observe(this, ::showLoading)
-        home()?.viewModel?.accountData?.observe(this) { update(it) }
+        home()?.viewModel?.accountData?.observe(this) { update() }
         home()?.viewModel?.filterData?.observeOnce(this, ::filter)
         homeTabs()?.viewModel?.sortData?.observeOnce(this) { update() }
 
         return rootView
     }
 
-    private fun update(accountItems: AccountItems? = null, force: Boolean = true) = viewModel.getVns(listType, tabValue, accountItems, force)
+    private fun update(force: Boolean = true) = viewModel.getVns(listType, tabValue, force)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val context = context ?: return

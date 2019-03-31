@@ -22,10 +22,8 @@ import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.setLightStatusAndNavigation
 import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.model.vndb.AccountItems
-import com.booboot.vndbandroid.model.vndbandroid.EVENT_VNLIST_CHANGED
 import com.booboot.vndbandroid.model.vndbandroid.NOT_SET
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
-import com.booboot.vndbandroid.service.EventReceiver
 import com.booboot.vndbandroid.ui.base.BaseActivity
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment
 import com.booboot.vndbandroid.ui.login.LoginActivity
@@ -69,10 +67,6 @@ class HomeActivity : BaseActivity(), View.OnClickListener, SearchView.OnQueryTex
             if (supportFragmentManager.primaryNavigationFragment == null) {
                 if (shouldSync) viewModel.startupSync()
             }
-
-            EventReceiver(this).observe(mapOf(
-                EVENT_VNLIST_CHANGED to { viewModel.getVns() }
-            ))
         }
     }
 
