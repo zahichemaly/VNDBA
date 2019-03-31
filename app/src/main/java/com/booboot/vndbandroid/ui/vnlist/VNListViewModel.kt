@@ -1,8 +1,6 @@
 package com.booboot.vndbandroid.ui.vnlist
 
 import android.app.Application
-import android.os.Bundle
-import android.os.Parcelable
 import androidx.lifecycle.MutableLiveData
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.model.vndb.AccountItems
@@ -29,7 +27,6 @@ import javax.inject.Inject
 class VNListViewModel constructor(application: Application) : BaseViewModel(application) {
     @Inject lateinit var accountRepository: AccountRepository
     val accountData: MutableLiveData<AccountItems> = MutableLiveData()
-    var layoutState: Parcelable? = null
 
     init {
         (application as App).appComponent.inject(this)
@@ -78,19 +75,7 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
             .subscribe({ accountData.value = it }, ::onError)
     }
 
-    override fun restoreState(state: Bundle?) {
-        super.restoreState(state)
-        state ?: return
-        layoutState = state.getParcelable(LAYOUT_STATE)
-    }
-
-    override fun saveState(state: Bundle) {
-        super.saveState(state)
-        state.putParcelable(LAYOUT_STATE, layoutState)
-    }
-
     companion object {
         private const val DISPOSABLE_GET_VN = "DISPOSABLE_GET_VN"
-        private const val LAYOUT_STATE = "LAYOUT_STATE"
     }
 }

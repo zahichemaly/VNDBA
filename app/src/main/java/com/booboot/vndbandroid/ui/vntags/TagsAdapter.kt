@@ -8,11 +8,12 @@ import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.diff.VNDetailsTagsDiffCallback
 import com.booboot.vndbandroid.model.vndbandroid.VNDetailsTags
 import com.booboot.vndbandroid.model.vndbandroid.VNTag
+import com.booboot.vndbandroid.ui.base.BaseAdapter
 
 /**
  * Created by od on 22/11/2016.
  */
-class TagsAdapter(private val callback: Callback) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class TagsAdapter(private val callback: Callback) : BaseAdapter<RecyclerView.ViewHolder>() {
     interface Callback {
         fun onTitleClicked(title: String)
         fun onChipClicked(tag: VNTag)

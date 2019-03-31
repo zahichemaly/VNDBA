@@ -1,8 +1,8 @@
 package com.booboot.vndbandroid.extensions
 
-import android.os.Parcelable
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.booboot.vndbandroid.ui.base.BaseViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 fun RecyclerView.hideOnBottom(fab: FloatingActionButton?) {
@@ -23,9 +23,9 @@ fun RecyclerView.hideOnBottom(fab: FloatingActionButton?) {
 
 fun RecyclerView.saveState() = layoutManager?.onSaveInstanceState()
 
-fun RecyclerView.restoreState(state: Parcelable?, onDone: () -> Unit = {}) = post {
-    state?.let {
+fun RecyclerView.restoreState(viewModel: BaseViewModel) = post {
+    viewModel.layoutState?.let {
         layoutManager?.onRestoreInstanceState(it)
-        onDone()
+        viewModel.layoutState = null
     }
 }

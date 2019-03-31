@@ -9,6 +9,8 @@ import com.booboot.vndbandroid.extensions.observe
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.openURL
 import com.booboot.vndbandroid.extensions.openVN
+import com.booboot.vndbandroid.extensions.restoreState
+import com.booboot.vndbandroid.extensions.saveState
 import com.booboot.vndbandroid.extensions.startParentEnterTransition
 import com.booboot.vndbandroid.model.vndb.Anime
 import com.booboot.vndbandroid.model.vndb.Links
@@ -48,7 +50,9 @@ class RelationsFragment : BaseFragment<RelationsViewModel>(), (Anime) -> Unit, (
     private fun showRelations(relationsData: RelationsData?) {
         relationsData ?: return
         adapter.relationsData = relationsData
-        startParentEnterTransition()
+
+        recyclerView.restoreState(viewModel)
+        startParentEnterTransition(adapter)
     }
 
     override fun invoke(anime: Anime) {
@@ -60,5 +64,10 @@ class RelationsFragment : BaseFragment<RelationsViewModel>(), (Anime) -> Unit, (
         vnDetailsFragment()?.viewModel?.let {
             findNavController().openVN(vn, view.image, it)
         }
+    }
+
+    override fun onPause() {
+        viewModel.layoutState = recyclerView.saveState()
+        super.onPause()
     }
 }

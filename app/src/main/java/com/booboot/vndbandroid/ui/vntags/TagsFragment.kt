@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.observe
 import com.booboot.vndbandroid.extensions.observeOnce
+import com.booboot.vndbandroid.extensions.restoreState
+import com.booboot.vndbandroid.extensions.saveState
 import com.booboot.vndbandroid.extensions.startParentEnterTransition
 import com.booboot.vndbandroid.model.vndbandroid.VNDetailsTags
 import com.booboot.vndbandroid.model.vndbandroid.VNTag
@@ -54,7 +56,9 @@ class TagsFragment : BaseFragment<TagsViewModel>(), TagsAdapter.Callback {
 
     private fun showTags(tags: VNDetailsTags) {
         tagsAdapter.items = tags
-        startParentEnterTransition()
+
+        recyclerView.restoreState(viewModel)
+        startParentEnterTransition(tagsAdapter)
     }
 
     override fun onTitleClicked(title: String) {
@@ -62,5 +66,10 @@ class TagsFragment : BaseFragment<TagsViewModel>(), TagsAdapter.Callback {
     }
 
     override fun onChipClicked(tag: VNTag) {
+    }
+
+    override fun onPause() {
+        viewModel.layoutState = recyclerView.saveState()
+        super.onPause()
     }
 }

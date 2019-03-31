@@ -2,11 +2,11 @@ package com.booboot.vndbandroid.extensions
 
 import android.graphics.Color
 import android.view.ViewGroup
-import androidx.core.view.doOnNextLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
+import com.booboot.vndbandroid.ui.base.BaseAdapter
 import com.booboot.vndbandroid.ui.base.BaseViewModel
 import com.booboot.vndbandroid.ui.home.HomeActivity
 import kotlinx.android.synthetic.main.home_activity.*
@@ -34,7 +34,11 @@ fun Fragment.setupStatusBar(drawBehind: Boolean = false) = activity?.let { activ
 
 fun LifecycleOwner.actualOwner() = (this as? Fragment)?.viewLifecycleOwner ?: this
 
-fun Fragment.startParentEnterTransition() = view?.doOnNextLayout {
+fun Fragment.startParentEnterTransition(adapter: BaseAdapter<*>? = null) = adapter?.apply {
+    onFinishDrawing = {
+        parentFragment?.startPostponedEnterTransition()
+    }
+} ?: view?.post {
     parentFragment?.startPostponedEnterTransition()
 }
 

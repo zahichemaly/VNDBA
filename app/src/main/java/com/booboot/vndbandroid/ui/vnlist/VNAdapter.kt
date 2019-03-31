@@ -6,11 +6,11 @@ import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.RecyclerView
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.diff.VNDiffCallback
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndb.VN
+import com.booboot.vndbandroid.ui.base.BaseAdapter
 
 class VNAdapter(
     private val onVnClicked: (View, VN) -> Unit,
@@ -19,7 +19,7 @@ class VNAdapter(
     private val showRating: Boolean = false,
     private val showPopularity: Boolean = false,
     private val showVoteCount: Boolean = false
-) : RecyclerView.Adapter<VNHolder>(), Filterable {
+) : BaseAdapter<VNHolder>(), Filterable {
     var items = AccountItems()
         set(value) {
             field = value
