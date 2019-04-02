@@ -16,11 +16,11 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.4.0-rc02'
+        classpath 'com.android.tools.build:gradle:3.4.0-rc03'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'io.fabric.tools:gradle:1.28.0'
         classpath "io.objectbox:objectbox-gradle-plugin:$objectbox_version"
-        classpath 'android.arch.navigation:navigation-safe-args-gradle-plugin:1.0.0-beta02'
+        classpath 'android.arch.navigation:navigation-safe-args-gradle-plugin:1.0.0'
     }
 }
 
@@ -38,7 +38,7 @@ ext {
     rxandroid_version = '2.1.0'
     dagger_version = '2.17'
     moshi_version = '1.8.0'
-    navigation_version = '1.0.0-beta02'
+    navigation_version = '1.0.0'
 }
 
 task clean(type: Delete) {
