@@ -19,23 +19,21 @@ class VNDetailsTabsAdapter(fm: FragmentManager?) : FragmentStatePagerAdapter(fm)
             notifyDataSetChanged()
         }
 
-    override fun getItem(position: Int): Fragment {
-        val args = Bundle()
-        args.putLong(VNDetailsFragment.EXTRA_VN_ID, vn?.id ?: 0)
-
-        val fragment = when (position) {
-            0 -> SummaryFragment()
-            1 -> TagsFragment()
-            2 -> RelationsFragment()
-            else -> Fragment()
+    override fun getItem(position: Int): Fragment = getClass(position).newInstance().apply {
+        arguments = Bundle().apply {
+            putLong(VNDetailsFragment.EXTRA_VN_ID, vn?.id ?: 0)
         }
-
-        fragment.arguments = args
-        return fragment
     }
 
     override fun getCount(): Int = numOfTabs
 
     private val tabs = listOf("Summary", "Tags", "Relations", "Characters", "Releases", "Staff")
     override fun getPageTitle(position: Int): CharSequence? = tabs[position]
+
+    fun getClass(position: Int) = when (position) {
+        0 -> SummaryFragment::class.java
+        1 -> TagsFragment::class.java
+        2 -> RelationsFragment::class.java
+        else -> Fragment::class.java
+    }
 }

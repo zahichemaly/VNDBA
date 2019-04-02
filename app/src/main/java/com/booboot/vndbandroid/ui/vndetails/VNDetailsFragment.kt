@@ -30,6 +30,7 @@ import com.booboot.vndbandroid.model.vndbandroid.Priority
 import com.booboot.vndbandroid.model.vndbandroid.Status
 import com.booboot.vndbandroid.model.vndbandroid.Vote
 import com.booboot.vndbandroid.ui.base.BaseFragment
+import com.booboot.vndbandroid.ui.base.HasTabs
 import com.booboot.vndbandroid.ui.slideshow.SlideshowActivity
 import com.booboot.vndbandroid.ui.slideshow.SlideshowAdapter
 import com.booboot.vndbandroid.util.StopFocusStealingAppBarBehavior
@@ -39,7 +40,7 @@ import kotlinx.android.synthetic.main.vn_details_bottom_sheet.*
 import kotlinx.android.synthetic.main.vn_details_fragment.*
 import java.io.Serializable
 
-class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), SlideshowAdapter.Listener, TabLayout.OnTabSelectedListener, View.OnClickListener, View.OnFocusChangeListener {
+class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), SlideshowAdapter.Listener, TabLayout.OnTabSelectedListener, View.OnClickListener, View.OnFocusChangeListener, HasTabs {
     override val layout: Int = R.layout.vn_details_fragment
     private lateinit var slideshowAdapter: SlideshowAdapter
     private lateinit var tabsAdapter: VNDetailsTabsAdapter
@@ -251,6 +252,8 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), SlideshowAdapter.L
     override fun onTabSelected(tab: TabLayout.Tab) {
         viewModel.currentPage = tab.position
     }
+
+    override fun currentFragmentClass() = tabsAdapter.getClass(viewPager.currentItem)
 
     override fun onDestroyView() {
         tabLayout?.removeOnTabSelectedListener(this)
