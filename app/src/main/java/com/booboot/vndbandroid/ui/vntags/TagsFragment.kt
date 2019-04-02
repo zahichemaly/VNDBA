@@ -44,19 +44,14 @@ class TagsFragment : BaseFragment<TagsViewModel>(), TagsAdapter.Callback {
         viewModel = ViewModelProviders.of(this).get(TagsViewModel::class.java)
         viewModel.errorData.observeOnce(this, ::showError)
         viewModel.tagsData.observe(this, ::showTags)
-        viewModel.tagsData.value?.let {
-            /* [IMPORTANT] Filling the tags adapter immediately. When the fragment is recreated, if we let the ViewModel observer call this method,
-            it is only called in onStart(), which is AFTER onViewRestoredState(), which is TOO LATE for the adapter to restore its state.
-            So we have to manually call the callback now. */
-            showTags(it)
-        }
 
+        /* [IMPORTANT] Manually updating the UI now so the state can be restored */
+        viewModel.tagsData.value?.let(::showTags)
         viewModel.loadTags(vnId, false)
     }
 
     private fun showTags(tags: VNDetailsTags) {
         tagsAdapter.items = tags
-
         recyclerView.restoreState(viewModel)
         startParentEnterTransition(tagsAdapter)
     }

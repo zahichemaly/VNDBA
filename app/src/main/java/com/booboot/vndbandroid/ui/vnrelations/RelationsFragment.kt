@@ -24,14 +24,14 @@ import com.booboot.vndbandroid.util.Pixels
 import kotlinx.android.synthetic.main.relations_fragment.*
 import kotlinx.android.synthetic.main.vn_card.view.*
 
-class RelationsFragment : BaseFragment<RelationsViewModel>(), (Anime) -> Unit, (View, Relation, VN?) -> Unit {
+class RelationsFragment : BaseFragment<RelationsViewModel>() {
     override val layout: Int = R.layout.relations_fragment
     private lateinit var adapter: RelationsAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val context = context ?: return
         recyclerView.layoutManager = GridAutofitLayoutManager(context, Pixels.px(300))
-        adapter = RelationsAdapter(this, this)
+        adapter = RelationsAdapter(::onAnimeClicked, ::onRelationClicked)
         recyclerView.adapter = adapter
 
         val vnId = arguments?.getLong(VNDetailsFragment.EXTRA_VN_ID) ?: 0
@@ -41,19 +41,17 @@ class RelationsFragment : BaseFragment<RelationsViewModel>(), (Anime) -> Unit, (
         home()?.viewModel?.accountData?.observe(this) { viewModel.loadVn(vnId) }
     }
 
-    private fun showRelations(relationsData: RelationsData?) {
-        relationsData ?: return
+    private fun showRelations(relationsData: RelationsData) {
         adapter.relationsData = relationsData
-
         recyclerView.restoreState(viewModel)
         startParentEnterTransition(adapter)
     }
 
-    override fun invoke(anime: Anime) {
+    private fun onAnimeClicked(anime: Anime) {
         context?.openURL(Links.ANIDB + anime.id)
     }
 
-    override fun invoke(view: View, relation: Relation, vn: VN?) {
+    private fun onRelationClicked(view: View, relation: Relation, vn: VN?) {
         vn ?: return
         vnDetailsFragment()?.viewModel?.let {
             findNavController().openVN(vn, view.image, it)
