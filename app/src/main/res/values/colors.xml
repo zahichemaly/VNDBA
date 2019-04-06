@@ -13,6 +13,7 @@
     <color name="transparent80Black">#cd000000</color>
     <color name="transparentWhite">#8CFFFFFF</color>
     <color name="transparent80White">#cdffffff</color>
+    <color name="slideshowBackground">@color/white</color>
 
     <!-- Grading colors -->
     <color name="green">@color/playing</color>

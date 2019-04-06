@@ -15,3 +15,7 @@ fun NavController.openVN(vn: VN, transitionView: View, viewModel: BaseViewModel)
         FragmentNavigatorExtras(transitionView to (ViewCompat.getTransitionName(transitionView) ?: ""))
     )
 }
+
+fun NavController.openSlideshow(vnId: Long, position: Int = 0) = navigate(
+    NavigationDirections.openSlideshow(vnId, position)
+)

@@ -1,6 +1,5 @@
 package com.booboot.vndbandroid.ui.vndetails
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
@@ -9,12 +8,14 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
+import androidx.viewpager.widget.ViewPager
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.home
 import com.booboot.vndbandroid.extensions.observe
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.onStateChanged
 import com.booboot.vndbandroid.extensions.onSubmitListener
+import com.booboot.vndbandroid.extensions.openSlideshow
 import com.booboot.vndbandroid.extensions.postponeEnterTransitionIfExists
 import com.booboot.vndbandroid.extensions.preventLineBreak
 import com.booboot.vndbandroid.extensions.replaceOnTabSelectedListener
@@ -31,16 +32,14 @@ import com.booboot.vndbandroid.model.vndbandroid.Status
 import com.booboot.vndbandroid.model.vndbandroid.Vote
 import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.booboot.vndbandroid.ui.base.HasTabs
-import com.booboot.vndbandroid.ui.slideshow.SlideshowActivity
 import com.booboot.vndbandroid.ui.slideshow.SlideshowAdapter
 import com.booboot.vndbandroid.util.StopFocusStealingAppBarBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.vn_details_bottom_sheet.*
 import kotlinx.android.synthetic.main.vn_details_fragment.*
-import java.io.Serializable
 
-class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), SlideshowAdapter.Listener, TabLayout.OnTabSelectedListener, View.OnClickListener, View.OnFocusChangeListener, HasTabs {
+class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSelectedListener, View.OnClickListener, View.OnFocusChangeListener, HasTabs, ViewPager.OnPageChangeListener {
     override val layout: Int = R.layout.vn_details_fragment
     private lateinit var slideshowAdapter: SlideshowAdapter
     private lateinit var tabsAdapter: VNDetailsTabsAdapter
@@ -73,8 +72,9 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), SlideshowAdapter.L
             val vnImage = VNDetailsFragmentArgs.fromBundle(arguments).vnImage
             val vnImageNsfw = VNDetailsFragmentArgs.fromBundle(arguments).vnImageNsfw
 
-            slideshowAdapter = SlideshowAdapter(activity, this, scaleType = ImageView.ScaleType.CENTER_CROP)
+            slideshowAdapter = SlideshowAdapter(layoutInflater, ::onImageClicked, scaleType = ImageView.ScaleType.CENTER_CROP)
             slideshow.adapter = slideshowAdapter
+            slideshow.addOnPageChangeListener(this)
 
             vnImage?.let {
                 slideshowAdapter.images = mutableListOf(Screen(image = vnImage, nsfw = vnImageNsfw))
@@ -122,6 +122,7 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), SlideshowAdapter.L
         val screens = vn.image?.let { mutableListOf(Screen(image = it, nsfw = vn.image_nsfw)) } ?: mutableListOf()
         screens.addAll(vn.screens)
         slideshowAdapter.images = screens
+        slideshow.setCurrentItem(viewModel.slideshowPosition, false)
         numberOfImages.text = String.format("x%d", screens.size)
 
         tabsAdapter.vn = vn
@@ -235,13 +236,7 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), SlideshowAdapter.L
         }
     }
 
-    override fun onImageClicked(position: Int, images: List<Screen>) {
-        val activity = activity ?: return
-        val intent = Intent(activity, SlideshowActivity::class.java)
-        intent.putExtra(SlideshowActivity.INDEX_ARG, position)
-        intent.putExtra(SlideshowActivity.IMAGES_ARG, images as Serializable)
-        startActivity(intent)
-    }
+    private fun onImageClicked(position: Int) = findNavController().openSlideshow(vnId, position)
 
     override fun onTabReselected(tab: TabLayout.Tab) {
     }
@@ -251,6 +246,16 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), SlideshowAdapter.L
 
     override fun onTabSelected(tab: TabLayout.Tab) {
         viewModel.currentPage = tab.position
+    }
+
+    override fun onPageScrollStateChanged(state: Int) {
+    }
+
+    override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+    }
+
+    override fun onPageSelected(position: Int) {
+        viewModel.slideshowPosition = position
     }
 
     override fun currentFragmentClass() = tabsAdapter.getClass(viewPager.currentItem)

@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.transition.TransitionInflater
+import com.booboot.vndbandroid.extensions.home
 import com.booboot.vndbandroid.ui.vndetails.VNDetailsFragment
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.progress_bar.*
@@ -24,8 +25,7 @@ abstract class BaseFragment<T : BaseViewModel> : Fragment() {
         return rootView
     }
 
-    fun showError(message: String?) {
-        message ?: return
+    open fun showError(message: String) {
         val view = activity?.findViewById<View>(android.R.id.content) ?: return
         Snackbar.make(view, message, Snackbar.LENGTH_LONG).show()
     }
@@ -41,5 +41,9 @@ abstract class BaseFragment<T : BaseViewModel> : Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         viewModel.saveState(outState)
+    }
+
+    fun finish() {
+        home()?.onSupportNavigateUp()
     }
 }

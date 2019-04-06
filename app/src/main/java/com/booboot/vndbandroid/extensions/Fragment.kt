@@ -1,11 +1,17 @@
 package com.booboot.vndbandroid.extensions
 
 import android.graphics.Color
+import android.view.Gravity
+import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
+import androidx.core.content.ContextCompat
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
+import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.ui.base.BaseAdapter
 import com.booboot.vndbandroid.ui.base.BaseViewModel
 import com.booboot.vndbandroid.ui.base.HasTabs
@@ -26,11 +32,15 @@ fun Fragment.setupStatusBar(drawBehind: Boolean = false) = activity?.let { activ
         activity.window.statusBarColor = Color.TRANSPARENT
         view
     } else {
+        activity.window.statusBarColor = ContextCompat.getColor(activity, R.color.tabBackgroundColor)
         toolbar
     }
 
-    val rootParams = toolbar?.layoutParams as? ViewGroup.MarginLayoutParams
-    rootParams?.topMargin = activity.statusBarHeight()
+    toolbar?.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+        val appBarLayoutParams = (toolbar.parent as? View)?.layoutParams
+        if (appBarLayoutParams is FrameLayout.LayoutParams && appBarLayoutParams.gravity == Gravity.BOTTOM) return@updateLayoutParams
+        topMargin = activity.statusBarHeight()
+    }
 }
 
 fun LifecycleOwner.actualOwner() = (this as? Fragment)?.viewLifecycleOwner ?: this

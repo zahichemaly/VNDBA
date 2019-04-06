@@ -60,8 +60,23 @@
             android:name="vnImageNsfw"
             app:argType="boolean" />
     </fragment>
+    <fragment
+        android:id="@+id/slideshowFragment"
+        android:name="com.booboot.vndbandroid.ui.slideshow.SlideshowFragment"
+        tools:layout="@layout/slideshow_fragment">
+        <argument
+            android:name="vnId"
+            app:argType="long" />
+        <argument
+            android:name="position"
+            app:argType="integer" />
+    </fragment>
 
     <action
         android:id="@+id/openVN"
         app:destination="@id/vnDetailsFragment" />
+
+    <action
+        android:id="@+id/openSlideshow"
+        app:destination="@id/slideshowFragment" />
 </navigation>

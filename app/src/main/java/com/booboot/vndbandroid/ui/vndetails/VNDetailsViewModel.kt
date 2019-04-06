@@ -32,7 +32,9 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
     val vnData: MutableLiveData<VN> = MutableLiveData()
     val initErrorData: MutableLiveData<String> = MutableLiveData()
     lateinit var accountData: MutableLiveData<AccountItems>
+
     var currentPage = -1
+    var slideshowPosition = 0
 
     init {
         (application as App).appComponent.inject(this)
@@ -138,15 +140,18 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
         super.restoreState(state)
         state ?: return
         currentPage = state.getInt(CURRENT_PAGE)
+        slideshowPosition = state.getInt(SLIDESHOW_POSITION)
     }
 
     override fun saveState(state: Bundle) {
         super.saveState(state)
         state.putInt(CURRENT_PAGE, currentPage)
+        state.putInt(SLIDESHOW_POSITION, slideshowPosition)
     }
 
     companion object {
         private const val DISPOSABLE_VN = "DISPOSABLE_VN"
         private const val CURRENT_PAGE = "CURRENT_PAGE"
+        private const val SLIDESHOW_POSITION = "SLIDESHOW_POSITION"
     }
 }
