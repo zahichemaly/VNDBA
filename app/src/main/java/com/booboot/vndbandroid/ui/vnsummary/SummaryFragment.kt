@@ -17,6 +17,7 @@ import com.booboot.vndbandroid.extensions.dayNightTheme
 import com.booboot.vndbandroid.extensions.observe
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.openURL
+import com.booboot.vndbandroid.extensions.scrollToTop
 import com.booboot.vndbandroid.extensions.startParentEnterTransition
 import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.model.vndb.Links
@@ -129,5 +130,9 @@ class SummaryFragment : BaseFragment<SummaryViewModel>() {
             encubedButton.setOnClickListener { ctx.openURL(Links.ENCUBED + vn.links.encubed) }
             startParentEnterTransition()
         }
+    }
+
+    override fun scrollToTop() {
+        scrollView.scrollToTop()
     }
 }

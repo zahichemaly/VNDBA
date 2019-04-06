@@ -42,6 +42,8 @@ abstract class BaseFragment<T : BaseViewModel> : Fragment() {
 
     fun vnDetailsFragment() = parentFragment as? VNDetailsFragment
 
+    open fun scrollToTop() {}
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         viewModel.saveState(outState)

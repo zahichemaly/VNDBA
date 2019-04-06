@@ -63,6 +63,10 @@ class TagsFragment : BaseFragment<TagsViewModel>(), TagsAdapter.Callback {
     override fun onChipClicked(tag: VNTag) {
     }
 
+    override fun scrollToTop() {
+        recyclerView.scrollToPosition(0)
+    }
+
     override fun onPause() {
         layoutState = recyclerView.saveState()
         viewModel.layoutState = layoutState

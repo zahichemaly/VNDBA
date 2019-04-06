@@ -39,7 +39,7 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
     lateinit var sortBottomSheetBehavior: BottomSheetBehavior<View>
 
     private var type: Int = 0
-    private var adapter: HomeTabsAdapter? = null
+    private var tabsAdapter: HomeTabsAdapter? = null
     private lateinit var sortBottomSheetButtons: List<View>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,10 +69,10 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
         viewModel.loadingData.observe(this, ::showLoading)
         home()?.viewModel?.accountData?.observe(this) { update() }
 
-        if (adapter == null) {
-            adapter = HomeTabsAdapter(childFragmentManager, type)
+        if (tabsAdapter == null) {
+            tabsAdapter = HomeTabsAdapter(childFragmentManager, type)
         }
-        viewPager.adapter = adapter
+        viewPager.adapter = tabsAdapter
         tabLayout.setupWithViewPager(viewPager)
         postponeEnterTransitionIfExists(viewModel)
 
@@ -91,7 +91,7 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
     private fun update(force: Boolean = true) = viewModel.getTabTitles(type, force)
 
     private fun showTitles(titles: List<String>) {
-        adapter?.titles = titles
+        tabsAdapter?.titles = titles
         if (viewModel.currentPage >= 0) viewPager.currentItem = viewModel.currentPage
         tabLayout.replaceOnTabSelectedListener(this)
     }
@@ -141,7 +141,9 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
 
     override fun onTabUnselected(tab: TabLayout.Tab) {}
 
-    override fun onTabReselected(tab: TabLayout.Tab) {}
+    override fun onTabReselected(tab: TabLayout.Tab) {
+        tabsAdapter?.getFragment(tab.position)?.scrollToTop()
+    }
 
     override fun onDestroyView() {
         tabLayout?.removeOnTabSelectedListener(this)

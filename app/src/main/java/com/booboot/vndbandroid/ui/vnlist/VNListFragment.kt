@@ -82,6 +82,10 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
         home()?.startupSync()
     }
 
+    override fun scrollToTop() {
+        vnList.scrollToPosition(0)
+    }
+
     override fun onPause() {
         layoutState = vnList.saveState()
         viewModel.layoutState = layoutState

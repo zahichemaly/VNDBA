@@ -241,6 +241,7 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
     private fun onImageClicked(position: Int) = findNavController().openSlideshow(vnId, position)
 
     override fun onTabReselected(tab: TabLayout.Tab) {
+        tabsAdapter?.getFragment(tab.position)?.scrollToTop()
     }
 
     override fun onTabUnselected(tab: TabLayout.Tab) {
