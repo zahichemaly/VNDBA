@@ -52,8 +52,8 @@ class TagsFragment : BaseFragment<TagsViewModel>(), TagsAdapter.Callback {
 
     private fun showTags(tags: VNDetailsTags) {
         tagsAdapter.items = tags
-        recyclerView.restoreState(viewModel)
         startParentEnterTransition(tagsAdapter)
+        recyclerView.restoreState(this)
     }
 
     override fun onTitleClicked(title: String) {
@@ -64,7 +64,8 @@ class TagsFragment : BaseFragment<TagsViewModel>(), TagsAdapter.Callback {
     }
 
     override fun onPause() {
-        viewModel.layoutState = recyclerView.saveState()
+        layoutState = recyclerView.saveState()
+        viewModel.layoutState = layoutState
         super.onPause()
     }
 }

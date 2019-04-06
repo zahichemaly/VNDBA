@@ -51,7 +51,7 @@ fun Fragment.startParentEnterTransition(adapter: BaseAdapter<*>? = null) {
     if (finalParentFragment is HasTabs && finalParentFragment.currentFragmentClass() != javaClass) return
 
     if (adapter != null) {
-        adapter.onFinishDrawing = {
+        adapter.onFinishDrawing.add {
             parentFragment?.startPostponedEnterTransition()
         }
     } else view?.post {

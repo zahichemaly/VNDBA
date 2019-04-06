@@ -42,7 +42,7 @@ import kotlinx.android.synthetic.main.vn_details_fragment.*
 class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSelectedListener, View.OnClickListener, View.OnFocusChangeListener, HasTabs, ViewPager.OnPageChangeListener {
     override val layout: Int = R.layout.vn_details_fragment
     private lateinit var slideshowAdapter: SlideshowAdapter
-    private lateinit var tabsAdapter: VNDetailsTabsAdapter
+    private var tabsAdapter: VNDetailsTabsAdapter? = null
 
     private var vnId: Long = 0
 
@@ -90,7 +90,9 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
         viewModel.errorData.observeOnce(this, ::showError)
         viewModel.initErrorData.observeOnce(this, ::onInitError)
 
-        tabsAdapter = VNDetailsTabsAdapter(childFragmentManager)
+        if (tabsAdapter == null) {
+            tabsAdapter = VNDetailsTabsAdapter(childFragmentManager)
+        }
         viewPager.adapter = tabsAdapter
         tabLayout.setupWithViewPager(viewPager)
         postponeEnterTransitionIfExists(viewModel)
@@ -125,7 +127,7 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
         slideshow.setCurrentItem(viewModel.slideshowPosition, false)
         numberOfImages.text = String.format("x%d", screens.size)
 
-        tabsAdapter.vn = vn
+        tabsAdapter?.vn = vn
         if (viewModel.currentPage >= 0) viewPager.currentItem = viewModel.currentPage
         tabLayout.replaceOnTabSelectedListener(this)
     }
@@ -258,7 +260,7 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
         viewModel.slideshowPosition = position
     }
 
-    override fun currentFragmentClass() = tabsAdapter.getClass(viewPager.currentItem)
+    override fun currentFragmentClass() = tabsAdapter?.getClass(viewPager.currentItem)
 
     override fun onDestroyView() {
         tabLayout?.removeOnTabSelectedListener(this)

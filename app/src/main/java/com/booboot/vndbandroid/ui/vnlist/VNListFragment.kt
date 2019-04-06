@@ -1,9 +1,7 @@
 package com.booboot.vndbandroid.ui.vnlist
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -35,8 +33,8 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
     private var tabValue: Int = 0
     private var listType: Int = 0
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        super.onCreateView(inflater, container, savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val context = context ?: return
 
         tabValue = arguments?.getInt(HomeTabsFragment.TAB_VALUE_ARG) ?: Status.PLAYING
         listType = arguments?.getInt(HomeTabsFragment.LIST_TYPE_ARG) ?: VNLIST
@@ -50,14 +48,6 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
         home()?.viewModel?.filterData?.observeOnce(this, ::filter)
         homeTabs()?.viewModel?.sortData?.observeOnce(this) { update() }
 
-        return rootView
-    }
-
-    private fun update(force: Boolean = true) = viewModel.getVns(listType, tabValue, force)
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val context = context ?: return
-
         adapter = VNAdapter(::onVnClicked)
         vnList.layoutManager = GridAutofitLayoutManager(context, Pixels.px(300))
         vnList.adapter = adapter
@@ -67,12 +57,14 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
         refreshLayout.setColorSchemeColors(context.getThemeColor(R.attr.colorAccent))
     }
 
+    private fun update(force: Boolean = true) = viewModel.getVns(listType, tabValue, force)
+
     private fun showVns(accountItems: AccountItems) {
         adapter.filterString = home()?.savedFilter ?: ""
         adapter.items = accountItems
 
-        vnList.restoreState(viewModel)
         startParentEnterTransition(adapter)
+        vnList.restoreState(this)
     }
 
     private fun filter(search: CharSequence?) {
@@ -91,7 +83,8 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
     }
 
     override fun onPause() {
-        viewModel.layoutState = vnList.saveState()
+        layoutState = vnList.saveState()
+        viewModel.layoutState = layoutState
         super.onPause()
     }
 

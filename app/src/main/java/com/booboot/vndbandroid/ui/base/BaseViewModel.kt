@@ -14,6 +14,8 @@ abstract class BaseViewModel constructor(application: Application) : AndroidView
     val loadingData: MutableLiveData<Int> = MutableLiveData()
     val errorData: MutableLiveData<String> = MutableLiveData()
     val disposables: MutableMap<String, Disposable> = mutableMapOf()
+
+    /* State saving #2 : when coming back to the Fragment with the NavController (onSaveInstanceState not called) */
     var hasPendingTransition = false
     var layoutState: Parcelable? = null
 
@@ -38,6 +40,7 @@ abstract class BaseViewModel constructor(application: Application) : AndroidView
     }
 
     open fun saveState(state: Bundle) {
+        /* State saving #3 : process kill (ViewModel and Fragment destroyed) */
         state.putBoolean(HAS_PENDING_TRANSITION, hasPendingTransition)
         state.putParcelable(LAYOUT_STATE, layoutState)
     }

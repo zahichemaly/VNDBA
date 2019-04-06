@@ -43,8 +43,8 @@ class RelationsFragment : BaseFragment<RelationsViewModel>() {
 
     private fun showRelations(relationsData: RelationsData) {
         adapter.relationsData = relationsData
-        recyclerView.restoreState(viewModel)
         startParentEnterTransition(adapter)
+        recyclerView.restoreState(this)
     }
 
     private fun onAnimeClicked(anime: Anime) {
@@ -59,7 +59,8 @@ class RelationsFragment : BaseFragment<RelationsViewModel>() {
     }
 
     override fun onPause() {
-        viewModel.layoutState = recyclerView.saveState()
+        layoutState = recyclerView.saveState()
+        viewModel.layoutState = layoutState
         super.onPause()
     }
 }
