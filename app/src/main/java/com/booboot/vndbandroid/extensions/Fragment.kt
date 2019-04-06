@@ -12,6 +12,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.ui.base.BaseAdapter
 import com.booboot.vndbandroid.ui.base.BaseViewModel
 import com.booboot.vndbandroid.ui.base.HasTabs
@@ -59,6 +60,6 @@ fun Fragment.startParentEnterTransition(adapter: BaseAdapter<*>? = null) {
 }
 
 fun Fragment.postponeEnterTransitionIfExists(viewModel: BaseViewModel) {
-    if (viewModel.hasPendingTransition) postponeEnterTransition()
+    if (viewModel.hasPendingTransition && Preferences.useSharedTransitions) postponeEnterTransition()
     viewModel.hasPendingTransition = false
 }

@@ -47,9 +47,9 @@
 
     <SwitchPreference
         android:defaultValue="true"
-        android:key="@string/pref_key_cover_background"
-        android:summary="Show the VN cover in the background (in the VN details page)"
-        android:title="Show the VN's background"
+        android:key="@string/pref_key_shared_transitions"
+        android:summary="Use transition animations when navigating between screens (e.g. when opening a VN page)."
+        android:title="Use transition animations"
         app:iconSpaceReserved="false" />
 
     <SwitchPreference
