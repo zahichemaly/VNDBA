@@ -17,5 +17,5 @@ object Preferences : KotprefModel() {
     var gdprCrashlytics by intPref(NOT_SET, key = "GDPR_CRASHLYTICS")
     var loginHelpSeen by booleanPref(false, key = "LOGIN_HELP_SEEN")
     var shouldResetPreferences by booleanPref(true, key = "SHOULD_RESET_PREFERENCES")
-    var useSharedTransitions by booleanPref(true, key = "USE_SHARED_TRANSITIONS")
+    var useSharedTransitions by booleanPref(true, key = context.getString(R.string.pref_key_shared_transitions))
 }
