@@ -63,8 +63,8 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
         adapter.filterString = home()?.viewModel?.filterData?.value ?: ""
         adapter.items = accountItems
 
-        startParentEnterTransition(adapter)
         vnList.restoreState(this)
+        startParentEnterTransition(adapter)
     }
 
     private fun filter(search: CharSequence) {

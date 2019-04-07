@@ -43,8 +43,8 @@ class RelationsFragment : BaseFragment<RelationsViewModel>() {
 
     private fun showRelations(relationsData: RelationsData) {
         adapter.relationsData = relationsData
-        startParentEnterTransition(adapter)
         recyclerView.restoreState(this)
+        startParentEnterTransition(adapter)
     }
 
     private fun onAnimeClicked(anime: Anime) {
