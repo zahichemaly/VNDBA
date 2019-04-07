@@ -95,6 +95,7 @@ class SlideshowFragment : BaseFragment<SlideshowViewModel>(), ViewPager.OnPageCh
     }
 
     override fun showError(message: String) {
+        super.onError()
         home()?.viewModel?.onError(Throwable(message))
         findNavController().popBackStack()
     }

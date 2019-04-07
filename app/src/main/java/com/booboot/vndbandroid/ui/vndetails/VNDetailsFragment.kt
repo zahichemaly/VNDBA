@@ -192,8 +192,8 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
         bottomSheetButtons.forEach { it.isEnabled = loading <= 0 }
     }
 
-    private fun onInitError(message: String?) {
-        message ?: return
+    private fun onInitError(message: String) {
+        super.onError()
         home()?.viewModel?.onError(Throwable(message))
         findNavController().popBackStack()
     }

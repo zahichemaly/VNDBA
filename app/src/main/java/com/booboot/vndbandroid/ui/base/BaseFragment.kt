@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.transition.TransitionInflater
 import com.booboot.vndbandroid.extensions.home
+import com.booboot.vndbandroid.extensions.startParentEnterTransition
 import com.booboot.vndbandroid.ui.vndetails.VNDetailsFragment
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.progress_bar.*
@@ -29,7 +30,13 @@ abstract class BaseFragment<T : BaseViewModel> : Fragment() {
         return rootView
     }
 
+    fun onError() {
+        startPostponedEnterTransition()
+        startParentEnterTransition()
+    }
+
     open fun showError(message: String) {
+        onError()
         val view = activity?.findViewById<View>(android.R.id.content) ?: return
         Snackbar.make(view, message, Snackbar.LENGTH_LONG).show()
     }
