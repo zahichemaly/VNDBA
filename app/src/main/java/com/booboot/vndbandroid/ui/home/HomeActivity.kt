@@ -6,7 +6,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
-import androidx.appcompat.widget.SearchView
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
@@ -31,11 +30,8 @@ import com.booboot.vndbandroid.ui.vndetails.VNDetailsFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.home_activity.*
 
-class HomeActivity : BaseActivity(), View.OnClickListener, SearchView.OnQueryTextListener {
+class HomeActivity : BaseActivity(), View.OnClickListener {
     lateinit var viewModel: HomeViewModel
-
-    private var searchView: SearchView? = null
-    var savedFilter: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,9 +49,6 @@ class HomeActivity : BaseActivity(), View.OnClickListener, SearchView.OnQueryTex
             intent.extras?.apply {
                 shouldSync = getBoolean(SHOULD_SYNC, true)
                 remove(SHOULD_SYNC)
-            }
-            savedInstanceState?.apply {
-                savedFilter = getString(SAVED_FILTER_STATE) ?: ""
             }
 
             viewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
@@ -98,32 +91,7 @@ class HomeActivity : BaseActivity(), View.OnClickListener, SearchView.OnQueryTex
         return true
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.home_activity, menu)
-
-        /* Filter */
-        searchView = menu.findItem(R.id.action_filter).actionView as SearchView
-
-        if (savedFilter.isNotEmpty()) {
-            searchView?.isIconified = false
-            searchView?.setQuery(savedFilter, true)
-        }
-
-        searchView?.setOnQueryTextListener(this)
-        searchView?.clearFocus()
-
-        return true
-    }
-
-    override fun onQueryTextSubmit(query: String): Boolean {
-        return false
-    }
-
-    override fun onQueryTextChange(search: String): Boolean {
-        savedFilter = search
-        viewModel.filterData.value = search
-        return true
-    }
+    override fun onCreateOptionsMenu(menu: Menu) = true
 
     override fun onClick(v: View?) = when (v?.id) {
         R.id.floatingSearchButton -> {
@@ -150,15 +118,13 @@ class HomeActivity : BaseActivity(), View.OnClickListener, SearchView.OnQueryTex
         when (fragment) {
             is HomeTabsFragment -> if (fragment.sortBottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
                 return fragment.sortBottomSheetBehavior.toggle()
+            } else if (fragment.searchView?.isIconified == false) {
+                fragment.searchView?.isIconified = true
+                return
             }
             is VNDetailsFragment -> if (fragment.bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
                 return fragment.bottomSheetBehavior.toggle()
             }
-        }
-
-        if (searchView?.isIconified == false) {
-            searchView?.isIconified = true
-            return
         }
 
         val topLevelDestinations = AppBarConfiguration.Builder(findNavController(R.id.navHost).graph).setDrawerLayout(drawer).build().topLevelDestinations
@@ -173,13 +139,7 @@ class HomeActivity : BaseActivity(), View.OnClickListener, SearchView.OnQueryTex
 
     override fun onSupportNavigateUp() = NavigationUI.navigateUp(findNavController(R.id.navHost), drawer)
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putString(SAVED_FILTER_STATE, searchView?.query?.toString() ?: "")
-        super.onSaveInstanceState(outState)
-    }
-
     companion object {
-        const val SAVED_FILTER_STATE = "SAVED_FILTER_STATE"
         const val SHOULD_SYNC = "SHOULD_SYNC"
     }
 }

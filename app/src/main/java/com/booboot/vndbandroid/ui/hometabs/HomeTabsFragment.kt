@@ -7,6 +7,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.home
@@ -34,9 +35,10 @@ import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.home_tabs_fragment.*
 import kotlinx.android.synthetic.main.vn_list_sort_bottom_sheet.*
 
-class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelectedListener, View.OnClickListener {
+class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelectedListener, View.OnClickListener, SearchView.OnQueryTextListener {
     override val layout: Int = R.layout.home_tabs_fragment
     lateinit var sortBottomSheetBehavior: BottomSheetBehavior<View>
+    var searchView: SearchView? = null
 
     private var type: Int = 0
     private var tabsAdapter: HomeTabsAdapter? = null
@@ -57,6 +59,10 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         activity ?: return
+
+        savedInstanceState?.apply {
+            setQuery(getString(SAVED_FILTER_STATE) ?: "", true)
+        }
 
         setupStatusBar()
         setupToolbar()
@@ -110,7 +116,26 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.home_tabs_fragment, menu)
-        menu.findItem(R.id.action_filter)?.isVisible = true
+
+        /* Filter */
+        searchView = menu.findItem(R.id.action_filter).actionView as SearchView
+
+        if (query()?.isNotEmpty() == true) {
+            searchView?.isIconified = false
+            searchView?.setQuery(query(), true)
+        }
+
+        searchView?.setOnQueryTextListener(this)
+        searchView?.clearFocus()
+    }
+
+    override fun onQueryTextSubmit(query: String): Boolean {
+        return false
+    }
+
+    override fun onQueryTextChange(search: String): Boolean {
+        setQuery(search)
+        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -135,6 +160,14 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
         }
     }
 
+    private fun query() = home()?.viewModel?.filterData?.value
+
+    private fun setQuery(search: String, setOnlyIfNull: Boolean = false) {
+        if (!setOnlyIfNull || query() == null) {
+            home()?.viewModel?.filterData?.value = search
+        }
+    }
+
     override fun onTabSelected(tab: TabLayout.Tab) {
         viewModel.currentPage = tab.position
     }
@@ -145,6 +178,11 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
         tabsAdapter?.getFragment(tab.position)?.scrollToTop()
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString(SAVED_FILTER_STATE, searchView?.query?.toString() ?: "")
+        super.onSaveInstanceState(outState)
+    }
+
     override fun onDestroyView() {
         tabLayout?.removeOnTabSelectedListener(this)
         super.onDestroyView()
@@ -153,6 +191,7 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
     companion object {
         const val LIST_TYPE_ARG = "LIST_TYPE_ARG"
         const val TAB_VALUE_ARG = "TAB_VALUE_ARG"
+        const val SAVED_FILTER_STATE = "SAVED_FILTER_STATE"
         const val VNLIST = 1
         const val VOTELIST = 2
         const val WISHLIST = 3

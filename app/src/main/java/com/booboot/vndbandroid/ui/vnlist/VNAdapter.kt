@@ -26,7 +26,7 @@ class VNAdapter(
             filter.filter(filterString)
         }
     private var filteredVns = items
-    private val mFilter = ItemFilter()
+    private val filter = ItemFilter()
     var filterString: String = ""
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VNHolder {
@@ -51,11 +51,11 @@ class VNAdapter(
 
     override fun getItemCount() = filteredVns.vns.values.size
 
-    override fun getFilter(): Filter = mFilter
+    override fun getFilter(): Filter = filter
 
     private inner class ItemFilter : Filter() {
-        override fun performFiltering(constraint: CharSequence): Filter.FilterResults {
-            filterString = constraint.toString().trim().toLowerCase()
+        override fun performFiltering(search: CharSequence): Filter.FilterResults {
+            filterString = search.toString().trim().toLowerCase()
             val results = Filter.FilterResults()
             val newVns = mutableMapOf<Long, VN>()
 

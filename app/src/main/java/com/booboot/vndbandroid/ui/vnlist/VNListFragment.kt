@@ -43,9 +43,9 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
         viewModel.restoreState(savedInstanceState)
         viewModel.accountData.observeOnce(this) { showVns(it) }
         viewModel.errorData.observeOnce(this, ::showError)
+        home()?.viewModel?.filterData?.observe(this, ::filter)
         home()?.viewModel?.loadingData?.observe(this, ::showLoading)
         home()?.viewModel?.accountData?.observe(this) { update() }
-        home()?.viewModel?.filterData?.observeOnce(this, ::filter)
         homeTabs()?.viewModel?.sortData?.observeOnce(this) { update() }
 
         adapter = VNAdapter(::onVnClicked)
@@ -60,15 +60,14 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
     private fun update(force: Boolean = true) = viewModel.getVns(listType, tabValue, force)
 
     private fun showVns(accountItems: AccountItems) {
-        adapter.filterString = home()?.savedFilter ?: ""
+        adapter.filterString = home()?.viewModel?.filterData?.value ?: ""
         adapter.items = accountItems
 
         startParentEnterTransition(adapter)
         vnList.restoreState(this)
     }
 
-    private fun filter(search: CharSequence?) {
-        search ?: return
+    private fun filter(search: CharSequence) {
         adapter.filter.filter(search)
     }
 
