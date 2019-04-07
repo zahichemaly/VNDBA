@@ -14,6 +14,9 @@
     <color name="transparentWhite">#8CFFFFFF</color>
     <color name="transparent80White">#cdffffff</color>
     <color name="slideshowBackground">@color/white</color>
+    <color name="textColorPrimaryBlack">#DE000000</color>
+    <color name="textColorPrimary">@color/textColorPrimaryBlack</color>
+    <color name="textColorPrimaryReverse">@color/white</color>
 
     <!-- Grading colors -->
     <color name="green">@color/playing</color>

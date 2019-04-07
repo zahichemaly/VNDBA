@@ -5,4 +5,6 @@
     <color name="tabBackgroundColor">@color/transparentBlack</color>
     <color name="transparent80Primary">@color/transparent80Black</color>
     <color name="slideshowBackground">@color/black</color>
+    <color name="textColorPrimary">@color/white</color>
+    <color name="textColorPrimaryReverse">@color/textColorPrimaryBlack</color>
 </resources>

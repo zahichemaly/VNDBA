@@ -1,21 +1,21 @@
 package com.booboot.vndbandroid.extensions
 
 import android.content.res.ColorStateList
+import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.util.Pixels
 import com.google.android.material.button.MaterialButton
 
-fun MaterialButton.selectIf(select: Boolean) = if (select) select() else unselect()
+fun MaterialButton.selectIf(
+    select: Boolean,
+    @ColorRes textColor: Int = R.color.white
+) = if (select) select(textColor) else unselect()
 
-fun MaterialButton.select() = apply {
-    val textColorPrimary = context.getThemeColorState(android.R.attr.textColorPrimary)
-    val newTextColor = if (strokeColor == textColorPrimary) {
-        context.getThemeColorStateEnabled(android.R.attr.windowBackground)
-    } else {
-        ContextCompat.getColor(context, R.color.white)
-    }
-
+fun MaterialButton.select(
+    @ColorRes textColor: Int = R.color.white
+) = apply {
+    val newTextColor = ContextCompat.getColor(context, textColor)
     setTextColor(newTextColor)
     iconTint = ColorStateList.valueOf(newTextColor)
     backgroundTintList = strokeColor

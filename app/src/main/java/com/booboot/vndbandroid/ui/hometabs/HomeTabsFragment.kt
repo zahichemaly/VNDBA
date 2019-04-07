@@ -103,15 +103,15 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
     }
 
     private fun showSort() {
-        buttonReverseSort?.selectIf(Preferences.reverseSort)
-        buttonSortID?.selectIf(Preferences.sort == SORT_ID)
-        buttonSortReleaseDate?.selectIf(Preferences.sort == SORT_RELEASE_DATE)
-        buttonSortLength?.selectIf(Preferences.sort == SORT_LENGTH)
-        buttonSortPopularity?.selectIf(Preferences.sort == SORT_POPULARITY)
-        buttonSortRating?.selectIf(Preferences.sort == SORT_RATING)
-        buttonSortStatus?.selectIf(Preferences.sort == SORT_STATUS)
-        buttonSortVote?.selectIf(Preferences.sort == SORT_VOTE)
-        buttonSortPriority?.selectIf(Preferences.sort == SORT_PRIORITY)
+        buttonReverseSort?.selectIf(Preferences.reverseSort, R.color.textColorPrimaryBlack)
+        buttonSortID?.selectIf(Preferences.sort == SORT_ID, R.color.textColorPrimaryReverse)
+        buttonSortReleaseDate?.selectIf(Preferences.sort == SORT_RELEASE_DATE, R.color.textColorPrimaryReverse)
+        buttonSortLength?.selectIf(Preferences.sort == SORT_LENGTH, R.color.textColorPrimaryReverse)
+        buttonSortPopularity?.selectIf(Preferences.sort == SORT_POPULARITY, R.color.textColorPrimaryReverse)
+        buttonSortRating?.selectIf(Preferences.sort == SORT_RATING, R.color.textColorPrimaryReverse)
+        buttonSortStatus?.selectIf(Preferences.sort == SORT_STATUS, R.color.textColorPrimaryReverse)
+        buttonSortVote?.selectIf(Preferences.sort == SORT_VOTE, R.color.textColorPrimaryReverse)
+        buttonSortPriority?.selectIf(Preferences.sort == SORT_PRIORITY, R.color.textColorPrimaryReverse)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
