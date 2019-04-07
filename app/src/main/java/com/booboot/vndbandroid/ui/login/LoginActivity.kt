@@ -2,10 +2,10 @@ package com.booboot.vndbandroid.ui.login
 
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.hideKeyboard
+import com.booboot.vndbandroid.extensions.observe
 import com.booboot.vndbandroid.extensions.openURL
 import com.booboot.vndbandroid.extensions.startActivity
 import com.booboot.vndbandroid.extensions.toggle
@@ -34,9 +34,9 @@ class LoginActivity : BaseActivity() {
         setContentView(R.layout.login_activity)
 
         viewModel = ViewModelProviders.of(this).get(LoginViewModel::class.java)
-        viewModel.loadingData.observe(this, Observer { showLoading(it) })
-        viewModel.syncData.observe(this, Observer { showResult(it) })
-        viewModel.errorData.observe(this, Observer { showError(it) })
+        viewModel.loadingData.observe(this, ::showLoading)
+        viewModel.syncData.observe(this, ::showResult)
+        viewModel.errorData.observe(this, ::showError)
 
         vnEngine = VnEngine(layoutInflater, background, yuki, yukiName, textYuki, customLayout, listOf(
             Step(

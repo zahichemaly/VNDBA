@@ -1,6 +1,7 @@
 package com.booboot.vndbandroid.ui.vndetails
 
 import android.app.Application
+import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.extensions.minus
@@ -29,8 +30,11 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
     @Inject lateinit var wishlistRepository: WishlistRepository
 
     val vnData: MutableLiveData<VN> = MutableLiveData()
-    val accountData: MutableLiveData<AccountItems> = MutableLiveData()
     val initErrorData: MutableLiveData<String> = MutableLiveData()
+    lateinit var accountData: MutableLiveData<AccountItems>
+
+    var currentPage = -1
+    var slideshowPosition = 0
 
     init {
         (application as App).appComponent.inject(this)
@@ -49,20 +53,6 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
                 disposables.remove(DISPOSABLE_VN)
             }
             .subscribe({ vnData.value = it }, { onError(it, initErrorData) })
-    }
-
-    fun loadAccount(force: Boolean = true) {
-        if (!force && accountData.value != null) return
-        if (disposables.contains(DISPOSABLE_ACCOUNT)) return
-
-        disposables[DISPOSABLE_ACCOUNT] = accountRepository.getItems()
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe { loadingData.plus() }
-            .doFinally {
-                loadingData.minus()
-                disposables.remove(DISPOSABLE_ACCOUNT)
-            }
-            .subscribe({ accountData.value = it }, { onError(it, initErrorData) })
     }
 
     fun setNotes(notes: String) {
@@ -146,8 +136,22 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
         .doFinally { loadingData.minus() }
         .subscribe({ accountData.value = it }, ::onError)
 
+    override fun restoreState(state: Bundle?) {
+        super.restoreState(state)
+        state ?: return
+        currentPage = state.getInt(CURRENT_PAGE)
+        slideshowPosition = state.getInt(SLIDESHOW_POSITION)
+    }
+
+    override fun saveState(state: Bundle) {
+        super.saveState(state)
+        state.putInt(CURRENT_PAGE, currentPage)
+        state.putInt(SLIDESHOW_POSITION, slideshowPosition)
+    }
+
     companion object {
         private const val DISPOSABLE_VN = "DISPOSABLE_VN"
-        private const val DISPOSABLE_ACCOUNT = "DISPOSABLE_ACCOUNT"
+        private const val CURRENT_PAGE = "CURRENT_PAGE"
+        private const val SLIDESHOW_POSITION = "SLIDESHOW_POSITION"
     }
 }

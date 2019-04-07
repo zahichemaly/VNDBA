@@ -8,45 +8,46 @@ import android.view.View
 import androidx.asynclayoutinflater.view.AsyncLayoutInflater
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.adjustAlpha
 import com.booboot.vndbandroid.extensions.darken
 import com.booboot.vndbandroid.extensions.dayNightTheme
+import com.booboot.vndbandroid.extensions.observe
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.openURL
+import com.booboot.vndbandroid.extensions.scrollToTop
+import com.booboot.vndbandroid.extensions.startParentEnterTransition
 import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.model.vndb.Links
 import com.booboot.vndbandroid.model.vndbandroid.LANGUAGES
 import com.booboot.vndbandroid.model.vndbandroid.PLATFORMS
 import com.booboot.vndbandroid.model.vndbandroid.Vote
 import com.booboot.vndbandroid.ui.base.BaseFragment
-import com.booboot.vndbandroid.ui.vndetails.VNDetailsActivity
+import com.booboot.vndbandroid.ui.vndetails.VNDetailsFragment
 import com.booboot.vndbandroid.util.Utils
 import com.google.android.material.chip.Chip
 import kotlinx.android.synthetic.main.info_bubble.view.*
 import kotlinx.android.synthetic.main.platform_tag.view.*
 import kotlinx.android.synthetic.main.summary_fragment.*
 
-class SummaryFragment : BaseFragment() {
+class SummaryFragment : BaseFragment<SummaryViewModel>() {
     override val layout: Int = R.layout.summary_fragment
-    private lateinit var viewModel: SummaryViewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if (activity == null) return
 
-        val vnId = arguments?.getLong(VNDetailsActivity.EXTRA_VN_ID) ?: 0
+        val vnId = arguments?.getLong(VNDetailsFragment.EXTRA_VN_ID) ?: 0
         viewModel = ViewModelProviders.of(this).get(SummaryViewModel::class.java)
-        viewModel.vnData.observe(this, Observer { showVn(it) })
+        viewModel.summaryData.observe(this, ::showVn)
         viewModel.errorData.observeOnce(this, ::showError)
         viewModel.loadVn(vnId, false)
     }
 
-    private fun showVn(summaryVN: SummaryVN?) {
+    private fun showVn(summaryVN: SummaryVN) {
         context?.let { ctx ->
-            val vn = summaryVN?.vn ?: return
+            val vn = summaryVN.vn
 
             title.text = vn.title
             originalTitle.text = vn.original
@@ -68,7 +69,7 @@ class SummaryFragment : BaseFragment() {
                         val color = ContextCompat.getColor(ctx, platform.color)
                         view.tagText.setTextColor(if (ctx.dayNightTheme() == "light") color.darken() else color)
                         view.tagText.setBackgroundColor(color.adjustAlpha(0.157f))
-                        platforms.addView(view)
+                        platforms?.addView(view)
                     }
                 }
             }
@@ -81,7 +82,7 @@ class SummaryFragment : BaseFragment() {
                         val chip = view as Chip
                         chip.text = language.text
                         chip.chipIcon = VectorDrawableCompat.create(ctx.resources, language.flag, ctx.theme)
-                        languages.addView(chip)
+                        languages?.addView(chip)
                     }
                 }
             }
@@ -127,6 +128,11 @@ class SummaryFragment : BaseFragment() {
             wikipediaButton.setOnClickListener { ctx.openURL(Links.WIKIPEDIA + vn.links.wikipedia) }
             renaiButton.setOnClickListener { ctx.openURL(Links.RENAI + vn.links.renai) }
             encubedButton.setOnClickListener { ctx.openURL(Links.ENCUBED + vn.links.encubed) }
+            startParentEnterTransition()
         }
+    }
+
+    override fun scrollToTop() {
+        scrollView.scrollToTop()
     }
 }

@@ -15,12 +15,9 @@ import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.browser.customtabs.CustomTabsIntent
-import androidx.core.app.ActivityOptionsCompat
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import com.booboot.vndbandroid.R
-import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
-import com.booboot.vndbandroid.ui.vndetails.VNDetailsActivity
 
 inline fun <reified A : Activity> Context.startActivity(configIntent: Intent.() -> Unit = {}) {
     startActivity(Intent(this, A::class.java).apply(configIntent))
@@ -34,21 +31,13 @@ inline fun <reified A : Activity> Context.startActivity(configIntent: Intent.() 
  */
 fun Activity.setLightStatusAndNavigation() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        window.decorView.systemUiVisibility = when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+        val flags = when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
             Configuration.UI_MODE_NIGHT_UNDEFINED, Configuration.UI_MODE_NIGHT_NO -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                 View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR else View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
             else -> 0
-        }
+        } or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+        window.decorView.systemUiVisibility = flags
     }
-}
-
-fun Activity.openVN(vn: VN, transitionView: View) {
-    val options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, transitionView, "slideshow")
-    val intent = Intent(this, VNDetailsActivity::class.java)
-    intent.putExtra(VNDetailsActivity.EXTRA_VN_ID, vn.id)
-    intent.putExtra(VNDetailsActivity.EXTRA_SHARED_ELEMENT_COVER, vn.image)
-    intent.putExtra(VNDetailsActivity.EXTRA_SHARED_ELEMENT_COVER_NSFW, vn.image_nsfw)
-    startActivityForResult(intent, 0, options.toBundle())
 }
 
 fun Context.getBitmap(@DrawableRes drawableRes: Int): Bitmap? {
@@ -101,4 +90,11 @@ fun Context.dayNightTheme(): String {
     val themeName = TypedValue()
     theme.resolveAttribute(R.attr.themeName, themeName, true)
     return themeName.string.toString()
+}
+
+fun Context.statusBarHeight(): Int {
+    val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
+    return if (resourceId > 0) {
+        resources.getDimensionPixelSize(resourceId)
+    } else 0
 }

@@ -28,9 +28,9 @@
 
     <style name="AppTheme.DayNight" parent="Base.AppTheme.DayNight">
         <!-- light/dark theme independent attributes -->
-        <item name="android:windowAllowEnterTransitionOverlap" tools:targetApi="lollipop">true</item>
-        <item name="android:windowAllowReturnTransitionOverlap" tools:targetApi="lollipop">true</item>
-        <item name="android:windowContentTransitions" tools:targetApi="lollipop">true</item>
+        <item name="android:windowAllowEnterTransitionOverlap">true</item>
+        <item name="android:windowAllowReturnTransitionOverlap">true</item>
+        <item name="android:windowContentTransitions">true</item>
         <item name="preferenceTheme">@style/AppTheme.DayNight.PreferenceThemeOverlay</item>
     </style>
 
@@ -39,7 +39,9 @@
         <item name="windowNoTitle">true</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBar">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowTranslucentStatus">false</item>
     </style>
 
     <style name="AppTheme.DayNight.NoActionBar.Translucent">

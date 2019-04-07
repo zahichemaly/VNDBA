@@ -30,6 +30,7 @@ class RelationHolder(itemView: View, private val onClick: (View, Relation, VN?) 
         title.text = relation.title
         subtitle.text = RELATIONS[relation.relation]
         vn?.let {
+            image.transitionName = "slideshow" + vn.id
             image.showNsfwImage(it.image, it.image_nsfw, nsfwTag)
         }
 

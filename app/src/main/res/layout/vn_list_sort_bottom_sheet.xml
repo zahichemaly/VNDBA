@@ -71,16 +71,16 @@
             android:layout_marginEnd="12dp"
             android:text="@string/reverse_order"
             android:textAllCaps="false"
-            android:textColor="@color/colorAccentDark"
+            android:textColor="@color/white"
             android:textSize="12sp"
             app:icon="@drawable/ic_swap_vert_white_48dp"
             app:iconSize="22dp"
-            app:iconTint="@color/colorAccentDark"
+            app:iconTint="@color/white"
             app:layout_constraintBottom_toBottomOf="@id/sortBottomSheetHeader"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/sortBottomSheetHeader"
-            app:rippleColor="@color/colorAccentDark"
-            app:strokeColor="@color/colorAccentDark" />
+            app:rippleColor="@color/white"
+            app:strokeColor="@color/white" />
 
         <com.google.android.flexbox.FlexboxLayout
             android:id="@+id/flexboxStatus"
@@ -103,10 +103,10 @@
                 android:layout_height="40dp"
                 android:text="@string/id"
                 android:textAllCaps="false"
-                android:textColor="?android:attr/textColorPrimary"
+                android:textColor="@color/textColorPrimary"
                 android:textSize="12sp"
-                app:rippleColor="?android:attr/textColorPrimary"
-                app:strokeColor="?android:attr/textColorPrimary" />
+                app:rippleColor="@color/textColorPrimary"
+                app:strokeColor="@color/textColorPrimary" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonSortReleaseDate"
@@ -115,10 +115,10 @@
                 android:layout_height="40dp"
                 android:text="@string/release_date"
                 android:textAllCaps="false"
-                android:textColor="?android:attr/textColorPrimary"
+                android:textColor="@color/textColorPrimary"
                 android:textSize="12sp"
-                app:rippleColor="?android:attr/textColorPrimary"
-                app:strokeColor="?android:attr/textColorPrimary" />
+                app:rippleColor="@color/textColorPrimary"
+                app:strokeColor="@color/textColorPrimary" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonSortLength"
@@ -127,10 +127,10 @@
                 android:layout_height="40dp"
                 android:text="@string/length"
                 android:textAllCaps="false"
-                android:textColor="?android:attr/textColorPrimary"
+                android:textColor="@color/textColorPrimary"
                 android:textSize="12sp"
-                app:rippleColor="?android:attr/textColorPrimary"
-                app:strokeColor="?android:attr/textColorPrimary" />
+                app:rippleColor="@color/textColorPrimary"
+                app:strokeColor="@color/textColorPrimary" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonSortPopularity"
@@ -139,10 +139,10 @@
                 android:layout_height="40dp"
                 android:text="@string/popularity"
                 android:textAllCaps="false"
-                android:textColor="?android:attr/textColorPrimary"
+                android:textColor="@color/textColorPrimary"
                 android:textSize="12sp"
-                app:rippleColor="?android:attr/textColorPrimary"
-                app:strokeColor="?android:attr/textColorPrimary" />
+                app:rippleColor="@color/textColorPrimary"
+                app:strokeColor="@color/textColorPrimary" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonSortRating"
@@ -151,10 +151,10 @@
                 android:layout_height="40dp"
                 android:text="@string/rating"
                 android:textAllCaps="false"
-                android:textColor="?android:attr/textColorPrimary"
+                android:textColor="@color/textColorPrimary"
                 android:textSize="12sp"
-                app:rippleColor="?android:attr/textColorPrimary"
-                app:strokeColor="?android:attr/textColorPrimary" />
+                app:rippleColor="@color/textColorPrimary"
+                app:strokeColor="@color/textColorPrimary" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonSortStatus"
@@ -163,10 +163,10 @@
                 android:layout_height="40dp"
                 android:text="@string/status"
                 android:textAllCaps="false"
-                android:textColor="?android:attr/textColorPrimary"
+                android:textColor="@color/textColorPrimary"
                 android:textSize="12sp"
-                app:rippleColor="?android:attr/textColorPrimary"
-                app:strokeColor="?android:attr/textColorPrimary" />
+                app:rippleColor="@color/textColorPrimary"
+                app:strokeColor="@color/textColorPrimary" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonSortVote"
@@ -175,10 +175,10 @@
                 android:layout_height="40dp"
                 android:text="@string/vote"
                 android:textAllCaps="false"
-                android:textColor="?android:attr/textColorPrimary"
+                android:textColor="@color/textColorPrimary"
                 android:textSize="12sp"
-                app:rippleColor="?android:attr/textColorPrimary"
-                app:strokeColor="?android:attr/textColorPrimary" />
+                app:rippleColor="@color/textColorPrimary"
+                app:strokeColor="@color/textColorPrimary" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonSortPriority"
@@ -187,10 +187,10 @@
                 android:layout_height="40dp"
                 android:text="@string/priority"
                 android:textAllCaps="false"
-                android:textColor="?android:attr/textColorPrimary"
+                android:textColor="@color/textColorPrimary"
                 android:textSize="12sp"
-                app:rippleColor="?android:attr/textColorPrimary"
-                app:strokeColor="?android:attr/textColorPrimary" />
+                app:rippleColor="@color/textColorPrimary"
+                app:strokeColor="@color/textColorPrimary" />
 
         </com.google.android.flexbox.FlexboxLayout>
 

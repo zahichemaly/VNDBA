@@ -3,6 +3,7 @@ package com.booboot.vndbandroid.ui.slideshow
 import android.Manifest
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
 import android.graphics.drawable.BitmapDrawable
 import android.media.MediaScannerConnection
@@ -10,55 +11,68 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.View
 import android.widget.ImageView
 import androidx.core.app.NotificationCompat
 import androidx.core.content.FileProvider
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import androidx.viewpager.widget.ViewPager
+import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.extensions.home
+import com.booboot.vndbandroid.extensions.observe
 import com.booboot.vndbandroid.extensions.observeOnce
+import com.booboot.vndbandroid.extensions.setupStatusBar
+import com.booboot.vndbandroid.extensions.setupToolbar
 import com.booboot.vndbandroid.model.vndb.Screen
+import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndbandroid.FileAction
 import com.booboot.vndbandroid.service.ScreenshotNotificationService
-import com.booboot.vndbandroid.ui.base.BaseActivity
+import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.booboot.vndbandroid.util.Notifications
-import kotlinx.android.synthetic.main.slideshow_activity.*
+import kotlinx.android.synthetic.main.slideshow_fragment.*
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 
-class SlideshowActivity : BaseActivity(), ViewPager.OnPageChangeListener {
-    private lateinit var viewModel: SlideshowViewModel
+class SlideshowFragment : BaseFragment<SlideshowViewModel>(), ViewPager.OnPageChangeListener {
+    override val layout: Int = R.layout.slideshow_fragment
+    private lateinit var slideshowAdapter: SlideshowAdapter
 
-    @Suppress("UNCHECKED_CAST")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.slideshow_activity)
+        setHasOptionsMenu(true)
+    }
 
-        setSupportActionBar(toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        setupToolbar()
+        setupStatusBar(true)
 
-        val position = intent.getIntExtra(INDEX_ARG, 0)
-        val images = intent.getSerializableExtra(IMAGES_ARG) as? List<Screen> ?: return
+        viewModel = ViewModelProviders.of(this).get(SlideshowViewModel::class.java)
+        viewModel.restoreState(savedInstanceState)
+        viewModel.errorData.observeOnce(this, ::showError)
+        viewModel.loadingData.observe(this, ::showLoading)
+        viewModel.fileData.observeOnce(this, ::launchActionForImage)
+        viewModel.vnData.observe(this, ::showVn)
 
-        val slideshowAdapter = SlideshowAdapter(this, scaleType = ImageView.ScaleType.FIT_CENTER)
+        arguments?.let { arguments ->
+            viewModel.position = if (viewModel.position < 0) {
+                SlideshowFragmentArgs.fromBundle(arguments).position
+            } else viewModel.position
+            viewModel.vnId = SlideshowFragmentArgs.fromBundle(arguments).vnId
+        }
+
+        slideshowAdapter = SlideshowAdapter(layoutInflater, scaleType = ImageView.ScaleType.FIT_CENTER)
         slideshow.adapter = slideshowAdapter
         slideshow.addOnPageChangeListener(this)
 
-        slideshowAdapter.images = images
-        slideshow.currentItem = position
-        onPageSelected(position)
-
-        viewModel = ViewModelProviders.of(this).get(SlideshowViewModel::class.java)
-        viewModel.errorData.observeOnce(this, ::showError)
-        viewModel.loadingData.observe(this, Observer { showLoading(it) })
-        viewModel.fileData.observeOnce(this, ::launchActionForImage)
+        viewModel.loadVn(false)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.slideshow_activity, menu)
-        return true
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.slideshow_fragment, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -68,6 +82,22 @@ class SlideshowActivity : BaseActivity(), ViewPager.OnPageChangeListener {
             R.id.action_share -> downloadScreenshot(SHARE_SCREENSHOT_PERMISSION)
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun showVn(vn: VN) {
+        val images = listOfNotNull(
+            vn.image?.let { Screen(image = it, nsfw = vn.image_nsfw) },
+            *vn.screens.toTypedArray()
+        )
+        slideshowAdapter.images = images
+        slideshow.setCurrentItem(viewModel.position, false)
+        onPageSelected(viewModel.position)
+    }
+
+    override fun showError(message: String) {
+        super.onError()
+        home()?.viewModel?.onError(Throwable(message))
+        findNavController().popBackStack()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -86,12 +116,14 @@ class SlideshowActivity : BaseActivity(), ViewPager.OnPageChangeListener {
     }
 
     private fun downloadScreenshot(action: Int) {
-        if (EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        val activity = home() ?: return
+
+        if (EasyPermissions.hasPermissions(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             val imageView = slideshow.findViewWithTag<ImageView>(slideshow.currentItem)
             val bitmap = (imageView.drawable as? BitmapDrawable)?.bitmap
             val directory = when (action) {
                 DOWNLOAD_SCREENSHOT_PERMISSION -> Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                SHARE_SCREENSHOT_PERMISSION -> externalCacheDir
+                SHARE_SCREENSHOT_PERMISSION -> activity.externalCacheDir
                 else -> return
             }
             viewModel.downloadScreenshot(bitmap, action, directory)
@@ -102,10 +134,11 @@ class SlideshowActivity : BaseActivity(), ViewPager.OnPageChangeListener {
     }
 
     private fun launchActionForImage(fileAction: FileAction?) {
+        val activity = home() ?: return
         fileAction ?: return
 
-        MediaScannerConnection.scanFile(applicationContext, arrayOf(fileAction.file.absolutePath), null) { _, _ ->
-            val uri = FileProvider.getUriForFile(applicationContext, applicationContext.packageName + ".fileprovider", fileAction.file)
+        MediaScannerConnection.scanFile(App.context, arrayOf(fileAction.file.absolutePath), null) { _, _ ->
+            val uri = FileProvider.getUriForFile(App.context, App.context.packageName + ".fileprovider", fileAction.file)
             val shareIntent = getFileIntent(uri).apply {
                 action = Intent.ACTION_SEND
                 putExtra(Intent.EXTRA_UID, REQUEST_CODE_SHARE)
@@ -114,20 +147,20 @@ class SlideshowActivity : BaseActivity(), ViewPager.OnPageChangeListener {
             when (fileAction.action) {
                 DOWNLOAD_SCREENSHOT_PERMISSION -> {
                     val mainIntent = getFileIntent(uri).apply { action = Intent.ACTION_VIEW }
-                    shareIntent.setClass(this@SlideshowActivity, ScreenshotNotificationService::class.java)
+                    shareIntent.setClass(activity, ScreenshotNotificationService::class.java)
                     val deleteIntent = getFileIntent(uri).apply {
-                        setClass(this@SlideshowActivity, ScreenshotNotificationService::class.java)
+                        setClass(activity, ScreenshotNotificationService::class.java)
                         putExtra(Intent.EXTRA_TEXT, fileAction.file.absolutePath)
                         putExtra(Intent.EXTRA_UID, REQUEST_CODE_DELETE)
                     }
 
                     val pendingFlags = PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_ONE_SHOT
-                    val mainPendingIntent = PendingIntent.getActivity(applicationContext, REQUEST_CODE_VIEW, mainIntent, pendingFlags)
-                    val sharePendingIntent = PendingIntent.getService(applicationContext, REQUEST_CODE_SHARE, shareIntent, pendingFlags)
-                    val deletePendingIntent = PendingIntent.getService(applicationContext, REQUEST_CODE_DELETE, deleteIntent, pendingFlags)
+                    val mainPendingIntent = PendingIntent.getActivity(App.context, REQUEST_CODE_VIEW, mainIntent, pendingFlags)
+                    val sharePendingIntent = PendingIntent.getService(App.context, REQUEST_CODE_SHARE, shareIntent, pendingFlags)
+                    val deletePendingIntent = PendingIntent.getService(App.context, REQUEST_CODE_DELETE, deleteIntent, pendingFlags)
 
-                    val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-                    val notif = NotificationCompat.Builder(applicationContext, Notifications.DEFAULT_CHANNEL_ID)
+                    val notificationManager = activity.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+                    val notif = NotificationCompat.Builder(App.context, Notifications.DEFAULT_CHANNEL_ID)
                         .setContentIntent(mainPendingIntent)
                         .setContentTitle("Image saved.")
                         .setSmallIcon(R.drawable.ic_logo_transparent)
@@ -146,7 +179,7 @@ class SlideshowActivity : BaseActivity(), ViewPager.OnPageChangeListener {
     }
 
     private fun getFileIntent(uri: Uri) = Intent().apply {
-        setDataAndType(uri, contentResolver.getType(uri))
+        setDataAndType(uri, home()?.contentResolver?.getType(uri))
         action = System.nanoTime().toString()
         putExtra(Intent.EXTRA_STREAM, uri)
         flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
@@ -159,16 +192,13 @@ class SlideshowActivity : BaseActivity(), ViewPager.OnPageChangeListener {
     }
 
     override fun onPageSelected(position: Int) {
-        supportActionBar?.title = String.format("%d/%d", position + 1, slideshow.adapter?.count)
-    }
-
-    companion object {
-        const val IMAGES_ARG = "IMAGES_ARG"
-        const val INDEX_ARG = "INDEX_ARG"
-        const val DOWNLOAD_SCREENSHOT_PERMISSION = 1001
-        const val SHARE_SCREENSHOT_PERMISSION = 1002
-        const val REQUEST_CODE_VIEW = 100
-        const val REQUEST_CODE_SHARE = 101
-        const val REQUEST_CODE_DELETE = 102
+        viewModel.position = position
+        home()?.supportActionBar?.title = String.format("%d/%d", position + 1, slideshow.adapter?.count ?: 0)
     }
 }
+
+const val DOWNLOAD_SCREENSHOT_PERMISSION = 1001
+const val SHARE_SCREENSHOT_PERMISSION = 1002
+const val REQUEST_CODE_VIEW = 100
+const val REQUEST_CODE_SHARE = 101
+const val REQUEST_CODE_DELETE = 102

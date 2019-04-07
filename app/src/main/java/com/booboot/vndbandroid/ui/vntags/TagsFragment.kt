@@ -3,23 +3,25 @@ package com.booboot.vndbandroid.ui.vntags
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.extensions.observe
 import com.booboot.vndbandroid.extensions.observeOnce
+import com.booboot.vndbandroid.extensions.restoreState
+import com.booboot.vndbandroid.extensions.saveState
+import com.booboot.vndbandroid.extensions.startParentEnterTransition
 import com.booboot.vndbandroid.model.vndbandroid.VNDetailsTags
 import com.booboot.vndbandroid.model.vndbandroid.VNTag
 import com.booboot.vndbandroid.ui.base.BaseFragment
-import com.booboot.vndbandroid.ui.vndetails.VNDetailsActivity
+import com.booboot.vndbandroid.ui.vndetails.VNDetailsFragment
 import com.google.android.flexbox.AlignItems
 import com.google.android.flexbox.FlexboxItemDecoration
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import kotlinx.android.synthetic.main.tags_fragment.*
 
-class TagsFragment : BaseFragment(), TagsAdapter.Callback {
+class TagsFragment : BaseFragment<TagsViewModel>(), TagsAdapter.Callback {
     override val layout: Int = R.layout.tags_fragment
-    private lateinit var viewModel: TagsViewModel
     private lateinit var tagsAdapter: TagsAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -37,24 +39,21 @@ class TagsFragment : BaseFragment(), TagsAdapter.Callback {
         tagsAdapter = TagsAdapter(this)
         recyclerView.adapter = tagsAdapter
 
-        val vnId = arguments?.getLong(VNDetailsActivity.EXTRA_VN_ID) ?: 0
+        val vnId = arguments?.getLong(VNDetailsFragment.EXTRA_VN_ID) ?: 0
 
         viewModel = ViewModelProviders.of(this).get(TagsViewModel::class.java)
         viewModel.errorData.observeOnce(this, ::showError)
-        viewModel.tagsData.observe(this, Observer { showTags(it) })
-        viewModel.tagsData.value?.let {
-            /* [IMPORTANT] Filling the tags adapter immediately. When the fragment is recreated, if we let the ViewModel observer call this method,
-            it is only called in onStart(), which is AFTER onViewRestoredState(), which is TOO LATE for the adapter to restore its state.
-            So we have to manually call the callback now. */
-            showTags(viewModel.tagsData.value)
-        }
+        viewModel.tagsData.observe(this, ::showTags)
 
+        /* [IMPORTANT] Manually updating the UI now so the state can be restored */
+        viewModel.tagsData.value?.let(::showTags)
         viewModel.loadTags(vnId, false)
     }
 
-    private fun showTags(tags: VNDetailsTags?) {
-        if (tags == null) return
+    private fun showTags(tags: VNDetailsTags) {
         tagsAdapter.items = tags
+        recyclerView.restoreState(this)
+        startParentEnterTransition(tagsAdapter)
     }
 
     override fun onTitleClicked(title: String) {
@@ -62,5 +61,15 @@ class TagsFragment : BaseFragment(), TagsAdapter.Callback {
     }
 
     override fun onChipClicked(tag: VNTag) {
+    }
+
+    override fun scrollToTop() {
+        recyclerView.scrollToPosition(0)
+    }
+
+    override fun onPause() {
+        layoutState = recyclerView.saveState()
+        viewModel.layoutState = layoutState
+        super.onPause()
     }
 }

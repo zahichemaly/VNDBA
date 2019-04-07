@@ -33,15 +33,6 @@
         </activity>
 
         <activity
-            android:name=".ui.vndetails.VNDetailsActivity"
-            android:theme="@style/SplashScreen"
-            android:windowSoftInputMode="adjustPan" />
-
-        <activity
-            android:name=".ui.slideshow.SlideshowActivity"
-            android:theme="@style/AppTheme.DayNight.NoActionBar.Translucent" />
-
-        <activity
             android:name=".ui.login.LoginActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"

@@ -6,11 +6,11 @@ import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.RecyclerView
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.diff.VNDiffCallback
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndb.VN
+import com.booboot.vndbandroid.ui.base.BaseAdapter
 
 class VNAdapter(
     private val onVnClicked: (View, VN) -> Unit,
@@ -19,14 +19,14 @@ class VNAdapter(
     private val showRating: Boolean = false,
     private val showPopularity: Boolean = false,
     private val showVoteCount: Boolean = false
-) : RecyclerView.Adapter<VNHolder>(), Filterable {
+) : BaseAdapter<VNHolder>(), Filterable {
     var items = AccountItems()
         set(value) {
             field = value
             filter.filter(filterString)
         }
     private var filteredVns = items
-    private val mFilter = ItemFilter()
+    private val filter = ItemFilter()
     var filterString: String = ""
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VNHolder {
@@ -51,11 +51,11 @@ class VNAdapter(
 
     override fun getItemCount() = filteredVns.vns.values.size
 
-    override fun getFilter(): Filter = mFilter
+    override fun getFilter(): Filter = filter
 
     private inner class ItemFilter : Filter() {
-        override fun performFiltering(constraint: CharSequence): Filter.FilterResults {
-            filterString = constraint.toString().trim().toLowerCase()
+        override fun performFiltering(search: CharSequence): Filter.FilterResults {
+            filterString = search.toString().trim().toLowerCase()
             val results = Filter.FilterResults()
             val newVns = mutableMapOf<Long, VN>()
 

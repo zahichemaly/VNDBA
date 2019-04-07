@@ -12,17 +12,22 @@ fun BottomSheetBehavior<*>.toggle() {
     }
 }
 
-fun BottomSheetBehavior<*>.onStateChanged(onCollapsed: () -> Unit? = {}, onHidden: () -> Unit? = {}, onExpanded: () -> Unit? = {}) =
-    object : BottomSheetBehavior.BottomSheetCallback() {
-        override fun onSlide(bottomSheet: View, slideOffset: Float) {
-        }
+fun BottomSheetBehavior<*>.onStateChanged(
+    onCollapsed: () -> Unit = {},
+    onHidden: () -> Unit = {},
+    onExpanded: () -> Unit = {},
+    onStateChanged: (Int) -> Unit = {}
+) = object : BottomSheetBehavior.BottomSheetCallback() {
+    override fun onSlide(bottomSheet: View, slideOffset: Float) {
+    }
 
-        @SuppressLint("SwitchIntDef")
-        override fun onStateChanged(bottomSheet: View, newState: Int) {
-            when (newState) {
-                BottomSheetBehavior.STATE_COLLAPSED -> onCollapsed()
-                BottomSheetBehavior.STATE_HIDDEN -> onHidden()
-                else -> onExpanded()
-            }
+    @SuppressLint("SwitchIntDef")
+    override fun onStateChanged(bottomSheet: View, newState: Int) {
+        onStateChanged(newState)
+        when (newState) {
+            BottomSheetBehavior.STATE_COLLAPSED -> onCollapsed()
+            BottomSheetBehavior.STATE_HIDDEN -> onHidden()
+            else -> onExpanded()
         }
-    }.apply { setBottomSheetCallback(this) }
+    }
+}.apply { setBottomSheetCallback(this) }

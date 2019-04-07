@@ -52,10 +52,7 @@ pages:
     - wget --quiet --output-document=android-sdk.zip https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip
     - unzip -q android-sdk.zip -d $ANDROID_HOME
     - mkdir $ANDROID_HOME/licenses
-    - echo "d56f5187479451eabf01fb78af6dfcb131a6481e" > $ANDROID_HOME/licenses/android-sdk-license &&
-      echo "84831b9409646a918e30573bab4c9c91346d8abd" > $ANDROID_HOME/licenses/android-sdk-preview-license
-
-    - sdkmanager --update > /dev/null
+    - yes | sdkmanager --licenses > /dev/null && sdkmanager --update > /dev/null
     - sdkmanager "platforms;android-${ANDROID_COMPILE_SDK}" "build-tools;${ANDROID_BUILD_TOOLS}" "extras;google;m2repository" "extras;android;m2repository" > /dev/null
     - chmod +x ./gradlew
 

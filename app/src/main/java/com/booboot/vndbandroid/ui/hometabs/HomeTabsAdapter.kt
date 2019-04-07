@@ -1,30 +1,33 @@
 package com.booboot.vndbandroid.ui.hometabs
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentStatePagerAdapter
 import com.booboot.vndbandroid.model.vndbandroid.Priority
 import com.booboot.vndbandroid.model.vndbandroid.Status
+import com.booboot.vndbandroid.ui.base.BaseFragmentStatePagerAdapter
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment.Companion.TAB_VALUE_ARG
 import com.booboot.vndbandroid.ui.vnlist.VNListFragment
 
-class HomeTabsAdapter(fm: FragmentManager?, private val numOfTabs: Int, private val type: Int) : FragmentStatePagerAdapter(fm) {
-    override fun getItem(position: Int): Fragment {
-        val args = Bundle()
-        val tab = VNListFragment()
-
-        when (position) {
-            0 -> args.putInt(TAB_VALUE_ARG, getTabValue(Status.PLAYING, 10, Priority.HIGH))
-            1 -> args.putInt(TAB_VALUE_ARG, getTabValue(Status.FINISHED, 8, Priority.MEDIUM))
-            2 -> args.putInt(TAB_VALUE_ARG, getTabValue(Status.STALLED, 6, Priority.LOW))
-            3 -> args.putInt(TAB_VALUE_ARG, getTabValue(Status.DROPPED, 4, Priority.BLACKLIST))
-            4 -> args.putInt(TAB_VALUE_ARG, getTabValue(Status.UNKNOWN, 2, -1))
+class HomeTabsAdapter(fm: FragmentManager?, private val type: Int) : BaseFragmentStatePagerAdapter(fm) {
+    var titles = emptyList<String>()
+        set(value) {
+            field = value
+            notifyDataSetChanged()
         }
 
-        args.putInt(HomeTabsFragment.LIST_TYPE_ARG, type)
-        tab.arguments = args
-        return tab
+    override fun getItem(position: Int) = (fragments[position] ?: VNListFragment()).apply {
+        arguments = Bundle().apply {
+            putInt(TAB_VALUE_ARG, getTabValue(position))
+            putInt(HomeTabsFragment.LIST_TYPE_ARG, type)
+        }
+    }
+
+    private fun getTabValue(position: Int) = when (position) {
+        0 -> getTabValue(Status.PLAYING, 10, Priority.HIGH)
+        1 -> getTabValue(Status.FINISHED, 8, Priority.MEDIUM)
+        2 -> getTabValue(Status.STALLED, 6, Priority.LOW)
+        3 -> getTabValue(Status.DROPPED, 4, Priority.BLACKLIST)
+        else -> getTabValue(Status.UNKNOWN, 2, -1)
     }
 
     private fun getTabValue(vnlistValue: Int, votelistValue: Int, wishlistValue: Int): Int = when (type) {
@@ -34,5 +37,7 @@ class HomeTabsAdapter(fm: FragmentManager?, private val numOfTabs: Int, private 
         else -> -1
     }
 
-    override fun getCount(): Int = numOfTabs
+    override fun getCount(): Int = titles.size
+
+    override fun getPageTitle(position: Int): CharSequence? = titles[position]
 }

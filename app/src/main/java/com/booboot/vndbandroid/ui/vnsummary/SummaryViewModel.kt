@@ -17,14 +17,14 @@ import javax.inject.Inject
 
 class SummaryViewModel constructor(application: Application) : BaseViewModel(application) {
     @Inject lateinit var vnRepository: VNRepository
-    val vnData: MutableLiveData<SummaryVN> = MutableLiveData()
+    val summaryData: MutableLiveData<SummaryVN> = MutableLiveData()
 
     init {
         (application as App).appComponent.inject(this)
     }
 
     fun loadVn(vnId: Long, force: Boolean = true) {
-        if (!force && vnData.value != null) return
+        if (!force && summaryData.value != null) return
         if (disposables.contains(DISPOSABLE_VN)) return
 
         disposables[DISPOSABLE_VN] = vnRepository.getItem(vnId)
@@ -42,7 +42,7 @@ class SummaryViewModel constructor(application: Application) : BaseViewModel(app
                 loadingData.minus()
                 disposables.remove(DISPOSABLE_VN)
             }
-            .subscribe({ vnData.value = it }, ::onError)
+            .subscribe({ summaryData.value = it }, ::onError)
     }
 
     companion object {

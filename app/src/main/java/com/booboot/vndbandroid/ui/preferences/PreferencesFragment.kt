@@ -8,6 +8,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.extensions.setupStatusBar
 import com.booboot.vndbandroid.extensions.setupToolbar
 import com.booboot.vndbandroid.extensions.toBooleanOrFalse
 import com.booboot.vndbandroid.model.vndbandroid.NO
@@ -17,6 +18,7 @@ import com.booboot.vndbandroid.model.vndbandroid.YES
 class PreferencesFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupStatusBar()
         setupToolbar()
     }
 

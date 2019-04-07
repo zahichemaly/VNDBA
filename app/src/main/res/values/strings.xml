@@ -8,9 +8,9 @@
     <string name="search_hint">Search on VNDB…</string>
     <string name="close">Close</string>
     <string name="my_account">My account</string>
-    <string name="my_visual_novel_list">My Visual Novel list</string>
-    <string name="my_votes">My Votes</string>
-    <string name="my_wishlist">My Wishlist</string>
+    <string name="my_visual_novel_list">My VN list</string>
+    <string name="my_votes">My votes</string>
+    <string name="my_wishlist">My wishlist</string>
     <string name="database_statistics">Database Statistics</string>
     <string name="preferences">Preferences</string>
     <string name="logout">Logout</string>

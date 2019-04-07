@@ -11,12 +11,13 @@ import com.booboot.vndbandroid.extensions.log
 import com.booboot.vndbandroid.model.vndb.Anime
 import com.booboot.vndbandroid.model.vndb.Relation
 import com.booboot.vndbandroid.model.vndb.VN
+import com.booboot.vndbandroid.ui.base.BaseAdapter
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
-class RelationsAdapter(private val onAnimeClicked: (Anime) -> Unit, private val onRelationClicked: (View, Relation, VN?) -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class RelationsAdapter(private val onAnimeClicked: (Anime) -> Unit, private val onRelationClicked: (View, Relation, VN?) -> Unit) : BaseAdapter<RecyclerView.ViewHolder>() {
     private var vn: VN = VN()
     private var disposable: Disposable? = null
     var relationsData: RelationsData = RelationsData()

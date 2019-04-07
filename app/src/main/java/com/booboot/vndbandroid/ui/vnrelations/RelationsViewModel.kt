@@ -18,14 +18,14 @@ import javax.inject.Inject
 class RelationsViewModel constructor(application: Application) : BaseViewModel(application) {
     @Inject lateinit var vnRepository: VNRepository
     @Inject lateinit var accountRepository: AccountRepository
-    val vnData: MutableLiveData<RelationsData> = MutableLiveData()
+    val relationsData: MutableLiveData<RelationsData> = MutableLiveData()
 
     init {
         (application as App).appComponent.inject(this)
     }
 
     fun loadVn(vnId: Long, force: Boolean = true) {
-        if (!force && vnData.value != null) return
+        if (!force && relationsData.value != null) return
         if (disposables.contains(DISPOSABLE_VN)) return
 
         var items = AccountItems()
@@ -43,7 +43,7 @@ class RelationsViewModel constructor(application: Application) : BaseViewModel(a
                 loadingData.minus()
                 disposables.remove(DISPOSABLE_VN)
             }
-            .subscribe({ vnData.value = RelationsData(vnId, items, it) }, ::onError)
+            .subscribe({ relationsData.value = RelationsData(vnId, items, it) }, ::onError)
     }
 
     companion object {

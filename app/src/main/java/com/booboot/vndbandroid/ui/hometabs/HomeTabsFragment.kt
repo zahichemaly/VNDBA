@@ -7,15 +7,19 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.Observer
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.home
+import com.booboot.vndbandroid.extensions.observe
 import com.booboot.vndbandroid.extensions.observeOnce
+import com.booboot.vndbandroid.extensions.onStateChanged
+import com.booboot.vndbandroid.extensions.postponeEnterTransitionIfExists
+import com.booboot.vndbandroid.extensions.replaceOnTabSelectedListener
 import com.booboot.vndbandroid.extensions.selectIf
+import com.booboot.vndbandroid.extensions.setupStatusBar
 import com.booboot.vndbandroid.extensions.setupToolbar
 import com.booboot.vndbandroid.extensions.toggle
-import com.booboot.vndbandroid.extensions.updateTabs
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.model.vndbandroid.SORT_ID
 import com.booboot.vndbandroid.model.vndbandroid.SORT_LENGTH
@@ -31,86 +35,107 @@ import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.home_tabs_fragment.*
 import kotlinx.android.synthetic.main.vn_list_sort_bottom_sheet.*
 
-class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.OnClickListener {
+class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelectedListener, View.OnClickListener, SearchView.OnQueryTextListener {
     override val layout: Int = R.layout.home_tabs_fragment
-    lateinit var viewModel: HomeTabsViewModel
     lateinit var sortBottomSheetBehavior: BottomSheetBehavior<View>
+    var searchView: SearchView? = null
 
     private var type: Int = 0
-    private var adapter: HomeTabsAdapter? = null
-    private val sortBottomSheetButtons by lazy {
-        listOf(buttonReverseSort, buttonSortID, buttonSortReleaseDate, buttonSortLength, buttonSortPopularity, buttonSortRating, buttonSortStatus, buttonSortVote, buttonSortPriority)
-    }
+    private var tabsAdapter: HomeTabsAdapter? = null
+    private lateinit var sortBottomSheetButtons: List<View>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         super.onCreateView(inflater, container, savedInstanceState)
-        type = arguments?.getInt(LIST_TYPE_ARG) ?: VNLIST
+        arguments?.let { arguments ->
+            type = HomeTabsFragmentArgs.fromBundle(arguments).listType
+        }
         return rootView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         activity ?: return
 
+        savedInstanceState?.apply {
+            setQuery(getString(SAVED_FILTER_STATE) ?: "", true)
+        }
+
+        setupStatusBar()
         setupToolbar()
-        floatingSearchButton.setOnClickListener(this)
-
-        viewPager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabLayout))
-        tabLayout.addOnTabSelectedListener(this)
-
-        sortBottomSheetBehavior = BottomSheetBehavior.from(sortBottomSheet)
-        sortBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-        sortBottomSheetHeader.setOnClickListener(this)
-        sortBottomSheetButtons.forEach { it.setOnClickListener(this) }
 
         viewModel = ViewModelProviders.of(this).get(HomeTabsViewModel::class.java)
-        viewModel.titlesData.observe(this, Observer { showTitles(it) })
-        viewModel.sortData.observe(this, Observer { showSort() })
+        viewModel.restoreState(savedInstanceState)
+        viewModel.titlesData.observeOnce(this, ::showTitles)
+        viewModel.sortData.observeOnce(this) { showSort() }
         viewModel.errorData.observeOnce(this, ::showError)
-        viewModel.loadingData.observe(this, Observer { showLoading(it) })
-        home()?.viewModel?.syncAccountData?.observe(this, Observer { it?.let { update() } })
-        update(false)
-    }
+        viewModel.loadingData.observe(this, ::showLoading)
+        home()?.viewModel?.accountData?.observe(this) { update() }
 
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        sortBottomSheetBehavior.state = savedInstanceState?.getInt(SORT_BOTTOM_SHEET_STATE) ?: BottomSheetBehavior.STATE_HIDDEN
+        if (tabsAdapter == null) {
+            tabsAdapter = HomeTabsAdapter(childFragmentManager, type)
+        }
+        viewPager.adapter = tabsAdapter
+        tabLayout.setupWithViewPager(viewPager)
+        postponeEnterTransitionIfExists(viewModel)
+
+        sortBottomSheetBehavior = BottomSheetBehavior.from(sortBottomSheet)
+        sortBottomSheetBehavior.state = viewModel.sortBottomSheetState
+        sortBottomSheetBehavior.onStateChanged(onStateChanged = { viewModel.sortBottomSheetState = it })
+        sortBottomSheetHeader.setOnClickListener(this)
+        floatingSearchButton.setOnClickListener(this)
+
+        sortBottomSheetButtons = listOf(buttonReverseSort, buttonSortID, buttonSortReleaseDate, buttonSortLength, buttonSortPopularity, buttonSortRating, buttonSortStatus, buttonSortVote, buttonSortPriority)
+        sortBottomSheetButtons.forEach { it.setOnClickListener(this) }
+
+        showSort()
     }
 
     private fun update(force: Boolean = true) = viewModel.getTabTitles(type, force)
 
-    private fun showTitles(titles: List<String>?) {
-        if (titles == null) return
-
-        val tabLayoutEmpty = tabLayout.tabCount <= 0
-        tabLayout.updateTabs(titles)
-
-        if (tabLayoutEmpty) { // INIT
-            adapter = HomeTabsAdapter(childFragmentManager, tabLayout.tabCount, type)
-            viewPager.adapter = adapter
-            if (currentPage >= 0) viewPager.currentItem = currentPage
-        }
+    private fun showTitles(titles: List<String>) {
+        tabsAdapter?.titles = titles
+        if (viewModel.currentPage >= 0) viewPager.currentItem = viewModel.currentPage
+        tabLayout.replaceOnTabSelectedListener(this)
     }
 
     private fun showSort() {
-        buttonReverseSort?.selectIf(Preferences.reverseSort)
-        buttonSortID?.selectIf(Preferences.sort == SORT_ID)
-        buttonSortReleaseDate?.selectIf(Preferences.sort == SORT_RELEASE_DATE)
-        buttonSortLength?.selectIf(Preferences.sort == SORT_LENGTH)
-        buttonSortPopularity?.selectIf(Preferences.sort == SORT_POPULARITY)
-        buttonSortRating?.selectIf(Preferences.sort == SORT_RATING)
-        buttonSortStatus?.selectIf(Preferences.sort == SORT_STATUS)
-        buttonSortVote?.selectIf(Preferences.sort == SORT_VOTE)
-        buttonSortPriority?.selectIf(Preferences.sort == SORT_PRIORITY)
+        buttonReverseSort?.selectIf(Preferences.reverseSort, R.color.textColorPrimaryBlack)
+        buttonSortID?.selectIf(Preferences.sort == SORT_ID, R.color.textColorPrimaryReverse)
+        buttonSortReleaseDate?.selectIf(Preferences.sort == SORT_RELEASE_DATE, R.color.textColorPrimaryReverse)
+        buttonSortLength?.selectIf(Preferences.sort == SORT_LENGTH, R.color.textColorPrimaryReverse)
+        buttonSortPopularity?.selectIf(Preferences.sort == SORT_POPULARITY, R.color.textColorPrimaryReverse)
+        buttonSortRating?.selectIf(Preferences.sort == SORT_RATING, R.color.textColorPrimaryReverse)
+        buttonSortStatus?.selectIf(Preferences.sort == SORT_STATUS, R.color.textColorPrimaryReverse)
+        buttonSortVote?.selectIf(Preferences.sort == SORT_VOTE, R.color.textColorPrimaryReverse)
+        buttonSortPriority?.selectIf(Preferences.sort == SORT_PRIORITY, R.color.textColorPrimaryReverse)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.home_tabs_fragment, menu)
-        menu.findItem(R.id.action_filter)?.isVisible = true
+
+        /* Filter */
+        searchView = menu.findItem(R.id.action_filter).actionView as SearchView
+
+        if (query()?.isNotEmpty() == true) {
+            searchView?.isIconified = false
+            searchView?.setQuery(query(), true)
+        }
+
+        searchView?.setOnQueryTextListener(this)
+        searchView?.clearFocus()
+    }
+
+    override fun onQueryTextSubmit(query: String): Boolean {
+        return false
+    }
+
+    override fun onQueryTextChange(search: String): Boolean {
+        setQuery(search)
+        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -135,28 +160,40 @@ class HomeTabsFragment : BaseFragment(), TabLayout.OnTabSelectedListener, View.O
         }
     }
 
+    private fun query() = home()?.viewModel?.filterData?.value
+
+    private fun setQuery(search: String, setOnlyIfNull: Boolean = false) {
+        if (!setOnlyIfNull || query() == null) {
+            home()?.viewModel?.filterData?.value = search
+        }
+    }
+
     override fun onTabSelected(tab: TabLayout.Tab) {
-        viewPager.currentItem = tab.position
-        currentPage = tab.position
+        viewModel.currentPage = tab.position
     }
 
     override fun onTabUnselected(tab: TabLayout.Tab) {}
 
-    override fun onTabReselected(tab: TabLayout.Tab) {}
+    override fun onTabReselected(tab: TabLayout.Tab) {
+        tabsAdapter?.getFragment(tab.position)?.scrollToTop()
+    }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putInt(SORT_BOTTOM_SHEET_STATE, sortBottomSheetBehavior.state)
+        outState.putString(SAVED_FILTER_STATE, searchView?.query?.toString() ?: "")
         super.onSaveInstanceState(outState)
+    }
+
+    override fun onDestroyView() {
+        tabLayout?.removeOnTabSelectedListener(this)
+        super.onDestroyView()
     }
 
     companion object {
         const val LIST_TYPE_ARG = "LIST_TYPE_ARG"
         const val TAB_VALUE_ARG = "TAB_VALUE_ARG"
-        const val SORT_BOTTOM_SHEET_STATE = "SORT_BOTTOM_SHEET_STATE"
+        const val SAVED_FILTER_STATE = "SAVED_FILTER_STATE"
         const val VNLIST = 1
         const val VOTELIST = 2
         const val WISHLIST = 3
-
-        var currentPage = 0
     }
 }
