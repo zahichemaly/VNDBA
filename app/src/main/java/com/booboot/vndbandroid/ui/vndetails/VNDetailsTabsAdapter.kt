@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.ui.base.BaseFragmentStatePagerAdapter
+import com.booboot.vndbandroid.ui.base.DummyFragment
 import com.booboot.vndbandroid.ui.vnrelations.RelationsFragment
 import com.booboot.vndbandroid.ui.vnsummary.SummaryFragment
 import com.booboot.vndbandroid.ui.vntags.TagsFragment
@@ -32,6 +33,6 @@ class VNDetailsTabsAdapter(fm: FragmentManager?) : BaseFragmentStatePagerAdapter
         0 -> SummaryFragment::class.java
         1 -> TagsFragment::class.java
         2 -> RelationsFragment::class.java
-        else -> Fragment::class.java
+        else -> DummyFragment::class.java
     }
 }
