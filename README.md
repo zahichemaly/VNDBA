@@ -1,3 +1,4 @@
+**Questions, bugs, suggestions? Feel free to contact me at vndba.app@gmail.com**  
 Gitlab is now the official supported repository for this project. Issues and merge requests must be submitted at https://gitlab.com/thomas_herbeth/VNDBA
 
 # VNDBA <img src="http://image.noelshack.com/fichiers/2018/44/7/1541340096-ic-launcher-web.png" height="50" align="right"/><a href="https://play.google.com/store/apps/details?id=com.booboot.vndbandroid"><img src="http://image.noelshack.com/fichiers/2017/12/1490206761-google-play-badge.png" height="50" align="right"/></a>
