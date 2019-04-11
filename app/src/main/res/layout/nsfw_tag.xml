@@ -7,7 +7,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_centerInParent="true"
-    android:visibility="visible"
+    android:visibility="gone"
     app:cardBackgroundColor="@color/materialLightRed"
     app:contentPaddingBottom="4dp"
     app:contentPaddingLeft="20dp"
