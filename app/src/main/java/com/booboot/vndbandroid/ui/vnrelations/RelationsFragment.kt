@@ -13,6 +13,7 @@ import com.booboot.vndbandroid.extensions.openVN
 import com.booboot.vndbandroid.extensions.restoreState
 import com.booboot.vndbandroid.extensions.saveState
 import com.booboot.vndbandroid.extensions.startParentEnterTransition
+import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.model.vndb.Anime
 import com.booboot.vndbandroid.model.vndb.Links
 import com.booboot.vndbandroid.model.vndb.Relation
@@ -32,6 +33,7 @@ class RelationsFragment : BaseFragment<RelationsViewModel>() {
         val context = context ?: return
         recyclerView.layoutManager = GridAutofitLayoutManager(context, Pixels.px(300))
         adapter = RelationsAdapter(::onAnimeClicked, ::onRelationClicked)
+        adapter.onUpdate = ::onAdapterUpdate
         recyclerView.adapter = adapter
 
         val vnId = arguments?.getLong(VNDetailsFragment.EXTRA_VN_ID) ?: 0
@@ -45,6 +47,10 @@ class RelationsFragment : BaseFragment<RelationsViewModel>() {
         adapter.relationsData = relationsData
         recyclerView.restoreState(this)
         startParentEnterTransition(adapter)
+    }
+
+    private fun onAdapterUpdate(empty: Boolean) {
+        backgroundInfo.toggle(empty)
     }
 
     private fun onAnimeClicked(anime: Anime) {

@@ -21,6 +21,11 @@ abstract class BaseAdapter<T : RecyclerView.ViewHolder> : RecyclerView.Adapter<T
         onFinishDrawing.clear()
     }
 
+    protected fun notifyChanged() {
+        super.notifyDataSetChanged()
+        onUpdateInternal()
+    }
+
     /**
      * Latest existing callback to get notified that the Adapter has done drawing its views after an update.
      */
