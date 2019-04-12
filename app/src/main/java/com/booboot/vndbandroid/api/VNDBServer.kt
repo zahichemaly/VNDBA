@@ -25,6 +25,7 @@ import java.io.UnsupportedEncodingException
 import java.net.SocketException
 import java.net.UnknownHostException
 import javax.inject.Inject
+import javax.inject.Singleton
 import javax.net.ssl.HttpsURLConnection
 import javax.net.ssl.SSLException
 import javax.net.ssl.SSLSocket
@@ -32,6 +33,7 @@ import javax.net.ssl.SSLSocketFactory
 import kotlin.math.max
 import kotlin.math.min
 
+@Singleton
 class VNDBServer @Inject constructor(private val moshi: Moshi) {
     private fun connect(socketIndex: Int) = try {
         val sf = SSLSocketFactory.getDefault()

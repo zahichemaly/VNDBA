@@ -1,6 +1,5 @@
 package com.booboot.vndbandroid.di
 
-import com.booboot.vndbandroid.api.VNDBServer
 import com.booboot.vndbandroid.api.VNDBService
 import com.booboot.vndbandroid.model.vndb.Links
 import com.squareup.moshi.Moshi
@@ -13,10 +12,6 @@ import javax.inject.Singleton
 
 @Module
 class ApiModule {
-    @Provides
-    @Singleton
-    fun vndbServer(moshi: Moshi): VNDBServer = VNDBServer(moshi)
-
     @Provides
     @Singleton
     fun retrofit(moshi: Moshi): Retrofit = Retrofit.Builder()
