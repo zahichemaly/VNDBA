@@ -26,6 +26,10 @@ class VNAdapter(
             filter.filter(filterString)
         }
     private var filteredVns = items
+        set (value) {
+            field = value
+            onUpdateInternal()
+        }
     private val filter = ItemFilter()
     var filterString: String = ""
 

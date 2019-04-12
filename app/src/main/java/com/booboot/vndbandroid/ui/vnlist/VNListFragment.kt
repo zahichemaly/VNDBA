@@ -15,6 +15,7 @@ import com.booboot.vndbandroid.extensions.openVN
 import com.booboot.vndbandroid.extensions.restoreState
 import com.booboot.vndbandroid.extensions.saveState
 import com.booboot.vndbandroid.extensions.startParentEnterTransition
+import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndbandroid.Status
@@ -49,6 +50,7 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
         homeTabs()?.viewModel?.sortData?.observeOnce(this) { update() }
 
         adapter = VNAdapter(::onVnClicked)
+        adapter.onUpdate = ::onAdapterUpdate
         vnList.layoutManager = GridAutofitLayoutManager(context, Pixels.px(300))
         vnList.adapter = adapter
         vnList.hideOnBottom(homeTabs()?.floatingSearchButton)
@@ -75,6 +77,10 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
         homeTabs()?.viewModel?.let {
             findNavController().openVN(vn, itemView.image, it)
         }
+    }
+
+    private fun onAdapterUpdate(empty: Boolean) {
+        backgroundInfo.toggle(empty)
     }
 
     override fun onRefresh() {

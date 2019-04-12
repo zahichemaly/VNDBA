@@ -6,10 +6,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingEnd="0dp"
     android:paddingStart="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingEnd="0dp"
+    android:paddingBottom="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".ui.home.HomeActivity">
 
@@ -22,22 +22,29 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <include
-                android:id="@+id/backgroundInfo"
-                layout="@layout/background_info"
-                android:visibility="gone" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/vnList"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingEnd="@dimen/activity_horizontal_margin" />
+                android:paddingEnd="@dimen/activity_horizontal_margin"
+                tools:listitem="@layout/vn_card" />
 
             <!--<com.pluscubed.recyclerfastscroll.RecyclerFastScroller-->
             <!--android:id="@+id/fastScroller"-->
             <!--android:layout_width="wrap_content"-->
             <!--android:layout_height="match_parent"-->
             <!--android:layout_gravity="end"/>-->
+
+            <com.booboot.vndbandroid.util.view.BackgroundInfo
+                android:id="@+id/backgroundInfo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                app:buttonText="@string/action_search"
+                app:maxFrame="200"
+                app:text="@string/empty_vn_list_text" />
+
         </FrameLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
