@@ -127,4 +127,5 @@
     <string name="empty_vn_list_text">There are no visual novels in this section.
 Check your filters or add a new one!</string>
     <string name="empty_relations_text">This VN has no relation.</string>
+    <string name="empty_tags_text">This VN has no tags.</string>
 </resources>

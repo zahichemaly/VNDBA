@@ -13,7 +13,6 @@ import com.booboot.vndbandroid.extensions.openVN
 import com.booboot.vndbandroid.extensions.restoreState
 import com.booboot.vndbandroid.extensions.saveState
 import com.booboot.vndbandroid.extensions.startParentEnterTransition
-import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.model.vndb.Anime
 import com.booboot.vndbandroid.model.vndb.Links
 import com.booboot.vndbandroid.model.vndb.Relation
@@ -47,10 +46,6 @@ class RelationsFragment : BaseFragment<RelationsViewModel>() {
         adapter.relationsData = relationsData
         recyclerView.restoreState(this)
         startParentEnterTransition(adapter)
-    }
-
-    private fun onAdapterUpdate(empty: Boolean) {
-        backgroundInfo.toggle(empty)
     }
 
     private fun onAnimeClicked(anime: Anime) {
