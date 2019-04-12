@@ -23,6 +23,7 @@ class TagsAdapter(private val callback: Callback) : BaseAdapter<RecyclerView.Vie
         set(value) {
             val diffResult = DiffUtil.calculateDiff(VNDetailsTagsDiffCallback(field, value))
             field = value
+            onUpdateInternal()
             diffResult.dispatchUpdatesTo(this)
         }
 

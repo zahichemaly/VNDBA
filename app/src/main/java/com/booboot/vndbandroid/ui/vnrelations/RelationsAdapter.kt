@@ -33,12 +33,13 @@ class RelationsAdapter(private val onAnimeClicked: (Anime) -> Unit, private val 
                 .subscribe({
                     vn = it.first.newVn ?: return@subscribe
                     field = value
+                    onUpdateInternal()
                     it.second.dispatchUpdatesTo(this)
                 }, {
                     it.log()
                     vn = value.items.vns[value.vnId] ?: return@subscribe
                     field = value
-                    notifyDataSetChanged()
+                    notifyChanged()
                 })
         }
 

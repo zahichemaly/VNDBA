@@ -32,6 +32,7 @@ class RelationsFragment : BaseFragment<RelationsViewModel>() {
         val context = context ?: return
         recyclerView.layoutManager = GridAutofitLayoutManager(context, Pixels.px(300))
         adapter = RelationsAdapter(::onAnimeClicked, ::onRelationClicked)
+        adapter.onUpdate = ::onAdapterUpdate
         recyclerView.adapter = adapter
 
         val vnId = arguments?.getLong(VNDetailsFragment.EXTRA_VN_ID) ?: 0

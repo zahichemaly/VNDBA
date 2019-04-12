@@ -54,7 +54,7 @@ class TagsViewModel constructor(application: Application) : BaseViewModel(applic
                     Tag.KEY_POPULAR to sortedTags.take(10)
                 )
                 categories.putAll(sortedTags.groupBy { it.tag.cat })
-                VNDetailsTags(categories.toSortedMap(compareBy { Tag.CATEGORIES.keys.indexOf(it) }))
+                VNDetailsTags(categories.filterValues { it.isNotEmpty() }.toSortedMap(compareBy { Tag.CATEGORIES.keys.indexOf(it) }))
             }
             .observeOn(AndroidSchedulers.mainThread())
             .doFinally {

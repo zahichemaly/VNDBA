@@ -49,6 +49,7 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
         homeTabs()?.viewModel?.sortData?.observeOnce(this) { update() }
 
         adapter = VNAdapter(::onVnClicked)
+        adapter.onUpdate = ::onAdapterUpdate
         vnList.layoutManager = GridAutofitLayoutManager(context, Pixels.px(300))
         vnList.adapter = adapter
         vnList.hideOnBottom(homeTabs()?.floatingSearchButton)

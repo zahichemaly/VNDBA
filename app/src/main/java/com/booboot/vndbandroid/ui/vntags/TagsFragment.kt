@@ -37,6 +37,7 @@ class TagsFragment : BaseFragment<TagsViewModel>(), TagsAdapter.Callback {
 
         recyclerView.layoutManager = flexbox
         tagsAdapter = TagsAdapter(this)
+        tagsAdapter.onUpdate = ::onAdapterUpdate
         recyclerView.adapter = tagsAdapter
 
         val vnId = arguments?.getLong(VNDetailsFragment.EXTRA_VN_ID) ?: 0
