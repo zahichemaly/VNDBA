@@ -7,11 +7,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 
 fun MutableLiveData<Int>.plus() {
-    postValue(value?.inc() ?: 1)
+    value = value?.inc() ?: 1
 }
 
 fun MutableLiveData<Int>.minus() {
-    postValue(if (value ?: 0 <= 1) 0 else value?.dec())
+    value = if (value ?: 0 <= 1) 0 else value?.dec()
 }
 
 fun MutableLiveData<*>.reset() = Handler(Looper.getMainLooper()).post {
