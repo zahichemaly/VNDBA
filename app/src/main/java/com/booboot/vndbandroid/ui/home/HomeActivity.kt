@@ -13,7 +13,6 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.booboot.vndbandroid.R
-import com.booboot.vndbandroid.api.VNDBServer
 import com.booboot.vndbandroid.extensions.Track
 import com.booboot.vndbandroid.extensions.isTopLevel
 import com.booboot.vndbandroid.extensions.observe
@@ -84,8 +83,7 @@ class HomeActivity : BaseActivity(), View.OnClickListener {
     // TODO make this work with setupWithNavController without opening a Fragment
     private fun logout(): Boolean {
         // TODO clear all
-        VNDBServer.closeAll().subscribe()
-
+        viewModel.logout()
         startActivity(Intent(this, LoginActivity::class.java))
         finish()
         return true

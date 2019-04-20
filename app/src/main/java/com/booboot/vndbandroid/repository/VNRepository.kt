@@ -3,6 +3,7 @@ package com.booboot.vndbandroid.repository
 import android.text.TextUtils
 import com.booboot.vndbandroid.api.VNDBServer
 import com.booboot.vndbandroid.dao.VNDao
+import com.booboot.vndbandroid.extensions.asyncOrLazy
 import com.booboot.vndbandroid.extensions.get
 import com.booboot.vndbandroid.extensions.save
 import com.booboot.vndbandroid.model.vndb.Options
@@ -14,14 +15,15 @@ import com.booboot.vndbandroid.model.vndbandroid.FLAGS_NOT_EXISTS
 import com.booboot.vndbandroid.util.type
 import com.squareup.moshi.Moshi
 import io.objectbox.BoxStore
-import io.reactivex.Completable
-import io.reactivex.Single
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class VNRepository @Inject constructor(var boxStore: BoxStore, var vndbServer: VNDBServer, var moshi: Moshi) : Repository<VN>() {
-    override fun getItems(cachePolicy: CachePolicy<Map<Long, VN>>): Single<Map<Long, VN>> = Single.fromCallable {
+    override suspend fun getItems(coroutineScope: CoroutineScope, cachePolicy: CachePolicy<Map<Long, VN>>) = coroutineScope.async(Dispatchers.Default) {
         cachePolicy
             .fetchFromMemory { items }
             .fetchFromDatabase {
@@ -31,7 +33,7 @@ class VNRepository @Inject constructor(var boxStore: BoxStore, var vndbServer: V
             .get()
     }
 
-    override fun getItems(ids: Set<Long>, flags: Int, cachePolicy: CachePolicy<Map<Long, VN>>): Single<Map<Long, VN>> = Single.fromCallable {
+    override suspend fun getItems(coroutineScope: CoroutineScope, ids: Set<Long>, flags: Int, cachePolicy: CachePolicy<Map<Long, VN>>) = coroutineScope.async(Dispatchers.Default) {
         cachePolicy
             .fetchFromMemory { items }
             .fetchFromDatabase {
@@ -61,9 +63,9 @@ class VNRepository @Inject constructor(var boxStore: BoxStore, var vndbServer: V
                 val mergedIdsString = TextUtils.join(",", newIds)
                 val numberOfPages = Math.ceil(newIds.size * 1.0 / 25).toInt()
 
-                val apiVns = vndbServer.get<VN>("vn", TextUtils.join(",", flagsList), "(id = [$mergedIdsString])",
+                val apiVns = vndbServer.get<VN>(this, "vn", TextUtils.join(",", flagsList), "(id = [$mergedIdsString])",
                     Options(fetchAllPages = true, numberOfPages = numberOfPages), type())
-                    .blockingGet()
+                    .await()
                     .items
 
                 apiVns.forEach {
@@ -121,12 +123,12 @@ class VNRepository @Inject constructor(var boxStore: BoxStore, var vndbServer: V
             .get()
     }
 
-    override fun setItems(items: Map<Long, VN>): Completable = Completable.fromAction {
-        this.items.putAll(items)
+    override suspend fun setItems(coroutineScope: CoroutineScope, items: Map<Long, VN>, lazy: Boolean) = coroutineScope.asyncOrLazy(lazy) {
+        this@VNRepository.items.putAll(items)
         boxStore.save { items.map { VNDao(it.value, boxStore) } }
     }
 
-    override fun getItem(id: Long, cachePolicy: CachePolicy<VN>): Single<VN> = Single.fromCallable {
-        getItems(setOf(id), FLAGS_FULL, cachePolicy.copy()).blockingGet()[id]
+    override suspend fun getItem(coroutineScope: CoroutineScope, id: Long, cachePolicy: CachePolicy<VN>) = coroutineScope.async(Dispatchers.Default) {
+        getItems(coroutineScope, setOf(id), FLAGS_FULL, cachePolicy.copy()).await()[id] ?: throw Throwable("VN not found.")
     }
 }

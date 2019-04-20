@@ -6,8 +6,8 @@ import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.ui.vnrelations.RelationsData
 
 class RelationsDiffCallback(private var oldItems: RelationsData, private var newItems: RelationsData) : DiffUtil.Callback() {
-    private val oldVn = oldItems.items.vns[oldItems.vnId]
-    val newVn = newItems.items.vns[newItems.vnId]
+    private val oldVn = oldItems.items.vns[oldItems.vn.id]
+    val newVn = newItems.items.vns[newItems.vn.id]
 
     override fun getOldListSize() = oldVn?.let {
         it.relations.size + it.anime.size

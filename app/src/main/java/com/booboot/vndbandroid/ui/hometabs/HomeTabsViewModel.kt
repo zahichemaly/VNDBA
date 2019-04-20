@@ -11,7 +11,8 @@ import com.booboot.vndbandroid.model.vndbandroid.Status
 import com.booboot.vndbandroid.repository.AccountRepository
 import com.booboot.vndbandroid.ui.base.BaseViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import io.reactivex.android.schedulers.AndroidSchedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class HomeTabsViewModel constructor(application: Application) : BaseViewModel(application) {
@@ -26,48 +27,41 @@ class HomeTabsViewModel constructor(application: Application) : BaseViewModel(ap
         (application as App).appComponent.inject(this)
     }
 
-    fun getTabTitles(type: Int, force: Boolean = true) {
-        if (!force && titlesData.value != null) return
-        if (disposables.contains(DISPOSABLE_TAB_TITLES)) return
-
-        disposables[DISPOSABLE_TAB_TITLES] = accountRepository.getItems()
-            .observeOn(AndroidSchedulers.mainThread())
-            .doFinally { disposables.remove(DISPOSABLE_TAB_TITLES) }
-            .subscribe({
-                val titles = when (type) {
-                    HomeTabsFragment.VNLIST -> {
-                        val statusCount = it.getStatusCount()
-                        listOf("Playing (" + statusCount[Status.PLAYING] + ")",
-                            "Finished (" + statusCount[Status.FINISHED] + ")",
-                            "Stalled (" + statusCount[Status.STALLED] + ")",
-                            "Dropped (" + statusCount[Status.DROPPED] + ")",
-                            "Unknown (" + statusCount[Status.UNKNOWN] + ")"
-                        )
-                    }
-
-                    HomeTabsFragment.VOTELIST -> {
-                        val voteCount = it.getVoteCount()
-                        listOf("10 - 9 (" + voteCount[0] + ")",
-                            "8 - 7 (" + voteCount[1] + ")",
-                            "6 - 5 (" + voteCount[2] + ")",
-                            "4 - 3 (" + voteCount[3] + ")",
-                            "2 - 1 (" + voteCount[4] + ")"
-                        )
-                    }
-
-                    HomeTabsFragment.WISHLIST -> {
-                        val wishCount = it.getWishCount()
-                        listOf("High (" + wishCount[Priority.HIGH] + ")",
-                            "Medium (" + wishCount[Priority.MEDIUM] + ")",
-                            "Low (" + wishCount[Priority.LOW] + ")",
-                            "Blacklist (" + wishCount[Priority.BLACKLIST] + ")"
-                        )
-                    }
-                    else -> emptyList()
+    fun getTabTitles(type: Int, force: Boolean = true) = coroutine(DISPOSABLE_TAB_TITLES, !force && titlesData.value != null) {
+        val items = accountRepository.getItems(this).await()
+        titlesData.value = withContext(Dispatchers.Default) {
+            when (type) {
+                HomeTabsFragment.VNLIST -> {
+                    val statusCount = items.getStatusCount()
+                    listOf("Playing (" + statusCount[Status.PLAYING] + ")",
+                        "Finished (" + statusCount[Status.FINISHED] + ")",
+                        "Stalled (" + statusCount[Status.STALLED] + ")",
+                        "Dropped (" + statusCount[Status.DROPPED] + ")",
+                        "Unknown (" + statusCount[Status.UNKNOWN] + ")"
+                    )
                 }
 
-                titlesData.value = titles
-            }, ::onError)
+                HomeTabsFragment.VOTELIST -> {
+                    val voteCount = items.getVoteCount()
+                    listOf("10 - 9 (" + voteCount[0] + ")",
+                        "8 - 7 (" + voteCount[1] + ")",
+                        "6 - 5 (" + voteCount[2] + ")",
+                        "4 - 3 (" + voteCount[3] + ")",
+                        "2 - 1 (" + voteCount[4] + ")"
+                    )
+                }
+
+                HomeTabsFragment.WISHLIST -> {
+                    val wishCount = items.getWishCount()
+                    listOf("High (" + wishCount[Priority.HIGH] + ")",
+                        "Medium (" + wishCount[Priority.MEDIUM] + ")",
+                        "Low (" + wishCount[Priority.LOW] + ")",
+                        "Blacklist (" + wishCount[Priority.BLACKLIST] + ")"
+                    )
+                }
+                else -> emptyList()
+            }
+        }
     }
 
     fun setSort(@SortOptions sort: Int) {

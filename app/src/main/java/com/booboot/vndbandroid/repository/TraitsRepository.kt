@@ -14,18 +14,21 @@ import com.booboot.vndbandroid.model.vndbandroid.Expiration
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import io.objectbox.BoxStore
-import io.reactivex.Single
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class TraitsRepository @Inject constructor(
-    var vndbService: VNDBService,
+    private var vndbService: VNDBService,
     var moshi: Moshi,
     var app: Application,
     var boxStore: BoxStore
 ) : Repository<Trait>() {
-    override fun getItems(cachePolicy: CachePolicy<Map<Long, Trait>>): Single<Map<Long, Trait>> = Single.fromCallable {
+    override suspend fun getItems(coroutineScope: CoroutineScope, cachePolicy: CachePolicy<Map<Long, Trait>>): Deferred<Map<Long, Trait>> = coroutineScope.async(Dispatchers.Default) {
         cachePolicy
             .fetchFromMemory { items }
             .fetchFromDatabase {
@@ -34,7 +37,7 @@ class TraitsRepository @Inject constructor(
             .fetchFromNetwork {
                 vndbService
                     .getTraits()
-                    .blockingGet()
+                    .await()
                     .saveToDisk("traits.json.gz", app.cacheDir)
                     .unzip()
                     .use {

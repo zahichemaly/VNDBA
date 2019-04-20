@@ -11,7 +11,6 @@ import com.booboot.vndbandroid.extensions.log
 import com.booboot.vndbandroid.extensions.minus
 import com.booboot.vndbandroid.extensions.plus
 import com.booboot.vndbandroid.util.EmptyMaybeException
-import io.reactivex.disposables.Disposable
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -20,7 +19,6 @@ import kotlinx.coroutines.launch
 abstract class BaseViewModel constructor(application: Application) : AndroidViewModel(application) {
     val loadingData = MutableLiveData<Int>()
     val errorData = MutableLiveData<String>()
-    val disposables = mutableMapOf<String, Disposable>()
     private val jobs = mutableMapOf<String, Job>()
     private val errorHandler = CoroutineExceptionHandler { _, throwable ->
         onError(throwable)
@@ -30,8 +28,8 @@ abstract class BaseViewModel constructor(application: Application) : AndroidView
     var hasPendingTransition = false
     var layoutState: Parcelable? = null
 
-    fun coroutine(jobName: String, errorHandler: CoroutineExceptionHandler = this.errorHandler, block: suspend CoroutineScope.() -> Unit) {
-        if (jobName in jobs) return
+    fun coroutine(jobName: String, skip: Boolean = false, errorHandler: CoroutineExceptionHandler = this.errorHandler, block: suspend CoroutineScope.() -> Unit) {
+        if (skip || jobName in jobs) return
 
         loadingData.plus()
         jobs[jobName] = viewModelScope.launch(errorHandler) {
@@ -52,11 +50,6 @@ abstract class BaseViewModel constructor(application: Application) : AndroidView
         if (throwable is EmptyMaybeException) return
         throwable.log()
         errorData.value = throwable.errorMessage()
-    }
-
-    // TODO remove : no longer useful with viewModelScope
-    override fun onCleared() {
-        disposables.forEach { it.value.dispose() }
     }
 
     open fun restoreState(state: Bundle?) {

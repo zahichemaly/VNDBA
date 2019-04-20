@@ -19,8 +19,8 @@ import com.booboot.vndbandroid.ui.base.BaseViewModel
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment.Companion.VNLIST
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment.Companion.VOTELIST
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment.Companion.WISHLIST
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class VNListViewModel constructor(application: Application) : BaseViewModel(application) {
@@ -31,46 +31,39 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
         (application as App).appComponent.inject(this)
     }
 
-    fun getVns(listType: Int, tabValue: Int, force: Boolean = true) {
-        if (!force && accountData.value != null) return
-        if (disposables.contains(DISPOSABLE_GET_VN)) return
+    fun getVns(listType: Int, tabValue: Int, force: Boolean = true) = coroutine(DISPOSABLE_GET_VN, !force && accountData.value != null) {
+        val accountItems = accountRepository.getItems(this).await()
+        accountData.value = withContext(Dispatchers.Default) {
+            val vnlist = accountItems.vnlist.filterValues { it.status == tabValue }
+            val votelist = accountItems.votelist.filterValues { it.vote / 10 == tabValue || it.vote / 10 == tabValue - 1 }
+            val wishlist = accountItems.wishlist.filterValues { it.priority == tabValue }
 
-        disposables[DISPOSABLE_GET_VN] = accountRepository.getItems()
-            .observeOn(Schedulers.computation())
-            .map { cache ->
-                val vnlist = cache.vnlist.filterValues { it.status == tabValue }
-                val votelist = cache.votelist.filterValues { it.vote / 10 == tabValue || it.vote / 10 == tabValue - 1 }
-                val wishlist = cache.wishlist.filterValues { it.priority == tabValue }
-
-                val sorter: (Pair<Long, VN>) -> Comparable<*>? = { (id, vn) ->
-                    when (Preferences.sort) {
-                        SORT_TITLE -> vn.title
-                        SORT_RELEASE_DATE -> vn.released
-                        SORT_LENGTH -> vn.length
-                        SORT_POPULARITY -> vn.popularity
-                        SORT_RATING -> vn.rating
-                        SORT_STATUS -> cache.vnlist[id]?.status
-                        SORT_VOTE -> cache.votelist[id]?.vote
-                        SORT_PRIORITY -> cache.wishlist[id]?.priority
-                        else -> id
-                    }
+            val sorter: (Pair<Long, VN>) -> Comparable<*>? = { (id, vn) ->
+                when (Preferences.sort) {
+                    SORT_TITLE -> vn.title
+                    SORT_RELEASE_DATE -> vn.released
+                    SORT_LENGTH -> vn.length
+                    SORT_POPULARITY -> vn.popularity
+                    SORT_RATING -> vn.rating
+                    SORT_STATUS -> accountItems.vnlist[id]?.status
+                    SORT_VOTE -> accountItems.votelist[id]?.vote
+                    SORT_PRIORITY -> accountItems.wishlist[id]?.priority
+                    else -> id
                 }
-
-                cache.vns = cache.vns.filterKeys {
-                    when (listType) {
-                        VNLIST -> it in vnlist
-                        VOTELIST -> it in votelist
-                        WISHLIST -> it in wishlist
-                        else -> true
-                    }
-                }.toList().sortedWith(if (Preferences.reverseSort) compareByDescending(sorter) else compareBy(sorter)).toMap()
-
-                /* #122 : to make DiffUtil work in the Adapter, the items must be deep copied here so the contents can be identified as different when changed from inside the app */
-                cache.deepCopy()
             }
-            .observeOn(AndroidSchedulers.mainThread())
-            .doFinally { disposables.remove(DISPOSABLE_GET_VN) }
-            .subscribe({ accountData.value = it }, ::onError)
+
+            accountItems.vns = accountItems.vns.filterKeys {
+                when (listType) {
+                    VNLIST -> it in vnlist
+                    VOTELIST -> it in votelist
+                    WISHLIST -> it in wishlist
+                    else -> true
+                }
+            }.toList().sortedWith(if (Preferences.reverseSort) compareByDescending(sorter) else compareBy(sorter)).toMap()
+
+            /* #122 : to make DiffUtil work in the Adapter, the items must be deep copied here so the contents can be identified as different when changed from inside the app */
+            accountItems.deepCopy()
+        }
     }
 
     companion object {

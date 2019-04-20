@@ -16,9 +16,12 @@ import com.booboot.vndbandroid.util.Logger
 import com.booboot.vndbandroid.util.TypeReference
 import com.booboot.vndbandroid.util.type
 import com.squareup.moshi.Moshi
-import io.reactivex.Completable
-import io.reactivex.Single
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import java.io.IOException
 import java.io.InputStreamReader
 import java.io.UnsupportedEncodingException
@@ -71,59 +74,54 @@ class VNDBServer @Inject constructor(private val moshi: Moshi) {
         }
     }
 
-    fun <T> get(type: String, flags: String, filters: String, options: Options = Options(), resultClass: TypeReference<Results<T>>): Single<Results<T>> {
-        val command = "get $type $flags $filters "
+    private fun errorHandler(options: Options) = CoroutineExceptionHandler { _, _ ->
+        close(options.socketIndex)
+    }
 
-        return if (options.numberOfPages > 1) {
-            options.numberOfSockets = max(min(options.numberOfPages / 2, SocketPool.MAX_SOCKETS), 3)
+    suspend fun <T> get(coroutineScope: CoroutineScope, type: String, flags: String, filters: String, options: Options = Options(), resultClass: TypeReference<Results<T>>) =
+        coroutineScope.async(Dispatchers.IO + errorHandler(options)) {
+            val command = "get $type $flags $filters "
+            val results = Results<T>()
 
-            /* We know in advance how many pages we must fetch: we can parallelize them with Single.merge */
-            val observables = mutableListOf<Single<Response<Results<T>>>>()
-            (0 until options.numberOfPages).mapTo(observables) { index ->
-                val socketIndex = index % options.numberOfSockets
-                Single.fromCallable<Response<Results<T>>> {
-                    val threadOptions = options.copy(page = index + 1, socketIndex = socketIndex)
-                    sendCommand(command + moshi.adapter(Options::class.java).toJson(threadOptions), threadOptions, resultClass)
-                }.doOnError { VNDBServer.close(socketIndex) }.subscribeOn(Schedulers.io())
-            }
+            if (options.numberOfPages > 1) {
+                options.numberOfSockets = max(min(options.numberOfPages / 2, SocketPool.MAX_SOCKETS), 3)
 
-            Single.merge(observables).collect({ Results<T>() }, { results, response ->
-                results.items.addAll(response.results?.items ?: emptyList())
-            })
-        } else {
-            /* We don't know how many pages we must fetch (hence how many requests we have to send): creating Singles sequentially until done */
-            Single.fromCallable<Results<T>> {
-                val results = Results<T>()
+                /* We know in advance how many pages we must fetch: we can parallelize them with Single.merge */
+                (0 until options.numberOfPages).mapTo(mutableListOf()) { index ->
+                    val socketIndex = index % options.numberOfSockets
+                    async(Dispatchers.IO + errorHandler(options)) {
+                        val threadOptions = options.copy(page = index + 1, socketIndex = socketIndex)
+                        sendCommand(command + moshi.adapter(Options::class.java).toJson(threadOptions), threadOptions, resultClass)
+                    }
+                }.forEach { job ->
+                    results.items.addAll(job.await().results?.items ?: listOf())
+                }
+            } else {
+                /* We don't know how many pages we must fetch (hence how many requests we have to send): creating Singles sequentially until done */
                 do {
                     options.socketIndex %= options.numberOfSockets
                     val response = sendCommand(command + moshi.adapter(Options::class.java).toJson(options), options, resultClass)
                     results.items.addAll(response.results?.items ?: emptyList())
                     options.page++
                 } while (options.fetchAllPages && response.results?.more == true)
-
-                results
             }
-                .doOnError { VNDBServer.close(options.socketIndex) }
-                .subscribeOn(Schedulers.io())
+            results
         }
-    }
 
-    fun <T> set(type: String, id: Long, fields: T?, resultClass: TypeReference<T>): Completable {
+    fun <T> set(coroutineScope: CoroutineScope, type: String, id: Long, fields: T?, resultClass: TypeReference<T>): Deferred<Response<Void>> {
         var command = "set $type $id "
         fields?.let {
             command += moshi.adapter<T>(resultClass.type).serializeNulls().toJson(fields)
         }
 
-        return Completable.fromAction {
+        return coroutineScope.async(Dispatchers.Default + errorHandler(Options())) {
             sendCommand(command, resultClass = type<Void>())
-        }.doOnError { VNDBServer.close(Options().socketIndex) }
+        }
     }
 
     @Suppress("unused")
-    fun dbstats(): Single<DbStats> {
-        return Single.fromCallable<Response<DbStats>> {
-            sendCommand("dbstats", resultClass = type())
-        }.map { response: Response<DbStats> -> response.results!! }
+    fun dbstats(coroutineScope: CoroutineScope): Deferred<DbStats?> = coroutineScope.async(Dispatchers.Default + errorHandler(Options())) {
+        sendCommand<DbStats>("dbstats", resultClass = type()).results
     }
 
     private fun <T> sendCommand(command: String, options: Options = Options(), resultClass: TypeReference<T>, retry: Boolean = false): Response<T> =
@@ -169,7 +167,7 @@ class VNDBServer @Inject constructor(private val moshi: Moshi) {
             } catch (se: SocketException) {
                 throw Throwable("A connection error occurred. Please check your connection or try again later.")
             } catch (ssle: SSLException) {
-                VNDBServer.close(options.socketIndex)
+                close(options.socketIndex)
                 return if (retry || command.startsWith("login", true)) {
                     throw Throwable("An error occurred while writing a query to the API. Please try again later.")
                 } else {
@@ -249,7 +247,8 @@ class VNDBServer @Inject constructor(private val moshi: Moshi) {
             }
         }
 
-        fun closeAll(): Completable = Completable.fromAction { for (i in 0 until SocketPool.MAX_SOCKETS) close(i) }
-            .subscribeOn(Schedulers.io())
+        fun closeAll() = GlobalScope.async(Dispatchers.Default) {
+            for (i in 0 until SocketPool.MAX_SOCKETS) close(i)
+        }
     }
 }
