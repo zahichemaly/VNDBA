@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.getThemeColor
@@ -51,7 +50,6 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
 
         adapter = VNAdapter(::onVnClicked)
         adapter.onUpdate = ::onAdapterUpdate
-        vnList.itemAnimator = null
         vnList.layoutManager = GridAutofitLayoutManager(context, Pixels.px(300))
         vnList.adapter = adapter
         vnList.hideOnBottom(homeTabs()?.floatingSearchButton)
@@ -66,7 +64,6 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
         adapter.filterString = home()?.viewModel?.filterData?.value ?: ""
         adapter.items = accountItems
 
-        adapter.onFinishDrawing.add { vnList.itemAnimator = DefaultItemAnimator() }
         vnList.restoreState(this)
         startParentEnterTransition(adapter)
     }
