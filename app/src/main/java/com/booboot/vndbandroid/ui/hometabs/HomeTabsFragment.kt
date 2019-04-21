@@ -72,7 +72,6 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
         viewModel.titlesData.observeOnce(this, ::showTitles)
         viewModel.sortData.observeOnce(this) { showSort() }
         viewModel.errorData.observeOnce(this, ::showError)
-        viewModel.loadingData.observe(this, ::showLoading)
         home()?.viewModel?.accountData?.observe(this) { update() }
 
         if (tabsAdapter == null) {
