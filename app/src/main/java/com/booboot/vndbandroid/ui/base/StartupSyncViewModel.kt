@@ -23,7 +23,6 @@ import kotlinx.coroutines.async
 import javax.inject.Inject
 
 abstract class StartupSyncViewModel constructor(application: Application) : BaseViewModel(application) {
-    @Inject lateinit var vndbServer: VNDBServer
     @Inject lateinit var vnlistRepository: VnlistRepository
     @Inject lateinit var votelistRepository: VotelistRepository
     @Inject lateinit var wishlistRepository: WishlistRepository
