@@ -49,7 +49,7 @@ abstract class BaseViewModel constructor(application: Application) : AndroidView
     fun onError(throwable: Throwable, errorData: MutableLiveData<String>) {
         if (throwable is EmptyMaybeException) return
         throwable.log()
-        errorData.value = throwable.errorMessage()
+        errorData.postValue(throwable.errorMessage())
     }
 
     open fun restoreState(state: Bundle?) {
