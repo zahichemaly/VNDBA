@@ -114,13 +114,13 @@ class VNDBServer @Inject constructor(private val moshi: Moshi) {
             command += moshi.adapter<T>(resultClass.type).serializeNulls().toJson(fields)
         }
 
-        return coroutineScope.async(Dispatchers.Default + errorHandler(Options())) {
+        return coroutineScope.async(Dispatchers.IO + errorHandler(Options())) {
             sendCommand(command, resultClass = type<Void>())
         }
     }
 
     @Suppress("unused")
-    fun dbstats(coroutineScope: CoroutineScope): Deferred<DbStats?> = coroutineScope.async(Dispatchers.Default + errorHandler(Options())) {
+    fun dbstats(coroutineScope: CoroutineScope): Deferred<DbStats?> = coroutineScope.async(Dispatchers.IO + errorHandler(Options())) {
         sendCommand<DbStats>("dbstats", resultClass = type()).results
     }
 
@@ -247,7 +247,7 @@ class VNDBServer @Inject constructor(private val moshi: Moshi) {
             }
         }
 
-        fun closeAll() = GlobalScope.async(Dispatchers.Default) {
+        fun closeAll() = GlobalScope.async(Dispatchers.IO) {
             for (i in 0 until SocketPool.MAX_SOCKETS) close(i)
         }
     }

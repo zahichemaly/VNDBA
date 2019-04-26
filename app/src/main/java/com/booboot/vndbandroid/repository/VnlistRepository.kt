@@ -26,14 +26,14 @@ open class VnlistRepository @Inject constructor(var boxStore: BoxStore, var vndb
         .get<Vnlist>(coroutineScope, "vnlist", "basic", "(uid = 0)", Options(results = 100, fetchAllPages = true), type())
         .await()
 
-    fun setItem(coroutineScope: CoroutineScope, vnlist: Vnlist) = coroutineScope.async(Dispatchers.Default) {
+    fun setItem(coroutineScope: CoroutineScope, vnlist: Vnlist) = coroutineScope.async(Dispatchers.IO) {
         vndbServer.set(this, "vnlist", vnlist.vn, vnlist, type()).await()
         items[vnlist.vn] = vnlist
         boxStore.save { listOf(VnlistDao(vnlist)) }
         true
     }
 
-    fun deleteItem(coroutineScope: CoroutineScope, vnlist: Vnlist) = coroutineScope.async(Dispatchers.Default) {
+    fun deleteItem(coroutineScope: CoroutineScope, vnlist: Vnlist) = coroutineScope.async(Dispatchers.IO) {
         vndbServer.set<Vnlist>(this, "vnlist", vnlist.vn, null, type()).await()
         items.remove(vnlist.vn)
         boxStore.boxFor<VnlistDao>().remove(vnlist.vn)

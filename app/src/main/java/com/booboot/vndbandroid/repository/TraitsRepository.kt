@@ -28,7 +28,7 @@ class TraitsRepository @Inject constructor(
     var app: Application,
     var boxStore: BoxStore
 ) : Repository<Trait>() {
-    override suspend fun getItems(coroutineScope: CoroutineScope, cachePolicy: CachePolicy<Map<Long, Trait>>): Deferred<Map<Long, Trait>> = coroutineScope.async(Dispatchers.Default) {
+    override suspend fun getItems(coroutineScope: CoroutineScope, cachePolicy: CachePolicy<Map<Long, Trait>>): Deferred<Map<Long, Trait>> = coroutineScope.async(Dispatchers.IO) {
         cachePolicy
             .fetchFromMemory { items }
             .fetchFromDatabase {

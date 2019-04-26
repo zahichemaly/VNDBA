@@ -7,4 +7,4 @@ import kotlinx.coroutines.async
 
 fun <T> CoroutineScope.asyncOrLazy(lazy: Boolean = false, block: suspend CoroutineScope.() -> T) =
     if (lazy) async(Dispatchers.Unconfined, CoroutineStart.LAZY, block)
-    else async(Dispatchers.Default, block = block)
+    else async(Dispatchers.IO, block = block)

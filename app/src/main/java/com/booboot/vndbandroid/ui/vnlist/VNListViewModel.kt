@@ -33,7 +33,7 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
 
     fun getVns(listType: Int, tabValue: Int, force: Boolean = true) = coroutine(DISPOSABLE_GET_VN, !force && accountData.value != null) {
         val accountItems = accountRepository.getItems(this).await()
-        accountData.value = withContext(Dispatchers.Default) {
+        accountData.value = withContext(Dispatchers.IO) {
             val vnlist = accountItems.vnlist.filterValues { it.status == tabValue }
             val votelist = accountItems.votelist.filterValues { it.vote / 10 == tabValue || it.vote / 10 == tabValue - 1 }
             val wishlist = accountItems.wishlist.filterValues { it.priority == tabValue }

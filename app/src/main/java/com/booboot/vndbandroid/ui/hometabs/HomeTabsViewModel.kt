@@ -29,7 +29,7 @@ class HomeTabsViewModel constructor(application: Application) : BaseViewModel(ap
 
     fun getTabTitles(type: Int, force: Boolean = true) = coroutine(DISPOSABLE_TAB_TITLES, !force && titlesData.value != null) {
         val items = accountRepository.getItems(this).await()
-        titlesData.value = withContext(Dispatchers.Default) {
+        titlesData.value = withContext(Dispatchers.IO) {
             when (type) {
                 HomeTabsFragment.VNLIST -> {
                     val statusCount = items.getStatusCount()

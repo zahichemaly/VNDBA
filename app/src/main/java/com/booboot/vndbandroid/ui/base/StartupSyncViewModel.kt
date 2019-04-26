@@ -35,7 +35,7 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
     val accountData: MutableLiveData<AccountItems> = MutableLiveData()
     val syncData: MutableLiveData<SyncData> = MutableLiveData()
 
-    protected suspend fun startupSync(coroutineScope: CoroutineScope, doOnAccountSuccess: (AccountItems) -> Unit = {}) = coroutineScope.async(Dispatchers.Default) {
+    protected suspend fun startupSync(coroutineScope: CoroutineScope, doOnAccountSuccess: (AccountItems) -> Unit = {}) = coroutineScope.async(Dispatchers.IO) {
         val tagsJob = tagsRepository.getItems(this, CachePolicy(true))
         val traitsJob = traitsRepository.getItems(this, CachePolicy(true))
         val vnlistJob = vnlistRepository.getItems(this, CachePolicy(false))

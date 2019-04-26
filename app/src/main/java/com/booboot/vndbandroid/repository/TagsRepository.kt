@@ -28,7 +28,7 @@ class TagsRepository @Inject constructor(
     var app: Application,
     var boxStore: BoxStore
 ) : Repository<Tag>() {
-    override suspend fun getItems(coroutineScope: CoroutineScope, cachePolicy: CachePolicy<Map<Long, Tag>>): Deferred<Map<Long, Tag>> = coroutineScope.async(Dispatchers.Default) {
+    override suspend fun getItems(coroutineScope: CoroutineScope, cachePolicy: CachePolicy<Map<Long, Tag>>): Deferred<Map<Long, Tag>> = coroutineScope.async(Dispatchers.IO) {
         cachePolicy
             .fetchFromMemory { items }
             .fetchFromDatabase {

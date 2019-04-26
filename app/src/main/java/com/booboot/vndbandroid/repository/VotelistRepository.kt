@@ -27,14 +27,14 @@ class VotelistRepository @Inject constructor(var boxStore: BoxStore, var vndbSer
         .get<Votelist>(coroutineScope, "votelist", "basic", "(uid = 0)", Options(results = 100, fetchAllPages = true, socketIndex = 1), type())
         .await()
 
-    fun setItem(coroutineScope: CoroutineScope, votelist: Votelist) = coroutineScope.async(Dispatchers.Default) {
+    fun setItem(coroutineScope: CoroutineScope, votelist: Votelist) = coroutineScope.async(Dispatchers.IO) {
         vndbServer.set(this, "votelist", votelist.vn, votelist, type()).await()
         items[votelist.vn] = votelist
         boxStore.save { listOf(VotelistDao(votelist)) }
         true
     }
 
-    fun deleteItem(coroutineScope: CoroutineScope, votelist: Votelist) = coroutineScope.async(Dispatchers.Default) {
+    fun deleteItem(coroutineScope: CoroutineScope, votelist: Votelist) = coroutineScope.async(Dispatchers.IO) {
         vndbServer.set<Vnlist>(this, "votelist", votelist.vn, null, type()).await()
         items.remove(votelist.vn)
         boxStore.boxFor<VotelistDao>().remove(votelist.vn)

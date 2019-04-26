@@ -32,7 +32,7 @@ class SlideshowViewModel constructor(application: Application) : BaseViewModel(a
     }
 
     fun downloadScreenshot(bitmap: Bitmap?, action: Int, directory: File) = coroutine(DISPOSABLE_DOWNLOAD_SCREENSHOT) {
-        fileData.value = withContext(Dispatchers.Default) {
+        fileData.value = withContext(Dispatchers.IO) {
             bitmap ?: throw Exception("The image is not ready yet.")
 
             val filename = String.format("IMAGE_%d.jpg", System.currentTimeMillis())

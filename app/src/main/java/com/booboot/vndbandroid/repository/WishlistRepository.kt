@@ -27,14 +27,14 @@ open class WishlistRepository @Inject constructor(var boxStore: BoxStore, var vn
         .get<Wishlist>(coroutineScope, "wishlist", "basic", "(uid = 0)", Options(results = 100, fetchAllPages = true, socketIndex = 2), type())
         .await()
 
-    fun setItem(coroutineScope: CoroutineScope, wishlist: Wishlist) = coroutineScope.async(Dispatchers.Default) {
+    fun setItem(coroutineScope: CoroutineScope, wishlist: Wishlist) = coroutineScope.async(Dispatchers.IO) {
         vndbServer.set(this, "wishlist", wishlist.vn, wishlist, type()).await()
         items[wishlist.vn] = wishlist
         boxStore.save { listOf(WishlistDao(wishlist)) }
         true
     }
 
-    fun deleteItem(coroutineScope: CoroutineScope, wishlist: Wishlist) = coroutineScope.async(Dispatchers.Default) {
+    fun deleteItem(coroutineScope: CoroutineScope, wishlist: Wishlist) = coroutineScope.async(Dispatchers.IO) {
         vndbServer.set<Vnlist>(this, "wishlist", wishlist.vn, null, type()).await()
         items.remove(wishlist.vn)
         boxStore.boxFor<WishlistDao>().remove(wishlist.vn)

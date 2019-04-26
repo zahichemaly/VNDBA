@@ -29,7 +29,7 @@ class TagsViewModel constructor(application: Application) : BaseViewModel(applic
         val tagsJob = tagsRepository.getItems(this)
         val vn = vnJob.await()
         val tags = tagsJob.await()
-        val vnDetailsTags = withContext(Dispatchers.Default) {
+        val vnDetailsTags = withContext(Dispatchers.IO) {
             val sortedTags = vn.tags.asSequence().sortedByDescending { it[1] }.mapNotNull { tagInfo ->
                 tags[tagInfo[0].toLong()]?.let { tag -> VNTag(tag, tagInfo) }
             }.toList()

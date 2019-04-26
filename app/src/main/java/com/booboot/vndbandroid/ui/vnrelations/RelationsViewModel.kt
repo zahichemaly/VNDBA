@@ -29,7 +29,7 @@ class RelationsViewModel constructor(application: Application) : BaseViewModel(a
         val vnJob = vnRepository.getItem(this, vnId)
         val accountItems = accountItemsJob.await()
         val vn = vnJob.await()
-        relationsData.value = withContext(Dispatchers.Default) {
+        relationsData.value = withContext(Dispatchers.IO) {
             val accountItemsCopy = accountItems.deepCopy()
             val relations = vnRepository.getItems(this, vn.relations.mapTo(hashSetOf()) { it.id }, FLAGS_DETAILS).await()
             RelationsData(vn, accountItemsCopy, relations).apply {

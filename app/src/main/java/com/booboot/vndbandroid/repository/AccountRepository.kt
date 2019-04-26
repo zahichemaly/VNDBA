@@ -15,7 +15,7 @@ class AccountRepository @Inject constructor(
     var votelistRepository: VotelistRepository,
     var wishlistRepository: WishlistRepository
 ) {
-    fun getItems(coroutineScope: CoroutineScope) = coroutineScope.async(Dispatchers.Default) {
+    fun getItems(coroutineScope: CoroutineScope) = coroutineScope.async(Dispatchers.IO) {
         val vnlistJob = vnlistRepository.getItems(this)
         val votelistJob = votelistRepository.getItems(this)
         val wishlistJob = wishlistRepository.getItems(this)

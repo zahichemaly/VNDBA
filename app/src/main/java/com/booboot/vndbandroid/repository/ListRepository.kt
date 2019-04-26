@@ -14,7 +14,7 @@ abstract class ListRepository<T : AccountItem> : Repository<T>() {
 
     protected abstract suspend fun getItemsFromAPI(coroutineScope: CoroutineScope): Results<T>
 
-    override suspend fun getItems(coroutineScope: CoroutineScope, cachePolicy: CachePolicy<Map<Long, T>>) = coroutineScope.async(Dispatchers.Default) {
+    override suspend fun getItems(coroutineScope: CoroutineScope, cachePolicy: CachePolicy<Map<Long, T>>) = coroutineScope.async(Dispatchers.IO) {
         cachePolicy
             .fetchFromMemory { items }
             .fetchFromDatabase { getItemsFromDB().associateBy { it.vn } }

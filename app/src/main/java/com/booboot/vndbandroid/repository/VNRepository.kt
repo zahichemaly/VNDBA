@@ -23,7 +23,7 @@ import javax.inject.Singleton
 
 @Singleton
 class VNRepository @Inject constructor(var boxStore: BoxStore, var vndbServer: VNDBServer, var moshi: Moshi) : Repository<VN>() {
-    override suspend fun getItems(coroutineScope: CoroutineScope, cachePolicy: CachePolicy<Map<Long, VN>>) = coroutineScope.async(Dispatchers.Default) {
+    override suspend fun getItems(coroutineScope: CoroutineScope, cachePolicy: CachePolicy<Map<Long, VN>>) = coroutineScope.async(Dispatchers.IO) {
         cachePolicy
             .fetchFromMemory { items }
             .fetchFromDatabase {
@@ -33,7 +33,7 @@ class VNRepository @Inject constructor(var boxStore: BoxStore, var vndbServer: V
             .get()
     }
 
-    override suspend fun getItems(coroutineScope: CoroutineScope, ids: Set<Long>, flags: Int, cachePolicy: CachePolicy<Map<Long, VN>>) = coroutineScope.async(Dispatchers.Default) {
+    override suspend fun getItems(coroutineScope: CoroutineScope, ids: Set<Long>, flags: Int, cachePolicy: CachePolicy<Map<Long, VN>>) = coroutineScope.async(Dispatchers.IO) {
         cachePolicy
             .fetchFromMemory { items }
             .fetchFromDatabase {
@@ -128,7 +128,7 @@ class VNRepository @Inject constructor(var boxStore: BoxStore, var vndbServer: V
         boxStore.save { items.map { VNDao(it.value, boxStore) } }
     }
 
-    override suspend fun getItem(coroutineScope: CoroutineScope, id: Long, cachePolicy: CachePolicy<VN>) = coroutineScope.async(Dispatchers.Default) {
+    override suspend fun getItem(coroutineScope: CoroutineScope, id: Long, cachePolicy: CachePolicy<VN>) = coroutineScope.async(Dispatchers.IO) {
         getItems(coroutineScope, setOf(id), FLAGS_FULL, cachePolicy.copy()).await()[id] ?: throw Throwable("VN not found.")
     }
 }
