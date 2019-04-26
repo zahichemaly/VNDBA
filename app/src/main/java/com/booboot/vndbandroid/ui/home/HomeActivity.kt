@@ -10,7 +10,6 @@ import androidx.core.view.GravityCompat
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.Track
@@ -106,14 +105,17 @@ class HomeActivity : BaseActivity(), View.OnClickListener {
         }
     }
 
-    override fun onBackPressed() {
-        if (drawer != null && drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START)
-            return
+    override fun onBackPressed() = onBackPressed(false)
+
+    override fun onSupportNavigateUp() = onBackPressed(true).let { true }
+
+    private fun onBackPressed(navigateUp: Boolean) {
+        when {
+            navigateUp -> return super.onBackPressed()
+            drawer?.isDrawerOpen(GravityCompat.START) == true -> return drawer.closeDrawer(GravityCompat.START)
         }
 
-        val fragment = supportFragmentManager.findFragmentById(R.id.navHost)?.childFragmentManager?.primaryNavigationFragment
-        when (fragment) {
+        when (val fragment = supportFragmentManager.findFragmentById(R.id.navHost)?.childFragmentManager?.primaryNavigationFragment) {
             is HomeTabsFragment -> if (fragment.sortBottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
                 return fragment.sortBottomSheetBehavior.toggle()
             } else if (fragment.searchView?.isIconified == false) {
@@ -126,7 +128,7 @@ class HomeActivity : BaseActivity(), View.OnClickListener {
         }
 
         val topLevelDestinations = AppBarConfiguration.Builder(findNavController(R.id.navHost).graph).setDrawerLayout(drawer).build().topLevelDestinations
-        if (drawer != null && findNavController(R.id.navHost).currentDestination?.isTopLevel(topLevelDestinations) == true) {
+        if (findNavController(R.id.navHost).currentDestination?.isTopLevel(topLevelDestinations) == true) {
             /* Going back to home screen (don't use super.onBackPressed() because it would kill the app) */
             val startMain = Intent(Intent.ACTION_MAIN)
             startMain.addCategory(Intent.CATEGORY_HOME)
@@ -134,8 +136,6 @@ class HomeActivity : BaseActivity(), View.OnClickListener {
             startActivity(startMain)
         } else super.onBackPressed()
     }
-
-    override fun onSupportNavigateUp() = NavigationUI.navigateUp(findNavController(R.id.navHost), drawer)
 
     companion object {
         const val SHOULD_SYNC = "SHOULD_SYNC"
