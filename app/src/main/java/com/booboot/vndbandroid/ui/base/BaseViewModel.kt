@@ -10,7 +10,6 @@ import com.booboot.vndbandroid.extensions.errorMessage
 import com.booboot.vndbandroid.extensions.log
 import com.booboot.vndbandroid.extensions.minus
 import com.booboot.vndbandroid.extensions.plus
-import com.booboot.vndbandroid.util.EmptyMaybeException
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -47,7 +46,6 @@ abstract class BaseViewModel constructor(application: Application) : AndroidView
     }
 
     fun onError(throwable: Throwable, errorData: MutableLiveData<String>) {
-        if (throwable is EmptyMaybeException) return
         throwable.log()
         errorData.postValue(throwable.errorMessage())
     }
