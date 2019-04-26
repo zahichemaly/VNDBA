@@ -30,12 +30,13 @@ import com.booboot.vndbandroid.model.vndbandroid.SORT_RELEASE_DATE
 import com.booboot.vndbandroid.model.vndbandroid.SORT_STATUS
 import com.booboot.vndbandroid.model.vndbandroid.SORT_VOTE
 import com.booboot.vndbandroid.ui.base.BaseFragment
+import com.booboot.vndbandroid.ui.base.HasTabs
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.home_tabs_fragment.*
 import kotlinx.android.synthetic.main.vn_list_sort_bottom_sheet.*
 
-class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelectedListener, View.OnClickListener, SearchView.OnQueryTextListener {
+class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelectedListener, View.OnClickListener, SearchView.OnQueryTextListener, HasTabs {
     override val layout: Int = R.layout.home_tabs_fragment
     lateinit var sortBottomSheetBehavior: BottomSheetBehavior<View>
     var searchView: SearchView? = null
@@ -176,6 +177,8 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
     override fun onTabReselected(tab: TabLayout.Tab) {
         tabsAdapter?.getFragment(tab.position)?.scrollToTop()
     }
+
+    override fun currentFragment() = tabsAdapter?.getFragment(viewPager.currentItem)
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putString(SAVED_FILTER_STATE, searchView?.query?.toString() ?: "")

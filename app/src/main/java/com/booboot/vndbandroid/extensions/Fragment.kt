@@ -48,7 +48,7 @@ fun LifecycleOwner.actualOwner() = (this as? Fragment)?.viewLifecycleOwner ?: th
 
 fun Fragment.startParentEnterTransition(adapter: BaseAdapter<*>? = null) {
     val finalParentFragment = parentFragment ?: return
-    if (finalParentFragment is HasTabs && finalParentFragment.currentFragmentClass() != javaClass) return
+    if (finalParentFragment is HasTabs && finalParentFragment.currentFragment() != this) return
 
     if (adapter != null) {
         adapter.onFinishDrawing.add {

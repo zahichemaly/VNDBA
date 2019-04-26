@@ -6,6 +6,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager.widget.ViewPager
@@ -104,7 +105,9 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
             onCollapsed = { iconArrow.setImageResource(R.drawable.ic_keyboard_arrow_down_white_24dp) },
             onExpanded = { iconArrow.setImageResource(R.drawable.ic_keyboard_arrow_up_white_24dp) }
         )
-        (appBarLayout.layoutParams as? CoordinatorLayout.LayoutParams)?.behavior = StopFocusStealingAppBarBehavior(bottomSheet)
+        appBarLayout.updateLayoutParams<CoordinatorLayout.LayoutParams> {
+            behavior = StopFocusStealingAppBarBehavior(bottomSheet)
+        }
         textNotes.preventLineBreak()
         bottomSheetButtons.forEach { it.setOnClickListener(this@VNDetailsFragment) }
         textNotes.onFocusChangeListener = this
@@ -261,7 +264,7 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
         viewModel.slideshowPosition = position
     }
 
-    override fun currentFragmentClass() = tabsAdapter?.getClass(viewPager.currentItem)
+    override fun currentFragment() = tabsAdapter?.getFragment(viewPager.currentItem)
 
     override fun onDestroyView() {
         tabLayout?.removeOnTabSelectedListener(this)
