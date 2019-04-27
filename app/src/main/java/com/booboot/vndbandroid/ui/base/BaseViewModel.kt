@@ -35,8 +35,10 @@ abstract class BaseViewModel constructor(application: Application) : AndroidView
             block()
         }.apply {
             invokeOnCompletion {
-                loadingData.minus()
-                jobs.remove(jobName)
+                viewModelScope.launch {
+                    loadingData.minus()
+                    jobs.remove(jobName)
+                }
             }
         }
     }

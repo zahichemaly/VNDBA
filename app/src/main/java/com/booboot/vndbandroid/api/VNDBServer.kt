@@ -3,6 +3,7 @@ package com.booboot.vndbandroid.api
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.BuildConfig
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.extensions.asyncWithError
 import com.booboot.vndbandroid.extensions.log
 import com.booboot.vndbandroid.model.vndb.DbStats
 import com.booboot.vndbandroid.model.vndb.Error
@@ -16,7 +17,6 @@ import com.booboot.vndbandroid.util.Logger
 import com.booboot.vndbandroid.util.TypeReference
 import com.booboot.vndbandroid.util.type
 import com.squareup.moshi.Moshi
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -74,37 +74,31 @@ class VNDBServer @Inject constructor(private val moshi: Moshi) {
         }
     }
 
-    private fun errorHandler(options: Options) = CoroutineExceptionHandler { _, _ ->
-        close(options.socketIndex)
-    }
-
     suspend fun <T> get(coroutineScope: CoroutineScope, type: String, flags: String, filters: String, options: Options = Options(), resultClass: TypeReference<Results<T>>) =
-        coroutineScope.async(Dispatchers.IO + errorHandler(options)) {
+        coroutineScope.asyncWithError({ close(options.socketIndex) }) {
             val command = "get $type $flags $filters "
             val results = Results<T>()
 
             if (options.numberOfPages > 1) {
                 options.numberOfSockets = max(min(options.numberOfPages / 2, SocketPool.MAX_SOCKETS), 3)
 
-                /* We know in advance how many pages we must fetch: we can parallelize them with Single.merge */
+                /* We know in advance how many pages we must fetch: we can parallelize them */
                 (0 until options.numberOfPages).mapTo(mutableListOf()) { index ->
                     val socketIndex = index % options.numberOfSockets
-                    async(Dispatchers.IO + errorHandler(options)) {
+                    asyncWithError({ close(socketIndex) }) {
                         val threadOptions = options.copy(page = index + 1, socketIndex = socketIndex)
                         sendCommand(command + moshi.adapter(Options::class.java).toJson(threadOptions), threadOptions, resultClass)
                     }
                 }.forEach { job ->
                     results.items.addAll(job.await().results?.items ?: listOf())
                 }
-            } else {
-                /* We don't know how many pages we must fetch (hence how many requests we have to send): creating Singles sequentially until done */
-                do {
-                    options.socketIndex %= options.numberOfSockets
-                    val response = sendCommand(command + moshi.adapter(Options::class.java).toJson(options), options, resultClass)
-                    results.items.addAll(response.results?.items ?: emptyList())
-                    options.page++
-                } while (options.fetchAllPages && response.results?.more == true)
-            }
+            } else do {
+                /* We don't know how many pages we must fetch (hence how many requests we have to send): sending commands sequentially until done */
+                options.socketIndex %= options.numberOfSockets
+                val response = sendCommand(command + moshi.adapter(Options::class.java).toJson(options), options, resultClass)
+                results.items.addAll(response.results?.items ?: emptyList())
+                options.page++
+            } while (options.fetchAllPages && response.results?.more == true)
             results
         }
 
@@ -114,13 +108,13 @@ class VNDBServer @Inject constructor(private val moshi: Moshi) {
             command += moshi.adapter<T>(resultClass.type).serializeNulls().toJson(fields)
         }
 
-        return coroutineScope.async(Dispatchers.IO + errorHandler(Options())) {
+        return coroutineScope.asyncWithError({ close(0) }) {
             sendCommand(command, resultClass = type<Void>())
         }
     }
 
     @Suppress("unused")
-    fun dbstats(coroutineScope: CoroutineScope): Deferred<DbStats?> = coroutineScope.async(Dispatchers.IO + errorHandler(Options())) {
+    fun dbstats(coroutineScope: CoroutineScope): Deferred<DbStats?> = coroutineScope.asyncWithError({ close(0) }) {
         sendCommand<DbStats>("dbstats", resultClass = type()).results
     }
 
