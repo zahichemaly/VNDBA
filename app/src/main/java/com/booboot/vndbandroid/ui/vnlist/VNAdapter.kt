@@ -33,6 +33,10 @@ class VNAdapter(
     private val filter = ItemFilter()
     var filterString: String = ""
 
+    init {
+        setHasStableIds(true)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VNHolder {
         val v = LayoutInflater.from(parent.context).inflate(R.layout.vn_card, parent, false)
         return VNHolder(v, onVnClicked)
@@ -54,6 +58,8 @@ class VNAdapter(
     }
 
     override fun getItemCount() = filteredVns.vns.values.size
+
+    override fun getItemId(position: Int) = filteredVns.vns.values.toList()[position].id
 
     override fun getFilter(): Filter = filter
 
