@@ -11,7 +11,9 @@ import com.booboot.vndbandroid.model.vndb.Votelist
 import com.booboot.vndbandroid.util.type
 import io.objectbox.BoxStore
 import io.objectbox.kotlin.boxFor
-import io.reactivex.Completable
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -21,18 +23,19 @@ class VotelistRepository @Inject constructor(var boxStore: BoxStore, var vndbSer
 
     override fun addItemsToDB(items: List<Votelist>) = boxStore.save(true) { items.map { VotelistDao(it) } }
 
-    override fun getItemsFromAPI(): Results<Votelist> = vndbServer
-        .get<Votelist>("votelist", "basic", "(uid = 0)", Options(results = 100, fetchAllPages = true, socketIndex = 1), type())
-        .blockingGet()
+    override suspend fun getItemsFromAPI(coroutineScope: CoroutineScope): Results<Votelist> = vndbServer
+        .get<Votelist>(coroutineScope, "votelist", "basic", "(uid = 0)", Options(results = 100, fetchAllPages = true, socketIndex = 1), type())
+        .await()
 
-    fun setItem(votelist: Votelist): Completable = Completable.fromAction {
-        vndbServer.set("votelist", votelist.vn, votelist, type()).blockingAwait()
+    fun setItem(coroutineScope: CoroutineScope, votelist: Votelist) = coroutineScope.async(Dispatchers.IO) {
+        vndbServer.set(this, "votelist", votelist.vn, votelist, type()).await()
         items[votelist.vn] = votelist
         boxStore.save { listOf(VotelistDao(votelist)) }
+        true
     }
 
-    fun deleteItem(votelist: Votelist): Completable = Completable.fromAction {
-        vndbServer.set<Vnlist>("votelist", votelist.vn, null, type()).blockingAwait()
+    fun deleteItem(coroutineScope: CoroutineScope, votelist: Votelist) = coroutineScope.async(Dispatchers.IO) {
+        vndbServer.set<Vnlist>(this, "votelist", votelist.vn, null, type()).await()
         items.remove(votelist.vn)
         boxStore.boxFor<VotelistDao>().remove(votelist.vn)
     }

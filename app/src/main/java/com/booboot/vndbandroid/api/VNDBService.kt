@@ -1,6 +1,6 @@
 package com.booboot.vndbandroid.api
 
-import io.reactivex.Single
+import kotlinx.coroutines.Deferred
 import okhttp3.ResponseBody
 import retrofit2.http.GET
 import retrofit2.http.Streaming
@@ -8,9 +8,9 @@ import retrofit2.http.Streaming
 interface VNDBService {
     @Streaming
     @GET("tags.json.gz")
-    fun getTags(): Single<ResponseBody>
+    fun getTags(): Deferred<ResponseBody>
 
     @Streaming
     @GET("traits.json.gz")
-    fun getTraits(): Single<ResponseBody>
+    fun getTraits(): Deferred<ResponseBody>
 }

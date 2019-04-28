@@ -15,7 +15,6 @@ import com.booboot.vndbandroid.extensions.saveState
 import com.booboot.vndbandroid.extensions.startParentEnterTransition
 import com.booboot.vndbandroid.model.vndb.Anime
 import com.booboot.vndbandroid.model.vndb.Links
-import com.booboot.vndbandroid.model.vndb.Relation
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.booboot.vndbandroid.ui.vndetails.VNDetailsFragment
@@ -39,7 +38,7 @@ class RelationsFragment : BaseFragment<RelationsViewModel>() {
         viewModel = ViewModelProviders.of(this).get(RelationsViewModel::class.java)
         viewModel.relationsData.observeOnce(this, ::showRelations)
         viewModel.errorData.observeOnce(this, ::showError)
-        home()?.viewModel?.accountData?.observe(this) { viewModel.loadVn(vnId) }
+        home()?.viewModel?.accountData?.observe(this) { viewModel.loadVn(vnId, adapter.relationsData) }
     }
 
     private fun showRelations(relationsData: RelationsData) {
@@ -52,7 +51,7 @@ class RelationsFragment : BaseFragment<RelationsViewModel>() {
         context?.openURL(Links.ANIDB + anime.id)
     }
 
-    private fun onRelationClicked(view: View, relation: Relation, vn: VN?) {
+    private fun onRelationClicked(view: View, vn: VN?) {
         vn ?: return
         vnDetailsFragment()?.viewModel?.let {
             findNavController().openVN(vn, view.image, it)

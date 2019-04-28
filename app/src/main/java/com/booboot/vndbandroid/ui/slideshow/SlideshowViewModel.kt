@@ -5,15 +5,12 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
 import com.booboot.vndbandroid.App
-import com.booboot.vndbandroid.extensions.minus
-import com.booboot.vndbandroid.extensions.plus
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndbandroid.FileAction
 import com.booboot.vndbandroid.repository.VNRepository
 import com.booboot.vndbandroid.ui.base.BaseViewModel
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
@@ -30,26 +27,13 @@ class SlideshowViewModel constructor(application: Application) : BaseViewModel(a
         (application as App).appComponent.inject(this)
     }
 
-    fun loadVn(force: Boolean = true) {
-        if (!force && vnData.value != null) return
-        if (disposables.contains(DISPOSABLE_VN)) return
-
-        disposables[DISPOSABLE_VN] = vnRepository.getItem(vnId)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe { loadingData.plus() }
-            .doFinally {
-                loadingData.minus()
-                disposables.remove(DISPOSABLE_VN)
-            }
-            .subscribe({ vnData.value = it }, ::onError)
+    fun loadVn(force: Boolean = true) = coroutine(DISPOSABLE_VN, !force && vnData.value != null) {
+        vnData.value = vnRepository.getItem(this, vnId).await()
     }
 
-    fun downloadScreenshot(bitmap: Bitmap?, action: Int, directory: File) {
-        if (disposables.contains(DISPOSABLE_DOWNLOAD_SCREENSHOT)) return
-
-        disposables[DISPOSABLE_DOWNLOAD_SCREENSHOT] = Single.fromCallable {
-            if (bitmap == null) throw Exception("The image is not ready yet.")
+    fun downloadScreenshot(bitmap: Bitmap?, action: Int, directory: File) = coroutine(DISPOSABLE_DOWNLOAD_SCREENSHOT) {
+        fileData.value = withContext(Dispatchers.IO) {
+            bitmap ?: throw Exception("The image is not ready yet.")
 
             val filename = String.format("IMAGE_%d.jpg", System.currentTimeMillis())
             val file = File(directory, filename)
@@ -58,16 +42,8 @@ class SlideshowViewModel constructor(application: Application) : BaseViewModel(a
             val ostream = FileOutputStream(file)
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, ostream)
             ostream.close()
-            file
+            FileAction(file, bitmap, action)
         }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe { loadingData.plus() }
-            .doFinally {
-                loadingData.minus()
-                disposables.remove(DISPOSABLE_DOWNLOAD_SCREENSHOT)
-            }
-            .subscribe({ fileData.value = FileAction(it, bitmap!!, action) }, ::onError)
     }
 
     override fun restoreState(state: Bundle?) {

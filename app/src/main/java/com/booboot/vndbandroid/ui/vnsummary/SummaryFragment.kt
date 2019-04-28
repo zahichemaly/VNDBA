@@ -41,6 +41,7 @@ class SummaryFragment : BaseFragment<SummaryViewModel>() {
         val vnId = arguments?.getLong(VNDetailsFragment.EXTRA_VN_ID) ?: 0
         viewModel = ViewModelProviders.of(this).get(SummaryViewModel::class.java)
         viewModel.summaryData.observe(this, ::showVn)
+        viewModel.loadingData.observe(this) { vnDetailsFragment()?.showLoading(it) }
         viewModel.errorData.observeOnce(this, ::showError)
         viewModel.loadVn(vnId, false)
     }

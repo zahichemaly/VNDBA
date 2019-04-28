@@ -15,7 +15,7 @@ import com.booboot.vndbandroid.model.vndbandroid.Vote
 import kotlinx.android.synthetic.main.nsfw_tag.view.*
 import kotlinx.android.synthetic.main.vn_card.view.*
 
-class RelationHolder(itemView: View, private val onClick: (View, Relation, VN?) -> Unit) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+class RelationHolder(itemView: View, private val onClick: (View, VN?) -> Unit) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
     private var relation: Relation? = null
     private var vn: VN? = null
 
@@ -40,6 +40,6 @@ class RelationHolder(itemView: View, private val onClick: (View, Relation, VN?) 
     }
 
     override fun onClick(view: View) {
-        relation?.let { onClick(view, it, vn) }
+        relation?.let { onClick(view, vn) }
     }
 }

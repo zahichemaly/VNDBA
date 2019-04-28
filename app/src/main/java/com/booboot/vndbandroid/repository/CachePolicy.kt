@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.booboot.vndbandroid.repository
 
 class CachePolicy<T>(
@@ -10,7 +12,7 @@ class CachePolicy<T>(
 ) {
     private var fetchFromMemory: () -> CacheValue<T> = { CacheValue() }
     private var fetchFromDatabase: () -> CacheValue<T> = { CacheValue() }
-    private var fetchFromNetwork: (T?) -> T = { throw NotImplementedError("Implement fetchFromNetwork") }
+    private var fetchFromNetwork: suspend (T?) -> T = { throw NotImplementedError("Implement fetchFromNetwork") }
     private var putInDatabase: (T) -> Unit = { }
     private var putInMemory: (T) -> Unit = { }
     private var isExpired: (T?) -> Boolean = { _ -> false }
@@ -40,7 +42,7 @@ class CachePolicy<T>(
         }
     }
 
-    fun fetchFromNetwork(fetchFromNetwork: (T?) -> T) = apply {
+    fun fetchFromNetwork(fetchFromNetwork: suspend (T?) -> T) = apply {
         this.fetchFromNetwork = {
             fetchFromNetwork(it).apply {
                 putExpiration(this)
@@ -72,7 +74,7 @@ class CachePolicy<T>(
 
     private fun requireNonEmpty(value: T?) = if (isEmpty(value)) null else value
 
-    fun get(defaultValue: (T?) -> T = this.defaultValue): T = if (enabled) {
+    suspend fun get(defaultValue: (T?) -> T = this.defaultValue): T = if (enabled) {
         var cache = fetchFromMemory()
         if (cache.checkedValue == null) cache = fetchFromDatabase()
 

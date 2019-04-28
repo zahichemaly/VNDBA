@@ -14,18 +14,21 @@ import com.booboot.vndbandroid.model.vndbandroid.Expiration
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import io.objectbox.BoxStore
-import io.reactivex.Single
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class TagsRepository @Inject constructor(
-    var vndbService: VNDBService,
+    private var vndbService: VNDBService,
     var moshi: Moshi,
     var app: Application,
     var boxStore: BoxStore
 ) : Repository<Tag>() {
-    override fun getItems(cachePolicy: CachePolicy<Map<Long, Tag>>): Single<Map<Long, Tag>> = Single.fromCallable {
+    override suspend fun getItems(coroutineScope: CoroutineScope, cachePolicy: CachePolicy<Map<Long, Tag>>): Deferred<Map<Long, Tag>> = coroutineScope.async(Dispatchers.IO) {
         cachePolicy
             .fetchFromMemory { items }
             .fetchFromDatabase {
@@ -34,7 +37,7 @@ class TagsRepository @Inject constructor(
             .fetchFromNetwork {
                 vndbService
                     .getTags()
-                    .blockingGet()
+                    .await()
                     .saveToDisk("tags.json.gz", app.cacheDir)
                     .unzip()
                     .use {

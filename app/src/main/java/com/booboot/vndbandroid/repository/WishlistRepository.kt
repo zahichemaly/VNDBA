@@ -11,7 +11,9 @@ import com.booboot.vndbandroid.model.vndb.Wishlist
 import com.booboot.vndbandroid.util.type
 import io.objectbox.BoxStore
 import io.objectbox.kotlin.boxFor
-import io.reactivex.Completable
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -21,18 +23,19 @@ open class WishlistRepository @Inject constructor(var boxStore: BoxStore, var vn
 
     override fun addItemsToDB(items: List<Wishlist>) = boxStore.save(true) { items.map { WishlistDao(it) } }
 
-    override fun getItemsFromAPI(): Results<Wishlist> = vndbServer
-        .get<Wishlist>("wishlist", "basic", "(uid = 0)", Options(results = 100, fetchAllPages = true, socketIndex = 2), type())
-        .blockingGet()
+    override suspend fun getItemsFromAPI(coroutineScope: CoroutineScope): Results<Wishlist> = vndbServer
+        .get<Wishlist>(coroutineScope, "wishlist", "basic", "(uid = 0)", Options(results = 100, fetchAllPages = true, socketIndex = 2), type())
+        .await()
 
-    fun setItem(wishlist: Wishlist): Completable = Completable.fromAction {
-        vndbServer.set("wishlist", wishlist.vn, wishlist, type()).blockingAwait()
+    fun setItem(coroutineScope: CoroutineScope, wishlist: Wishlist) = coroutineScope.async(Dispatchers.IO) {
+        vndbServer.set(this, "wishlist", wishlist.vn, wishlist, type()).await()
         items[wishlist.vn] = wishlist
         boxStore.save { listOf(WishlistDao(wishlist)) }
+        true
     }
 
-    fun deleteItem(wishlist: Wishlist): Completable = Completable.fromAction {
-        vndbServer.set<Vnlist>("wishlist", wishlist.vn, null, type()).blockingAwait()
+    fun deleteItem(coroutineScope: CoroutineScope, wishlist: Wishlist) = coroutineScope.async(Dispatchers.IO) {
+        vndbServer.set<Vnlist>(this, "wishlist", wishlist.vn, null, type()).await()
         items.remove(wishlist.vn)
         boxStore.boxFor<WishlistDao>().remove(wishlist.vn)
     }
