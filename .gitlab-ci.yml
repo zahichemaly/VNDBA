@@ -62,7 +62,7 @@ pages:
 
     # Cloning private files
     - GITLAB_BASE_URL=`echo $CI_REPOSITORY_URL | sed "s;\/*$CI_PROJECT_PATH.*;;"`
-    - PRIVATE_REPO_URL="$GITLAB_BASE_URL/thomas.herbeth/VNDBA-private.git"
+    - PRIVATE_REPO_URL="$GITLAB_BASE_URL/thomas_herbeth/VNDBA-private.git"
     - PRIVATE_DIR="private"
     - git clone $PRIVATE_REPO_URL $PRIVATE_DIR
     - rm -rf $PRIVATE_DIR/.git
