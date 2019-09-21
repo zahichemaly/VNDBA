@@ -10,7 +10,7 @@ import com.booboot.vndbandroid.ui.vnrelations.RelationsFragment
 import com.booboot.vndbandroid.ui.vnsummary.SummaryFragment
 import com.booboot.vndbandroid.ui.vntags.TagsFragment
 
-class VNDetailsTabsAdapter(fm: FragmentManager?) : BaseFragmentStatePagerAdapter(fm) {
+class VNDetailsTabsAdapter(fm: FragmentManager) : BaseFragmentStatePagerAdapter(fm) {
     var vn: VN? = null
         set(value) {
             field = value
