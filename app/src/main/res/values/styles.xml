@@ -70,8 +70,4 @@
     <style name="Tab" parent="TextAppearance.Design.Tab">
         <item name="textAllCaps">false</item>
     </style>
-
-    <style name="LoginFormDirection">
-        <item name="flexDirection">column</item>
-    </style>
 </resources>

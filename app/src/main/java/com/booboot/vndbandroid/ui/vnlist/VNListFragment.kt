@@ -9,7 +9,7 @@ import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.getThemeColor
 import com.booboot.vndbandroid.extensions.hideOnBottom
 import com.booboot.vndbandroid.extensions.home
-import com.booboot.vndbandroid.extensions.observe
+import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.openVN
 import com.booboot.vndbandroid.extensions.restoreState
@@ -43,9 +43,9 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
         viewModel.restoreState(savedInstanceState)
         viewModel.accountData.observeOnce(this) { showVns(it) }
         viewModel.errorData.observeOnce(this, ::showError)
-        home()?.viewModel?.filterData?.observe(this, ::filter)
-        home()?.viewModel?.loadingData?.observe(this, ::showLoading)
-        home()?.viewModel?.accountData?.observe(this) { update() }
+        home()?.viewModel?.filterData?.observeNonNull(this, ::filter)
+        home()?.viewModel?.loadingData?.observeNonNull(this, ::showLoading)
+        home()?.viewModel?.accountData?.observeNonNull(this) { update() }
         homeTabs()?.viewModel?.sortData?.observeOnce(this) { update() }
 
         adapter = VNAdapter(::onVnClicked)

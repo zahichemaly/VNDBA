@@ -14,7 +14,7 @@ import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.adjustAlpha
 import com.booboot.vndbandroid.extensions.darken
 import com.booboot.vndbandroid.extensions.dayNightTheme
-import com.booboot.vndbandroid.extensions.observe
+import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.openURL
 import com.booboot.vndbandroid.extensions.scrollToTop
@@ -40,8 +40,8 @@ class SummaryFragment : BaseFragment<SummaryViewModel>() {
 
         val vnId = arguments?.getLong(VNDetailsFragment.EXTRA_VN_ID) ?: 0
         viewModel = ViewModelProviders.of(this).get(SummaryViewModel::class.java)
-        viewModel.summaryData.observe(this, ::showVn)
-        viewModel.loadingData.observe(this) { vnDetailsFragment()?.showLoading(it) }
+        viewModel.summaryData.observeNonNull(this, ::showVn)
+        viewModel.loadingData.observeNonNull(this) { vnDetailsFragment()?.showLoading(it) }
         viewModel.errorData.observeOnce(this, ::showError)
         viewModel.loadVn(vnId, false)
     }

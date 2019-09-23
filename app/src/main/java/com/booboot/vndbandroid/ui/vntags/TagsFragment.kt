@@ -5,7 +5,7 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
-import com.booboot.vndbandroid.extensions.observe
+import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.restoreState
 import com.booboot.vndbandroid.extensions.saveState
@@ -44,7 +44,7 @@ class TagsFragment : BaseFragment<TagsViewModel>(), TagsAdapter.Callback {
 
         viewModel = ViewModelProviders.of(this).get(TagsViewModel::class.java)
         viewModel.errorData.observeOnce(this, ::showError)
-        viewModel.tagsData.observe(this, ::showTags)
+        viewModel.tagsData.observeNonNull(this, ::showTags)
 
         /* [IMPORTANT] Manually updating the UI now so the state can be restored */
         viewModel.tagsData.value?.let(::showTags)

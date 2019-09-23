@@ -12,7 +12,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.viewpager.widget.ViewPager
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.home
-import com.booboot.vndbandroid.extensions.observe
+import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.onStateChanged
 import com.booboot.vndbandroid.extensions.onSubmitListener
@@ -85,9 +85,9 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
         viewModel = ViewModelProviders.of(this).get(VNDetailsViewModel::class.java)
         viewModel.restoreState(savedInstanceState)
         viewModel.accountData = home()?.viewModel?.accountData ?: return
-        viewModel.loadingData.observe(this, ::showLoading)
-        viewModel.vnData.observe(this, ::showVn)
-        home()?.viewModel?.accountData?.observe(this, ::showAccount)
+        viewModel.loadingData.observeNonNull(this, ::showLoading)
+        viewModel.vnData.observeNonNull(this, ::showVn)
+        home()?.viewModel?.accountData?.observeNonNull(this, ::showAccount)
         viewModel.errorData.observeOnce(this, ::showError)
         viewModel.initErrorData.observeOnce(this, ::onInitError)
 

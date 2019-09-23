@@ -11,7 +11,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.home
-import com.booboot.vndbandroid.extensions.observe
+import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.onStateChanged
 import com.booboot.vndbandroid.extensions.postponeEnterTransitionIfExists
@@ -73,7 +73,7 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
         viewModel.titlesData.observeOnce(this, ::showTitles)
         viewModel.sortData.observeOnce(this) { showSort() }
         viewModel.errorData.observeOnce(this, ::showError)
-        home()?.viewModel?.accountData?.observe(this) { update() }
+        home()?.viewModel?.accountData?.observeNonNull(this) { update() }
 
         if (tabsAdapter == null) {
             tabsAdapter = HomeTabsAdapter(childFragmentManager, type)

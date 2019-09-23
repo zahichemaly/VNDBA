@@ -9,21 +9,20 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.progress_bar.*
 
 abstract class BaseActivity : AppCompatActivity() {
-    open fun showError(message: String?) {
-        message ?: return
+    open fun showError(message: String) {
         Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show()
     }
 
-    open fun showLoading(loading: Int?) {
-        loading ?: return
+    open fun showLoading(loading: Int) {
         progressBar?.visibility = if (loading > 0) View.VISIBLE else View.GONE
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        data ?: return
 
         when (resultCode) {
-            RESULT_ERROR -> showError(data?.getStringExtra(EXTRA_ERROR_MESSAGE))
+            RESULT_ERROR -> showError(data.getStringExtra(EXTRA_ERROR_MESSAGE))
         }
     }
 }

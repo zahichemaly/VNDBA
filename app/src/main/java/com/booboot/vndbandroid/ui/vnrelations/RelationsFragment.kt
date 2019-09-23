@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.home
-import com.booboot.vndbandroid.extensions.observe
+import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.openURL
 import com.booboot.vndbandroid.extensions.openVN
@@ -38,7 +38,7 @@ class RelationsFragment : BaseFragment<RelationsViewModel>() {
         viewModel = ViewModelProviders.of(this).get(RelationsViewModel::class.java)
         viewModel.relationsData.observeOnce(this, ::showRelations)
         viewModel.errorData.observeOnce(this, ::showError)
-        home()?.viewModel?.accountData?.observe(this) { viewModel.loadVn(vnId, adapter.relationsData) }
+        home()?.viewModel?.accountData?.observeNonNull(this) { viewModel.loadVn(vnId, adapter.relationsData) }
     }
 
     private fun showRelations(relationsData: RelationsData) {

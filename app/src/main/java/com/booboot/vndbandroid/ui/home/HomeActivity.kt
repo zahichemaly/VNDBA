@@ -14,7 +14,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.Track
 import com.booboot.vndbandroid.extensions.isTopLevel
-import com.booboot.vndbandroid.extensions.observe
+import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.setLightStatusAndNavigation
 import com.booboot.vndbandroid.extensions.toggle
@@ -50,8 +50,8 @@ class HomeActivity : BaseActivity(), View.OnClickListener {
             }
 
             viewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
-            viewModel.loadingData.observe(this, ::showLoading)
-            viewModel.accountData.observe(this, ::showAccount)
+            viewModel.loadingData.observeNonNull(this, ::showLoading)
+            viewModel.accountData.observeNonNull(this, ::showAccount)
             viewModel.errorData.observeOnce(this, ::showError)
             viewModel.getVns()
 

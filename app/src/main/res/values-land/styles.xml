@@ -1,6 +1,0 @@
-<resources>
-
-    <style name="LoginFormDirection">
-        <item name="flexDirection">row</item>
-    </style>
-</resources>

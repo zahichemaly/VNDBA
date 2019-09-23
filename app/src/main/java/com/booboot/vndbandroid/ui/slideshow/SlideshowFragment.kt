@@ -23,7 +23,7 @@ import androidx.viewpager.widget.ViewPager
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.home
-import com.booboot.vndbandroid.extensions.observe
+import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.setupStatusBar
 import com.booboot.vndbandroid.extensions.setupToolbar
@@ -53,9 +53,9 @@ class SlideshowFragment : BaseFragment<SlideshowViewModel>(), ViewPager.OnPageCh
         viewModel = ViewModelProviders.of(this).get(SlideshowViewModel::class.java)
         viewModel.restoreState(savedInstanceState)
         viewModel.errorData.observeOnce(this, ::showError)
-        viewModel.loadingData.observe(this, ::showLoading)
+        viewModel.loadingData.observeNonNull(this, ::showLoading)
         viewModel.fileData.observeOnce(this, ::launchActionForImage)
-        viewModel.vnData.observe(this, ::showVn)
+        viewModel.vnData.observeNonNull(this, ::showVn)
 
         arguments?.let { arguments ->
             viewModel.position = if (viewModel.position < 0) {

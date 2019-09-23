@@ -111,9 +111,12 @@
     <string name="reverse_order">Reverse order</string>
     <string name="yuki">Yuki</string>
     <string name="yuki_vndba_guide">Yuki - VNDBA\'s guide</string>
-    <string name="login_step_welcome">Hello and welcome to VNDBA! I am here to help you track your visual novels!</string>
+    <string name="login_step_welcome">"Hello and welcome to VNDBA! I am here to help you track your visual novels!
+
+Before we begin, I would appreciate your consent for sending crash info in case something goes wrong. That would help me a lot to improve the app! In any case, you'll be able to change your choice at anytime in your preferences!
+
+Are you okay with it?"</string>
     <string name="login_step_signin">Mmh… I can\'t seem to remember you… Who are you again?</string>
-    <string name="login_step_gdpr">While I set things up for you, I would appreciate your consent for sending crash info in case something goes wrong. That would help me a lot to improve the app! In any case, you\'ll be able to change your choice at anytime in your preferences! Are you okay with it?</string>
     <string name="login_step_onboarding">By the way, if you happen to be lost or want more info on how to use the app, just call me by tapping the Help button on any page!</string>
     <string name="login_step_loading">Sorry, I haven\'t prepared everything yet… Thank you for waiting~!</string>
     <string name="login_step_ok">Oh, looks like things are ready, see you soon~!</string>
