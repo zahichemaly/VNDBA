@@ -9,7 +9,7 @@ object Preferences : KotprefModel() {
     var username by nullableStringPref(key = "USERNAME")
     var password by nullableStringPref(key = "PASSWORD")
     var loggedIn by booleanPref(key = "LOGGED_IN")
-    var useCustomTabs by booleanPref(key = context.getString(R.string.pref_key_browser))
+    var useCustomTabs by booleanPref(true, key = context.getString(R.string.pref_key_browser))
     var nsfw by booleanPref(key = context.getString(R.string.pref_key_nsfw))
     var nightMode by intPref(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM, "NIGHT_MODE") // Don't use R.string.pref_key_night_mode because not an int!
     var sort by intPref(SORT_ID, key = "SORT")
