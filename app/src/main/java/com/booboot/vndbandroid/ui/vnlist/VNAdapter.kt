@@ -11,6 +11,7 @@ import com.booboot.vndbandroid.diff.VNDiffCallback
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.ui.base.BaseAdapter
+import com.booboot.vndbandroid.ui.base.BaseFilter
 
 class VNAdapter(
     private val onVnClicked: (View, VN) -> Unit,
@@ -26,7 +27,7 @@ class VNAdapter(
             filter.filter(filterString)
         }
     private var filteredVns = items
-        set (value) {
+        set(value) {
             field = value
             onUpdateInternal()
         }
@@ -63,10 +64,9 @@ class VNAdapter(
 
     override fun getFilter(): Filter = filter
 
-    private inner class ItemFilter : Filter() {
-        override fun performFiltering(search: CharSequence): Filter.FilterResults {
+    private inner class ItemFilter : BaseFilter<VNFilterResults>() {
+        override fun performFilter(search: CharSequence): VNFilterResults {
             filterString = search.toString().trim().toLowerCase()
-            val results = Filter.FilterResults()
             val newVns = mutableMapOf<Long, VN>()
 
             items.vns.forEach {
@@ -79,15 +79,12 @@ class VNAdapter(
             newItems.vns = newVns
 
             val diffResult = DiffUtil.calculateDiff(VNDiffCallback(filteredVns, newItems))
-            results.values = VNFilterResults(newItems, diffResult)
-
-            return results
+            return VNFilterResults(newItems, diffResult)
         }
 
-        override fun publishResults(constraint: CharSequence, results: Filter.FilterResults) {
-            val filterResults = results.values as? VNFilterResults ?: return
-            filteredVns = filterResults.items
-            filterResults.diffResult.dispatchUpdatesTo(this@VNAdapter)
+        override fun publishResults(constraint: CharSequence, results: VNFilterResults) {
+            filteredVns = results.items
+            results.diffResult.dispatchUpdatesTo(this@VNAdapter)
         }
     }
 
