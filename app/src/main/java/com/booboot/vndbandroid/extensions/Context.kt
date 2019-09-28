@@ -30,14 +30,12 @@ inline fun <reified A : Activity> Context.startActivity(configIntent: Intent.() 
  * Android isn't able to reset these flags. Hence the programmatical reset.
  */
 fun Activity.setLightStatusAndNavigation() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        val flags = when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
-            Configuration.UI_MODE_NIGHT_UNDEFINED, Configuration.UI_MODE_NIGHT_NO -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR else View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-            else -> 0
-        } or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-        window.decorView.systemUiVisibility = flags
-    }
+    val flags = when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+        Configuration.UI_MODE_NIGHT_UNDEFINED, Configuration.UI_MODE_NIGHT_NO -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR else View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        else -> 0
+    } or View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+    window.decorView.systemUiVisibility = flags
 }
 
 fun Context.getBitmap(@DrawableRes drawableRes: Int): Bitmap? {

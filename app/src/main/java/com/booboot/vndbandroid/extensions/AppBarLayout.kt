@@ -1,6 +1,5 @@
 package com.booboot.vndbandroid.extensions
 
-import android.os.Build
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -11,8 +10,6 @@ import com.google.android.material.appbar.CollapsingToolbarLayout
 
 fun AppBarLayout.setStatusBarThemeForCollapsingToolbar(activity: AppCompatActivity, collapsingToolbar: CollapsingToolbarLayout, toolbar: Toolbar, contentView: View) =
     addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { _, offset ->
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return@OnOffsetChangedListener
-
         if (collapsingToolbar.height + offset < collapsingToolbar.scrimVisibleHeightTrigger) {
             /* Toolbar is collapsing: removing the status bar's translucence and adding the light flag */
             activity.window.statusBarColor = ContextCompat.getColor(activity, android.R.color.transparent)

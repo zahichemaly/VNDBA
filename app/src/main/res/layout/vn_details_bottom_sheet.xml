@@ -36,8 +36,7 @@
             android:theme="@style/AppTheme.Light"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="UnusedAttribute" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/iconArrow"
@@ -443,7 +442,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="flexboxVote, flexboxStatus" />
+            app:constraint_referenced_ids="flexboxVote,flexboxStatus" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/iconContentWishlist"

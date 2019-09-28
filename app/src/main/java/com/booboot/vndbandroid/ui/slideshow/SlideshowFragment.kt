@@ -125,7 +125,7 @@ class SlideshowFragment : BaseFragment<SlideshowViewModel>(), ViewPager.OnPageCh
                 DOWNLOAD_SCREENSHOT_PERMISSION -> Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                 SHARE_SCREENSHOT_PERMISSION -> activity.externalCacheDir
                 else -> return
-            }
+            } ?: return
             viewModel.downloadScreenshot(bitmap, action, directory)
         } else {
             EasyPermissions.requestPermissions(this, String.format(getString(R.string.share_screenshot_rationale), getString(R.string.app_name)),

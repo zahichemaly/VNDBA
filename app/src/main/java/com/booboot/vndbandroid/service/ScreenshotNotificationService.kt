@@ -14,23 +14,25 @@ import com.booboot.vndbandroid.util.Notifications
 import java.io.File
 
 class ScreenshotNotificationService : IntentService("ScreenshotNotificationService") {
-    override fun onHandleIntent(intent: Intent) {
+    override fun onHandleIntent(intent: Intent?) {
         startForeground(SERVICE_ID, NotificationCompat.Builder(this, Notifications.DEFAULT_CHANNEL_ID).build())
 
-        val action = intent.getIntExtra(Intent.EXTRA_UID, -1)
+        val action = intent?.getIntExtra(Intent.EXTRA_UID, -1)
         when (action) {
             REQUEST_CODE_SHARE -> {
                 intent.component = null
-                startActivity(Intent.createChooser(intent, getString(R.string.action_share)))
+                startActivity(Intent.createChooser(intent, getString(R.string.action_share)).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                })
             }
 
             REQUEST_CODE_DELETE -> {
-                val path = intent.getStringExtra(Intent.EXTRA_TEXT)
-
-                MediaScannerConnection.scanFile(applicationContext, arrayOf(path), null) { _, uri ->
-                    uri?.grantPermission(this)
-                    contentResolver.delete(uri, null, null)
-                    File(path).delete()
+                intent.getStringExtra(Intent.EXTRA_TEXT)?.let { path ->
+                    MediaScannerConnection.scanFile(applicationContext, arrayOf(path), null) { _, uri ->
+                        uri?.grantPermission(this)
+                        contentResolver.delete(uri, null, null)
+                        File(path).delete()
+                    }
                 }
             }
         }
