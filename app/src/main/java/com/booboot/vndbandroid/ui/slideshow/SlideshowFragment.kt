@@ -6,17 +6,14 @@ import android.app.PendingIntent
 import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
 import android.graphics.drawable.BitmapDrawable
-import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import androidx.core.app.NotificationCompat
-import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager.widget.ViewPager
@@ -121,12 +118,7 @@ class SlideshowFragment : BaseFragment<SlideshowViewModel>(), ViewPager.OnPageCh
         if (EasyPermissions.hasPermissions(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             val imageView = slideshow.findViewWithTag<ImageView>(slideshow.currentItem)
             val bitmap = (imageView.drawable as? BitmapDrawable)?.bitmap
-            val directory = when (action) {
-                DOWNLOAD_SCREENSHOT_PERMISSION -> Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                SHARE_SCREENSHOT_PERMISSION -> activity.externalCacheDir
-                else -> return
-            } ?: return
-            viewModel.downloadScreenshot(bitmap, action, directory)
+            viewModel.downloadScreenshot(bitmap, action) //, directory)
         } else {
             EasyPermissions.requestPermissions(this, String.format(getString(R.string.share_screenshot_rationale), getString(R.string.app_name)),
                 action, Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -137,49 +129,49 @@ class SlideshowFragment : BaseFragment<SlideshowViewModel>(), ViewPager.OnPageCh
         val activity = home() ?: return
         fileAction ?: return
 
-        MediaScannerConnection.scanFile(App.context, arrayOf(fileAction.file.absolutePath), null) { _, _ ->
-            val uri = FileProvider.getUriForFile(App.context, App.context.packageName + ".fileprovider", fileAction.file)
-            val shareIntent = getFileIntent(uri).apply {
-                action = Intent.ACTION_SEND
-                putExtra(Intent.EXTRA_UID, REQUEST_CODE_SHARE)
-            }
+        val shareIntent = getFileIntent(fileAction.uri).apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_UID, REQUEST_CODE_SHARE)
+        }
 
-            when (fileAction.action) {
-                DOWNLOAD_SCREENSHOT_PERMISSION -> {
-                    val mainIntent = getFileIntent(uri).apply { action = Intent.ACTION_VIEW }
-                    shareIntent.setClass(activity, ScreenshotNotificationService::class.java)
-                    val deleteIntent = getFileIntent(uri).apply {
-                        setClass(activity, ScreenshotNotificationService::class.java)
-                        putExtra(Intent.EXTRA_TEXT, fileAction.file.absolutePath)
-                        putExtra(Intent.EXTRA_UID, REQUEST_CODE_DELETE)
-                    }
-
-                    val pendingFlags = PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_ONE_SHOT
-                    val mainPendingIntent = PendingIntent.getActivity(App.context, REQUEST_CODE_VIEW, mainIntent, pendingFlags)
-                    val sharePendingIntent = PendingIntent.getService(App.context, REQUEST_CODE_SHARE, shareIntent, pendingFlags)
-                    val deletePendingIntent = PendingIntent.getService(App.context, REQUEST_CODE_DELETE, deleteIntent, pendingFlags)
-
-                    val notificationManager = activity.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-                    val notif = NotificationCompat.Builder(App.context, Notifications.DEFAULT_CHANNEL_ID)
-                        .setContentIntent(mainPendingIntent)
-                        .setContentTitle("Image saved.")
-                        .setSmallIcon(R.drawable.ic_logo_transparent)
-                        .setLargeIcon(fileAction.bitmap)
-                        .addAction(R.drawable.ic_share_white_24dp, getString(R.string.action_share), sharePendingIntent)
-                        .addAction(R.drawable.ic_delete_forever_black_24dp, getString(R.string.action_delete), deletePendingIntent)
-                        .setAutoCancel(true)
-                        .setStyle(NotificationCompat.BigPictureStyle().bigPicture(fileAction.bitmap))
-                        .build()
-                    notificationManager.notify(Notifications.IMAGE_DOWNLOADED_NOTIFICATION_ID, notif)
+        when (fileAction.action) {
+            DOWNLOAD_SCREENSHOT_PERMISSION -> {
+                val mainIntent = getFileIntent(fileAction.uri).apply {
+                    data = fileAction.uri
+                    action = Intent.ACTION_VIEW
+                }
+                shareIntent.setClass(activity, ScreenshotNotificationService::class.java)
+                val deleteIntent = getFileIntent(fileAction.uri).apply {
+                    setClass(activity, ScreenshotNotificationService::class.java)
+                    putExtra(Intent.EXTRA_ORIGINATING_URI, fileAction.uri)
+                    putExtra(Intent.EXTRA_UID, REQUEST_CODE_DELETE)
                 }
 
-                SHARE_SCREENSHOT_PERMISSION -> startActivity(Intent.createChooser(shareIntent, getString(R.string.action_share)))
+                val pendingFlags = PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_ONE_SHOT
+                val mainPendingIntent = PendingIntent.getActivity(App.context, REQUEST_CODE_VIEW, mainIntent, pendingFlags)
+                val sharePendingIntent = PendingIntent.getService(App.context, REQUEST_CODE_SHARE, shareIntent, pendingFlags)
+                val deletePendingIntent = PendingIntent.getService(App.context, REQUEST_CODE_DELETE, deleteIntent, pendingFlags)
+
+                val notificationManager = activity.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+                val notif = NotificationCompat.Builder(App.context, Notifications.DEFAULT_CHANNEL_ID)
+                    .setContentIntent(mainPendingIntent)
+                    .setContentTitle("Image saved.")
+                    .setSmallIcon(R.drawable.ic_logo_transparent)
+                    .setLargeIcon(fileAction.bitmap)
+                    .addAction(R.drawable.ic_share_white_24dp, getString(R.string.action_share), sharePendingIntent)
+                    .addAction(R.drawable.ic_delete_forever_black_24dp, getString(R.string.action_delete), deletePendingIntent)
+                    .setAutoCancel(true)
+                    .setStyle(NotificationCompat.BigPictureStyle().bigPicture(fileAction.bitmap))
+                    .build()
+                notificationManager.notify(Notifications.IMAGE_DOWNLOADED_NOTIFICATION_ID, notif)
             }
+
+            SHARE_SCREENSHOT_PERMISSION -> startActivity(Intent.createChooser(shareIntent, getString(R.string.action_share)))
         }
     }
 
     private fun getFileIntent(uri: Uri) = Intent().apply {
-        setDataAndType(uri, home()?.contentResolver?.getType(uri))
+        type = home()?.contentResolver?.getType(uri)
         action = System.nanoTime().toString()
         putExtra(Intent.EXTRA_STREAM, uri)
         flags = Intent.FLAG_GRANT_READ_URI_PERMISSION

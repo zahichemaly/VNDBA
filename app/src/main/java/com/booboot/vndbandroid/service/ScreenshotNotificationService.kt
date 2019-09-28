@@ -3,7 +3,7 @@ package com.booboot.vndbandroid.service
 import android.app.IntentService
 import android.app.NotificationManager
 import android.content.Intent
-import android.media.MediaScannerConnection
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import com.booboot.vndbandroid.R
@@ -11,7 +11,6 @@ import com.booboot.vndbandroid.extensions.grantPermission
 import com.booboot.vndbandroid.ui.slideshow.REQUEST_CODE_DELETE
 import com.booboot.vndbandroid.ui.slideshow.REQUEST_CODE_SHARE
 import com.booboot.vndbandroid.util.Notifications
-import java.io.File
 
 class ScreenshotNotificationService : IntentService("ScreenshotNotificationService") {
     override fun onHandleIntent(intent: Intent?) {
@@ -27,12 +26,10 @@ class ScreenshotNotificationService : IntentService("ScreenshotNotificationServi
             }
 
             REQUEST_CODE_DELETE -> {
-                intent.getStringExtra(Intent.EXTRA_TEXT)?.let { path ->
-                    MediaScannerConnection.scanFile(applicationContext, arrayOf(path), null) { _, uri ->
-                        uri?.grantPermission(this)
-                        contentResolver.delete(uri, null, null)
-                        File(path).delete()
-                    }
+                val uri = intent.getParcelableExtra(Intent.EXTRA_ORIGINATING_URI) as? Uri
+                uri?.let {
+                    uri.grantPermission(this)
+                    contentResolver.delete(uri, null, null)
                 }
             }
         }
