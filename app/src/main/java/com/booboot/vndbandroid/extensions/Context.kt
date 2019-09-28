@@ -54,7 +54,7 @@ fun Context.openURL(url: String) {
     if (Preferences.useCustomTabs) {
         val builder = CustomTabsIntent.Builder()
         builder.setToolbarColor(getThemeColor(R.attr.colorPrimary))
-        getBitmap(R.drawable.ic_arrow_back_white_24dp)?.let {
+        getBitmap(R.drawable.ic_arrow_back_24dp)?.let {
             builder.setCloseButtonIcon(it)
         }
         builder.setStartAnimations(this, R.anim.slide_in, R.anim.slide_out)
