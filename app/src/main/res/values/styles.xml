@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="Base.AppTheme.Light" parent="Theme.MaterialComponents.Light">
         <!-- light theme attributes -->
@@ -6,11 +6,13 @@
         <item name="colorPrimaryDark">#fafafa</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="themeName">light</item>
-        <item name="android:navigationBarColor">#424242</item>
+        <item name="android:navigationBarColor">?attr/colorPrimaryDark</item>
     </style>
 
     <style name="AppTheme.Light" parent="Base.AppTheme.Light">
         <!-- default API level light theme attributes -->
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
     </style>
 
     <style name="Base.AppTheme.Dark" parent="Theme.MaterialComponents">
@@ -18,6 +20,8 @@
         <item name="colorPrimary">#424242</item>
         <item name="colorPrimaryDark">#303030</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
         <item name="android:navigationBarColor">?attr/colorPrimaryDark</item>
         <item name="themeName">dark</item>
     </style>
