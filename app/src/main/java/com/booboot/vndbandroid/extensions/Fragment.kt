@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
@@ -27,7 +28,8 @@ fun Fragment.setupToolbar() {
     home()?.setupActionBarWithNavController(findNavController(), home()?.drawer)
 }
 
-fun Fragment.setupStatusBar(drawBehind: Boolean = false) = activity?.let { activity ->
+fun Fragment.setupStatusBar(drawBehind: Boolean = false) = view?.post {
+    val activity = activity ?: return@post
     val toolbar = if (!drawBehind) {
         activity.window.statusBarColor = Color.TRANSPARENT
         view
@@ -41,6 +43,7 @@ fun Fragment.setupStatusBar(drawBehind: Boolean = false) = activity?.let { activ
         if (appBarLayoutParams is FrameLayout.LayoutParams && appBarLayoutParams.gravity == Gravity.BOTTOM) return@updateLayoutParams
         topMargin = activity.statusBarHeight()
     }
+    toolbar?.isVisible = true
 }
 
 fun LifecycleOwner.actualOwner() = (this as? Fragment)?.viewLifecycleOwner ?: this

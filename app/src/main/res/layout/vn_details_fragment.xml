@@ -74,10 +74,11 @@
                 android:layout_height="?attr/actionBarSize"
                 android:layout_gravity="top"
                 android:layout_marginBottom="48dp"
+                android:background="@color/tabBackgroundColor"
                 android:fitsSystemWindows="true"
+                android:visibility="gone"
                 app:layout_collapseMode="pin"
-                app:popupTheme="@style/ThemeOverlay.MaterialComponents"
-                tools:background="@color/tabBackgroundColor" />
+                app:popupTheme="@style/ThemeOverlay.MaterialComponents" />
 
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tabLayout"
