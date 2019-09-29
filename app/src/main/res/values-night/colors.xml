@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- DayNight colors -->
+    <color name="colorBackground">#303030</color>
     <color name="cardDividerColor">@color/medium_gray</color>
     <color name="tabBackgroundColor">@color/transparentBlack</color>
     <color name="transparent80Primary">@color/transparent80Black</color>

@@ -39,14 +39,15 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/floatingSearchButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
+        android:layout_gravity="bottom|center_horizontal"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/ic_search_white_48dp"
-        android:tint="@color/white" />
+        android:text="@string/search_hint"
+        android:textAllCaps="false"
+        app:icon="@drawable/ic_search_white_48dp" />
 
     <include layout="@layout/vn_list_sort_bottom_sheet" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

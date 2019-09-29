@@ -3,15 +3,19 @@ package com.booboot.vndbandroid.extensions
 import android.content.Context
 import android.view.View
 import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.view.inputmethod.InputMethodManager
+import androidx.core.view.isVisible
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 fun View.toggle() {
-    visibility = if (visibility == GONE) VISIBLE else GONE
+    isVisible = visibility == GONE
 }
 
-fun View.toggle(show: Boolean) {
-    visibility = if (show) VISIBLE else GONE
+fun View.toggle(show: Boolean) = when (this) {
+    is FloatingActionButton -> toggle(show)
+    is ExtendedFloatingActionButton -> toggle(show)
+    else -> isVisible = show
 }
 
 fun View.hideKeyboard() {

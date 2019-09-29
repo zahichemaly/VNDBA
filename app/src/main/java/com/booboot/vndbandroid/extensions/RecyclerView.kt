@@ -1,12 +1,12 @@
 package com.booboot.vndbandroid.extensions
 
+import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.booboot.vndbandroid.ui.base.BaseAdapter
 import com.booboot.vndbandroid.ui.base.BaseFragment
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-fun RecyclerView.hideOnBottom(fab: FloatingActionButton?) {
+fun <T : View> RecyclerView.hideOnBottom(fab: T?) {
     addOnScrollListener(object : RecyclerView.OnScrollListener() {
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
             if (dy > 0) {

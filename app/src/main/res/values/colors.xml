@@ -2,7 +2,7 @@
 <resources>
     <color name="colorAccent">#2979FF</color>
     <color name="colorAccentDark">#1a237e</color>
-    <color name="windowBackground">#FFFFFF</color>
+    <color name="colorBackground">#fafafa</color>
 
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
