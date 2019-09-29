@@ -58,7 +58,9 @@ abstract class BaseFragment<T : BaseViewModel> : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        viewModel.saveState(outState)
+        if (::viewModel.isInitialized) {
+            viewModel.saveState(outState)
+        }
     }
 
     fun finish() {
