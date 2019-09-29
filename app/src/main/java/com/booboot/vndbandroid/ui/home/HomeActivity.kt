@@ -3,13 +3,13 @@ package com.booboot.vndbandroid.ui.home
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.Track
@@ -61,13 +61,6 @@ class HomeActivity : BaseActivity(), View.OnClickListener {
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> finish()
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
     fun startupSync() = viewModel.startupSync()
 
     private fun showAccount(accountItems: AccountItems?) {
@@ -107,7 +100,7 @@ class HomeActivity : BaseActivity(), View.OnClickListener {
 
     override fun onBackPressed() = onBackPressed(false)
 
-    override fun onSupportNavigateUp() = onBackPressed(true).let { true }
+    override fun onSupportNavigateUp() = NavigationUI.navigateUp(findNavController(R.id.navHost), drawer)
 
     private fun onBackPressed(navigateUp: Boolean) {
         when {
@@ -127,14 +120,18 @@ class HomeActivity : BaseActivity(), View.OnClickListener {
             }
         }
 
-        val topLevelDestinations = AppBarConfiguration.Builder(findNavController(R.id.navHost).graph).setDrawerLayout(drawer).build().topLevelDestinations
-        if (findNavController(R.id.navHost).currentDestination?.isTopLevel(topLevelDestinations) == true) {
+        if (isTopLevel()) {
             /* Going back to home screen (don't use super.onBackPressed() because it would kill the app) */
             val startMain = Intent(Intent.ACTION_MAIN)
             startMain.addCategory(Intent.CATEGORY_HOME)
             startMain.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(startMain)
         } else super.onBackPressed()
+    }
+
+    fun isTopLevel(): Boolean {
+        val topLevelDestinations = AppBarConfiguration.Builder(findNavController(R.id.navHost).graph).setDrawerLayout(drawer).build().topLevelDestinations
+        return findNavController(R.id.navHost).currentDestination?.isTopLevel(topLevelDestinations) == true
     }
 
     companion object {

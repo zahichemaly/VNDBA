@@ -25,7 +25,6 @@ fun Fragment.home() = activity as? HomeActivity?
 fun Fragment.setupToolbar() {
     home()?.setSupportActionBar(toolbar)
     home()?.setupActionBarWithNavController(findNavController(), home()?.drawer)
-    toolbar.setNavigationOnClickListener { home()?.onSupportNavigateUp() }
 }
 
 fun Fragment.setupStatusBar(drawBehind: Boolean = false) = activity?.let { activity ->
