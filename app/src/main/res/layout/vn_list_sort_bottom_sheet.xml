@@ -9,7 +9,7 @@
     android:layout_marginEnd="@dimen/bottom_sheet_margin"
     android:background="?attr/colorBackgroundFloating"
     android:clickable="true"
-    android:elevation="6dp"
+    android:elevation="@dimen/bottom_sheet_elevation"
     android:fillViewport="true"
     android:focusable="true"
     app:behavior_hideable="true"
