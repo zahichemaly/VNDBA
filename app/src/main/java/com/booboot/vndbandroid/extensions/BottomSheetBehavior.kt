@@ -16,6 +16,7 @@ fun BottomSheetBehavior<*>.onStateChanged(
     onCollapsed: () -> Unit = {},
     onHidden: () -> Unit = {},
     onExpanded: () -> Unit = {},
+    onExpanding: () -> Unit = {},
     onStateChanged: (Int) -> Unit = {}
 ) = object : BottomSheetBehavior.BottomSheetCallback() {
     override fun onSlide(bottomSheet: View, slideOffset: Float) {
@@ -27,7 +28,8 @@ fun BottomSheetBehavior<*>.onStateChanged(
         when (newState) {
             BottomSheetBehavior.STATE_COLLAPSED -> onCollapsed()
             BottomSheetBehavior.STATE_HIDDEN -> onHidden()
-            else -> onExpanded()
+            BottomSheetBehavior.STATE_EXPANDED -> onExpanded()
+            else -> onExpanding()
         }
     }
 }.apply { setBottomSheetCallback(this) }
