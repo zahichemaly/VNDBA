@@ -25,6 +25,7 @@ import com.booboot.vndbandroid.extensions.setStatusBarThemeForCollapsingToolbar
 import com.booboot.vndbandroid.extensions.setupStatusBar
 import com.booboot.vndbandroid.extensions.setupToolbar
 import com.booboot.vndbandroid.extensions.toggle
+import com.booboot.vndbandroid.extensions.toggleBottomSheet
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndb.Screen
 import com.booboot.vndbandroid.model.vndb.VN
@@ -203,7 +204,7 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
 
     override fun onClick(view: View) {
         when (view.id) {
-            R.id.bottomSheetHeader -> bottomSheetBehavior.toggle()
+            R.id.bottomSheetHeader -> bottomSheet.toggleBottomSheet()
 
             R.id.buttonPlaying -> viewModel.setStatus(Status.PLAYING)
             R.id.buttonFinished -> viewModel.setStatus(Status.FINISHED)

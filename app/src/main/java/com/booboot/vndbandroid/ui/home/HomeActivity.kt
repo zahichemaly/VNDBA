@@ -22,7 +22,7 @@ import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.removeFocus
 import com.booboot.vndbandroid.extensions.setLightStatusAndNavigation
-import com.booboot.vndbandroid.extensions.toggle
+import com.booboot.vndbandroid.extensions.toggleBottomSheet
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndbandroid.NOT_SET
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
@@ -32,6 +32,8 @@ import com.booboot.vndbandroid.ui.login.LoginActivity
 import com.booboot.vndbandroid.ui.vndetails.VNDetailsFragment
 import kotlinx.android.synthetic.main.filter_bar_bottom_sheet.*
 import kotlinx.android.synthetic.main.home_activity.*
+import kotlinx.android.synthetic.main.sort_bottom_sheet.*
+import kotlinx.android.synthetic.main.vn_details_bottom_sheet.*
 import kotlin.math.roundToInt
 
 class HomeActivity : BaseActivity(), View.OnClickListener {
@@ -124,12 +126,15 @@ class HomeActivity : BaseActivity(), View.OnClickListener {
 
         when (val fragment = currentFragment()) {
             is HomeTabsFragment -> if (fragment.sortBottomSheetBehavior.isOpen()) {
-                return fragment.sortBottomSheetBehavior.toggle()
+                fragment.sortBottomSheet?.toggleBottomSheet()
+                return
             } else if (fragment.filterBarBehavior.isOpen()) {
-                return fragment.filterBarBehavior.toggle()
+                fragment.filterBarBottomSheet?.toggleBottomSheet()
+                return
             }
             is VNDetailsFragment -> if (fragment.bottomSheetBehavior.isOpen()) {
-                return fragment.bottomSheetBehavior.toggle()
+                fragment.bottomSheet?.toggleBottomSheet()
+                return
             }
         }
 

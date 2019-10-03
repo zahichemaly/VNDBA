@@ -23,6 +23,7 @@ import com.booboot.vndbandroid.extensions.setTextChangedListener
 import com.booboot.vndbandroid.extensions.setupStatusBar
 import com.booboot.vndbandroid.extensions.setupToolbar
 import com.booboot.vndbandroid.extensions.toggle
+import com.booboot.vndbandroid.extensions.toggleBottomSheet
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.model.vndbandroid.SORT_ID
 import com.booboot.vndbandroid.model.vndbandroid.SORT_LENGTH
@@ -109,7 +110,7 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
         filterBar.setTextChangedListener { setQuery(it) }
         filterBarClear.setOnClickListener {
             if (filterBar.text.isNullOrEmpty()) {
-                filterBarBehavior.toggle()
+                filterBarBottomSheet.toggleBottomSheet()
             } else {
                 filterBar.text = null
             }
@@ -150,15 +151,15 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.action_sort -> sortBottomSheetBehavior.toggle()
-            R.id.action_filter -> filterBarBehavior.toggle()
+            R.id.action_sort -> sortBottomSheet.toggleBottomSheet()
+            R.id.action_filter -> filterBarBottomSheet.toggleBottomSheet()
         }
         return super.onOptionsItemSelected(item)
     }
 
     override fun onClick(view: View) {
         when (view.id) {
-            R.id.sortBottomSheetHeader -> sortBottomSheetBehavior.toggle()
+            R.id.sortBottomSheetHeader -> sortBottomSheet.toggleBottomSheet()
             R.id.buttonReverseSort -> viewModel.reverseSort()
             R.id.buttonSortID -> viewModel.setSort(SORT_ID)
             R.id.buttonSortReleaseDate -> viewModel.setSort(SORT_RELEASE_DATE)
