@@ -49,5 +49,7 @@
         android:textAllCaps="false"
         app:icon="@drawable/ic_search_white_48dp" />
 
-    <include layout="@layout/vn_list_sort_bottom_sheet" />
+    <include layout="@layout/sort_bottom_sheet" />
+
+    <include layout="@layout/filter_bar_bottom_sheet" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

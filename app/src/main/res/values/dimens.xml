@@ -10,6 +10,7 @@
     <dimen name="text_margin">16dp</dimen>
     <dimen name="tabLayoutHeight">48dp</dimen>
     <dimen name="bottom_sheet_margin">0dp</dimen>
+    <dimen name="floating_bottom_sheet_margin">12dp</dimen>
     <dimen name="bottom_sheet_peek">64dp</dimen>
     <dimen name="bottom_sheet_peek_with_margin">72dp</dimen>
     <dimen name="bottom_sheet_elevation">8dp</dimen>

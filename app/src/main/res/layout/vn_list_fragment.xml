@@ -18,16 +18,21 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <FrameLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
+            android:layout_height="match_parent"
+            android:animateLayoutChanges="true">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/vnList"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:clipToPadding="false"
                 android:paddingEnd="@dimen/activity_horizontal_margin"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 tools:listitem="@layout/vn_card" />
 
             <!--<com.pluscubed.recyclerfastscroll.RecyclerFastScroller-->
@@ -38,14 +43,18 @@
 
             <com.booboot.vndbandroid.util.view.BackgroundInfo
                 android:id="@+id/backgroundInfo"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 android:visibility="gone"
                 app:buttonText="@string/action_search"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:maxFrame="200"
                 app:text="@string/empty_vn_list_text" />
 
-        </FrameLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <include layout="@layout/progress_bar" />

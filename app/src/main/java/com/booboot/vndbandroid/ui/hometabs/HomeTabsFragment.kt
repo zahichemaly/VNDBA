@@ -7,7 +7,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.home
@@ -15,8 +14,12 @@ import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.onStateChanged
 import com.booboot.vndbandroid.extensions.postponeEnterTransitionIfExists
+import com.booboot.vndbandroid.extensions.removeFocus
 import com.booboot.vndbandroid.extensions.replaceOnTabSelectedListener
 import com.booboot.vndbandroid.extensions.selectIf
+import com.booboot.vndbandroid.extensions.setFocus
+import com.booboot.vndbandroid.extensions.setPaddingBottom
+import com.booboot.vndbandroid.extensions.setTextChangedListener
 import com.booboot.vndbandroid.extensions.setupStatusBar
 import com.booboot.vndbandroid.extensions.setupToolbar
 import com.booboot.vndbandroid.extensions.toggle
@@ -31,15 +34,18 @@ import com.booboot.vndbandroid.model.vndbandroid.SORT_STATUS
 import com.booboot.vndbandroid.model.vndbandroid.SORT_VOTE
 import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.booboot.vndbandroid.ui.base.HasTabs
+import com.booboot.vndbandroid.util.Pixels
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.tabs.TabLayout
+import kotlinx.android.synthetic.main.filter_bar_bottom_sheet.*
 import kotlinx.android.synthetic.main.home_tabs_fragment.*
-import kotlinx.android.synthetic.main.vn_list_sort_bottom_sheet.*
+import kotlinx.android.synthetic.main.sort_bottom_sheet.*
+import kotlinx.android.synthetic.main.vn_list_fragment.view.*
 
-class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelectedListener, View.OnClickListener, SearchView.OnQueryTextListener, HasTabs {
+class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelectedListener, View.OnClickListener, HasTabs {
     override val layout: Int = R.layout.home_tabs_fragment
     lateinit var sortBottomSheetBehavior: BottomSheetBehavior<View>
-    var searchView: SearchView? = null
+    lateinit var filterBarBehavior: BottomSheetBehavior<View>
 
     private var type: Int = 0
     private var tabsAdapter: HomeTabsAdapter? = null
@@ -85,6 +91,30 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
         sortBottomSheetBehavior = BottomSheetBehavior.from(sortBottomSheet)
         sortBottomSheetBehavior.state = viewModel.sortBottomSheetState
         sortBottomSheetBehavior.onStateChanged(onStateChanged = { viewModel.sortBottomSheetState = it })
+
+        filterBarBehavior = BottomSheetBehavior.from(filterBarBottomSheet)
+        filterBarBehavior.state = viewModel.filterBarState
+        filterBarBehavior.onStateChanged(
+            onStateChanged = { viewModel.filterBarState = it },
+            onExpanded = {
+                filterBar?.setFocus()
+                addFilterBarPaddingToFragments()
+            },
+            onHidden = {
+                filterBar?.removeFocus()
+                filterBar?.text = null
+                addFilterBarPaddingToFragments(false)
+            }
+        )
+        filterBar.setTextChangedListener { setQuery(it) }
+        filterBarClear.setOnClickListener {
+            if (filterBar.text.isNullOrEmpty()) {
+                filterBarBehavior.toggle()
+            } else {
+                filterBar.text = null
+            }
+        }
+
         sortBottomSheetHeader.setOnClickListener(this)
         floatingSearchButton.setOnClickListener(this)
 
@@ -116,31 +146,12 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.home_tabs_fragment, menu)
-
-        /* Filter */
-        searchView = menu.findItem(R.id.action_filter).actionView as SearchView
-
-        if (query()?.isNotEmpty() == true) {
-            searchView?.isIconified = false
-            searchView?.setQuery(query(), true)
-        }
-
-        searchView?.setOnQueryTextListener(this)
-        searchView?.clearFocus()
-    }
-
-    override fun onQueryTextSubmit(query: String): Boolean {
-        return false
-    }
-
-    override fun onQueryTextChange(search: String): Boolean {
-        setQuery(search)
-        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_sort -> sortBottomSheetBehavior.toggle()
+            R.id.action_filter -> filterBarBehavior.toggle()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -168,6 +179,10 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
         }
     }
 
+    private fun addFilterBarPaddingToFragments(add: Boolean = true) = tabsAdapter?.fragments?.forEach {
+        it.value.view?.vnList?.setPaddingBottom(if (add) Pixels.px(76) else 0)
+    }
+
     override fun onTabSelected(tab: TabLayout.Tab) {
         viewModel.currentPage = tab.position
     }
@@ -179,11 +194,6 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
     }
 
     override fun currentFragment() = tabsAdapter?.getFragment(viewPager.currentItem)
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putString(SAVED_FILTER_STATE, searchView?.query?.toString() ?: "")
-        super.onSaveInstanceState(outState)
-    }
 
     override fun onDestroyView() {
         tabLayout?.removeOnTabSelectedListener(this)

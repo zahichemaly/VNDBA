@@ -33,3 +33,5 @@ fun BottomSheetBehavior<*>.onStateChanged(
         }
     }
 }.apply { setBottomSheetCallback(this) }
+
+fun BottomSheetBehavior<*>.isOpen() = state == BottomSheetBehavior.STATE_EXPANDED

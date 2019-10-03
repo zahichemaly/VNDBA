@@ -9,11 +9,13 @@ import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.getThemeColor
 import com.booboot.vndbandroid.extensions.hideOnBottom
 import com.booboot.vndbandroid.extensions.home
+import com.booboot.vndbandroid.extensions.isOpen
 import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.openVN
 import com.booboot.vndbandroid.extensions.restoreState
 import com.booboot.vndbandroid.extensions.saveState
+import com.booboot.vndbandroid.extensions.setPaddingBottom
 import com.booboot.vndbandroid.extensions.startParentEnterTransition
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndb.VN
@@ -57,6 +59,10 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
 
         refreshLayout.setOnRefreshListener(this)
         refreshLayout.setColorSchemeColors(context.getThemeColor(R.attr.colorAccent))
+
+        if (homeTabs()?.filterBarBehavior?.isOpen() == true) {
+            vnList.setPaddingBottom(Pixels.px(76))
+        }
     }
 
     private fun update(force: Boolean = true) = viewModel.getVns(listType, tabValue, force)

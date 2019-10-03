@@ -1,21 +1,26 @@
 package com.booboot.vndbandroid.ui.home
 
 import android.content.Intent
+import android.graphics.Point
 import android.os.Bundle
 import android.view.Menu
+import android.view.MotionEvent
 import android.view.View
 import android.widget.TextView
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.Track
+import com.booboot.vndbandroid.extensions.currentFragment
+import com.booboot.vndbandroid.extensions.isOpen
+import com.booboot.vndbandroid.extensions.isPointInsideBounds
 import com.booboot.vndbandroid.extensions.isTopLevel
 import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
+import com.booboot.vndbandroid.extensions.removeFocus
 import com.booboot.vndbandroid.extensions.setLightStatusAndNavigation
 import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.model.vndb.AccountItems
@@ -25,8 +30,9 @@ import com.booboot.vndbandroid.ui.base.BaseActivity
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment
 import com.booboot.vndbandroid.ui.login.LoginActivity
 import com.booboot.vndbandroid.ui.vndetails.VNDetailsFragment
-import com.google.android.material.bottomsheet.BottomSheetBehavior
+import kotlinx.android.synthetic.main.filter_bar_bottom_sheet.*
 import kotlinx.android.synthetic.main.home_activity.*
+import kotlin.math.roundToInt
 
 class HomeActivity : BaseActivity(), View.OnClickListener {
     lateinit var viewModel: HomeViewModel
@@ -98,24 +104,31 @@ class HomeActivity : BaseActivity(), View.OnClickListener {
         }
     }
 
-    override fun onBackPressed() = onBackPressed(false)
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        when (val fragment = currentFragment()) {
+            is HomeTabsFragment -> {
+                val touchPoint = Point(ev.rawX.roundToInt(), ev.rawY.roundToInt())
+                if (fragment.filterBarBehavior.isOpen() && fragment.filterBar?.isPointInsideBounds(touchPoint) == false) {
+                    fragment.filterBar?.removeFocus()
+                }
+            }
+        }
+        return super.dispatchTouchEvent(ev)
+    }
 
     override fun onSupportNavigateUp() = NavigationUI.navigateUp(findNavController(R.id.navHost), drawer)
 
-    private fun onBackPressed(navigateUp: Boolean) {
-        when {
-            navigateUp -> return super.onBackPressed()
-            drawer?.isDrawerOpen(GravityCompat.START) == true -> return drawer.closeDrawer(GravityCompat.START)
-        }
+    override fun onBackPressed() {
+        if (drawer?.isDrawerOpen(GravityCompat.START) == true)
+            return drawer.closeDrawer(GravityCompat.START)
 
-        when (val fragment = supportFragmentManager.findFragmentById(R.id.navHost)?.childFragmentManager?.primaryNavigationFragment) {
-            is HomeTabsFragment -> if (fragment.sortBottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
+        when (val fragment = currentFragment()) {
+            is HomeTabsFragment -> if (fragment.sortBottomSheetBehavior.isOpen()) {
                 return fragment.sortBottomSheetBehavior.toggle()
-            } else if (fragment.searchView?.isIconified == false) {
-                fragment.searchView?.isIconified = true
-                return
+            } else if (fragment.filterBarBehavior.isOpen()) {
+                return fragment.filterBarBehavior.toggle()
             }
-            is VNDetailsFragment -> if (fragment.bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
+            is VNDetailsFragment -> if (fragment.bottomSheetBehavior.isOpen()) {
                 return fragment.bottomSheetBehavior.toggle()
             }
         }
@@ -127,11 +140,6 @@ class HomeActivity : BaseActivity(), View.OnClickListener {
             startMain.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(startMain)
         } else super.onBackPressed()
-    }
-
-    fun isTopLevel(): Boolean {
-        val topLevelDestinations = AppBarConfiguration.Builder(findNavController(R.id.navHost).graph).setDrawerLayout(drawer).build().topLevelDestinations
-        return findNavController(R.id.navHost).currentDestination?.isTopLevel(topLevelDestinations) == true
     }
 
     companion object {

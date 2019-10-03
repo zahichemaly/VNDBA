@@ -22,6 +22,7 @@ class HomeTabsViewModel constructor(application: Application) : BaseViewModel(ap
 
     var currentPage = -1
     var sortBottomSheetState = BottomSheetBehavior.STATE_HIDDEN
+    var filterBarState = BottomSheetBehavior.STATE_HIDDEN
 
     init {
         (application as App).appComponent.inject(this)

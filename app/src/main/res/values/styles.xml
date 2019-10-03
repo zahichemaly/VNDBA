@@ -64,4 +64,8 @@
     <style name="Tab" parent="TextAppearance.Design.Tab">
         <item name="textAllCaps">false</item>
     </style>
+
+    <style name="FloatingTextInputLayoutHintTextAppearance" parent="TextAppearance.AppCompat">
+        <item name="android:background">@color/white</item>
+    </style>
 </resources>

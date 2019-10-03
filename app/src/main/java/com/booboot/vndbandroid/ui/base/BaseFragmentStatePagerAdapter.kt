@@ -5,7 +5,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 
 abstract class BaseFragmentStatePagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
-    protected val fragments = mutableMapOf<Int, BaseFragment<*>>()
+    val fragments = mutableMapOf<Int, BaseFragment<*>>()
 
     override fun instantiateItem(container: ViewGroup, position: Int) = super.instantiateItem(container, position).apply {
         fragments[position] = this as BaseFragment<*>
