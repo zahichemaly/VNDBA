@@ -5,14 +5,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.diff.RelationsDiffCallback
+import com.booboot.vndbandroid.extensions.plusAssign
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndbandroid.FLAGS_DETAILS
 import com.booboot.vndbandroid.repository.AccountRepository
 import com.booboot.vndbandroid.repository.VNRepository
 import com.booboot.vndbandroid.ui.base.BaseViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class RelationsViewModel constructor(application: Application) : BaseViewModel(application) {
@@ -29,13 +28,11 @@ class RelationsViewModel constructor(application: Application) : BaseViewModel(a
         val vnJob = vnRepository.getItem(this, vnId)
         val accountItems = accountItemsJob.await()
         val vn = vnJob.await()
-        relationsData.value = withContext(Dispatchers.IO) {
-            val accountItemsCopy = accountItems.deepCopy()
-            val relations = vnRepository.getItems(this, vn.relations.mapTo(hashSetOf()) { it.id }, FLAGS_DETAILS).await()
-            RelationsData(vn, accountItemsCopy, relations).apply {
-                val diffCallback = RelationsDiffCallback(oldRelationsData, this)
-                diffResult = DiffUtil.calculateDiff(diffCallback)
-            }
+        val accountItemsCopy = accountItems.deepCopy()
+        val relations = vnRepository.getItems(this, vn.relations.mapTo(hashSetOf()) { it.id }, FLAGS_DETAILS).await()
+        relationsData += RelationsData(vn, accountItemsCopy, relations).apply {
+            val diffCallback = RelationsDiffCallback(oldRelationsData, this)
+            diffResult = DiffUtil.calculateDiff(diffCallback)
         }
     }
 

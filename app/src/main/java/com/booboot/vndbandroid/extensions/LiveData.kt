@@ -6,6 +6,10 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 
+operator fun <T> MutableLiveData<T>?.plusAssign(value: T?) {
+    this?.postValue(value)
+}
+
 fun MutableLiveData<Int>.plus() {
     value = value?.inc() ?: 1
 }

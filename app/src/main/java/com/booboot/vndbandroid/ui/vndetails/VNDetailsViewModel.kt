@@ -4,6 +4,7 @@ import android.app.Application
 import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
 import com.booboot.vndbandroid.App
+import com.booboot.vndbandroid.extensions.plusAssign
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndb.Vnlist
@@ -43,7 +44,7 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
     }
 
     fun loadVn(vnId: Long, force: Boolean = true) = coroutine(DISPOSABLE_VN, !force && vnData.value != null, initErrorHandler) {
-        vnData.value = vnRepository.getItem(this, vnId).await()
+        vnData += vnRepository.getItem(this, vnId).await()
     }
 
     fun setNotes(notes: String) {
@@ -107,7 +108,7 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
     private fun setVotelist(votelist: Votelist) = coroutine(JOB_SET_VOTELIST) {
         if (accountData.value?.votelist?.get(vnData.value?.id) == votelist) {
             /* In case the user inputs "8.0" as a vote, still refreshes the UI so the custom vote EditText is cleared */
-            accountData.value = accountData.value
+            accountData += accountData.value
         } else {
             votelistRepository.setItem(this, votelist).setAndSubscribe(this)
         }
@@ -119,7 +120,7 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
 
     private suspend fun Deferred<*>.setAndSubscribe(coroutineScope: CoroutineScope) {
         await()
-        accountData.value = accountRepository.getItems(coroutineScope).await()
+        accountData += accountRepository.getItems(coroutineScope).await()
     }
 
     override fun restoreState(state: Bundle?) {

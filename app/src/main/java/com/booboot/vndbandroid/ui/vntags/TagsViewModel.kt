@@ -3,6 +3,7 @@ package com.booboot.vndbandroid.ui.vntags
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import com.booboot.vndbandroid.App
+import com.booboot.vndbandroid.extensions.plusAssign
 import com.booboot.vndbandroid.model.vndb.Tag
 import com.booboot.vndbandroid.model.vndbandroid.Genre
 import com.booboot.vndbandroid.model.vndbandroid.VNDetailsTags
@@ -10,8 +11,6 @@ import com.booboot.vndbandroid.model.vndbandroid.VNTag
 import com.booboot.vndbandroid.repository.TagsRepository
 import com.booboot.vndbandroid.repository.VNRepository
 import com.booboot.vndbandroid.ui.base.BaseViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class TagsViewModel constructor(application: Application) : BaseViewModel(application) {
@@ -29,20 +28,18 @@ class TagsViewModel constructor(application: Application) : BaseViewModel(applic
         val tagsJob = tagsRepository.getItems(this)
         val vn = vnJob.await()
         val tags = tagsJob.await()
-        val vnDetailsTags = withContext(Dispatchers.IO) {
-            val sortedTags = vn.tags.asSequence().sortedByDescending { it[1] }.mapNotNull { tagInfo ->
-                tags[tagInfo[0].toLong()]?.let { tag -> VNTag(tag, tagInfo) }
-            }.toList()
+        val sortedTags = vn.tags.asSequence().sortedByDescending { it[1] }.mapNotNull { tagInfo ->
+            tags[tagInfo[0].toLong()]?.let { tag -> VNTag(tag, tagInfo) }
+        }.toList()
 
-            val categories = mutableMapOf(
-                Tag.KEY_GENRES to sortedTags.filter { Genre.contains(it.tag.name) },
-                Tag.KEY_POPULAR to sortedTags.take(10)
-            )
-            categories.putAll(sortedTags.groupBy { it.tag.cat })
-            VNDetailsTags(categories.filterValues { it.isNotEmpty() }.toSortedMap(compareBy { Tag.CATEGORIES.keys.indexOf(it) }))
-        }
-        tagsData.value = vnDetailsTags
-        fullTagsData.value = vnDetailsTags
+        val categories = mutableMapOf(
+            Tag.KEY_GENRES to sortedTags.filter { Genre.contains(it.tag.name) },
+            Tag.KEY_POPULAR to sortedTags.take(10)
+        )
+        categories.putAll(sortedTags.groupBy { it.tag.cat })
+        val vnDetailsTags = VNDetailsTags(categories.filterValues { it.isNotEmpty() }.toSortedMap(compareBy { Tag.CATEGORIES.keys.indexOf(it) }))
+        tagsData += vnDetailsTags
+        fullTagsData += vnDetailsTags
     }
 
     fun collapseTags(title: String) {

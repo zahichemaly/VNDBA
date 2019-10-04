@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.api.VNDBServer
+import com.booboot.vndbandroid.extensions.plusAssign
 import com.booboot.vndbandroid.ui.base.StartupSyncViewModel
 
 class HomeViewModel constructor(application: Application) : StartupSyncViewModel(application) {
@@ -18,7 +19,7 @@ class HomeViewModel constructor(application: Application) : StartupSyncViewModel
     }
 
     fun getVns(force: Boolean = true) = coroutine(DISPOSABLE_GET_VNS, !force && accountData.value != null) {
-        accountData.value = accountRepository.getItems(this).await()
+        accountData += accountRepository.getItems(this).await()
     }
 
     fun logout() = coroutine(JOB_LOGOUT) {
