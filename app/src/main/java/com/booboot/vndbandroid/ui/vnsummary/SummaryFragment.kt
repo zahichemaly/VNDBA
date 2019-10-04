@@ -18,8 +18,10 @@ import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.openURL
 import com.booboot.vndbandroid.extensions.scrollToTop
+import com.booboot.vndbandroid.extensions.setPadding
 import com.booboot.vndbandroid.extensions.startParentEnterTransition
 import com.booboot.vndbandroid.extensions.toggle
+import com.booboot.vndbandroid.extensions.toggleText
 import com.booboot.vndbandroid.model.vndb.Links
 import com.booboot.vndbandroid.model.vndbandroid.LANGUAGES
 import com.booboot.vndbandroid.model.vndbandroid.PLATFORMS
@@ -81,8 +83,9 @@ class SummaryFragment : BaseFragment<SummaryViewModel>() {
                     context?.let { ctx ->
                         val language = LANGUAGES[it] ?: return@inflate
                         val chip = view as Chip
-                        chip.text = language.text
                         chip.chipIcon = VectorDrawableCompat.create(ctx.resources, language.flag, ctx.theme)
+                        chip.setPadding()
+                        chip.setOnClickListener { chip.toggleText(language.text) }
                         languages?.addView(chip)
                     }
                 }

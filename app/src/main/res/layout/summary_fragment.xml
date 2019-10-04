@@ -55,7 +55,7 @@
             android:id="@+id/languages"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="8dp"
             app:dividerDrawable="@drawable/flexbox_divider_8dp"
             app:flexWrap="wrap"
             app:justifyContent="space_evenly"
@@ -64,6 +64,7 @@
         <com.google.android.flexbox.FlexboxLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:clipChildren="false"
             android:clipToPadding="false"
             android:padding="5dp"
