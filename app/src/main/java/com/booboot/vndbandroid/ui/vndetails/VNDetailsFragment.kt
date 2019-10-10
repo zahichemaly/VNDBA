@@ -6,6 +6,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
@@ -186,8 +187,8 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
         buttonWishlistLow.selectIf(wishlist?.priority == Priority.LOW)
         buttonWishlistBlacklist.selectIf(wishlist?.priority == Priority.BLACKLIST)
 
-        votelistViews.forEach { it?.toggle(wishlist == null) }
-        wishlistViews.forEach { it?.toggle(votelist == null) }
+        votelistViews.forEach { it?.isVisible = wishlist == null || votelist != null }
+        wishlistViews.forEach { it?.isVisible = votelist == null || wishlist != null }
     }
 
     override fun showLoading(loading: Int?) {
