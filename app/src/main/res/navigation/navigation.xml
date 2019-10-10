@@ -60,6 +60,7 @@
             android:name="vnImageNsfw"
             app:argType="boolean" />
     </fragment>
+
     <fragment
         android:id="@+id/slideshowFragment"
         android:name="com.booboot.vndbandroid.ui.slideshow.SlideshowFragment"
@@ -71,6 +72,11 @@
             android:name="position"
             app:argType="integer" />
     </fragment>
+
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.booboot.vndbandroid.ui.search.SearchFragment"
+        tools:layout="@layout/search_fragment" />
 
     <action
         android:id="@+id/openVN"

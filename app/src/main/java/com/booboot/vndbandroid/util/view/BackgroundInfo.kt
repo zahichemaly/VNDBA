@@ -2,6 +2,7 @@ package com.booboot.vndbandroid.util.view
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.View
 import android.widget.FrameLayout
 import androidx.annotation.AttrRes
 import com.booboot.vndbandroid.R
@@ -28,4 +29,6 @@ class BackgroundInfo @JvmOverloads constructor(
             }
         }
     }
+
+    fun setButtonOnClickListener(listener: (View) -> Unit) = button.setOnClickListener(listener)
 }

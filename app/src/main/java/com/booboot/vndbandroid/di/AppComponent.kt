@@ -4,6 +4,7 @@ import com.booboot.vndbandroid.ui.home.HomeActivity
 import com.booboot.vndbandroid.ui.home.HomeViewModel
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsViewModel
 import com.booboot.vndbandroid.ui.login.LoginViewModel
+import com.booboot.vndbandroid.ui.search.SearchViewModel
 import com.booboot.vndbandroid.ui.slideshow.SlideshowViewModel
 import com.booboot.vndbandroid.ui.vndetails.VNDetailsViewModel
 import com.booboot.vndbandroid.ui.vnlist.VNListViewModel
@@ -31,4 +32,5 @@ interface AppComponent {
     fun inject(summaryViewModel: SummaryViewModel)
     fun inject(relationsViewModel: RelationsViewModel)
     fun inject(slideshowViewModel: SlideshowViewModel)
+    fun inject(searchViewModel: SearchViewModel)
 }

@@ -57,6 +57,7 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
         vnList.adapter = adapter
         vnList.hideOnBottom(homeTabs()?.floatingSearchButton)
 
+        backgroundInfo.setButtonOnClickListener { findNavController().navigate(R.id.searchFragment) }
         refreshLayout.setOnRefreshListener(this)
         refreshLayout.setColorSchemeColors(context.getThemeColor(R.attr.colorAccent))
 

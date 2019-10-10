@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottomSheet"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/bottom_sheet_margin"
+    android:layout_marginEnd="@dimen/bottom_sheet_margin"
+    android:background="?attr/colorBackgroundFloating"
+    android:clickable="true"
+    android:elevation="@dimen/bottom_sheet_elevation"
+    android:fillViewport="true"
+    android:focusable="true"
+    app:behavior_hideable="false"
+    app:behavior_peekHeight="@dimen/bottom_sheet_peek"
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+    <com.booboot.vndbandroid.util.view.FrameLayoutKeyboardSupport
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:paddingBottom="16dp">
+
+            <View
+                android:id="@+id/bottomSheetHeader"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/bottom_sheet_peek"
+                android:background="?attr/colorAccent"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iconArrow"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_marginStart="12dp"
+                app:layout_constraintBottom_toBottomOf="@id/bottomSheetHeader"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/bottomSheetHeader"
+                app:srcCompat="@drawable/ic_keyboard_arrow_down_white_24dp"
+                app:tint="@color/transparent80White" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/textAdvancedSearch"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="@string/advanced_search"
+                android:textColor="@color/transparent80White"
+                app:layout_constraintBottom_toBottomOf="@id/iconArrow"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/iconArrow"
+                app:layout_constraintTop_toTopOf="@id/iconArrow" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/pageLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="12dp"
+                android:fitsSystemWindows="true"
+                android:hint="@string/start_from_page"
+                android:textColorHint="?attr/colorAccent"
+                app:boxBackgroundColor="?attr/colorBackgroundFloating"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/bottomSheetHeader">
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/page"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext|flagNoExtractUi"
+                    android:inputType="number"
+                    android:maxLines="1"
+                    android:textAlignment="center"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    tools:text="8" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/pageLayout2"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="12dp"
+                android:fitsSystemWindows="true"
+                android:hint="@string/start_from_page"
+                android:textColorHint="?attr/colorAccent"
+                app:boxBackgroundColor="?attr/colorBackgroundFloating"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/pageLayout">
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/page2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext|flagNoExtractUi"
+                    android:inputType="number"
+                    android:maxLines="1"
+                    android:textAlignment="center"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    tools:text="8" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.booboot.vndbandroid.util.view.FrameLayoutKeyboardSupport>
+</androidx.core.widget.NestedScrollView>

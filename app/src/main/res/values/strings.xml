@@ -131,4 +131,6 @@ Are you okay with it?"</string>
 Check your filters or add a new one!</string>
     <string name="empty_relations_text">This VN has no relation.</string>
     <string name="empty_tags_text">This VN has no tags.</string>
+    <string name="advanced_search">Advanced search</string>
+    <string name="start_from_page">Start from page</string>
 </resources>

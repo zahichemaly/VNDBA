@@ -8,8 +8,10 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.home
+import com.booboot.vndbandroid.extensions.isOpen
 import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.onStateChanged
@@ -22,7 +24,6 @@ import com.booboot.vndbandroid.extensions.setPaddingBottom
 import com.booboot.vndbandroid.extensions.setTextChangedListener
 import com.booboot.vndbandroid.extensions.setupStatusBar
 import com.booboot.vndbandroid.extensions.setupToolbar
-import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.extensions.toggleBottomSheet
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.model.vndbandroid.SORT_ID
@@ -34,6 +35,7 @@ import com.booboot.vndbandroid.model.vndbandroid.SORT_RELEASE_DATE
 import com.booboot.vndbandroid.model.vndbandroid.SORT_STATUS
 import com.booboot.vndbandroid.model.vndbandroid.SORT_VOTE
 import com.booboot.vndbandroid.ui.base.BaseFragment
+import com.booboot.vndbandroid.ui.base.HasSearchBar
 import com.booboot.vndbandroid.ui.base.HasTabs
 import com.booboot.vndbandroid.util.Pixels
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -43,7 +45,7 @@ import kotlinx.android.synthetic.main.home_tabs_fragment.*
 import kotlinx.android.synthetic.main.sort_bottom_sheet.*
 import kotlinx.android.synthetic.main.vn_list_fragment.view.*
 
-class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelectedListener, View.OnClickListener, HasTabs {
+class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelectedListener, View.OnClickListener, HasTabs, HasSearchBar {
     override val layout: Int = R.layout.home_tabs_fragment
     lateinit var sortBottomSheetBehavior: BottomSheetBehavior<View>
     lateinit var filterBarBehavior: BottomSheetBehavior<View>
@@ -108,7 +110,7 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
             }
         )
         filterBar.setTextChangedListener { setQuery(it) }
-        filterBarClear.setOnClickListener {
+        filterBarLayout.setEndIconOnClickListener {
             if (filterBar.text.isNullOrEmpty()) {
                 filterBarBottomSheet.toggleBottomSheet()
             } else {
@@ -124,6 +126,8 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
 
         showSort()
     }
+
+    override fun searchBar(): View? = if (filterBarBehavior.isOpen()) filterBar else null
 
     private fun update(force: Boolean = true) = viewModel.getTabTitles(type, force)
 
@@ -169,6 +173,7 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
             R.id.buttonSortStatus -> viewModel.setSort(SORT_STATUS)
             R.id.buttonSortVote -> viewModel.setSort(SORT_VOTE)
             R.id.buttonSortPriority -> viewModel.setSort(SORT_PRIORITY)
+            R.id.floatingSearchButton -> findNavController().navigate(R.id.searchFragment)
         }
     }
 

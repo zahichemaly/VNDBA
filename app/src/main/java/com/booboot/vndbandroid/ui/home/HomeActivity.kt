@@ -27,6 +27,7 @@ import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndbandroid.NOT_SET
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.ui.base.BaseActivity
+import com.booboot.vndbandroid.ui.base.HasSearchBar
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment
 import com.booboot.vndbandroid.ui.login.LoginActivity
 import com.booboot.vndbandroid.ui.vndetails.VNDetailsFragment
@@ -71,9 +72,7 @@ class HomeActivity : BaseActivity(), View.OnClickListener {
 
     fun startupSync() = viewModel.startupSync()
 
-    private fun showAccount(accountItems: AccountItems?) {
-        accountItems ?: return
-
+    private fun showAccount(accountItems: AccountItems) {
         Track.tag(accountItems)
         setMenuCounter(R.id.vnlistFragment, accountItems.vnlist.size)
         setMenuCounter(R.id.votelistFragment, accountItems.wishlist.size)
@@ -107,11 +106,13 @@ class HomeActivity : BaseActivity(), View.OnClickListener {
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-        when (val fragment = currentFragment()) {
-            is HomeTabsFragment -> {
-                val touchPoint = Point(ev.rawX.roundToInt(), ev.rawY.roundToInt())
-                if (fragment.filterBarBehavior.isOpen() && fragment.filterBar?.isPointInsideBounds(touchPoint) == false) {
-                    fragment.filterBar?.removeFocus()
+        if (ev.actionMasked == MotionEvent.ACTION_DOWN) {
+            when (val fragment = currentFragment()) {
+                is HasSearchBar -> {
+                    val touchPoint = Point(ev.rawX.roundToInt(), ev.rawY.roundToInt())
+                    if (fragment.searchBar()?.isPointInsideBounds(touchPoint) == false) {
+                        fragment.searchBar()?.removeFocus()
+                    }
                 }
             }
         }
