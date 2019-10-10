@@ -10,11 +10,11 @@ operator fun <T> MutableLiveData<T>?.plusAssign(value: T?) {
     this?.postValue(value)
 }
 
-fun MutableLiveData<Int>.plus() {
+fun MutableLiveData<Int>.plus() = Handler(Looper.getMainLooper()).post {
     value = value?.inc() ?: 1
 }
 
-fun MutableLiveData<Int>.minus() {
+fun MutableLiveData<Int>.minus() = Handler(Looper.getMainLooper()).post {
     value = if (value ?: 0 <= 1) 0 else value?.dec()
 }
 
