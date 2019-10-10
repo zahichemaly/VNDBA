@@ -17,7 +17,7 @@ class VNDiffCallback(private var oldItems: AccountItems, private var newItems: A
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         val oldVn = oldVns[oldItemPosition]
         val newVn = newVns[newItemPosition]
-        return oldVn == newVn
+        return oldVn.equalsBasic(newVn)
             && oldItems.vnlist[oldVn.id] == newItems.vnlist[newVn.id]
             && oldItems.votelist[oldVn.id] == newItems.votelist[newVn.id]
             && oldItems.wishlist[oldVn.id] == newItems.wishlist[newVn.id]

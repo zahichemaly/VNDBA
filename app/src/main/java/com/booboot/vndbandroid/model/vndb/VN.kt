@@ -60,4 +60,12 @@ data class VN(
         popularity >= 1 -> R.color.orange
         else -> R.color.red
     }
+
+    fun equalsBasic(other: VN) = id == other.id
+        && title == other.title
+        && rating == other.rating
+        && popularity == other.popularity
+        && votecount == other.votecount
+        && released == other.released
+        && length == other.length
 }
