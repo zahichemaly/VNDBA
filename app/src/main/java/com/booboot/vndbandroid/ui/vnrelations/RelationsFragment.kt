@@ -10,8 +10,6 @@ import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.openURL
 import com.booboot.vndbandroid.extensions.openVN
-import com.booboot.vndbandroid.extensions.restoreState
-import com.booboot.vndbandroid.extensions.saveState
 import com.booboot.vndbandroid.extensions.startParentEnterTransition
 import com.booboot.vndbandroid.model.vndb.Anime
 import com.booboot.vndbandroid.model.vndb.Links
@@ -25,12 +23,11 @@ import kotlinx.android.synthetic.main.vn_card.view.*
 
 class RelationsFragment : BaseFragment<RelationsViewModel>() {
     override val layout: Int = R.layout.relations_fragment
-    private lateinit var adapter: RelationsAdapter
+    private val adapter: RelationsAdapter by lazy { RelationsAdapter(::onAnimeClicked, ::onRelationClicked) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val context = context ?: return
         recyclerView.layoutManager = GridAutofitLayoutManager(context, Pixels.px(300))
-        adapter = RelationsAdapter(::onAnimeClicked, ::onRelationClicked)
         adapter.onUpdate = ::onAdapterUpdate
         recyclerView.adapter = adapter
 
@@ -43,8 +40,7 @@ class RelationsFragment : BaseFragment<RelationsViewModel>() {
 
     private fun showRelations(relationsData: RelationsData) {
         adapter.relationsData = relationsData
-        recyclerView.restoreState(this)
-        startParentEnterTransition(adapter)
+        startParentEnterTransition()
     }
 
     private fun onAnimeClicked(anime: Anime) {
@@ -60,11 +56,5 @@ class RelationsFragment : BaseFragment<RelationsViewModel>() {
 
     override fun scrollToTop() {
         recyclerView.scrollToPosition(0)
-    }
-
-    override fun onPause() {
-        layoutState = recyclerView.saveState()
-        viewModel.layoutState = layoutState
-        super.onPause()
     }
 }

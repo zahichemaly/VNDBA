@@ -3,8 +3,6 @@ package com.booboot.vndbandroid.extensions
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.booboot.vndbandroid.ui.base.BaseAdapter
-import com.booboot.vndbandroid.ui.base.BaseFragment
 
 fun <T : View> RecyclerView.hideOnBottom(fab: T?) {
     addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -20,14 +18,4 @@ fun <T : View> RecyclerView.hideOnBottom(fab: T?) {
             }
         }
     })
-}
-
-fun RecyclerView.saveState() = layoutManager?.onSaveInstanceState()
-
-fun RecyclerView.restoreState(fragment: BaseFragment<*>) = (adapter as? BaseAdapter)?.onFinishDrawing?.add {
-    (fragment.viewModel.layoutState ?: fragment.layoutState)?.let {
-        layoutManager?.onRestoreInstanceState(it)
-        fragment.viewModel.layoutState = null
-        fragment.layoutState = null
-    }
 }

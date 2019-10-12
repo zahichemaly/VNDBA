@@ -14,9 +14,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
-import com.booboot.vndbandroid.ui.base.BaseAdapter
-import com.booboot.vndbandroid.ui.base.BaseViewModel
-import com.booboot.vndbandroid.ui.base.HasTabs
 import com.booboot.vndbandroid.ui.home.HomeActivity
 import kotlinx.android.synthetic.main.home_activity.*
 import kotlinx.android.synthetic.main.home_tabs_fragment.*
@@ -48,20 +45,10 @@ fun Fragment.setupStatusBar(drawBehind: Boolean = false) = view?.post {
 
 fun LifecycleOwner.actualOwner() = (this as? Fragment)?.viewLifecycleOwner ?: this
 
-fun Fragment.startParentEnterTransition(adapter: BaseAdapter<*>? = null) {
-    val finalParentFragment = parentFragment ?: return
-    if (finalParentFragment is HasTabs && finalParentFragment.currentFragment() != this) return
-
-    if (adapter != null) {
-        adapter.onFinishDrawing.add {
-            parentFragment?.startPostponedEnterTransition()
-        }
-    } else view?.post {
-        parentFragment?.startPostponedEnterTransition()
-    }
+fun Fragment.startParentEnterTransition() = view?.post {
+    parentFragment?.startPostponedEnterTransition()
 }
 
-fun Fragment.postponeEnterTransitionIfExists(viewModel: BaseViewModel) {
-    if (viewModel.hasPendingTransition && Preferences.useSharedTransitions) postponeEnterTransition()
-    viewModel.hasPendingTransition = false
+fun Fragment.postponeEnterTransitionIfExists() {
+    if (Preferences.useSharedTransitions) postponeEnterTransition()
 }

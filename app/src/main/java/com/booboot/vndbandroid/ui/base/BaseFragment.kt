@@ -1,7 +1,6 @@
 package com.booboot.vndbandroid.ui.base
 
 import android.os.Bundle
-import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,9 +18,6 @@ abstract class BaseFragment<T : BaseViewModel> : Fragment() {
     abstract val layout: Int
     lateinit var rootView: View
     lateinit var viewModel: T
-
-    /* State saving #1 : when swiping through a ViewPager back and forth (ViewModel destroyed, native state called too early) */
-    var layoutState: Parcelable? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
@@ -55,13 +51,6 @@ abstract class BaseFragment<T : BaseViewModel> : Fragment() {
     fun vnDetailsFragment() = parentFragment as? VNDetailsFragment
 
     open fun scrollToTop() {}
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        if (::viewModel.isInitialized) {
-            viewModel.saveState(outState)
-        }
-    }
 
     fun finish() {
         home()?.onSupportNavigateUp()

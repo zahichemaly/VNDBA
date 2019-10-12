@@ -14,7 +14,6 @@ import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.openVN
 import com.booboot.vndbandroid.extensions.restoreState
-import com.booboot.vndbandroid.extensions.saveState
 import com.booboot.vndbandroid.extensions.setPaddingBottom
 import com.booboot.vndbandroid.extensions.startParentEnterTransition
 import com.booboot.vndbandroid.model.vndb.AccountItems
@@ -42,7 +41,6 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
         listType = arguments?.getInt(HomeTabsFragment.LIST_TYPE_ARG) ?: VNLIST
 
         viewModel = ViewModelProviders.of(this).get(VNListViewModel::class.java)
-        viewModel.restoreState(savedInstanceState)
         viewModel.accountData.observeOnce(this) { showVns(it) }
         viewModel.errorData.observeOnce(this, ::showError)
         home()?.viewModel?.filterData?.observeNonNull(this, ::filter)
@@ -74,8 +72,7 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
         adapter?.filterString = home()?.viewModel?.filterData?.value ?: ""
         adapter?.items = accountItems
 
-        vnList.restoreState(this)
-        startParentEnterTransition(adapter)
+        startParentEnterTransition()
     }
 
     private fun filter(search: CharSequence) {
@@ -94,12 +91,6 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
 
     override fun scrollToTop() {
         vnList.scrollToPosition(0)
-    }
-
-    override fun onPause() {
-        layoutState = vnList.saveState()
-        viewModel.layoutState = layoutState
-        super.onPause()
     }
 
     private fun homeTabs() = parentFragment as? HomeTabsFragment?

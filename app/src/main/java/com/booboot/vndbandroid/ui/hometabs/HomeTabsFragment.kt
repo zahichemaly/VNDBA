@@ -36,7 +36,6 @@ import com.booboot.vndbandroid.model.vndbandroid.SORT_STATUS
 import com.booboot.vndbandroid.model.vndbandroid.SORT_VOTE
 import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.booboot.vndbandroid.ui.base.HasSearchBar
-import com.booboot.vndbandroid.ui.base.HasTabs
 import com.booboot.vndbandroid.util.Pixels
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.tabs.TabLayout
@@ -45,7 +44,7 @@ import kotlinx.android.synthetic.main.home_tabs_fragment.*
 import kotlinx.android.synthetic.main.sort_bottom_sheet.*
 import kotlinx.android.synthetic.main.vn_list_fragment.view.*
 
-class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelectedListener, View.OnClickListener, HasTabs, HasSearchBar {
+class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelectedListener, View.OnClickListener, HasSearchBar {
     override val layout: Int = R.layout.home_tabs_fragment
     lateinit var sortBottomSheetBehavior: BottomSheetBehavior<View>
     lateinit var filterBarBehavior: BottomSheetBehavior<View>
@@ -86,10 +85,11 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
 
         if (tabsAdapter == null) {
             tabsAdapter = HomeTabsAdapter(childFragmentManager, type)
+        } else {
+            postponeEnterTransitionIfExists()
         }
         viewPager.adapter = tabsAdapter
         tabLayout.setupWithViewPager(viewPager)
-        postponeEnterTransitionIfExists(viewModel)
 
         sortBottomSheetBehavior = BottomSheetBehavior.from(sortBottomSheet)
         sortBottomSheetBehavior.state = viewModel.sortBottomSheetState
@@ -198,8 +198,6 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
     override fun onTabReselected(tab: TabLayout.Tab) {
         tabsAdapter?.getFragment(tab.position)?.scrollToTop()
     }
-
-    override fun currentFragment() = tabsAdapter?.getFragment(viewPager.currentItem)
 
     override fun onDestroyView() {
         tabLayout?.removeOnTabSelectedListener(this)
