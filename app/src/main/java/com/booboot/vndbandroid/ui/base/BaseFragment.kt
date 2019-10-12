@@ -52,6 +52,13 @@ abstract class BaseFragment<T : BaseViewModel> : Fragment() {
 
     open fun scrollToTop() {}
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        if (::viewModel.isInitialized) {
+            viewModel.saveState(outState)
+        }
+    }
+
     fun finish() {
         home()?.onSupportNavigateUp()
     }

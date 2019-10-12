@@ -1,6 +1,7 @@
 package com.booboot.vndbandroid.ui.base
 
 import android.app.Application
+import android.os.Bundle
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -47,4 +48,8 @@ abstract class BaseViewModel constructor(application: Application) : AndroidView
         throwable.log()
         errorData.postValue(throwable.errorMessage())
     }
+
+    open fun restoreState(state: Bundle?) {}
+
+    open fun saveState(state: Bundle) {}
 }
