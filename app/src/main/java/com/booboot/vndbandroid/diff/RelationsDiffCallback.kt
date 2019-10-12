@@ -39,7 +39,7 @@ class RelationsDiffCallback(private var oldItems: RelationsData, private var new
                 if (oldRelation != newRelation) return false
                 val oldRelationVn = oldItems.relations[oldRelation?.id ?: 0]
                 val newRelationVn = newItems.relations[newRelation?.id ?: 0]
-                if (oldRelationVn != newRelationVn) return false
+                if (oldRelationVn?.equalsBasic(newRelationVn) != true) return false
                 val oldVnlist = oldItems.items.vnlist[oldRelation?.id ?: 0]
                 val newVnlist = newItems.items.vnlist[newRelation?.id ?: 0]
                 if (oldVnlist != newVnlist) return false

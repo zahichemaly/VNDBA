@@ -61,8 +61,11 @@ data class VN(
         else -> R.color.red
     }
 
-    fun equalsBasic(other: VN) = id == other.id
+    fun equalsBasic(other: VN?) = other != null
+        && id == other.id
         && title == other.title
+        && image == other.image
+        && image_nsfw == other.image_nsfw
         && rating == other.rating
         && popularity == other.popularity
         && votecount == other.votecount
