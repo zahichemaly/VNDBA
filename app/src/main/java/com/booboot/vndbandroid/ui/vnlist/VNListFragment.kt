@@ -13,7 +13,6 @@ import com.booboot.vndbandroid.extensions.isOpen
 import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.openVN
-import com.booboot.vndbandroid.extensions.restoreState
 import com.booboot.vndbandroid.extensions.setPaddingBottom
 import com.booboot.vndbandroid.extensions.startParentEnterTransition
 import com.booboot.vndbandroid.model.vndb.AccountItems
