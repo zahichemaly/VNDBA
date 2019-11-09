@@ -88,7 +88,6 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
         } else {
             postponeEnterTransitionIfExists()
         }
-        viewPager.adapter = tabsAdapter
         tabLayout.setupWithViewPager(viewPager)
 
         sortBottomSheetBehavior = BottomSheetBehavior.from(sortBottomSheet)
@@ -133,6 +132,7 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
 
     private fun showTitles(titles: List<String>) {
         tabsAdapter?.titles = titles
+        viewPager.adapter = tabsAdapter
         if (viewModel.currentPage >= 0) viewPager.currentItem = viewModel.currentPage
         tabLayout.replaceOnTabSelectedListener(this)
     }
