@@ -51,7 +51,7 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
     lateinit var filterBarBehavior: BottomSheetBehavior<View>
 
     private var type: Int = 0
-    private var tabsAdapter: HomeTabsAdapter? = null
+    private val tabsAdapter: HomeTabsAdapter by lazy { HomeTabsAdapter(childFragmentManager, type) }
     private lateinit var sortBottomSheetButtons: List<View>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,11 +87,10 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
         viewModel.errorData.observeOnce(this, ::showError)
         home()?.viewModel?.accountData?.observeNonNull(this) { update() }
 
-        if (tabsAdapter == null) {
-            tabsAdapter = HomeTabsAdapter(childFragmentManager, type)
-        } else {
+        if (viewModel.vnlistData.value?.tabs?.isNotEmpty() == true) {
             postponeEnterTransitionIfExists()
         }
+
         viewPager.adapter = tabsAdapter
         tabLayout.setupWithViewPager(viewPager)
 
@@ -137,7 +136,7 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
 
     private fun showTabs(vnlistData: VnlistData) {
         if (viewModel.currentPage >= 0) viewPager.currentItem = viewModel.currentPage
-        tabsAdapter?.tabs = vnlistData.tabs
+        tabsAdapter.tabs = vnlistData.tabs
         tabLayout.replaceOnTabSelectedListener(this)
     }
 
@@ -189,7 +188,7 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
         }
     }
 
-    private fun addFilterBarPaddingToFragments(add: Boolean = true) = tabsAdapter?.fragments?.forEach {
+    private fun addFilterBarPaddingToFragments(add: Boolean = true) = tabsAdapter.fragments.forEach {
         it.value.view?.vnList?.setPaddingBottom(if (add) Pixels.px(76) else 0)
     }
 
@@ -200,7 +199,7 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
     override fun onTabUnselected(tab: TabLayout.Tab) {}
 
     override fun onTabReselected(tab: TabLayout.Tab) {
-        tabsAdapter?.getFragment(tab.position)?.scrollToTop()
+        tabsAdapter.getFragment(tab.position)?.scrollToTop()
     }
 
     override fun onDestroyView() {
