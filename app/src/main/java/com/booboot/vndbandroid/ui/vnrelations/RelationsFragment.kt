@@ -10,8 +10,6 @@ import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.openURL
 import com.booboot.vndbandroid.extensions.openVN
-import com.booboot.vndbandroid.extensions.restoreState
-import com.booboot.vndbandroid.extensions.saveState
 import com.booboot.vndbandroid.extensions.startParentEnterTransition
 import com.booboot.vndbandroid.model.vndb.Anime
 import com.booboot.vndbandroid.model.vndb.Links
@@ -24,27 +22,25 @@ import kotlinx.android.synthetic.main.relations_fragment.*
 import kotlinx.android.synthetic.main.vn_card.view.*
 
 class RelationsFragment : BaseFragment<RelationsViewModel>() {
-    override val layout: Int = R.layout.relations_fragment
-    private lateinit var adapter: RelationsAdapter
+    override val layout = R.layout.relations_fragment
+    private val adapter by lazy { RelationsAdapter(::onAnimeClicked, ::onRelationClicked) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val context = context ?: return
         recyclerView.layoutManager = GridAutofitLayoutManager(context, Pixels.px(300))
-        adapter = RelationsAdapter(::onAnimeClicked, ::onRelationClicked)
         adapter.onUpdate = ::onAdapterUpdate
         recyclerView.adapter = adapter
 
         val vnId = arguments?.getLong(VNDetailsFragment.EXTRA_VN_ID) ?: 0
         viewModel = ViewModelProviders.of(this).get(RelationsViewModel::class.java)
-        viewModel.relationsData.observeOnce(this, ::showRelations)
+        viewModel.relationsData.observeNonNull(this, ::showRelations)
         viewModel.errorData.observeOnce(this, ::showError)
         home()?.viewModel?.accountData?.observeNonNull(this) { viewModel.loadVn(vnId, adapter.relationsData) }
     }
 
     private fun showRelations(relationsData: RelationsData) {
         adapter.relationsData = relationsData
-        recyclerView.restoreState(this)
-        startParentEnterTransition(adapter)
+        startParentEnterTransition()
     }
 
     private fun onAnimeClicked(anime: Anime) {
@@ -60,11 +56,5 @@ class RelationsFragment : BaseFragment<RelationsViewModel>() {
 
     override fun scrollToTop() {
         recyclerView.scrollToPosition(0)
-    }
-
-    override fun onPause() {
-        layoutState = recyclerView.saveState()
-        viewModel.layoutState = layoutState
-        super.onPause()
     }
 }

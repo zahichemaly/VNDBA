@@ -34,9 +34,9 @@ import com.booboot.vndbandroid.model.vndbandroid.SORT_RATING
 import com.booboot.vndbandroid.model.vndbandroid.SORT_RELEASE_DATE
 import com.booboot.vndbandroid.model.vndbandroid.SORT_STATUS
 import com.booboot.vndbandroid.model.vndbandroid.SORT_VOTE
+import com.booboot.vndbandroid.model.vndbandroid.VnlistData
 import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.booboot.vndbandroid.ui.base.HasSearchBar
-import com.booboot.vndbandroid.ui.base.HasTabs
 import com.booboot.vndbandroid.util.Pixels
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.tabs.TabLayout
@@ -45,13 +45,13 @@ import kotlinx.android.synthetic.main.home_tabs_fragment.*
 import kotlinx.android.synthetic.main.sort_bottom_sheet.*
 import kotlinx.android.synthetic.main.vn_list_fragment.view.*
 
-class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelectedListener, View.OnClickListener, HasTabs, HasSearchBar {
+class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelectedListener, View.OnClickListener, HasSearchBar {
     override val layout: Int = R.layout.home_tabs_fragment
     lateinit var sortBottomSheetBehavior: BottomSheetBehavior<View>
     lateinit var filterBarBehavior: BottomSheetBehavior<View>
 
     private var type: Int = 0
-    private var tabsAdapter: HomeTabsAdapter? = null
+    private val tabsAdapter: HomeTabsAdapter by lazy { HomeTabsAdapter(childFragmentManager, type) }
     private lateinit var sortBottomSheetButtons: List<View>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,17 +79,20 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
 
         viewModel = ViewModelProviders.of(this).get(HomeTabsViewModel::class.java)
         viewModel.restoreState(savedInstanceState)
-        viewModel.titlesData.observeOnce(this, ::showTitles)
-        viewModel.sortData.observeOnce(this) { showSort() }
+        viewModel.vnlistData.observeNonNull(this, ::showTabs)
+        viewModel.sortData.observeOnce(this) {
+            showSort()
+            update()
+        }
         viewModel.errorData.observeOnce(this, ::showError)
         home()?.viewModel?.accountData?.observeNonNull(this) { update() }
 
-        if (tabsAdapter == null) {
-            tabsAdapter = HomeTabsAdapter(childFragmentManager, type)
+        if (viewModel.vnlistData.value?.tabs?.isNotEmpty() == true) {
+            postponeEnterTransitionIfExists()
         }
+
         viewPager.adapter = tabsAdapter
         tabLayout.setupWithViewPager(viewPager)
-        postponeEnterTransitionIfExists(viewModel)
 
         sortBottomSheetBehavior = BottomSheetBehavior.from(sortBottomSheet)
         sortBottomSheetBehavior.state = viewModel.sortBottomSheetState
@@ -131,9 +134,9 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
 
     private fun update(force: Boolean = true) = viewModel.getTabTitles(type, force)
 
-    private fun showTitles(titles: List<String>) {
-        tabsAdapter?.titles = titles
+    private fun showTabs(vnlistData: VnlistData) {
         if (viewModel.currentPage >= 0) viewPager.currentItem = viewModel.currentPage
+        tabsAdapter.tabs = vnlistData.tabs
         tabLayout.replaceOnTabSelectedListener(this)
     }
 
@@ -185,7 +188,7 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
         }
     }
 
-    private fun addFilterBarPaddingToFragments(add: Boolean = true) = tabsAdapter?.fragments?.forEach {
+    private fun addFilterBarPaddingToFragments(add: Boolean = true) = tabsAdapter.fragments.forEach {
         it.value.view?.vnList?.setPaddingBottom(if (add) Pixels.px(76) else 0)
     }
 
@@ -196,10 +199,8 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
     override fun onTabUnselected(tab: TabLayout.Tab) {}
 
     override fun onTabReselected(tab: TabLayout.Tab) {
-        tabsAdapter?.getFragment(tab.position)?.scrollToTop()
+        tabsAdapter.getFragment(tab.position)?.scrollToTop()
     }
-
-    override fun currentFragment() = tabsAdapter?.getFragment(viewPager.currentItem)
 
     override fun onDestroyView() {
         tabLayout?.removeOnTabSelectedListener(this)

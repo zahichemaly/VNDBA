@@ -34,7 +34,6 @@ import com.booboot.vndbandroid.model.vndbandroid.Priority
 import com.booboot.vndbandroid.model.vndbandroid.Status
 import com.booboot.vndbandroid.model.vndbandroid.Vote
 import com.booboot.vndbandroid.ui.base.BaseFragment
-import com.booboot.vndbandroid.ui.base.HasTabs
 import com.booboot.vndbandroid.ui.slideshow.SlideshowAdapter
 import com.booboot.vndbandroid.util.StopFocusStealingAppBarBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -42,7 +41,7 @@ import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.vn_details_bottom_sheet.*
 import kotlinx.android.synthetic.main.vn_details_fragment.*
 
-class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSelectedListener, View.OnClickListener, View.OnFocusChangeListener, HasTabs, ViewPager.OnPageChangeListener {
+class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSelectedListener, View.OnClickListener, View.OnFocusChangeListener, ViewPager.OnPageChangeListener {
     override val layout: Int = R.layout.vn_details_fragment
     private lateinit var slideshowAdapter: SlideshowAdapter
     private var tabsAdapter: VNDetailsTabsAdapter? = null
@@ -95,10 +94,11 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
 
         if (tabsAdapter == null) {
             tabsAdapter = VNDetailsTabsAdapter(childFragmentManager)
+        } else {
+            postponeEnterTransitionIfExists()
         }
         viewPager.adapter = tabsAdapter
         tabLayout.setupWithViewPager(viewPager)
-        postponeEnterTransitionIfExists(viewModel)
 
         /* Bottom sheet */
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
@@ -265,8 +265,6 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
     override fun onPageSelected(position: Int) {
         viewModel.slideshowPosition = position
     }
-
-    override fun currentFragment() = tabsAdapter?.getFragment(viewPager.currentItem)
 
     override fun onDestroyView() {
         tabLayout?.removeOnTabSelectedListener(this)

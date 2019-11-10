@@ -10,7 +10,6 @@ import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.ui.base.BaseViewModel
 
 fun NavController.openVN(vn: VN, transitionView: View, viewModel: BaseViewModel) {
-    viewModel.hasPendingTransition = true
     val extras = if (Preferences.useSharedTransitions) {
         FragmentNavigatorExtras(transitionView to (ViewCompat.getTransitionName(transitionView) ?: ""))
     } else {

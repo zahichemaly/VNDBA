@@ -7,8 +7,6 @@ import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
-import com.booboot.vndbandroid.extensions.restoreState
-import com.booboot.vndbandroid.extensions.saveState
 import com.booboot.vndbandroid.extensions.startParentEnterTransition
 import com.booboot.vndbandroid.model.vndbandroid.VNDetailsTags
 import com.booboot.vndbandroid.model.vndbandroid.VNTag
@@ -22,7 +20,7 @@ import kotlinx.android.synthetic.main.tags_fragment.*
 
 class TagsFragment : BaseFragment<TagsViewModel>(), TagsAdapter.Callback {
     override val layout: Int = R.layout.tags_fragment
-    private lateinit var tagsAdapter: TagsAdapter
+    private val tagsAdapter by lazy { TagsAdapter(this) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val activity = activity ?: return
@@ -36,7 +34,6 @@ class TagsFragment : BaseFragment<TagsViewModel>(), TagsAdapter.Callback {
         recyclerView.addItemDecoration(itemDecoration)
 
         recyclerView.layoutManager = flexbox
-        tagsAdapter = TagsAdapter(this)
         tagsAdapter.onUpdate = ::onAdapterUpdate
         recyclerView.adapter = tagsAdapter
 
@@ -53,8 +50,7 @@ class TagsFragment : BaseFragment<TagsViewModel>(), TagsAdapter.Callback {
 
     private fun showTags(tags: VNDetailsTags) {
         tagsAdapter.items = tags
-        recyclerView.restoreState(this)
-        startParentEnterTransition(tagsAdapter)
+        startParentEnterTransition()
     }
 
     override fun onTitleClicked(title: String) {
@@ -66,11 +62,5 @@ class TagsFragment : BaseFragment<TagsViewModel>(), TagsAdapter.Callback {
 
     override fun scrollToTop() {
         recyclerView.scrollToPosition(0)
-    }
-
-    override fun onPause() {
-        layoutState = recyclerView.saveState()
-        viewModel.layoutState = layoutState
-        super.onPause()
     }
 }

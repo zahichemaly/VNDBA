@@ -1,10 +1,10 @@
 package com.booboot.vndbandroid.ui.base
 
 import android.os.Bundle
-import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
 import androidx.transition.TransitionInflater
 import com.booboot.vndbandroid.extensions.home
@@ -19,9 +19,6 @@ abstract class BaseFragment<T : BaseViewModel> : Fragment() {
     abstract val layout: Int
     lateinit var rootView: View
     lateinit var viewModel: T
-
-    /* State saving #1 : when swiping through a ViewPager back and forth (ViewModel destroyed, native state called too early) */
-    var layoutState: Parcelable? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
@@ -48,7 +45,8 @@ abstract class BaseFragment<T : BaseViewModel> : Fragment() {
         refreshLayout?.isRefreshing = loading > 0
     }
 
-    protected fun onAdapterUpdate(empty: Boolean) {
+    @CallSuper
+    protected open fun onAdapterUpdate(empty: Boolean) {
         backgroundInfo?.toggle(empty)
     }
 

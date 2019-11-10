@@ -13,13 +13,11 @@ import com.booboot.vndbandroid.extensions.isOpen
 import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.openVN
-import com.booboot.vndbandroid.extensions.restoreState
-import com.booboot.vndbandroid.extensions.saveState
 import com.booboot.vndbandroid.extensions.setPaddingBottom
 import com.booboot.vndbandroid.extensions.startParentEnterTransition
-import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndbandroid.Status
+import com.booboot.vndbandroid.model.vndbandroid.VnlistData
 import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment.Companion.VNLIST
@@ -31,7 +29,7 @@ import kotlinx.android.synthetic.main.vn_list_fragment.*
 
 class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRefreshListener {
     override val layout: Int = R.layout.vn_list_fragment
-    private var adapter: VNAdapter? = null
+    private val adapter by lazy { VNAdapter(::onVnClicked, filteredVns = viewModel.filteredVns) }
     private var tabValue: Int = 0
     private var listType: Int = 0
 
@@ -42,18 +40,12 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
         listType = arguments?.getInt(HomeTabsFragment.LIST_TYPE_ARG) ?: VNLIST
 
         viewModel = ViewModelProviders.of(this).get(VNListViewModel::class.java)
-        viewModel.restoreState(savedInstanceState)
-        viewModel.accountData.observeOnce(this) { showVns(it) }
         viewModel.errorData.observeOnce(this, ::showError)
         home()?.viewModel?.filterData?.observeNonNull(this, ::filter)
         home()?.viewModel?.loadingData?.observeNonNull(this, ::showLoading)
-        home()?.viewModel?.accountData?.observeNonNull(this) { update() }
-        homeTabs()?.viewModel?.sortData?.observeOnce(this) { update() }
+        homeTabs()?.viewModel?.vnlistData?.observeNonNull(this) { showVns(it) }
 
-        if (adapter == null) {
-            adapter = VNAdapter(::onVnClicked)
-        }
-        adapter?.onUpdate = ::onAdapterUpdate
+        adapter.onUpdate = ::onAdapterUpdate
         vnList.setHasFixedSize(true)
         vnList.layoutManager = GridAutofitLayoutManager(context, Pixels.px(300))
         vnList.adapter = adapter
@@ -68,18 +60,21 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
         }
     }
 
-    private fun update(force: Boolean = true) = viewModel.getVns(listType, tabValue, force)
+    private fun showVns(vnlistData: VnlistData) {
+        val accountItems = vnlistData.items[tabValue] ?: return
+        adapter.filterString = home()?.viewModel?.filterData?.value ?: ""
+        adapter.items = accountItems
 
-    private fun showVns(accountItems: AccountItems) {
-        adapter?.filterString = home()?.viewModel?.filterData?.value ?: ""
-        adapter?.items = accountItems
+        startParentEnterTransition()
+    }
 
-        vnList.restoreState(this)
-        startParentEnterTransition(adapter)
+    override fun onAdapterUpdate(empty: Boolean) {
+        super.onAdapterUpdate(empty)
+        viewModel.filteredVns = adapter.filteredVns
     }
 
     private fun filter(search: CharSequence) {
-        adapter?.filter?.filter(search)
+        adapter.filter.filter(search)
     }
 
     private fun onVnClicked(itemView: View, vn: VN) {
@@ -94,12 +89,6 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
 
     override fun scrollToTop() {
         vnList.scrollToPosition(0)
-    }
-
-    override fun onPause() {
-        layoutState = vnList.saveState()
-        viewModel.layoutState = layoutState
-        super.onPause()
     }
 
     private fun homeTabs() = parentFragment as? HomeTabsFragment?
