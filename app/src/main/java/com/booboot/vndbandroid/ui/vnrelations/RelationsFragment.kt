@@ -22,8 +22,8 @@ import kotlinx.android.synthetic.main.relations_fragment.*
 import kotlinx.android.synthetic.main.vn_card.view.*
 
 class RelationsFragment : BaseFragment<RelationsViewModel>() {
-    override val layout: Int = R.layout.relations_fragment
-    private val adapter: RelationsAdapter by lazy { RelationsAdapter(::onAnimeClicked, ::onRelationClicked) }
+    override val layout = R.layout.relations_fragment
+    private val adapter by lazy { RelationsAdapter(::onAnimeClicked, ::onRelationClicked) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val context = context ?: return
@@ -33,7 +33,7 @@ class RelationsFragment : BaseFragment<RelationsViewModel>() {
 
         val vnId = arguments?.getLong(VNDetailsFragment.EXTRA_VN_ID) ?: 0
         viewModel = ViewModelProviders.of(this).get(RelationsViewModel::class.java)
-        viewModel.relationsData.observeOnce(this, ::showRelations)
+        viewModel.relationsData.observeNonNull(this, ::showRelations)
         viewModel.errorData.observeOnce(this, ::showError)
         home()?.viewModel?.accountData?.observeNonNull(this) { viewModel.loadVn(vnId, adapter.relationsData) }
     }

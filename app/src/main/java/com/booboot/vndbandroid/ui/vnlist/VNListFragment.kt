@@ -60,17 +60,17 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
         }
     }
 
-    override fun onAdapterUpdate(empty: Boolean) {
-        super.onAdapterUpdate(empty)
-        viewModel.filteredVns = adapter.filteredVns
-    }
-
     private fun showVns(vnlistData: VnlistData) {
         val accountItems = vnlistData.items[tabValue] ?: return
         adapter.filterString = home()?.viewModel?.filterData?.value ?: ""
         adapter.items = accountItems
 
         startParentEnterTransition()
+    }
+
+    override fun onAdapterUpdate(empty: Boolean) {
+        super.onAdapterUpdate(empty)
+        viewModel.filteredVns = adapter.filteredVns
     }
 
     private fun filter(search: CharSequence) {
