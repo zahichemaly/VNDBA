@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
 import androidx.transition.TransitionInflater
 import com.booboot.vndbandroid.extensions.home
@@ -44,7 +45,8 @@ abstract class BaseFragment<T : BaseViewModel> : Fragment() {
         refreshLayout?.isRefreshing = loading > 0
     }
 
-    protected fun onAdapterUpdate(empty: Boolean) {
+    @CallSuper
+    protected open fun onAdapterUpdate(empty: Boolean) {
         backgroundInfo?.toggle(empty)
     }
 

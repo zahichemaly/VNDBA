@@ -19,15 +19,16 @@ class VNAdapter(
     private val showRank: Boolean = false,
     private val showRating: Boolean = false,
     private val showPopularity: Boolean = false,
-    private val showVoteCount: Boolean = false
+    private val showVoteCount: Boolean = false,
+    filteredVns: AccountItems? = null
 ) : BaseAdapter<VNHolder>(), Filterable {
     var items = AccountItems()
         set(value) {
             field = value
             filter.filter(filterString)
         }
-    private var filteredVns = items
-        set(value) {
+    var filteredVns = items
+        private set(value) {
             field = value
             onUpdateInternal()
         }
@@ -36,6 +37,10 @@ class VNAdapter(
 
     init {
         setHasStableIds(true)
+        filteredVns?.let {
+            this.filteredVns = filteredVns
+            notifyDataSetChanged()
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VNHolder {

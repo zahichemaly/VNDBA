@@ -29,7 +29,7 @@ import kotlinx.android.synthetic.main.vn_list_fragment.*
 
 class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRefreshListener {
     override val layout: Int = R.layout.vn_list_fragment
-    private var adapter: VNAdapter? = null
+    private val adapter by lazy { VNAdapter(::onVnClicked, filteredVns = viewModel.filteredVns) }
     private var tabValue: Int = 0
     private var listType: Int = 0
 
@@ -45,10 +45,7 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
         home()?.viewModel?.loadingData?.observeNonNull(this, ::showLoading)
         homeTabs()?.viewModel?.vnlistData?.observeNonNull(this) { showVns(it) }
 
-        if (adapter == null) {
-            adapter = VNAdapter(::onVnClicked)
-        }
-        adapter?.onUpdate = ::onAdapterUpdate
+        adapter.onUpdate = ::onAdapterUpdate
         vnList.setHasFixedSize(true)
         vnList.layoutManager = GridAutofitLayoutManager(context, Pixels.px(300))
         vnList.adapter = adapter
@@ -63,16 +60,21 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
         }
     }
 
+    override fun onAdapterUpdate(empty: Boolean) {
+        super.onAdapterUpdate(empty)
+        viewModel.filteredVns = adapter.filteredVns
+    }
+
     private fun showVns(vnlistData: VnlistData) {
         val accountItems = vnlistData.items[tabValue] ?: return
-        adapter?.filterString = home()?.viewModel?.filterData?.value ?: ""
-        adapter?.items = accountItems
+        adapter.filterString = home()?.viewModel?.filterData?.value ?: ""
+        adapter.items = accountItems
 
         startParentEnterTransition()
     }
 
     private fun filter(search: CharSequence) {
-        adapter?.filter?.filter(search)
+        adapter.filter.filter(search)
     }
 
     private fun onVnClicked(itemView: View, vn: VN) {
