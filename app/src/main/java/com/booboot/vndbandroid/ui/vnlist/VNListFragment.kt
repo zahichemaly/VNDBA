@@ -15,9 +15,9 @@ import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.openVN
 import com.booboot.vndbandroid.extensions.setPaddingBottom
 import com.booboot.vndbandroid.extensions.startParentEnterTransition
-import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndbandroid.Status
+import com.booboot.vndbandroid.model.vndbandroid.VnlistData
 import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment.Companion.VNLIST
@@ -40,12 +40,10 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
         listType = arguments?.getInt(HomeTabsFragment.LIST_TYPE_ARG) ?: VNLIST
 
         viewModel = ViewModelProviders.of(this).get(VNListViewModel::class.java)
-        viewModel.accountData.observeOnce(this) { showVns(it) }
         viewModel.errorData.observeOnce(this, ::showError)
         home()?.viewModel?.filterData?.observeNonNull(this, ::filter)
         home()?.viewModel?.loadingData?.observeNonNull(this, ::showLoading)
-        home()?.viewModel?.accountData?.observeNonNull(this) { update() }
-        homeTabs()?.viewModel?.sortData?.observeOnce(this) { update() }
+        homeTabs()?.viewModel?.vnlistData?.observeNonNull(this) { showVns(it) }
 
         if (adapter == null) {
             adapter = VNAdapter(::onVnClicked)
@@ -65,9 +63,8 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
         }
     }
 
-    private fun update(force: Boolean = true) = viewModel.getVns(listType, tabValue, force)
-
-    private fun showVns(accountItems: AccountItems) {
+    private fun showVns(vnlistData: VnlistData) {
+        val accountItems = vnlistData.items[tabValue] ?: return
         adapter?.filterString = home()?.viewModel?.filterData?.value ?: ""
         adapter?.items = accountItems
 

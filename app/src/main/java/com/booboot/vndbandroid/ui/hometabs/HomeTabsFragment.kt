@@ -34,6 +34,7 @@ import com.booboot.vndbandroid.model.vndbandroid.SORT_RATING
 import com.booboot.vndbandroid.model.vndbandroid.SORT_RELEASE_DATE
 import com.booboot.vndbandroid.model.vndbandroid.SORT_STATUS
 import com.booboot.vndbandroid.model.vndbandroid.SORT_VOTE
+import com.booboot.vndbandroid.model.vndbandroid.VnlistData
 import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.booboot.vndbandroid.ui.base.HasSearchBar
 import com.booboot.vndbandroid.util.Pixels
@@ -78,8 +79,11 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
 
         viewModel = ViewModelProviders.of(this).get(HomeTabsViewModel::class.java)
         viewModel.restoreState(savedInstanceState)
-        viewModel.titlesData.observeOnce(this, ::showTitles)
-        viewModel.sortData.observeOnce(this) { showSort() }
+        viewModel.vnlistData.observeNonNull(this, ::showTabs)
+        viewModel.sortData.observeOnce(this) {
+            showSort()
+            update()
+        }
         viewModel.errorData.observeOnce(this, ::showError)
         home()?.viewModel?.accountData?.observeNonNull(this) { update() }
 
@@ -88,6 +92,7 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
         } else {
             postponeEnterTransitionIfExists()
         }
+        viewPager.adapter = tabsAdapter
         tabLayout.setupWithViewPager(viewPager)
 
         sortBottomSheetBehavior = BottomSheetBehavior.from(sortBottomSheet)
@@ -130,10 +135,9 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
 
     private fun update(force: Boolean = true) = viewModel.getTabTitles(type, force)
 
-    private fun showTitles(titles: List<String>) {
-        tabsAdapter?.titles = titles
-        viewPager.adapter = tabsAdapter
+    private fun showTabs(vnlistData: VnlistData) {
         if (viewModel.currentPage >= 0) viewPager.currentItem = viewModel.currentPage
+        tabsAdapter?.tabs = vnlistData.tabs
         tabLayout.replaceOnTabSelectedListener(this)
     }
 
