@@ -19,7 +19,7 @@ import com.google.android.flexbox.JustifyContent
 import kotlinx.android.synthetic.main.tags_fragment.*
 
 class TagsFragment : BaseFragment<TagsViewModel>(), TagsAdapter.Callback {
-    override val layout: Int = R.layout.tags_fragment
+    override val layout = R.layout.tags_fragment
     private val tagsAdapter by lazy { TagsAdapter(this) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -35,7 +35,7 @@ import kotlinx.android.synthetic.main.platform_tag.view.*
 import kotlinx.android.synthetic.main.summary_fragment.*
 
 class SummaryFragment : BaseFragment<SummaryViewModel>() {
-    override val layout: Int = R.layout.summary_fragment
+    override val layout = R.layout.summary_fragment
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if (activity == null) return

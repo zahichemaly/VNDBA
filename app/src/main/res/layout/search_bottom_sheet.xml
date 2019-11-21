@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
+<com.booboot.vndbandroid.util.view.FrameLayoutKeyboardSupport
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -17,16 +17,14 @@
     app:behavior_peekHeight="@dimen/bottom_sheet_peek"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-    <com.booboot.vndbandroid.util.view.FrameLayoutKeyboardSupport
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:clickable="true"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
+            android:clipToPadding="false"
             android:paddingBottom="16dp">
 
             <View
@@ -73,7 +71,6 @@
                 android:layout_marginStart="12dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginEnd="12dp"
-                android:fitsSystemWindows="true"
                 android:hint="@string/start_from_page"
                 android:textColorHint="?attr/colorAccent"
                 app:boxBackgroundColor="?attr/colorBackgroundFloating"
@@ -81,7 +78,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/bottomSheetHeader">
 
-                <androidx.appcompat.widget.AppCompatEditText
+                <com.booboot.vndbandroid.util.view.TextInputEditText
                     android:id="@+id/page"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -102,7 +99,6 @@
                 android:layout_marginStart="12dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginEnd="12dp"
-                android:fitsSystemWindows="true"
                 android:hint="@string/start_from_page"
                 android:textColorHint="?attr/colorAccent"
                 app:boxBackgroundColor="?attr/colorBackgroundFloating"
@@ -110,7 +106,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/pageLayout">
 
-                <androidx.appcompat.widget.AppCompatEditText
+                <com.booboot.vndbandroid.util.view.TextInputEditText
                     android:id="@+id/page2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -124,5 +120,5 @@
             </com.google.android.material.textfield.TextInputLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </com.booboot.vndbandroid.util.view.FrameLayoutKeyboardSupport>
-</androidx.core.widget.NestedScrollView>
+    </androidx.core.widget.NestedScrollView>
+</com.booboot.vndbandroid.util.view.FrameLayoutKeyboardSupport>

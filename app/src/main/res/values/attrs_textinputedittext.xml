@@ -1,0 +1,5 @@
+<resources>
+    <declare-styleable name="TextInputEditText">
+        <attr name="spaceAboveKeyboard" format="dimension" />
+    </declare-styleable>
+</resources>

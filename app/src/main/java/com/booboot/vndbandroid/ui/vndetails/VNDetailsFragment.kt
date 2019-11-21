@@ -2,6 +2,7 @@ package com.booboot.vndbandroid.ui.vndetails
 
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -42,7 +43,8 @@ import kotlinx.android.synthetic.main.vn_details_bottom_sheet.*
 import kotlinx.android.synthetic.main.vn_details_fragment.*
 
 class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSelectedListener, View.OnClickListener, View.OnFocusChangeListener, ViewPager.OnPageChangeListener {
-    override val layout: Int = R.layout.vn_details_fragment
+    override val layout = R.layout.vn_details_fragment
+    override val softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
     private lateinit var slideshowAdapter: SlideshowAdapter
     private var tabsAdapter: VNDetailsTabsAdapter? = null
 

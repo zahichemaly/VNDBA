@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
 import androidx.transition.TransitionInflater
@@ -17,10 +18,15 @@ import kotlinx.android.synthetic.main.vn_list_fragment.*
 
 abstract class BaseFragment<T : BaseViewModel> : Fragment() {
     abstract val layout: Int
+    open val softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
     lateinit var rootView: View
     lateinit var viewModel: T
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        if (parentFragment !is BaseFragment<*>) {
+            activity?.window?.setSoftInputMode(softInputMode)
+        }
+
         sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
         sharedElementReturnTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
 

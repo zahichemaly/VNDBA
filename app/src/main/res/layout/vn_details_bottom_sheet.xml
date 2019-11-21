@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
+<com.booboot.vndbandroid.util.view.FrameLayoutKeyboardSupport
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -17,534 +17,540 @@
     app:behavior_peekHeight="@dimen/bottom_sheet_peek"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:paddingBottom="16dp">
+        android:layout_height="wrap_content">
 
-        <View
-            android:id="@+id/bottomSheetHeader"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/bottom_sheet_peek"
-            android:background="?attr/colorAccent"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?attr/selectableItemBackground"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/iconArrow"
-            android:layout_width="22dp"
-            android:layout_height="22dp"
-            android:layout_marginStart="12dp"
-            app:layout_constraintBottom_toBottomOf="@id/bottomSheetHeader"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/bottomSheetHeader"
-            app:srcCompat="@drawable/ic_keyboard_arrow_down_white_24dp"
-            app:tint="@color/transparent80White" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/textAddToList"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:textColor="@color/transparent80White"
-            app:layout_constraintBottom_toBottomOf="@id/iconArrow"
-            app:layout_constraintEnd_toStartOf="@id/statusLayout"
-            app:layout_constraintStart_toEndOf="@id/iconArrow"
-            app:layout_constraintTop_toTopOf="@id/iconArrow"
-            tools:text="Add to your lists" />
-
-        <RelativeLayout
-            android:id="@+id/statusLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="24dp"
-            android:gravity="center"
-            app:layout_constraintBottom_toBottomOf="@id/bottomSheetHeader"
-            app:layout_constraintEnd_toStartOf="@id/votesButton"
-            app:layout_constraintTop_toTopOf="@id/bottomSheetHeader">
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/iconStatus"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                app:srcCompat="@drawable/ic_list_black_48dp"
-                app:tint="@color/transparent80White" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/textStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignTop="@id/iconStatus"
-                android:layout_alignBottom="@id/iconStatus"
-                android:layout_marginStart="8dp"
-                android:layout_toEndOf="@id/iconStatus"
-                android:gravity="center"
-                android:textColor="@color/transparent80White"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                tools:text="Finished" />
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/iconWishlist"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:layout_below="@id/iconStatus"
-                android:layout_marginTop="6dp"
-                app:srcCompat="@drawable/ic_wishlist"
-                app:tint="@color/transparent80White" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/textWishlist"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignTop="@id/iconWishlist"
-                android:layout_alignBottom="@id/iconWishlist"
-                android:layout_marginStart="8dp"
-                android:layout_toEndOf="@id/iconWishlist"
-                android:gravity="center"
-                android:textColor="@color/transparent80White"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                tools:text="Blacklist" />
-
-        </RelativeLayout>
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/votesButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginEnd="12dp"
-            android:background="@drawable/rounded_green_background"
-            android:elevation="8dp"
-            android:gravity="center"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@id/bottomSheetHeader"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/bottomSheetHeader"
-            tools:text="8" />
-
-        <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/textNotes"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:hint="@string/add_notes"
-            android:imeOptions="actionGo|flagNoExtractUi"
-            android:textSize="13sp"
-            android:textStyle="italic"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/bottomSheetHeader"
-            tools:text="Notes here which are going to be very long notes on multiple lines." />
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/iconContentStatus"
-            android:layout_width="22dp"
-            android:layout_height="22dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textNotes"
-            app:srcCompat="@drawable/ic_list_black_48dp"
-            app:tint="?android:attr/textColorPrimary" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="@string/status"
-            android:textColor="?android:attr/textColorPrimary"
-            app:layout_constraintBottom_toBottomOf="@id/iconContentStatus"
-            app:layout_constraintStart_toEndOf="@id/iconContentStatus"
-            app:layout_constraintTop_toTopOf="@id/iconContentStatus" />
-
-        <com.google.android.flexbox.FlexboxLayout
-            android:id="@+id/flexboxStatus"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            app:dividerDrawable="@drawable/flexbox_divider_8dp"
-            app:flexWrap="wrap"
-            app:layout_constraintEnd_toStartOf="@id/buttonRemoveStatus"
-            app:layout_constraintStart_toStartOf="@id/iconContentStatus"
-            app:layout_constraintTop_toBottomOf="@id/iconContentStatus"
-            app:showDividerVertical="middle">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonPlaying"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:text="@string/playing"
-                android:textAllCaps="false"
-                android:textColor="@color/playing"
-                android:textSize="12sp"
-                app:rippleColor="@color/playing"
-                app:strokeColor="@color/playing" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonFinished"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:text="@string/finished"
-                android:textAllCaps="false"
-                android:textColor="@color/finished"
-                android:textSize="12sp"
-                app:rippleColor="@color/finished"
-                app:strokeColor="@color/finished" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonStalled"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:text="@string/stalled"
-                android:textAllCaps="false"
-                android:textColor="@color/stalled"
-                android:textSize="12sp"
-                app:rippleColor="@color/stalled"
-                app:strokeColor="@color/stalled" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonDropped"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:text="@string/dropped"
-                android:textAllCaps="false"
-                android:textColor="@color/dropped"
-                android:textSize="12sp"
-                app:rippleColor="@color/dropped"
-                app:strokeColor="@color/dropped" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonUnknown"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:text="@string/unknown"
-                android:textAllCaps="false"
-                android:textColor="@color/unknown"
-                android:textSize="12sp"
-                app:rippleColor="@color/unknown"
-                app:strokeColor="@color/unknown" />
-        </com.google.android.flexbox.FlexboxLayout>
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/buttonRemoveStatus"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_marginEnd="16dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            android:padding="6dp"
-            app:layout_constraintBottom_toBottomOf="@id/flexboxStatus"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/flexboxStatus"
-            app:srcCompat="@drawable/ic_delete_forever_black_24dp"
-            app:tint="?android:attr/textColorPrimary" />
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/iconContentVote"
-            android:layout_width="22dp"
-            android:layout_height="22dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/flexboxStatus"
-            app:srcCompat="@drawable/ic_format_list_numbered_black_48dp"
-            app:tint="?android:attr/textColorPrimary" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/textContentVote"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="@string/vote"
-            android:textColor="?android:attr/textColorPrimary"
-            app:layout_constraintBottom_toBottomOf="@id/iconContentVote"
-            app:layout_constraintStart_toEndOf="@id/iconContentVote"
-            app:layout_constraintTop_toTopOf="@id/iconContentVote" />
-
-        <com.google.android.flexbox.FlexboxLayout
-            android:id="@+id/flexboxVote"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            app:dividerDrawable="@drawable/flexbox_divider_8dp"
-            app:flexWrap="wrap"
-            app:layout_constraintEnd_toStartOf="@id/buttonRemoveVote"
-            app:layout_constraintStart_toStartOf="@id/iconContentVote"
-            app:layout_constraintTop_toBottomOf="@id/iconContentVote"
-            app:showDividerVertical="middle">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonVote1"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="40dp"
-                android:layout_height="50dp"
-                android:text="@string/_1"
-                android:textAllCaps="false"
-                android:textSize="14sp"
-                app:cornerRadius="50dp"
-                app:strokeColor="?attr/colorAccent" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonVote2"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="40dp"
-                android:layout_height="50dp"
-                android:text="@string/_2"
-                android:textAllCaps="false"
-                android:textSize="14sp"
-                app:cornerRadius="50dp"
-                app:strokeColor="?attr/colorAccent" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonVote3"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="40dp"
-                android:layout_height="50dp"
-                android:text="@string/_3"
-                android:textAllCaps="false"
-                android:textSize="14sp"
-                app:cornerRadius="50dp"
-                app:strokeColor="?attr/colorAccent" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonVote4"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="40dp"
-                android:layout_height="50dp"
-                android:text="@string/_4"
-                android:textAllCaps="false"
-                android:textSize="14sp"
-                app:cornerRadius="50dp"
-                app:strokeColor="?attr/colorAccent" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonVote5"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="40dp"
-                android:layout_height="50dp"
-                android:text="@string/_5"
-                android:textAllCaps="false"
-                android:textSize="14sp"
-                app:cornerRadius="50dp"
-                app:strokeColor="?attr/colorAccent" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonVote6"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="40dp"
-                android:layout_height="50dp"
-                android:text="@string/_6"
-                android:textAllCaps="false"
-                android:textSize="14sp"
-                app:cornerRadius="50dp"
-                app:strokeColor="?attr/colorAccent" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonVote7"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="40dp"
-                android:layout_height="50dp"
-                android:text="@string/_7"
-                android:textAllCaps="false"
-                android:textSize="14sp"
-                app:cornerRadius="50dp"
-                app:strokeColor="?attr/colorAccent" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonVote8"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="40dp"
-                android:layout_height="50dp"
-                android:text="@string/_8"
-                android:textAllCaps="false"
-                android:textSize="14sp"
-                app:cornerRadius="50dp"
-                app:strokeColor="?attr/colorAccent" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonVote9"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="40dp"
-                android:layout_height="50dp"
-                android:text="@string/_9"
-                android:textAllCaps="false"
-                android:textSize="14sp"
-                app:cornerRadius="50dp"
-                app:strokeColor="?attr/colorAccent" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonVote10"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="40dp"
-                android:layout_height="50dp"
-                android:padding="0dp"
-                android:text="@string/_10"
-                android:textAllCaps="false"
-                android:textSize="14sp"
-                app:cornerRadius="50dp"
-                app:strokeColor="?attr/colorAccent" />
-
-            <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/inputCustomVote"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:focusable="true"
-                android:hint="@string/custom_vote"
-                android:imeOptions="actionGo|flagNoExtractUi"
-                android:inputType="numberDecimal"
-                android:maxLines="1"
-                android:textAlignment="center"
-                android:textSize="13sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@id/iconContentStatus"
-                app:layout_constraintTop_toBottomOf="@id/flexboxVote"
-                tools:text="7.5" />
-
-        </com.google.android.flexbox.FlexboxLayout>
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/buttonRemoveVote"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_marginEnd="16dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            android:padding="6dp"
-            app:layout_constraintBottom_toBottomOf="@id/flexboxVote"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/flexboxVote"
-            app:srcCompat="@drawable/ic_delete_forever_black_24dp"
-            app:tint="?android:attr/textColorPrimary" />
-
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrierVote"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="flexboxVote,flexboxStatus" />
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/iconContentWishlist"
-            android:layout_width="22dp"
-            android:layout_height="22dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/barrierVote"
-            app:srcCompat="@drawable/ic_wishlist"
-            app:tint="?android:attr/textColorPrimary" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/textContentWishlist"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="@string/wishlist"
-            android:textColor="?android:attr/textColorPrimary"
-            app:layout_constraintBottom_toBottomOf="@id/iconContentWishlist"
-            app:layout_constraintStart_toEndOf="@id/iconContentWishlist"
-            app:layout_constraintTop_toTopOf="@id/iconContentWishlist" />
-
-        <com.google.android.flexbox.FlexboxLayout
-            android:id="@+id/flexboxWishlist"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            app:dividerDrawable="@drawable/flexbox_divider_8dp"
-            app:flexWrap="wrap"
-            app:layout_constraintEnd_toStartOf="@id/buttonRemoveWishlist"
-            app:layout_constraintStart_toStartOf="@id/iconContentWishlist"
-            app:layout_constraintTop_toBottomOf="@id/iconContentWishlist"
-            app:showDividerVertical="middle">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonWishlistHigh"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:text="@string/high"
-                android:textAllCaps="false"
-                android:textColor="@color/playing"
-                android:textSize="12sp"
-                app:rippleColor="@color/playing"
-                app:strokeColor="@color/playing" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonWishlistMedium"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:text="@string/medium"
-                android:textAllCaps="false"
-                android:textColor="@color/stalled"
-                android:textSize="12sp"
-                app:rippleColor="@color/stalled"
-                app:strokeColor="@color/stalled" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonWishlistLow"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:text="@string/low"
-                android:textAllCaps="false"
-                android:textColor="@color/dropped"
-                android:textSize="12sp"
-                app:rippleColor="@color/dropped"
-                app:strokeColor="@color/dropped" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonWishlistBlacklist"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:text="@string/blacklist"
-                android:textAllCaps="false"
-                android:textColor="@color/unknown"
-                android:textSize="12sp"
-                app:rippleColor="@color/unknown"
-                app:strokeColor="@color/unknown" />
-        </com.google.android.flexbox.FlexboxLayout>
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/buttonRemoveWishlist"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_marginEnd="16dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
+            android:clipToPadding="false"
             android:focusable="true"
-            android:padding="6dp"
-            app:layout_constraintBottom_toBottomOf="@id/flexboxWishlist"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/flexboxWishlist"
-            app:srcCompat="@drawable/ic_delete_forever_black_24dp"
-            app:tint="?android:attr/textColorPrimary" />
+            android:focusableInTouchMode="true"
+            android:paddingBottom="16dp">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.core.widget.NestedScrollView>
+            <View
+                android:id="@+id/bottomSheetHeader"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/bottom_sheet_peek"
+                android:background="?attr/colorAccent"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iconArrow"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_marginStart="12dp"
+                app:layout_constraintBottom_toBottomOf="@id/bottomSheetHeader"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/bottomSheetHeader"
+                app:srcCompat="@drawable/ic_keyboard_arrow_down_white_24dp"
+                app:tint="@color/transparent80White" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/textAddToList"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textColor="@color/transparent80White"
+                app:layout_constraintBottom_toBottomOf="@id/iconArrow"
+                app:layout_constraintEnd_toStartOf="@id/statusLayout"
+                app:layout_constraintStart_toEndOf="@id/iconArrow"
+                app:layout_constraintTop_toTopOf="@id/iconArrow"
+                tools:text="Add to your lists" />
+
+            <RelativeLayout
+                android:id="@+id/statusLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="24dp"
+                android:gravity="center"
+                app:layout_constraintBottom_toBottomOf="@id/bottomSheetHeader"
+                app:layout_constraintEnd_toStartOf="@id/votesButton"
+                app:layout_constraintTop_toTopOf="@id/bottomSheetHeader">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/iconStatus"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    app:srcCompat="@drawable/ic_list_black_48dp"
+                    app:tint="@color/transparent80White" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/textStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@id/iconStatus"
+                    android:layout_alignBottom="@id/iconStatus"
+                    android:layout_marginStart="8dp"
+                    android:layout_toEndOf="@id/iconStatus"
+                    android:gravity="center"
+                    android:textColor="@color/transparent80White"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    tools:text="Finished" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/iconWishlist"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_below="@id/iconStatus"
+                    android:layout_marginTop="6dp"
+                    app:srcCompat="@drawable/ic_wishlist"
+                    app:tint="@color/transparent80White" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/textWishlist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@id/iconWishlist"
+                    android:layout_alignBottom="@id/iconWishlist"
+                    android:layout_marginStart="8dp"
+                    android:layout_toEndOf="@id/iconWishlist"
+                    android:gravity="center"
+                    android:textColor="@color/transparent80White"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    tools:text="Blacklist" />
+
+            </RelativeLayout>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/votesButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="12dp"
+                android:background="@drawable/rounded_green_background"
+                android:elevation="8dp"
+                android:gravity="center"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@id/bottomSheetHeader"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/bottomSheetHeader"
+                tools:text="8" />
+
+            <com.booboot.vndbandroid.util.view.TextInputEditText
+                android:id="@+id/textNotes"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:hint="@string/add_notes"
+                android:imeOptions="actionGo|flagNoExtractUi"
+                android:textSize="13sp"
+                android:textStyle="italic"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/bottomSheetHeader"
+                tools:text="Notes here which are going to be very long notes on multiple lines." />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iconContentStatus"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textNotes"
+                app:srcCompat="@drawable/ic_list_black_48dp"
+                app:tint="?android:attr/textColorPrimary" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/status"
+                android:textColor="?android:attr/textColorPrimary"
+                app:layout_constraintBottom_toBottomOf="@id/iconContentStatus"
+                app:layout_constraintStart_toEndOf="@id/iconContentStatus"
+                app:layout_constraintTop_toTopOf="@id/iconContentStatus" />
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/flexboxStatus"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                app:dividerDrawable="@drawable/flexbox_divider_8dp"
+                app:flexWrap="wrap"
+                app:layout_constraintEnd_toStartOf="@id/buttonRemoveStatus"
+                app:layout_constraintStart_toStartOf="@id/iconContentStatus"
+                app:layout_constraintTop_toBottomOf="@id/iconContentStatus"
+                app:showDividerVertical="middle">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonPlaying"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="@string/playing"
+                    android:textAllCaps="false"
+                    android:textColor="@color/playing"
+                    android:textSize="12sp"
+                    app:rippleColor="@color/playing"
+                    app:strokeColor="@color/playing" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonFinished"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="@string/finished"
+                    android:textAllCaps="false"
+                    android:textColor="@color/finished"
+                    android:textSize="12sp"
+                    app:rippleColor="@color/finished"
+                    app:strokeColor="@color/finished" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonStalled"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="@string/stalled"
+                    android:textAllCaps="false"
+                    android:textColor="@color/stalled"
+                    android:textSize="12sp"
+                    app:rippleColor="@color/stalled"
+                    app:strokeColor="@color/stalled" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonDropped"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="@string/dropped"
+                    android:textAllCaps="false"
+                    android:textColor="@color/dropped"
+                    android:textSize="12sp"
+                    app:rippleColor="@color/dropped"
+                    app:strokeColor="@color/dropped" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonUnknown"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="@string/unknown"
+                    android:textAllCaps="false"
+                    android:textColor="@color/unknown"
+                    android:textSize="12sp"
+                    app:rippleColor="@color/unknown"
+                    app:strokeColor="@color/unknown" />
+            </com.google.android.flexbox.FlexboxLayout>
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/buttonRemoveStatus"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginEnd="16dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="6dp"
+                app:layout_constraintBottom_toBottomOf="@id/flexboxStatus"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/flexboxStatus"
+                app:srcCompat="@drawable/ic_delete_forever_black_24dp"
+                app:tint="?android:attr/textColorPrimary" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iconContentVote"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/flexboxStatus"
+                app:srcCompat="@drawable/ic_format_list_numbered_black_48dp"
+                app:tint="?android:attr/textColorPrimary" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/textContentVote"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/vote"
+                android:textColor="?android:attr/textColorPrimary"
+                app:layout_constraintBottom_toBottomOf="@id/iconContentVote"
+                app:layout_constraintStart_toEndOf="@id/iconContentVote"
+                app:layout_constraintTop_toTopOf="@id/iconContentVote" />
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/flexboxVote"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                app:dividerDrawable="@drawable/flexbox_divider_8dp"
+                app:flexWrap="wrap"
+                app:layout_constraintEnd_toStartOf="@id/buttonRemoveVote"
+                app:layout_constraintStart_toStartOf="@id/iconContentVote"
+                app:layout_constraintTop_toBottomOf="@id/iconContentVote"
+                app:showDividerVertical="middle">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonVote1"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="40dp"
+                    android:layout_height="50dp"
+                    android:text="@string/_1"
+                    android:textAllCaps="false"
+                    android:textSize="14sp"
+                    app:cornerRadius="50dp"
+                    app:strokeColor="?attr/colorAccent" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonVote2"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="40dp"
+                    android:layout_height="50dp"
+                    android:text="@string/_2"
+                    android:textAllCaps="false"
+                    android:textSize="14sp"
+                    app:cornerRadius="50dp"
+                    app:strokeColor="?attr/colorAccent" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonVote3"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="40dp"
+                    android:layout_height="50dp"
+                    android:text="@string/_3"
+                    android:textAllCaps="false"
+                    android:textSize="14sp"
+                    app:cornerRadius="50dp"
+                    app:strokeColor="?attr/colorAccent" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonVote4"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="40dp"
+                    android:layout_height="50dp"
+                    android:text="@string/_4"
+                    android:textAllCaps="false"
+                    android:textSize="14sp"
+                    app:cornerRadius="50dp"
+                    app:strokeColor="?attr/colorAccent" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonVote5"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="40dp"
+                    android:layout_height="50dp"
+                    android:text="@string/_5"
+                    android:textAllCaps="false"
+                    android:textSize="14sp"
+                    app:cornerRadius="50dp"
+                    app:strokeColor="?attr/colorAccent" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonVote6"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="40dp"
+                    android:layout_height="50dp"
+                    android:text="@string/_6"
+                    android:textAllCaps="false"
+                    android:textSize="14sp"
+                    app:cornerRadius="50dp"
+                    app:strokeColor="?attr/colorAccent" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonVote7"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="40dp"
+                    android:layout_height="50dp"
+                    android:text="@string/_7"
+                    android:textAllCaps="false"
+                    android:textSize="14sp"
+                    app:cornerRadius="50dp"
+                    app:strokeColor="?attr/colorAccent" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonVote8"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="40dp"
+                    android:layout_height="50dp"
+                    android:text="@string/_8"
+                    android:textAllCaps="false"
+                    android:textSize="14sp"
+                    app:cornerRadius="50dp"
+                    app:strokeColor="?attr/colorAccent" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonVote9"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="40dp"
+                    android:layout_height="50dp"
+                    android:text="@string/_9"
+                    android:textAllCaps="false"
+                    android:textSize="14sp"
+                    app:cornerRadius="50dp"
+                    app:strokeColor="?attr/colorAccent" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonVote10"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="40dp"
+                    android:layout_height="50dp"
+                    android:padding="0dp"
+                    android:text="@string/_10"
+                    android:textAllCaps="false"
+                    android:textSize="14sp"
+                    app:cornerRadius="50dp"
+                    app:strokeColor="?attr/colorAccent" />
+
+                <com.booboot.vndbandroid.util.view.TextInputEditText
+                    android:id="@+id/inputCustomVote"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:hint="@string/custom_vote"
+                    android:imeOptions="actionGo|flagNoExtractUi"
+                    android:inputType="numberDecimal"
+                    android:maxLines="1"
+                    android:textAlignment="center"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="@id/iconContentStatus"
+                    app:layout_constraintTop_toBottomOf="@id/flexboxVote"
+                    tools:text="7.5" />
+
+            </com.google.android.flexbox.FlexboxLayout>
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/buttonRemoveVote"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginEnd="16dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="6dp"
+                app:layout_constraintBottom_toBottomOf="@id/flexboxVote"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/flexboxVote"
+                app:srcCompat="@drawable/ic_delete_forever_black_24dp"
+                app:tint="?android:attr/textColorPrimary" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrierVote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="flexboxVote,flexboxStatus" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iconContentWishlist"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/barrierVote"
+                app:srcCompat="@drawable/ic_wishlist"
+                app:tint="?android:attr/textColorPrimary" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/textContentWishlist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/wishlist"
+                android:textColor="?android:attr/textColorPrimary"
+                app:layout_constraintBottom_toBottomOf="@id/iconContentWishlist"
+                app:layout_constraintStart_toEndOf="@id/iconContentWishlist"
+                app:layout_constraintTop_toTopOf="@id/iconContentWishlist" />
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/flexboxWishlist"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                app:dividerDrawable="@drawable/flexbox_divider_8dp"
+                app:flexWrap="wrap"
+                app:layout_constraintEnd_toStartOf="@id/buttonRemoveWishlist"
+                app:layout_constraintStart_toStartOf="@id/iconContentWishlist"
+                app:layout_constraintTop_toBottomOf="@id/iconContentWishlist"
+                app:showDividerVertical="middle">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonWishlistHigh"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="@string/high"
+                    android:textAllCaps="false"
+                    android:textColor="@color/playing"
+                    android:textSize="12sp"
+                    app:rippleColor="@color/playing"
+                    app:strokeColor="@color/playing" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonWishlistMedium"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="@string/medium"
+                    android:textAllCaps="false"
+                    android:textColor="@color/stalled"
+                    android:textSize="12sp"
+                    app:rippleColor="@color/stalled"
+                    app:strokeColor="@color/stalled" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonWishlistLow"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="@string/low"
+                    android:textAllCaps="false"
+                    android:textColor="@color/dropped"
+                    android:textSize="12sp"
+                    app:rippleColor="@color/dropped"
+                    app:strokeColor="@color/dropped" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonWishlistBlacklist"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="@string/blacklist"
+                    android:textAllCaps="false"
+                    android:textColor="@color/unknown"
+                    android:textSize="12sp"
+                    app:rippleColor="@color/unknown"
+                    app:strokeColor="@color/unknown" />
+            </com.google.android.flexbox.FlexboxLayout>
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/buttonRemoveWishlist"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginEnd="16dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="6dp"
+                app:layout_constraintBottom_toBottomOf="@id/flexboxWishlist"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/flexboxWishlist"
+                app:srcCompat="@drawable/ic_delete_forever_black_24dp"
+                app:tint="?android:attr/textColorPrimary" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+</com.booboot.vndbandroid.util.view.FrameLayoutKeyboardSupport>
