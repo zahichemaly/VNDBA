@@ -44,6 +44,7 @@ import kotlinx.android.synthetic.main.vn_details_fragment.*
 
 class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSelectedListener, View.OnClickListener, View.OnFocusChangeListener, ViewPager.OnPageChangeListener {
     override val layout = R.layout.vn_details_fragment
+    /* Layout with CollapsingToolbarLayout doesn't work with adjustResize (Android bug : https://stackoverflow.com/a/39099510/4561039) */
     override val softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
     private lateinit var slideshowAdapter: SlideshowAdapter
     private var tabsAdapter: VNDetailsTabsAdapter? = null
