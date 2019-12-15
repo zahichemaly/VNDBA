@@ -99,9 +99,9 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
         sortBottomSheetBehavior.onStateChanged(onStateChanged = { viewModel.sortBottomSheetState = it })
 
         filterBarBehavior = BottomSheetBehavior.from(filterBarBottomSheet)
-        filterBarBehavior.state = viewModel.filterBarState
+        filterBarBehavior.state = home()?.viewModel?.filterBarState ?: BottomSheetBehavior.STATE_HIDDEN
         filterBarBehavior.onStateChanged(
-            onStateChanged = { viewModel.filterBarState = it },
+            onStateChanged = { home()?.viewModel?.filterBarState = it },
             onExpanded = {
                 filterBar?.setFocus()
                 addFilterBarPaddingToFragments()
@@ -113,6 +113,7 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
             }
         )
         filterBar.setTextChangedListener { setQuery(it) }
+        filterBar.setText(home()?.viewModel?.filterData?.value)
         filterBarLayout.setEndIconOnClickListener {
             if (filterBar.text.isNullOrEmpty()) {
                 filterBarBottomSheet.toggleBottomSheet()
