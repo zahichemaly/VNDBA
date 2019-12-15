@@ -34,7 +34,6 @@ fun View.showKeyboard() {
 
 fun EditText.setFocus() = post {
     requestFocus()
-    requestFocusFromTouch()
     isCursorVisible = true
     showKeyboard()
 }

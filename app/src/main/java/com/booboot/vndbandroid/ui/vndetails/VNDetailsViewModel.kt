@@ -20,6 +20,7 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 class VNDetailsViewModel constructor(application: Application) : BaseViewModel(application) {
     @Inject lateinit var vnRepository: VNRepository
@@ -69,7 +70,7 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
         if (voteText?.isEmpty() != false) return
 
         val vote = voteText.toFloatOrNull()?.let {
-            Math.round(it * 10)
+            (it * 10).roundToInt()
         } ?: return onError(Throwable("The vote must be a number with one decimal digit (e.g. 8.3)."))
 
         if (vote < 10 || vote > 100) return onError(Throwable("The vote must be between 1 and 10."))

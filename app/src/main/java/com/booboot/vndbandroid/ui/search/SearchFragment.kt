@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.home
 import com.booboot.vndbandroid.extensions.onStateChanged
+import com.booboot.vndbandroid.extensions.onSubmitListener
 import com.booboot.vndbandroid.extensions.removeFocus
 import com.booboot.vndbandroid.extensions.setupStatusBar
 import com.booboot.vndbandroid.extensions.setupToolbar
@@ -41,6 +42,7 @@ class SearchFragment : BaseFragment<SearchViewModel>() {
             }
         )
 
+        searchBar.onSubmitListener { searchBar?.clearFocus() }
         searchBarTextInputLayout.setEndIconOnClickListener {
             searchBar.text = null
         }

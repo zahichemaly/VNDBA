@@ -11,7 +11,7 @@ fun TextView.preventLineBreak(_maxLines: Int = Int.MAX_VALUE) = apply {
 
 fun TextView.onSubmitListener(action: () -> Unit) {
     setOnEditorActionListener { _, actionId, _ ->
-        if (actionId == EditorInfo.IME_ACTION_GO) {
+        if (actionId in listOf(EditorInfo.IME_ACTION_GO, EditorInfo.IME_ACTION_DONE)) {
             action()
         }
         false

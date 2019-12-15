@@ -9,10 +9,8 @@
     android:layout_marginStart="@dimen/bottom_sheet_margin"
     android:layout_marginEnd="@dimen/bottom_sheet_margin"
     android:background="?attr/colorBackgroundFloating"
-    android:clickable="true"
     android:elevation="@dimen/bottom_sheet_elevation"
     android:fillViewport="true"
-    android:focusable="true"
     app:behavior_hideable="false"
     app:behavior_peekHeight="@dimen/bottom_sheet_peek"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
@@ -24,10 +22,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:clickable="true"
             android:clipToPadding="false"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
             android:paddingBottom="16dp">
 
             <View

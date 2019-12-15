@@ -77,14 +77,15 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:startIconDrawable="@drawable/ic_search_24dp">
 
-                <androidx.appcompat.widget.AppCompatEditText
+                <com.booboot.vndbandroid.util.view.TextInputEditText
                     android:id="@+id/searchBar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/action_filter_hint"
-                    android:imeOptions="actionNext|flagNoExtractUi"
+                    android:imeOptions="actionGo|flagNoExtractUi"
                     android:maxLines="1"
                     android:paddingEnd="46dp"
+                    android:singleLine="true"
                     tools:ignore="RtlSymmetry"
                     tools:text="Saya no Uta" />
 
