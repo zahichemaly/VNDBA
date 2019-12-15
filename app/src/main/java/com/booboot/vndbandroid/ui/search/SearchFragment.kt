@@ -11,12 +11,11 @@ import com.booboot.vndbandroid.extensions.setupStatusBar
 import com.booboot.vndbandroid.extensions.setupToolbar
 import com.booboot.vndbandroid.extensions.toggleBottomSheet
 import com.booboot.vndbandroid.ui.base.BaseFragment
-import com.booboot.vndbandroid.ui.base.HasSearchBar
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.search_bottom_sheet.*
 import kotlinx.android.synthetic.main.search_fragment.*
 
-class SearchFragment : BaseFragment<SearchViewModel>(), HasSearchBar {
+class SearchFragment : BaseFragment<SearchViewModel>() {
     override val layout: Int = R.layout.search_fragment
     lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
 
@@ -47,6 +46,4 @@ class SearchFragment : BaseFragment<SearchViewModel>(), HasSearchBar {
         }
         bottomSheetHeader.setOnClickListener { bottomSheet.toggleBottomSheet() }
     }
-
-    override fun searchBar(): View? = searchBar
 }

@@ -1,10 +1,8 @@
 package com.booboot.vndbandroid.ui.home
 
 import android.content.Intent
-import android.graphics.Point
 import android.os.Bundle
 import android.view.Menu
-import android.view.MotionEvent
 import android.view.View
 import android.widget.TextView
 import androidx.core.view.GravityCompat
@@ -16,18 +14,15 @@ import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.Track
 import com.booboot.vndbandroid.extensions.currentFragment
 import com.booboot.vndbandroid.extensions.isOpen
-import com.booboot.vndbandroid.extensions.isPointInsideBounds
 import com.booboot.vndbandroid.extensions.isTopLevel
 import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
-import com.booboot.vndbandroid.extensions.removeFocus
 import com.booboot.vndbandroid.extensions.setLightStatusAndNavigation
 import com.booboot.vndbandroid.extensions.toggleBottomSheet
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndbandroid.NOT_SET
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.ui.base.BaseActivity
-import com.booboot.vndbandroid.ui.base.HasSearchBar
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment
 import com.booboot.vndbandroid.ui.login.LoginActivity
 import com.booboot.vndbandroid.ui.vndetails.VNDetailsFragment
@@ -35,7 +30,6 @@ import kotlinx.android.synthetic.main.filter_bar_bottom_sheet.*
 import kotlinx.android.synthetic.main.home_activity.*
 import kotlinx.android.synthetic.main.sort_bottom_sheet.*
 import kotlinx.android.synthetic.main.vn_details_bottom_sheet.*
-import kotlin.math.roundToInt
 
 class HomeActivity : BaseActivity(), View.OnClickListener {
     lateinit var viewModel: HomeViewModel
@@ -103,20 +97,6 @@ class HomeActivity : BaseActivity(), View.OnClickListener {
             val view = it.menu.findItem(itemId).actionView as TextView
             view.text = if (count > 0) count.toString() else null
         }
-    }
-
-    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-        if (ev.actionMasked == MotionEvent.ACTION_DOWN) {
-            when (val fragment = currentFragment()) {
-                is HasSearchBar -> {
-                    val touchPoint = Point(ev.rawX.roundToInt(), ev.rawY.roundToInt())
-                    if (fragment.searchBar()?.isPointInsideBounds(touchPoint) == false) {
-                        fragment.searchBar()?.removeFocus()
-                    }
-                }
-            }
-        }
-        return super.dispatchTouchEvent(ev)
     }
 
     override fun onSupportNavigateUp() = NavigationUI.navigateUp(findNavController(R.id.navHost), drawer)

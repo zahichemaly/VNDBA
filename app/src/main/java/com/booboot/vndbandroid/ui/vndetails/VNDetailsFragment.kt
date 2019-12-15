@@ -21,6 +21,7 @@ import com.booboot.vndbandroid.extensions.onSubmitListener
 import com.booboot.vndbandroid.extensions.openSlideshow
 import com.booboot.vndbandroid.extensions.postponeEnterTransitionIfExists
 import com.booboot.vndbandroid.extensions.preventLineBreak
+import com.booboot.vndbandroid.extensions.removeFocus
 import com.booboot.vndbandroid.extensions.replaceOnTabSelectedListener
 import com.booboot.vndbandroid.extensions.selectIf
 import com.booboot.vndbandroid.extensions.setStatusBarThemeForCollapsingToolbar
@@ -107,7 +108,10 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
         bottomSheetHeader.setOnClickListener(this)
         bottomSheetBehavior.onStateChanged(
-            onCollapsed = { iconArrow.setImageResource(R.drawable.ic_keyboard_arrow_down_white_24dp) },
+            onCollapsed = {
+                removeFocus()
+                iconArrow.setImageResource(R.drawable.ic_keyboard_arrow_down_white_24dp)
+            },
             onExpanding = { iconArrow.setImageResource(R.drawable.ic_keyboard_arrow_up_white_24dp) }
         )
         appBarLayout.updateLayoutParams<CoordinatorLayout.LayoutParams> {

@@ -30,3 +30,5 @@ fun Activity.isTopLevel(): Boolean {
     val topLevelDestinations = AppBarConfiguration.Builder(findNavController(R.id.navHost).graph).build().topLevelDestinations
     return findNavController(R.id.navHost).currentDestination?.isTopLevel(topLevelDestinations) == true
 }
+
+fun Activity.removeFocus() = currentFocus?.removeFocus()

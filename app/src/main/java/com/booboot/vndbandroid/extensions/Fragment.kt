@@ -52,3 +52,5 @@ fun Fragment.startParentEnterTransition() = view?.post {
 fun Fragment.postponeEnterTransitionIfExists() {
     if (Preferences.useSharedTransitions) postponeEnterTransition()
 }
+
+fun Fragment.removeFocus() = activity?.removeFocus()
