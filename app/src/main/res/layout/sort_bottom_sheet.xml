@@ -7,11 +7,9 @@
     android:layout_height="wrap_content"
     android:layout_marginStart="@dimen/bottom_sheet_margin"
     android:layout_marginEnd="@dimen/bottom_sheet_margin"
-    android:background="?attr/colorBackgroundFloating"
-    android:clickable="true"
+    android:background="@drawable/bottom_sheet_background"
     android:elevation="@dimen/bottom_sheet_elevation"
     android:fillViewport="true"
-    android:focusable="true"
     app:behavior_hideable="true"
     app:behavior_peekHeight="0dp"
     app:behavior_skipCollapsed="true"
@@ -20,17 +18,14 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:clickable="true"
         android:clipToPadding="false"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
         android:paddingBottom="16dp">
 
         <View
             android:id="@+id/sortBottomSheetHeader"
             android:layout_width="0dp"
             android:layout_height="@dimen/bottom_sheet_peek"
-            android:background="?attr/colorAccent"
+            android:background="@drawable/bottom_sheet_header_background"
             android:clickable="true"
             android:focusable="true"
             android:foreground="?attr/selectableItemBackground"
