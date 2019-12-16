@@ -17,7 +17,6 @@ import com.booboot.vndbandroid.extensions.home
 import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.onStateChanged
-import com.booboot.vndbandroid.extensions.onSubmitListener
 import com.booboot.vndbandroid.extensions.openSlideshow
 import com.booboot.vndbandroid.extensions.postponeEnterTransitionIfExists
 import com.booboot.vndbandroid.extensions.preventLineBreak
@@ -121,8 +120,6 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
         bottomSheetButtons.forEach { it.setOnClickListener(this@VNDetailsFragment) }
         textNotes.onFocusChangeListener = this
         inputCustomVote.onFocusChangeListener = this
-        textNotes.onSubmitListener { textNotes.clearFocus() }
-        inputCustomVote.onSubmitListener { inputCustomVote.clearFocus() }
 
         slideshow.transitionName = "slideshow$vnId"
 

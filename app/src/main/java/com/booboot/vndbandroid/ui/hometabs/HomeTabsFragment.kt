@@ -14,7 +14,6 @@ import com.booboot.vndbandroid.extensions.home
 import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.onStateChanged
-import com.booboot.vndbandroid.extensions.onSubmitListener
 import com.booboot.vndbandroid.extensions.postponeEnterTransitionIfExists
 import com.booboot.vndbandroid.extensions.removeFocus
 import com.booboot.vndbandroid.extensions.replaceOnTabSelectedListener
@@ -112,7 +111,6 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
             }
         )
         filterBar.setTextChangedListener { setQuery(it) }
-        filterBar.onSubmitListener { filterBar?.clearFocus() }
         filterBar.setText(home()?.viewModel?.filterData?.value)
         filterBarLayout.setEndIconOnClickListener {
             if (filterBar.text.isNullOrEmpty()) {

@@ -3,7 +3,9 @@ package com.booboot.vndbandroid.util.view
 import android.content.Context
 import android.graphics.Rect
 import android.util.AttributeSet
+import android.view.inputmethod.EditorInfo.IME_ACTION_DONE
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.extensions.onSubmitListener
 import com.booboot.vndbandroid.util.Pixels
 import com.google.android.material.textfield.TextInputEditText
 
@@ -24,6 +26,9 @@ class TextInputEditText : TextInputEditText {
     }
 
     private fun init(attrs: AttributeSet?) = attrs?.let {
+        onSubmitListener { actionId ->
+            if (actionId == IME_ACTION_DONE) clearFocus()
+        }
         with(context.obtainStyledAttributes(attrs, R.styleable.TextInputEditText)) {
             spaceAboveKeyboard = getDimensionPixelSize(R.styleable.TextInputEditText_spaceAboveKeyboard, Pixels.px(48))
         }
