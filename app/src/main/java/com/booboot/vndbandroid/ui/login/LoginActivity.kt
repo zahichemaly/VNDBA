@@ -40,7 +40,6 @@ class LoginActivity : BaseActivity() {
 
         layoutConsent.isVisible = Preferences.gdprCrashlytics == NOT_SET
         layoutSignin.isVisible = Preferences.gdprCrashlytics != NOT_SET
-        layoutHelp.isVisible = viewModel.helpVisible
 
         loginUsername.setText(Preferences.username)
         loginPassword.setText(Preferences.password)
@@ -58,8 +57,6 @@ class LoginActivity : BaseActivity() {
         buttonMoreInfo.setOnClickListener { openURL(Links.PRIVACY_POLICY) }
 
         loginButton.setOnClickListener {
-            viewModel.helpVisible = true
-            layoutHelp.isVisible = viewModel.helpVisible
             it.hideKeyboard()
             Preferences.username = loginUsername.text.toString()
             Preferences.password = loginPassword.text.toString()

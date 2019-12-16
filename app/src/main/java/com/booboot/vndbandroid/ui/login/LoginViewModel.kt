@@ -6,8 +6,6 @@ import com.booboot.vndbandroid.api.VNDBServer
 import com.booboot.vndbandroid.ui.base.StartupSyncViewModel
 
 class LoginViewModel constructor(application: Application) : StartupSyncViewModel(application) {
-    var helpVisible = false
-
     init {
         (application as App).appComponent.inject(this)
     }
