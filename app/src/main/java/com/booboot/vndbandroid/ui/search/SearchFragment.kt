@@ -43,6 +43,7 @@ class SearchFragment : BaseFragment<SearchViewModel>() {
         )
 
         searchBar.onSubmitListener { searchBar?.clearFocus() }
+        page2.onSubmitListener { page2?.clearFocus() }
         searchBarTextInputLayout.setEndIconOnClickListener {
             searchBar.text = null
         }
