@@ -9,6 +9,7 @@ import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
 import androidx.transition.TransitionInflater
 import com.booboot.vndbandroid.extensions.home
+import com.booboot.vndbandroid.extensions.removeFocus
 import com.booboot.vndbandroid.extensions.startParentEnterTransition
 import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.ui.vndetails.VNDetailsFragment
@@ -25,6 +26,8 @@ abstract class BaseFragment<T : BaseViewModel> : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         if (parentFragment !is BaseFragment<*>) {
             activity?.window?.setSoftInputMode(softInputMode)
+            /* Hiding the keyboard when leaving a Fragment */
+            removeFocus()
         }
 
         sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
