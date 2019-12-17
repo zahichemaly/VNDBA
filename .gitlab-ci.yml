@@ -12,6 +12,9 @@ image: openjdk:8-jdk
 ### Deploy
 pages:
   stage: deploy
+  only:
+    - v3
+    - develop
   tags:
     - docker
   script:
