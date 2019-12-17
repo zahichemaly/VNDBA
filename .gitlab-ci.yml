@@ -40,15 +40,7 @@ pages:
     - export APT_DIR=$CI_PROJECT_DIR/.apt && export APT_STATE_LISTS=$APT_DIR/lists && export APT_CACHE_ARCHIVES=$APT_DIR/archives
     - printf "dir::state::lists    ${APT_STATE_LISTS};\ndir::cache::archives    ${APT_CACHE_ARCHIVES};\n" > /etc/apt/apt.conf
     - mkdir -p "${APT_STATE_LISTS}/partial" && mkdir -p "${APT_CACHE_ARCHIVES}/partial"
-    - apt-get update -y && apt-get install -y -qq wget tar unzip lib32stdc++6 lib32z1 git rsync build-essential g++ > /dev/null
-
-    # Installing Ruby
-    - wget -O ruby.tar.gz https://cache.ruby-lang.org/pub/ruby/2.6/ruby-${RUBY_VERSION}.tar.gz
-    - tar -xzvf ruby.tar.gz
-    - cd ruby-${RUBY_VERSION}
-    - ./configure
-    - make
-    - make install
+    - apt-get update -y && apt-get install -y -qq wget tar unzip lib32stdc++6 lib32z1 git rsync ruby-full build-essential g++ > /dev/null
 
     # Setting environment variables
     - export ANDROID_HOME=$CI_PROJECT_DIR/.android-sdk
