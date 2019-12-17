@@ -72,7 +72,6 @@ pages:
     # Installing Fastlane
     - gem install bundler --no-ri --no-rdoc > /dev/null
     - bundle install --path .gem > /dev/null
-    - bundle update fastlane > /dev/null
 
 build:
   <<: *build_template
