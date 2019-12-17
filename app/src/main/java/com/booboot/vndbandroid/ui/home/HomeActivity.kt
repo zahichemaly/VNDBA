@@ -3,7 +3,6 @@ package com.booboot.vndbandroid.ui.home
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
-import android.view.View
 import android.widget.TextView
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.ViewModelProviders
@@ -26,12 +25,11 @@ import com.booboot.vndbandroid.ui.base.BaseActivity
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment
 import com.booboot.vndbandroid.ui.login.LoginActivity
 import com.booboot.vndbandroid.ui.vndetails.VNDetailsFragment
-import kotlinx.android.synthetic.main.filter_bar_bottom_sheet.*
 import kotlinx.android.synthetic.main.home_activity.*
 import kotlinx.android.synthetic.main.sort_bottom_sheet.*
 import kotlinx.android.synthetic.main.vn_details_bottom_sheet.*
 
-class HomeActivity : BaseActivity(), View.OnClickListener {
+class HomeActivity : BaseActivity() {
     lateinit var viewModel: HomeViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,14 +82,6 @@ class HomeActivity : BaseActivity(), View.OnClickListener {
 
     override fun onCreateOptionsMenu(menu: Menu) = true
 
-    override fun onClick(v: View?) = when (v?.id) {
-        R.id.floatingSearchButton -> {
-//            startActivity(Intent(this, VNSearchActivity::class.java))
-        }
-        else -> {
-        }
-    }
-
     private fun setMenuCounter(itemId: Int, count: Int) {
         navigationView?.let {
             val view = it.menu.findItem(itemId).actionView as TextView
@@ -108,9 +98,6 @@ class HomeActivity : BaseActivity(), View.OnClickListener {
         when (val fragment = currentFragment()) {
             is HomeTabsFragment -> if (fragment.sortBottomSheetBehavior.isOpen()) {
                 fragment.sortBottomSheet?.toggleBottomSheet()
-                return
-            } else if (fragment.filterBarBehavior.isOpen()) {
-                fragment.filterBarBottomSheet?.toggleBottomSheet()
                 return
             }
             is VNDetailsFragment -> if (fragment.bottomSheetBehavior.isOpen()) {

@@ -7,6 +7,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import com.booboot.vndbandroid.R
@@ -19,10 +20,10 @@ import com.booboot.vndbandroid.extensions.removeFocus
 import com.booboot.vndbandroid.extensions.replaceOnTabSelectedListener
 import com.booboot.vndbandroid.extensions.selectIf
 import com.booboot.vndbandroid.extensions.setFocus
-import com.booboot.vndbandroid.extensions.setPaddingBottom
 import com.booboot.vndbandroid.extensions.setTextChangedListener
 import com.booboot.vndbandroid.extensions.setupStatusBar
 import com.booboot.vndbandroid.extensions.setupToolbar
+import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.extensions.toggleBottomSheet
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.model.vndbandroid.SORT_ID
@@ -35,18 +36,14 @@ import com.booboot.vndbandroid.model.vndbandroid.SORT_STATUS
 import com.booboot.vndbandroid.model.vndbandroid.SORT_VOTE
 import com.booboot.vndbandroid.model.vndbandroid.VnlistData
 import com.booboot.vndbandroid.ui.base.BaseFragment
-import com.booboot.vndbandroid.util.Pixels
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.tabs.TabLayout
-import kotlinx.android.synthetic.main.filter_bar_bottom_sheet.*
 import kotlinx.android.synthetic.main.home_tabs_fragment.*
 import kotlinx.android.synthetic.main.sort_bottom_sheet.*
-import kotlinx.android.synthetic.main.vn_list_fragment.view.*
 
 class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelectedListener, View.OnClickListener {
     override val layout: Int = R.layout.home_tabs_fragment
     lateinit var sortBottomSheetBehavior: BottomSheetBehavior<View>
-    lateinit var filterBarBehavior: BottomSheetBehavior<View>
 
     private var type: Int = 0
     private val tabsAdapter: HomeTabsAdapter by lazy { HomeTabsAdapter(childFragmentManager, type) }
@@ -96,25 +93,12 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
         sortBottomSheetBehavior.state = viewModel.sortBottomSheetState
         sortBottomSheetBehavior.onStateChanged(onStateChanged = { viewModel.sortBottomSheetState = it })
 
-        filterBarBehavior = BottomSheetBehavior.from(filterBarBottomSheet)
-        filterBarBehavior.state = home()?.viewModel?.filterBarState ?: BottomSheetBehavior.STATE_HIDDEN
-        filterBarBehavior.onStateChanged(
-            onStateChanged = { home()?.viewModel?.filterBarState = it },
-            onExpanded = {
-                filterBar?.setFocus()
-                addFilterBarPaddingToFragments()
-            },
-            onHidden = {
-                filterBar?.removeFocus()
-                filterBar?.text = null
-                addFilterBarPaddingToFragments(false)
-            }
-        )
+        filterBarLayout.isVisible = home()?.viewModel?.filterData?.value.isNullOrEmpty() == false // home()?.viewModel?.filterBarVisible ?: false
         filterBar.setTextChangedListener { setQuery(it) }
         filterBar.setText(home()?.viewModel?.filterData?.value)
-        filterBarLayout.setEndIconOnClickListener {
+        filterBarClear.setOnClickListener {
             if (filterBar.text.isNullOrEmpty()) {
-                filterBarBottomSheet.toggleBottomSheet()
+                toggleFilterBar()
             } else {
                 filterBar.text = null
             }
@@ -127,6 +111,16 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
         sortBottomSheetButtons.forEach { it.setOnClickListener(this) }
 
         showSort()
+    }
+
+    private fun toggleFilterBar() {
+        filterBarLayout.toggle()
+        if (filterBarLayout.isVisible) {
+            filterBar?.setFocus()
+        } else {
+            filterBar?.text = null
+            filterBar?.removeFocus()
+        }
     }
 
     private fun update(force: Boolean = true) = viewModel.getTabTitles(type, force)
@@ -156,7 +150,7 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_sort -> sortBottomSheet.toggleBottomSheet()
-            R.id.action_filter -> filterBarBottomSheet.toggleBottomSheet()
+            R.id.action_filter -> toggleFilterBar()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -183,10 +177,6 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
         if (!setOnlyIfNull || query() == null) {
             home()?.viewModel?.filterData?.value = search
         }
-    }
-
-    private fun addFilterBarPaddingToFragments(add: Boolean = true) = tabsAdapter.fragments.forEach {
-        it.value.view?.vnList?.setPaddingBottom(if (add) Pixels.px(76) else 0)
     }
 
     override fun onTabSelected(tab: TabLayout.Tab) {

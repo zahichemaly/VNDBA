@@ -6,12 +6,9 @@ import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.api.VNDBServer
 import com.booboot.vndbandroid.extensions.plusAssign
 import com.booboot.vndbandroid.ui.base.StartupSyncViewModel
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 
 class HomeViewModel constructor(application: Application) : StartupSyncViewModel(application) {
     val filterData: MutableLiveData<String> = MutableLiveData()
-
-    var filterBarState = BottomSheetBehavior.STATE_HIDDEN
 
     init {
         (application as App).appComponent.inject(this)

@@ -84,7 +84,7 @@
                         android:paddingEnd="-4dp"
                         android:textColorHint="?attr/colorAccent"
                         app:boxBackgroundColor="?attr/colorBackgroundFloating"
-                        app:boxStrokeColor="@color/textinputlayout_no_boxstrokecolor"
+                        app:boxStrokeColor="@color/selector_color_background_floating"
                         app:endIconDrawable="@drawable/ic_clear_48dp"
                         app:endIconMode="custom"
                         app:hintEnabled="false"
