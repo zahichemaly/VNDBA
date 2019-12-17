@@ -8,7 +8,6 @@ import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.repository.AccountRepository
 import com.booboot.vndbandroid.repository.VNRepository
 import com.booboot.vndbandroid.ui.base.BaseViewModel
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import javax.inject.Inject
 
 class SearchViewModel constructor(application: Application) : BaseViewModel(application) {
@@ -18,7 +17,6 @@ class SearchViewModel constructor(application: Application) : BaseViewModel(appl
     val searchData: MutableLiveData<AccountItems> = MutableLiveData()
 
     var currentPage = -1
-    var bottomSheetState = BottomSheetBehavior.STATE_HIDDEN
 
     init {
         (application as App).appComponent.inject(this)
@@ -34,18 +32,15 @@ class SearchViewModel constructor(application: Application) : BaseViewModel(appl
         super.restoreState(state)
         state ?: return
         currentPage = state.getInt(CURRENT_PAGE)
-        bottomSheetState = state.getInt(BOTTOM_SHEET_STATE)
     }
 
     override fun saveState(state: Bundle) {
         super.saveState(state)
         state.putInt(CURRENT_PAGE, currentPage)
-        state.putInt(BOTTOM_SHEET_STATE, bottomSheetState)
     }
 
     companion object {
         private const val JOB_SEARCH = "JOB_SEARCH"
         private const val CURRENT_PAGE = "CURRENT_PAGE"
-        private const val BOTTOM_SHEET_STATE = "BOTTOM_SHEET_STATE"
     }
 }

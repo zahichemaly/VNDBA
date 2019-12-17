@@ -133,4 +133,5 @@ Check your filters or add a new one!</string>
     <string name="empty_tags_text">This VN has no tags.</string>
     <string name="advanced_search">Advanced search</string>
     <string name="start_from_page">Start from page</string>
+    <string name="action_advanced_search">Advanced search</string>
 </resources>
