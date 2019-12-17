@@ -6,6 +6,7 @@ stages:
 variables:
   ANDROID_COMPILE_SDK: "29"
   ANDROID_BUILD_TOOLS: "29.0.2"
+  RUBY_VERSION: "2.6.5"
 
 image: openjdk:8-jdk
 
@@ -42,9 +43,9 @@ pages:
     - apt-get update -y && apt-get install -y -qq wget tar unzip lib32stdc++6 lib32z1 git rsync build-essential g++ > /dev/null
 
     # Installing Ruby
-    - wget -O ruby.tar.gz https://cache.ruby-lang.org/pub/ruby/2.6/ruby-2.6.5.tar.gz
+    - wget -O ruby.tar.gz https://cache.ruby-lang.org/pub/ruby/2.6/ruby-${RUBY_VERSION}.tar.gz
     - tar -xzvf ruby.tar.gz
-    - cd ruby
+    - cd ruby-${RUBY_VERSION}
     - ./configure
     - make
     - make install
