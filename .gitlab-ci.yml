@@ -42,11 +42,12 @@ pages:
     - apt-get update -y && apt-get install -y -qq wget tar unzip lib32stdc++6 lib32z1 git rsync build-essential g++ > /dev/null
 
     # Installing Ruby
-    - wget -O ruby-install-0.7.0.tar.gz https://github.com/postmodern/ruby-install/archive/v0.7.0.tar.gz
-    - tar -xzvf ruby-install-0.7.0.tar.gz
-    - cd ruby-install-0.7.0/
+    - wget -O ruby.tar.gz https://cache.ruby-lang.org/pub/ruby/2.6/ruby-2.6.5.tar.gz
+    - tar -xzvf ruby.tar.gz
+    - cd ruby
+    - ./configure
+    - make
     - make install
-    - ruby-install ruby
 
     # Setting environment variables
     - export ANDROID_HOME=$CI_PROJECT_DIR/.android-sdk
