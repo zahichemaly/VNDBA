@@ -48,3 +48,7 @@ fun View.scanForActivity() = context?.scanForActivity()
 fun View.setPaddingBottom(bottom: Int) {
     setPadding(paddingLeft, paddingTop, paddingRight, bottom)
 }
+
+fun View.addPaddingTop(top: Int) {
+    setPadding(paddingLeft, paddingTop + top, paddingRight, paddingBottom)
+}

@@ -131,4 +131,20 @@ class VNRepository @Inject constructor(var boxStore: BoxStore, var vndbServer: V
     override suspend fun getItem(coroutineScope: CoroutineScope, id: Long, cachePolicy: CachePolicy<VN>) = coroutineScope.async(Dispatchers.IO) {
         getItems(coroutineScope, setOf(id), FLAGS_FULL, cachePolicy.copy()).await()[id] ?: throw Throwable("VN not found.")
     }
+
+    suspend fun search(
+        coroutineScope: CoroutineScope,
+        page: Int,
+        query: String? = null,
+        cachePolicy: CachePolicy<Map<Long, VN>> = CachePolicy(false)
+    ) = coroutineScope.async(Dispatchers.IO) {
+        cachePolicy
+            .fetchFromNetwork {
+                vndbServer.get<VN>(this, "vn", "basic,details,stats", "(search ~ \"$query\")", Options(page = page), type())
+                    .await()
+                    .items
+                    .associateBy { it.id }
+            }
+            .get()
+    }
 }

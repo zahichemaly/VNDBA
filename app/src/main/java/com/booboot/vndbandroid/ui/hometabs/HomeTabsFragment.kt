@@ -93,7 +93,7 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
         sortBottomSheetBehavior.state = viewModel.sortBottomSheetState
         sortBottomSheetBehavior.onStateChanged(onStateChanged = { viewModel.sortBottomSheetState = it })
 
-        filterBarLayout.isVisible = home()?.viewModel?.filterData?.value.isNullOrEmpty() == false // home()?.viewModel?.filterBarVisible ?: false
+        filterBarLayout.isVisible = home()?.viewModel?.filterData?.value.isNullOrEmpty() == false
         filterBar.setTextChangedListener { setQuery(it) }
         filterBar.setText(home()?.viewModel?.filterData?.value)
         filterBarClear.setOnClickListener {

@@ -134,4 +134,5 @@ Check your filters or add a new one!</string>
     <string name="advanced_search">Advanced search</string>
     <string name="start_from_page">Start from page</string>
     <string name="action_advanced_search">Advanced search</string>
+    <string name="empty_search_text">No results found. Try to change your query or advanced search parameters.</string>
 </resources>

@@ -25,20 +25,20 @@ fun Fragment.setupToolbar() {
     home()?.setupActionBarWithNavController(findNavController(), home()?.drawer)
 }
 
-fun Fragment.setupStatusBar(drawBehind: Boolean = false) = view?.post {
+fun Fragment.setupStatusBar(drawBehind: Boolean = false, _toolbar: View? = null) = view?.post {
     val activity = activity ?: return@post
     val toolbar = if (!drawBehind) {
         activity.window.statusBarColor = Color.TRANSPARENT
         view
     } else {
         activity.window.statusBarColor = ContextCompat.getColor(activity, R.color.tabBackgroundColor)
-        toolbar
+        _toolbar ?: toolbar
     }
 
     toolbar?.updateLayoutParams<ViewGroup.MarginLayoutParams> {
         val appBarLayoutParams = (toolbar.parent as? View)?.layoutParams
         if (appBarLayoutParams is FrameLayout.LayoutParams && appBarLayoutParams.gravity == Gravity.BOTTOM) return@updateLayoutParams
-        topMargin = activity.statusBarHeight()
+        topMargin += activity.statusBarHeight()
     }
     toolbar?.isVisible = true
 }
@@ -54,3 +54,5 @@ fun Fragment.postponeEnterTransitionIfExists() {
 }
 
 fun Fragment.removeFocus() = activity?.removeFocus()
+
+fun Fragment.statusBarHeight() = context?.statusBarHeight() ?: 0

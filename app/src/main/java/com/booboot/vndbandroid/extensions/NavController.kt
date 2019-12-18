@@ -7,9 +7,8 @@ import androidx.navigation.fragment.FragmentNavigatorExtras
 import com.booboot.vndbandroid.NavigationDirections
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
-import com.booboot.vndbandroid.ui.base.BaseViewModel
 
-fun NavController.openVN(vn: VN, transitionView: View, viewModel: BaseViewModel) {
+fun NavController.openVN(vn: VN, transitionView: View) {
     val extras = if (Preferences.useSharedTransitions) {
         FragmentNavigatorExtras(transitionView to (ViewCompat.getTransitionName(transitionView) ?: ""))
     } else {

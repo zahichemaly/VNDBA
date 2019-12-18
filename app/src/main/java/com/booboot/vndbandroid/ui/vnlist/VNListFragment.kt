@@ -11,9 +11,7 @@ import com.booboot.vndbandroid.extensions.hideOnBottom
 import com.booboot.vndbandroid.extensions.home
 import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
-import com.booboot.vndbandroid.extensions.openVN
 import com.booboot.vndbandroid.extensions.startParentEnterTransition
-import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndbandroid.Status
 import com.booboot.vndbandroid.model.vndbandroid.VnlistData
 import com.booboot.vndbandroid.ui.base.BaseFragment
@@ -22,7 +20,6 @@ import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment.Companion.VNLIST
 import com.booboot.vndbandroid.util.GridAutofitLayoutManager
 import com.booboot.vndbandroid.util.Pixels
 import kotlinx.android.synthetic.main.home_tabs_fragment.*
-import kotlinx.android.synthetic.main.vn_card.view.*
 import kotlinx.android.synthetic.main.vn_list_fragment.*
 
 class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRefreshListener {
@@ -69,12 +66,6 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
 
     private fun filter(search: CharSequence) {
         adapter.filter.filter(search)
-    }
-
-    private fun onVnClicked(itemView: View, vn: VN) {
-        homeTabs()?.viewModel?.let {
-            findNavController().openVN(vn, itemView.image, it)
-        }
     }
 
     override fun onRefresh() {

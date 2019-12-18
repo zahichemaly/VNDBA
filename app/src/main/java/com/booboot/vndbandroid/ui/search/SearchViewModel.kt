@@ -4,6 +4,7 @@ import android.app.Application
 import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
 import com.booboot.vndbandroid.App
+import com.booboot.vndbandroid.extensions.plusAssign
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.repository.AccountRepository
 import com.booboot.vndbandroid.repository.VNRepository
@@ -16,16 +17,20 @@ class SearchViewModel constructor(application: Application) : BaseViewModel(appl
 
     val searchData: MutableLiveData<AccountItems> = MutableLiveData()
 
-    var currentPage = -1
+    var currentPage = 1
+    var filteredVns: AccountItems? = null
 
     init {
         (application as App).appComponent.inject(this)
     }
 
-    fun getTabTitles(query: String) = coroutine(JOB_SEARCH) {
+    fun search(query: String) = coroutine(JOB_SEARCH) {
         /* Getting account items so we can show whether the results are in the user's lists */
-        val items = accountRepository.getItems(this).await()
-        // TODO vnRepository.search()
+        val accountItemsJob = accountRepository.getItems(this)
+        val vnJob = vnRepository.search(this, currentPage, query)
+        searchData += accountItemsJob.await().apply {
+            vns = vnJob.await()
+        }
     }
 
     override fun restoreState(state: Bundle?) {

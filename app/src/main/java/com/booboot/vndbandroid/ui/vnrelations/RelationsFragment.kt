@@ -3,27 +3,23 @@ package com.booboot.vndbandroid.ui.vnrelations
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.fragment.findNavController
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.home
 import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.openURL
-import com.booboot.vndbandroid.extensions.openVN
 import com.booboot.vndbandroid.extensions.startParentEnterTransition
 import com.booboot.vndbandroid.model.vndb.Anime
 import com.booboot.vndbandroid.model.vndb.Links
-import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.booboot.vndbandroid.ui.vndetails.VNDetailsFragment
 import com.booboot.vndbandroid.util.GridAutofitLayoutManager
 import com.booboot.vndbandroid.util.Pixels
 import kotlinx.android.synthetic.main.relations_fragment.*
-import kotlinx.android.synthetic.main.vn_card.view.*
 
 class RelationsFragment : BaseFragment<RelationsViewModel>() {
     override val layout = R.layout.relations_fragment
-    private val adapter by lazy { RelationsAdapter(::onAnimeClicked, ::onRelationClicked) }
+    private val adapter by lazy { RelationsAdapter(::onAnimeClicked, ::onVnClicked) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val context = context ?: return
@@ -45,13 +41,6 @@ class RelationsFragment : BaseFragment<RelationsViewModel>() {
 
     private fun onAnimeClicked(anime: Anime) {
         context?.openURL(Links.ANIDB + anime.id)
-    }
-
-    private fun onRelationClicked(view: View, vn: VN?) {
-        vn ?: return
-        vnDetailsFragment()?.viewModel?.let {
-            findNavController().openVN(vn, view.image, it)
-        }
     }
 
     override fun scrollToTop() {

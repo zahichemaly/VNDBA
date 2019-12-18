@@ -7,14 +7,18 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.transition.TransitionInflater
 import com.booboot.vndbandroid.extensions.home
+import com.booboot.vndbandroid.extensions.openVN
 import com.booboot.vndbandroid.extensions.removeFocus
 import com.booboot.vndbandroid.extensions.startParentEnterTransition
 import com.booboot.vndbandroid.extensions.toggle
+import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.ui.vndetails.VNDetailsFragment
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.progress_bar.*
+import kotlinx.android.synthetic.main.vn_card.view.*
 import kotlinx.android.synthetic.main.vn_list_fragment.*
 
 abstract class BaseFragment<T : BaseViewModel> : Fragment() {
@@ -62,6 +66,11 @@ abstract class BaseFragment<T : BaseViewModel> : Fragment() {
     fun vnDetailsFragment() = parentFragment as? VNDetailsFragment
 
     open fun scrollToTop() {}
+
+    fun onVnClicked(view: View, vn: VN?) {
+        vn ?: return
+        findNavController().openVN(vn, view.image)
+    }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
