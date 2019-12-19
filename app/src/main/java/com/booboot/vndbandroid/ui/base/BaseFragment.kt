@@ -8,7 +8,7 @@ import android.view.WindowManager
 import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import androidx.transition.TransitionInflater
+import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.extensions.home
 import com.booboot.vndbandroid.extensions.openVN
 import com.booboot.vndbandroid.extensions.removeFocus
@@ -27,15 +27,18 @@ abstract class BaseFragment<T : BaseViewModel> : Fragment() {
     lateinit var rootView: View
     lateinit var viewModel: T
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        sharedElementEnterTransition = App.context.enterTransition
+        sharedElementReturnTransition = App.context.enterTransition
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         if (parentFragment !is BaseFragment<*>) {
             activity?.window?.setSoftInputMode(softInputMode)
             /* Hiding the keyboard when leaving a Fragment */
             removeFocus()
         }
-
-        sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
-        sharedElementReturnTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
 
         rootView = inflater.inflate(layout, container, false)
         return rootView

@@ -6,6 +6,8 @@ import android.net.NetworkRequest
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDexApplication
 import androidx.preference.PreferenceManager
+import androidx.transition.Transition
+import androidx.transition.TransitionInflater
 import cat.ereza.customactivityoncrash.config.CaocConfig
 import com.booboot.vndbandroid.di.AppComponent
 import com.booboot.vndbandroid.di.AppModule
@@ -21,6 +23,7 @@ import io.fabric.sdk.android.Fabric
 
 class App : MultiDexApplication() {
     lateinit var appComponent: AppComponent
+    lateinit var enterTransition: Transition
 
     override fun onCreate() {
         super.onCreate()
@@ -43,6 +46,8 @@ class App : MultiDexApplication() {
 
         val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
         connectivityManager?.registerNetworkCallback(NetworkRequest.Builder().build(), ConnectionReceiver())
+
+        enterTransition = TransitionInflater.from(this).inflateTransition(android.R.transition.move)
     }
 
     companion object {

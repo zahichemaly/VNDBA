@@ -31,7 +31,7 @@ fun <T> MutableLiveData<T>.observeOnce(lifecycleOwner: LifecycleOwner, action: (
 /** Remove result nullabilty **/
 fun <T> MutableLiveData<T>.observeNonNull(lifecycleOwner: LifecycleOwner, action: (T) -> Unit) {
     removeObservers(lifecycleOwner.actualOwner())
-    observe(lifecycleOwner, Observer<T> {
+    observe(lifecycleOwner.actualOwner(), Observer<T> {
         it ?: return@Observer
         action(it)
     })
