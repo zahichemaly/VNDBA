@@ -1,7 +1,6 @@
 package com.booboot.vndbandroid.api
 
 import com.booboot.vndbandroid.App
-import com.booboot.vndbandroid.BuildConfig
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.asyncWithError
 import com.booboot.vndbandroid.extensions.catchAndRethrow
@@ -39,6 +38,7 @@ import kotlin.math.roundToLong
 @Singleton
 class VNDBServer @Inject constructor(private val moshi: Moshi) {
     private fun connect(socketIndex: Int) = try {
+        Logger.log("connect TCP ON " + Thread.currentThread().id + " SOCKET $socketIndex")
         val sf = SSLSocketFactory.getDefault()
         val socket = sf.createSocket(HOST, PORT) as SSLSocket
         socket.keepAlive = false
@@ -130,7 +130,7 @@ class VNDBServer @Inject constructor(private val moshi: Moshi) {
                 val input = InputStreamReader(socket.inputStream)
 
                 do {
-                    if (BuildConfig.DEBUG) Logger.log(query + " ON " + Thread.currentThread().id)
+                    Logger.log(query + " ON " + Thread.currentThread().id + " SOCKET ${options.socketIndex}")
                     if (input.ready()) while (input.read() > -1);
                     output.flush()
                     output.write(query.toByteArray(charset("UTF-8")))
