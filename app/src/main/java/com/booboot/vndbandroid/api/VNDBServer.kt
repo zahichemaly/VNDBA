@@ -4,6 +4,7 @@ import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.BuildConfig
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.asyncWithError
+import com.booboot.vndbandroid.extensions.catchAndRethrow
 import com.booboot.vndbandroid.extensions.log
 import com.booboot.vndbandroid.model.vndb.DbStats
 import com.booboot.vndbandroid.model.vndb.Error
@@ -19,9 +20,7 @@ import com.booboot.vndbandroid.util.type
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import java.io.IOException
 import java.io.InputStreamReader
 import java.io.UnsupportedEncodingException
@@ -35,6 +34,7 @@ import javax.net.ssl.SSLSocket
 import javax.net.ssl.SSLSocketFactory
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.roundToLong
 
 @Singleton
 class VNDBServer @Inject constructor(private val moshi: Moshi) {
@@ -74,14 +74,14 @@ class VNDBServer @Inject constructor(private val moshi: Moshi) {
         }
     }
 
-    suspend fun <T> get(coroutineScope: CoroutineScope, type: String, flags: String, filters: String, options: Options = Options(), resultClass: TypeReference<Results<T>>) =
-        coroutineScope.asyncWithError({ close(options.socketIndex) }) {
-            val command = "get $type $flags $filters "
-            val results = Results<T>()
+    suspend fun <T> get(type: String, flags: String, filters: String, options: Options = Options(), resultClass: TypeReference<Results<T>>) = catchAndRethrow({ close(options.socketIndex) }) {
+        val command = "get $type $flags $filters "
+        val results = Results<T>()
 
-            if (options.numberOfPages > 1) {
-                options.numberOfSockets = max(min(options.numberOfPages / 2, SocketPool.MAX_SOCKETS), 3)
+        if (options.numberOfPages > 1) {
+            options.numberOfSockets = max(min(options.numberOfPages / 2, SocketPool.MAX_SOCKETS), 3)
 
+            coroutineScope {
                 /* We know in advance how many pages we must fetch: we can parallelize them */
                 (0 until options.numberOfPages).mapTo(mutableListOf()) { index ->
                     val socketIndex = index % options.numberOfSockets
@@ -92,23 +92,24 @@ class VNDBServer @Inject constructor(private val moshi: Moshi) {
                 }.forEach { job ->
                     results.items.addAll(job.await().results?.items ?: listOf())
                 }
-            } else do {
-                /* We don't know how many pages we must fetch (hence how many requests we have to send): sending commands sequentially until done */
-                options.socketIndex %= options.numberOfSockets
-                val response = sendCommand(command + moshi.adapter(Options::class.java).toJson(options), options, resultClass)
-                results.items.addAll(response.results?.items ?: emptyList())
-                options.page++
-            } while (options.fetchAllPages && response.results?.more == true)
-            results
-        }
+            }
+        } else do {
+            /* We don't know how many pages we must fetch (hence how many requests we have to send): sending commands sequentially until done */
+            options.socketIndex %= options.numberOfSockets
+            val response = sendCommand(command + moshi.adapter(Options::class.java).toJson(options), options, resultClass)
+            results.items.addAll(response.results?.items ?: emptyList())
+            options.page++
+        } while (options.fetchAllPages && response.results?.more == true)
+        results
+    }
 
-    fun <T> set(coroutineScope: CoroutineScope, type: String, id: Long, fields: T?, resultClass: TypeReference<T>): Deferred<Response<Void>> {
+    suspend fun <T> set(type: String, id: Long, fields: T?, resultClass: TypeReference<T>): Response<Void> {
         var command = "set $type $id "
         fields?.let {
             command += moshi.adapter<T>(resultClass.type).serializeNulls().toJson(fields)
         }
 
-        return coroutineScope.asyncWithError({ close(0) }) {
+        return catchAndRethrow({ close(0) }) {
             sendCommand(command, resultClass = type<Void>())
         }
     }
@@ -142,12 +143,12 @@ class VNDBServer @Inject constructor(private val moshi: Moshi) {
                             if (SocketPool.throttleHandlingSocket < 0) SocketPool.throttleHandlingSocket = options.socketIndex
 
                             /* We got throttled by the server. Displaying a warning message */
-                            val fullwait = Math.round(error.fullwait / 60)
+                            val fullwait = (error.fullwait / 60).roundToLong()
                             ErrorHandler.showToast(String.format(App.context.getString(R.string.throttle_warning), fullwait))
                             try {
                                 /* Waiting ~minwait if the we are in the thread that handles the throttle, 5+ minwaits otherwise */
                                 val waitingFactor = (if (SocketPool.throttleHandlingSocket == options.socketIndex) 1050 else 5000 + 500 * options.socketIndex).toLong()
-                                Thread.sleep(Math.round(error.minwait * waitingFactor))
+                                Thread.sleep((error.minwait * waitingFactor).roundToLong())
                             } catch (e: InterruptedException) {
                                 /* For some reason we weren't able to sleep, so we can ignore the exception and keep rolling anyway */
                             }
@@ -241,7 +242,7 @@ class VNDBServer @Inject constructor(private val moshi: Moshi) {
             }
         }
 
-        fun closeAll() = GlobalScope.async(Dispatchers.IO) {
+        fun closeAll() {
             for (i in 0 until SocketPool.MAX_SOCKETS) close(i)
         }
     }

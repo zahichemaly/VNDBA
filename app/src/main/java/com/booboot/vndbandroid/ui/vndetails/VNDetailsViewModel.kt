@@ -17,8 +17,6 @@ import com.booboot.vndbandroid.repository.VotelistRepository
 import com.booboot.vndbandroid.repository.WishlistRepository
 import com.booboot.vndbandroid.ui.base.BaseViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
@@ -45,7 +43,7 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
     }
 
     fun loadVn(vnId: Long, force: Boolean = true) = coroutine(DISPOSABLE_VN, !force && vnData.value != null, initErrorHandler) {
-        vnData += vnRepository.getItem(this, vnId).await()
+        vnData += vnRepository.getItem(vnId)
     }
 
     fun setNotes(notes: String) {
@@ -87,23 +85,27 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
     fun removeVnlist() = coroutine(JOB_REMOVE_VNLIST) {
         val vnId = vnData.value?.id ?: return@coroutine
         val vnlist = accountData.value?.vnlist?.get(vnId) ?: return@coroutine
-        vnlistRepository.deleteItem(this, vnlist).setAndSubscribe(this)
+        vnlistRepository.deleteItem(vnlist)
+        accountData += accountRepository.getItems()
     }
 
     fun removeVotelist() = coroutine(JOB_REMOVE_VOTELIST) {
         val vnId = vnData.value?.id ?: return@coroutine
         val votelist = accountData.value?.votelist?.get(vnId) ?: return@coroutine
-        votelistRepository.deleteItem(this, votelist).setAndSubscribe(this)
+        votelistRepository.deleteItem(votelist)
+        accountData += accountRepository.getItems()
     }
 
     fun removeWishlist() = coroutine(JOB_REMOVE_WISHLIST) {
         val vnId = vnData.value?.id ?: return@coroutine
         val wishlist = accountData.value?.wishlist?.get(vnId) ?: return@coroutine
-        wishlistRepository.deleteItem(this, wishlist).setAndSubscribe(this)
+        wishlistRepository.deleteItem(wishlist)
+        accountData += accountRepository.getItems()
     }
 
     private fun setVnlist(vnlist: Vnlist) = coroutine(JOB_SET_VNLIST, accountData.value?.vnlist?.get(vnData.value?.id) == vnlist) {
-        vnlistRepository.setItem(this, vnlist).setAndSubscribe(this)
+        vnlistRepository.setItem(vnlist)
+        accountData += accountRepository.getItems()
     }
 
     private fun setVotelist(votelist: Votelist) = coroutine(JOB_SET_VOTELIST) {
@@ -111,17 +113,14 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
             /* In case the user inputs "8.0" as a vote, still refreshes the UI so the custom vote EditText is cleared */
             accountData += accountData.value
         } else {
-            votelistRepository.setItem(this, votelist).setAndSubscribe(this)
+            votelistRepository.setItem(votelist)
+            accountData += accountRepository.getItems()
         }
     }
 
     private fun setWishlist(wishlist: Wishlist) = coroutine(JOB_SET_WISHLIST, accountData.value?.wishlist?.get(vnData.value?.id) == wishlist) {
-        wishlistRepository.setItem(this, wishlist).setAndSubscribe(this)
-    }
-
-    private suspend fun Deferred<*>.setAndSubscribe(coroutineScope: CoroutineScope) {
-        await()
-        accountData += accountRepository.getItems(coroutineScope).await()
+        wishlistRepository.setItem(wishlist)
+        accountData += accountRepository.getItems()
     }
 
     override fun restoreState(state: Bundle?) {

@@ -11,6 +11,7 @@ import com.booboot.vndbandroid.model.vndbandroid.VNTag
 import com.booboot.vndbandroid.repository.TagsRepository
 import com.booboot.vndbandroid.repository.VNRepository
 import com.booboot.vndbandroid.ui.base.BaseViewModel
+import kotlinx.coroutines.async
 import javax.inject.Inject
 
 class TagsViewModel constructor(application: Application) : BaseViewModel(application) {
@@ -24,8 +25,8 @@ class TagsViewModel constructor(application: Application) : BaseViewModel(applic
     }
 
     fun loadTags(vnId: Long, force: Boolean = true) = coroutine(DISPOSABLE_LOAD_TAGS, !force && tagsData.value != null) {
-        val vnJob = vnRepository.getItem(this, vnId)
-        val tagsJob = tagsRepository.getItems(this)
+        val vnJob = async { vnRepository.getItem(vnId) }
+        val tagsJob = async { tagsRepository.getItems() }
         val vn = vnJob.await()
         val tags = tagsJob.await()
         val sortedTags = vn.tags.asSequence().sortedByDescending { it[1] }.mapNotNull { tagInfo ->

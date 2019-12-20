@@ -14,7 +14,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
 
 abstract class BaseViewModel constructor(application: Application) : AndroidViewModel(application) {
     val loadingData = MutableLiveData<Int>()
@@ -24,7 +23,7 @@ abstract class BaseViewModel constructor(application: Application) : AndroidView
         onError(throwable)
     }
 
-    fun coroutine(jobName: String, skip: Boolean = false, errorHandler: CoroutineContext = this.errorHandler, block: suspend CoroutineScope.() -> Unit) {
+    fun coroutine(jobName: String, skip: Boolean = false, errorHandler: CoroutineExceptionHandler = this.errorHandler, block: suspend CoroutineScope.() -> Unit) {
         if (skip || jobName in jobs) return
 
         loadingData.plus()

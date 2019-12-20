@@ -9,6 +9,7 @@ import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.repository.AccountRepository
 import com.booboot.vndbandroid.repository.VNRepository
 import com.booboot.vndbandroid.ui.base.BaseViewModel
+import kotlinx.coroutines.async
 import javax.inject.Inject
 
 class SearchViewModel constructor(application: Application) : BaseViewModel(application) {
@@ -26,8 +27,8 @@ class SearchViewModel constructor(application: Application) : BaseViewModel(appl
 
     fun search(query: String) = coroutine(JOB_SEARCH) {
         /* Getting account items so we can show whether the results are in the user's lists */
-        val accountItemsJob = accountRepository.getItems(this)
-        val vnJob = vnRepository.search(this, currentPage, query)
+        val accountItemsJob = async { accountRepository.getItems() }
+        val vnJob = async { vnRepository.search(currentPage, query) }
         searchData += accountItemsJob.await().apply {
             vns = vnJob.await()
         }
