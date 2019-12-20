@@ -3,6 +3,7 @@ package com.booboot.vndbandroid.ui.base
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import com.booboot.vndbandroid.extensions.asyncLazy
+import com.booboot.vndbandroid.extensions.plusAssign
 import com.booboot.vndbandroid.extensions.transaction
 import com.booboot.vndbandroid.model.vndb.AccountItems
 import com.booboot.vndbandroid.model.vndbandroid.FLAGS_DETAILS
@@ -17,9 +18,8 @@ import com.booboot.vndbandroid.repository.VnlistRepository
 import com.booboot.vndbandroid.repository.VotelistRepository
 import com.booboot.vndbandroid.repository.WishlistRepository
 import io.objectbox.BoxStore
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 
 abstract class StartupSyncViewModel constructor(application: Application) : BaseViewModel(application) {
@@ -35,7 +35,7 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
     val accountData: MutableLiveData<AccountItems> = MutableLiveData()
     val syncData: MutableLiveData<SyncData> = MutableLiveData()
 
-    protected suspend fun startupSync(coroutineScope: CoroutineScope, doOnAccountSuccess: (AccountItems) -> Unit = {}) = coroutineScope.async(Dispatchers.IO) {
+    protected suspend fun startupSyncInternal() = coroutineScope {
         val tagsJob = async { tagsRepository.getItems(CachePolicy(true)) }
         val traitsJob = async { traitsRepository.getItems(CachePolicy(true)) }
         val vnlistJob = async { vnlistRepository.getItems(CachePolicy(false)) }
@@ -73,12 +73,11 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
             // TODO DB startup clean (in a new flatmap, must make sure the above transaction has completed before)
 
             accountRepository.getItems().apply {
-                accountData.postValue(this)
-                doOnAccountSuccess(this)
+                accountData += this
             }
         } ?: accountRepository.getItems()
 
         Preferences.loggedIn = true
-        syncData.postValue(SyncData(accountItems, tagsJob.await(), traitsJob.await()))
+        syncData += SyncData(accountItems, tagsJob.await(), traitsJob.await())
     }
 }
