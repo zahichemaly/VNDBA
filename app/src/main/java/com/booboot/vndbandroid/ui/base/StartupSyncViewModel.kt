@@ -56,7 +56,7 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
         val newIds = allIds.minus(oldVnlist.keys).minus(oldVotelist.keys).minus(oldWishlist.keys)
         val haveListsChanged = vnlist != oldVnlist || votelist != oldVotelist || wishlist != oldWishlist
 
-        val accountItems = when {
+        val hasAccountChanged = when {
             allIds.isEmpty() -> emptyMap() // empty account
             newIds.isNotEmpty() -> { // should send get vn
                 vnRepository.getItems(newIds, FLAGS_DETAILS, CachePolicy(false))
@@ -70,12 +70,12 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
                 asyncLazy { wishlistRepository.setItems(wishlist) },
                 asyncLazy { vnRepository.setItems(vns) }
             )
-            // TODO DB startup clean (in a new flatmap, must make sure the above transaction has completed before)
+            true
+        } ?: false
 
-            accountRepository.getItems().apply {
-                accountData += this
-            }
-        } ?: accountRepository.getItems()
+        // TODO DB startup clean in ALL cases exactly here on this line
+        val accountItems = accountRepository.getItems()
+        if (hasAccountChanged) accountData += accountItems
 
         Preferences.loggedIn = true
         syncData += SyncData(accountItems, tagsJob.await(), traitsJob.await())
