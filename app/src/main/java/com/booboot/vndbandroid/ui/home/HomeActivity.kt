@@ -67,8 +67,8 @@ class HomeActivity : BaseActivity() {
     private fun showAccount(accountItems: AccountItems) {
         Track.tag(accountItems)
         setMenuCounter(R.id.vnlistFragment, accountItems.vnlist.size)
-        setMenuCounter(R.id.votelistFragment, accountItems.wishlist.size)
-        setMenuCounter(R.id.wishlistFragment, accountItems.votelist.size)
+        setMenuCounter(R.id.votelistFragment, accountItems.votelist.size)
+        setMenuCounter(R.id.wishlistFragment, accountItems.wishlist.size)
     }
 
     // TODO make this work with setupWithNavController without opening a Fragment

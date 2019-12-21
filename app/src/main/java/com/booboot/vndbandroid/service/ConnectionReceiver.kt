@@ -11,7 +11,7 @@ class ConnectionReceiver : ConnectivityManager.NetworkCallback() {
 
     override fun onLost(network: Network?) {
         GlobalScope.launch {
-            VNDBServer.closeAll().await()
+            VNDBServer.closeAll()
         }
     }
 
@@ -19,7 +19,7 @@ class ConnectionReceiver : ConnectivityManager.NetworkCallback() {
         if (startupCall) {
             startupCall = false
         } else GlobalScope.launch {
-            VNDBServer.closeAll().await()
+            VNDBServer.closeAll()
         }
     }
 }

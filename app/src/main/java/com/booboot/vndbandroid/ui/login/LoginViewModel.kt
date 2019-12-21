@@ -11,8 +11,8 @@ class LoginViewModel constructor(application: Application) : StartupSyncViewMode
     }
 
     fun login() = coroutine(DISPOSABLE_LOGIN) {
-        VNDBServer.closeAll().await()
-        startupSync(this).await()
+        VNDBServer.closeAll()
+        startupSyncInternal()
     }
 
     companion object {

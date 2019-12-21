@@ -14,10 +14,6 @@ import com.booboot.vndbandroid.model.vndbandroid.Expiration
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import io.objectbox.BoxStore
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -28,32 +24,29 @@ class TagsRepository @Inject constructor(
     var app: Application,
     var boxStore: BoxStore
 ) : Repository<Tag>() {
-    override suspend fun getItems(coroutineScope: CoroutineScope, cachePolicy: CachePolicy<Map<Long, Tag>>): Deferred<Map<Long, Tag>> = coroutineScope.async(Dispatchers.IO) {
-        cachePolicy
-            .fetchFromMemory { items }
-            .fetchFromDatabase {
-                boxStore.get<TagDao, Map<Long, Tag>> { it.all.map { it.toBo() }.associateBy { it.id } }
-            }
-            .fetchFromNetwork {
-                vndbService
-                    .getTags()
-                    .await()
-                    .saveToDisk("tags.json.gz", app.cacheDir)
-                    .unzip()
-                    .use {
-                        moshi
-                            .adapter<List<Tag>>(Types.newParameterizedType(List::class.java, Tag::class.java))
-                            .fromJson(it.toBufferedSource())
-                            ?.associateBy { it.id }
-                            ?: throw Exception("Error while getting tags : empty.")
-                    }
-            }
-            .putInMemory { items = it.toMutableMap() }
-            .putInDatabase {
-                boxStore.save(true) { it.map { TagDao(it.value, boxStore) } }
-            }
-            .isExpired { System.currentTimeMillis() > Expiration.tags }
-            .putExpiration { Expiration.tags = System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7 }
-            .get()
-    }
+    override suspend fun getItems(cachePolicy: CachePolicy<Map<Long, Tag>>) = cachePolicy
+        .fetchFromMemory { items }
+        .fetchFromDatabase {
+            boxStore.get<TagDao, Map<Long, Tag>> { it.all.map { tagDao -> tagDao.toBo() }.associateBy { tag -> tag.id } }
+        }
+        .fetchFromNetwork {
+            vndbService
+                .getTags()
+                .saveToDisk("tags.json.gz", app.cacheDir)
+                .unzip()
+                .use {
+                    moshi
+                        .adapter<List<Tag>>(Types.newParameterizedType(List::class.java, Tag::class.java))
+                        .fromJson(it.toBufferedSource())
+                        ?.associateBy { tag -> tag.id }
+                        ?: throw Exception("Error while getting tags : empty.")
+                }
+        }
+        .putInMemory { items = it.toMutableMap() }
+        .putInDatabase {
+            boxStore.save(true) { it.map { TagDao(it.value, boxStore) } }
+        }
+        .isExpired { System.currentTimeMillis() > Expiration.tags }
+        .putExpiration { Expiration.tags = System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7 }
+        .get()
 }

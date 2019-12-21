@@ -15,15 +15,15 @@ class HomeViewModel constructor(application: Application) : StartupSyncViewModel
     }
 
     fun startupSync() = coroutine(DISPOSABLE_STARTUP_SYNC) {
-        super.startupSync(this) { accountData.postValue(it) }.await()
+        startupSyncInternal()
     }
 
     fun getVns(force: Boolean = true) = coroutine(DISPOSABLE_GET_VNS, !force && accountData.value != null) {
-        accountData += accountRepository.getItems(this).await()
+        accountData += accountRepository.getItems()
     }
 
     fun logout() = coroutine(JOB_LOGOUT) {
-        VNDBServer.closeAll().await()
+        VNDBServer.closeAll()
     }
 
     companion object {

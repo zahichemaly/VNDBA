@@ -21,7 +21,7 @@ class SummaryViewModel constructor(application: Application) : BaseViewModel(app
     }
 
     fun loadVn(vnId: Long, force: Boolean = true) = coroutine(DISPOSABLE_VN, !force && summaryData.value != null) {
-        val vn = vnRepository.getItem(this, vnId).await()
+        val vn = vnRepository.getItem(vnId)
         vn.aliases = vn.aliases?.replace("\n", ", ")
         val description = vn.description?.format(getApplication<Application>().packageName) ?: SpannableString("")
         summaryData += SummaryVN(vn, description)

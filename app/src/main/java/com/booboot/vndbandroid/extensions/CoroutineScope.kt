@@ -5,9 +5,7 @@ import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 
-fun <T> CoroutineScope.asyncOrLazy(lazy: Boolean = false, block: suspend CoroutineScope.() -> T) =
-    if (lazy) async(Dispatchers.Unconfined, CoroutineStart.LAZY, block)
-    else async(Dispatchers.IO, block = block)
+fun <T> CoroutineScope.asyncLazy(block: suspend CoroutineScope.() -> T) = async(Dispatchers.Unconfined, CoroutineStart.LAZY, block)
 
 /**
  * Kotlin decided for some reason that CoroutineExceptionHandler didn't work for async blocks (see https://kotlinlang.org/docs/reference/coroutines/exception-handling.html#coroutineexceptionhandler).
@@ -24,4 +22,11 @@ fun <T> CoroutineScope.asyncWithError(onError: (Throwable) -> Unit, block: suspe
         onError(t)
         throw t
     }
+}
+
+suspend fun <T> catchAndRethrow(onError: (Throwable) -> Unit, block: suspend () -> T) = try {
+    block()
+} catch (t: Throwable) {
+    onError(t)
+    throw t
 }

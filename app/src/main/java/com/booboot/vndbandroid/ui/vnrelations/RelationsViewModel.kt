@@ -12,6 +12,7 @@ import com.booboot.vndbandroid.model.vndbandroid.FLAGS_DETAILS
 import com.booboot.vndbandroid.repository.AccountRepository
 import com.booboot.vndbandroid.repository.VNRepository
 import com.booboot.vndbandroid.ui.base.BaseViewModel
+import kotlinx.coroutines.async
 import javax.inject.Inject
 
 class RelationsViewModel constructor(application: Application) : BaseViewModel(application) {
@@ -24,12 +25,12 @@ class RelationsViewModel constructor(application: Application) : BaseViewModel(a
     }
 
     fun loadVn(vnId: Long, oldRelationsData: RelationsData, force: Boolean = true) = coroutine(DISPOSABLE_VN, !force && relationsData.value != null) {
-        val accountItemsJob = accountRepository.getItems(this)
-        val vnJob = vnRepository.getItem(this, vnId)
+        val accountItemsJob = async { accountRepository.getItems() }
+        val vnJob = async { vnRepository.getItem(vnId) }
         val accountItems = accountItemsJob.await()
         val vn = vnJob.await()
         val accountItemsCopy = accountItems.deepCopy()
-        val relations = vnRepository.getItems(this, vn.relations.mapTo(hashSetOf()) { it.id }, FLAGS_DETAILS).await()
+        val relations = vnRepository.getItems(vn.relations.mapTo(hashSetOf()) { it.id }, FLAGS_DETAILS)
         relationsData += RelationsData(vn, accountItemsCopy, relations).apply {
             val diffCallback = RelationsDiffCallback(oldRelationsData, this)
             diffResult = DiffUtil.calculateDiff(diffCallback)

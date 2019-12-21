@@ -27,7 +27,7 @@ class SlideshowViewModel constructor(application: Application) : BaseViewModel(a
     }
 
     fun loadVn(force: Boolean = true) = coroutine(DISPOSABLE_VN, !force && vnData.value != null) {
-        vnData += vnRepository.getItem(this, vnId).await()
+        vnData += vnRepository.getItem(vnId)
     }
 
     fun downloadScreenshot(bitmap: Bitmap?, action: Int) = coroutine(DISPOSABLE_DOWNLOAD_SCREENSHOT) {
