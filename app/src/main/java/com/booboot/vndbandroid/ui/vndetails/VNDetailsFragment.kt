@@ -52,13 +52,9 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
     private var vnId: Long = 0
 
     lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
-    private val votelistViews by lazy { listOf(iconContentVote, textContentVote, flexboxVote, buttonRemoveVote) }
-    private val wishlistViews by lazy { listOf(iconContentWishlist, textContentWishlist, flexboxWishlist, buttonRemoveWishlist) }
-    private val bottomSheetButtons by lazy {
-        listOf(textNotes as View, buttonPlaying, buttonFinished, buttonStalled, buttonDropped, buttonUnknown, buttonRemoveStatus,
-            buttonVote1, buttonVote2, buttonVote3, buttonVote4, buttonVote5, buttonVote6, buttonVote7, buttonVote8, buttonVote9, buttonVote10, inputCustomVote, buttonRemoveVote,
-            buttonWishlistHigh, buttonWishlistMedium, buttonWishlistLow, buttonWishlistBlacklist, buttonRemoveWishlist)
-    }
+    private lateinit var votelistViews: List<View?>
+    private lateinit var wishlistViews: List<View?>
+    private lateinit var bottomSheetButtons: List<View?>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -103,6 +99,13 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
         viewPager.adapter = tabsAdapter
         tabLayout.setupWithViewPager(viewPager)
 
+        /* View groups */
+        votelistViews = listOf(iconContentVote, textContentVote, flexboxVote, buttonRemoveVote)
+        wishlistViews = listOf(iconContentWishlist, textContentWishlist, flexboxWishlist, buttonRemoveWishlist)
+        bottomSheetButtons = listOf(textNotes, buttonPlaying, buttonFinished, buttonStalled, buttonDropped, buttonUnknown, buttonRemoveStatus,
+            buttonVote1, buttonVote2, buttonVote3, buttonVote4, buttonVote5, buttonVote6, buttonVote7, buttonVote8, buttonVote9, buttonVote10, inputCustomVote, buttonRemoveVote,
+            buttonWishlistHigh, buttonWishlistMedium, buttonWishlistLow, buttonWishlistBlacklist, buttonRemoveWishlist)
+
         /* Bottom sheet */
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
         bottomSheetHeader.setOnClickListener(this)
@@ -117,7 +120,7 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
             behavior = StopFocusStealingAppBarBehavior(bottomSheet)
         }
         textNotes.preventLineBreak()
-        bottomSheetButtons.forEach { it.setOnClickListener(this@VNDetailsFragment) }
+        bottomSheetButtons.forEach { it?.setOnClickListener(this@VNDetailsFragment) }
         textNotes.onFocusChangeListener = this
         inputCustomVote.onFocusChangeListener = this
 
@@ -198,7 +201,7 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
     override fun showLoading(loading: Int?) {
         super.showLoading(loading)
         loading ?: return
-        bottomSheetButtons.forEach { it.isEnabled = loading <= 0 }
+        bottomSheetButtons.forEach { it?.isEnabled = loading <= 0 }
     }
 
     private fun onInitError(message: String) {

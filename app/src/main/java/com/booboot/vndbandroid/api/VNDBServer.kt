@@ -193,7 +193,7 @@ class VNDBServer @Inject constructor(private val moshi: Moshi) {
             throw Throwable("An error occurred while receiving the response from the API. Please try again later.")
         }
 
-        //        if (BuildConfig.DEBUG) Logger.log(response.toString())
+//        Logger.log(response.toString())
 
         val delimiterIndex = response.indexOf("{")
         if (delimiterIndex < 0) {
