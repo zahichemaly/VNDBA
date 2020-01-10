@@ -13,7 +13,6 @@ import com.booboot.vndbandroid.model.vndb.Response
 import com.booboot.vndbandroid.model.vndb.Results
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.util.ErrorHandler
-import com.booboot.vndbandroid.util.Logger
 import com.booboot.vndbandroid.util.TypeReference
 import com.booboot.vndbandroid.util.type
 import com.squareup.moshi.Moshi
@@ -38,7 +37,7 @@ import kotlin.math.roundToLong
 @Singleton
 class VNDBServer @Inject constructor(private val moshi: Moshi) {
     private fun connect(socketIndex: Int) = try {
-        Logger.log("connect TCP ON " + Thread.currentThread().id + " SOCKET $socketIndex")
+        "connect TCP ON " + Thread.currentThread().id + " SOCKET $socketIndex".log()
         val sf = SSLSocketFactory.getDefault()
         val socket = sf.createSocket(HOST, PORT) as SSLSocket
         socket.keepAlive = false
@@ -130,7 +129,7 @@ class VNDBServer @Inject constructor(private val moshi: Moshi) {
                 val input = InputStreamReader(socket.inputStream)
 
                 do {
-                    Logger.log(query + " ON " + Thread.currentThread().id + " SOCKET ${options.socketIndex}")
+                    query + " ON " + Thread.currentThread().id + " SOCKET ${options.socketIndex}".log()
                     if (input.ready()) while (input.read() > -1);
                     output.flush()
                     output.write(query.toByteArray(charset("UTF-8")))
@@ -193,7 +192,7 @@ class VNDBServer @Inject constructor(private val moshi: Moshi) {
             throw Throwable("An error occurred while receiving the response from the API. Please try again later.")
         }
 
-//        Logger.log(response.toString())
+//        response.log()
 
         val delimiterIndex = response.indexOf("{")
         if (delimiterIndex < 0) {

@@ -7,3 +7,5 @@ fun <T> tryOrDefault(defaultValue: T, f: () -> T) = try {
 }
 
 fun <T> tryOrNull(f: () -> T) = tryOrDefault(null, f)
+
+fun Any.log() = toString().log()
