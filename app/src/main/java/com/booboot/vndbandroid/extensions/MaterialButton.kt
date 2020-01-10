@@ -20,6 +20,7 @@ fun MaterialButton.select(
     iconTint = ColorStateList.valueOf(newTextColor)
     backgroundTintList = strokeColor
     elevation = Pixels.px(3).toFloat()
+    rippleColor = textColors
 }
 
 fun MaterialButton.unselect() = apply {
@@ -27,4 +28,5 @@ fun MaterialButton.unselect() = apply {
     iconTint = strokeColor
     backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, android.R.color.transparent))
     elevation = Pixels.px(0).toFloat()
+    rippleColor = textColors
 }
