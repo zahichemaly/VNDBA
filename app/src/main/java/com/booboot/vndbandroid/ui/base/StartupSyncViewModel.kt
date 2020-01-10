@@ -13,19 +13,15 @@ import com.booboot.vndbandroid.repository.AccountRepository
 import com.booboot.vndbandroid.repository.CachePolicy
 import com.booboot.vndbandroid.repository.TagsRepository
 import com.booboot.vndbandroid.repository.TraitsRepository
+import com.booboot.vndbandroid.repository.UserListRepository
 import com.booboot.vndbandroid.repository.VNRepository
-import com.booboot.vndbandroid.repository.VnlistRepository
-import com.booboot.vndbandroid.repository.VotelistRepository
-import com.booboot.vndbandroid.repository.WishlistRepository
 import io.objectbox.BoxStore
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 
 abstract class StartupSyncViewModel constructor(application: Application) : BaseViewModel(application) {
-    @Inject lateinit var vnlistRepository: VnlistRepository
-    @Inject lateinit var votelistRepository: VotelistRepository
-    @Inject lateinit var wishlistRepository: WishlistRepository
+    @Inject lateinit var userListRepository: UserListRepository
     @Inject lateinit var vnRepository: VNRepository
     @Inject lateinit var accountRepository: AccountRepository
     @Inject lateinit var tagsRepository: TagsRepository
@@ -38,36 +34,26 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
     protected suspend fun startupSyncInternal() = coroutineScope {
         val tagsJob = async { tagsRepository.getItems(CachePolicy(true)) }
         val traitsJob = async { traitsRepository.getItems(CachePolicy(true)) }
-        val vnlistJob = async { vnlistRepository.getItems(CachePolicy(false)) }
-        val votelistJob = async { votelistRepository.getItems(CachePolicy(false)) }
-        val wishlistJob = async { wishlistRepository.getItems(CachePolicy(false)) }
-        val oldVnlistJob = async { vnlistRepository.getItems(CachePolicy(cacheOnly = true)) }
-        val oldVotelistJob = async { votelistRepository.getItems(CachePolicy(cacheOnly = true)) }
-        val oldWishlistJob = async { wishlistRepository.getItems(CachePolicy(cacheOnly = true)) }
+        val userListJob = async { userListRepository.getItems(CachePolicy(false)) }
+        val oldUserListJob = async { userListRepository.getItems(CachePolicy(cacheOnly = true)) }
 
-        val vnlist = vnlistJob.await()
-        val votelist = votelistJob.await()
-        val wishlist = wishlistJob.await()
-        val oldVnlist = oldVnlistJob.await()
-        val oldVotelist = oldVotelistJob.await()
-        val oldWishlist = oldWishlistJob.await()
+        val userList = userListJob.await()
+        val oldUserList = oldUserListJob.await()
 
-        val allIds = vnlist.keys.union(votelist.keys).union(wishlist.keys)
-        val newIds = allIds.minus(oldVnlist.keys).minus(oldVotelist.keys).minus(oldWishlist.keys)
-        val haveListsChanged = vnlist != oldVnlist || votelist != oldVotelist || wishlist != oldWishlist
+        val allIds = userList.keys
+        val newIds = allIds.minus(oldUserList.keys)
+        val hasListChanged = userList != oldUserList
 
         val hasAccountChanged = when {
             allIds.isEmpty() -> emptyMap() // empty account
             newIds.isNotEmpty() -> { // should send get vn
                 vnRepository.getItems(newIds, FLAGS_DETAILS, CachePolicy(false))
             }
-            haveListsChanged -> emptyMap() // no new VNs but status of existing VNs have changed
+            hasListChanged -> emptyMap() // no new VNs but status of existing VNs have changed
             else -> null // nothing new: skipping DB update with an empty result
         }?.let { vns ->
             boxStore.transaction(
-                asyncLazy { vnlistRepository.setItems(vnlist) },
-                asyncLazy { votelistRepository.setItems(votelist) },
-                asyncLazy { wishlistRepository.setItems(wishlist) },
+                asyncLazy { userListRepository.setItems(userList) },
                 asyncLazy { vnRepository.setItems(vns) }
             )
             true

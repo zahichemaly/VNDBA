@@ -18,28 +18,6 @@
     </fragment>
 
     <fragment
-        android:id="@+id/votelistFragment"
-        android:name="com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment"
-        android:label="@string/my_votes"
-        tools:layout="@layout/home_tabs_fragment">
-        <argument
-            android:name="listType"
-            android:defaultValue="2"
-            app:argType="integer" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/wishlistFragment"
-        android:name="com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment"
-        android:label="@string/my_wishlist"
-        tools:layout="@layout/home_tabs_fragment">
-        <argument
-            android:name="listType"
-            android:defaultValue="3"
-            app:argType="integer" />
-    </fragment>
-
-    <fragment
         android:id="@+id/preferencesFragment"
         android:name="com.booboot.vndbandroid.ui.preferences.PreferencesFragment"
         android:label="PreferencesFragment"

@@ -6,10 +6,10 @@ import androidx.lifecycle.MutableLiveData
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.extensions.plusAssign
 import com.booboot.vndbandroid.model.vndb.AccountItems
+import com.booboot.vndbandroid.model.vndb.Label
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndbandroid.HomeTab
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
-import com.booboot.vndbandroid.model.vndbandroid.Priority
 import com.booboot.vndbandroid.model.vndbandroid.SORT_LENGTH
 import com.booboot.vndbandroid.model.vndbandroid.SORT_POPULARITY
 import com.booboot.vndbandroid.model.vndbandroid.SORT_PRIORITY
@@ -19,7 +19,6 @@ import com.booboot.vndbandroid.model.vndbandroid.SORT_STATUS
 import com.booboot.vndbandroid.model.vndbandroid.SORT_TITLE
 import com.booboot.vndbandroid.model.vndbandroid.SORT_VOTE
 import com.booboot.vndbandroid.model.vndbandroid.SortOptions
-import com.booboot.vndbandroid.model.vndbandroid.Status
 import com.booboot.vndbandroid.model.vndbandroid.VnlistData
 import com.booboot.vndbandroid.repository.AccountRepository
 import com.booboot.vndbandroid.ui.base.BaseViewModel
@@ -38,45 +37,18 @@ class HomeTabsViewModel constructor(application: Application) : BaseViewModel(ap
         (application as App).appComponent.inject(this)
     }
 
-    fun getTabTitles(listType: Int, force: Boolean = true) = coroutine(DISPOSABLE_TAB_TITLES, !force && vnlistData.value != null) {
+    fun getTabTitles(force: Boolean = true) = coroutine(DISPOSABLE_TAB_TITLES, !force && vnlistData.value != null) {
         val accountItems = accountRepository.getItems()
-        val tabs = when (listType) {
-            HomeTabsFragment.VNLIST -> {
-                val statusCount = accountItems.getStatusCount()
-                listOf(
-                    HomeTab(Status.PLAYING, "Playing (" + statusCount[Status.PLAYING] + ")"),
-                    HomeTab(Status.FINISHED, "Finished (" + statusCount[Status.FINISHED] + ")"),
-                    HomeTab(Status.STALLED, "Stalled (" + statusCount[Status.STALLED] + ")"),
-                    HomeTab(Status.DROPPED, "Dropped (" + statusCount[Status.DROPPED] + ")"),
-                    HomeTab(Status.UNKNOWN, "Unknown (" + statusCount[Status.UNKNOWN] + ")")
-                )
-            }
-
-            HomeTabsFragment.VOTELIST -> {
-                val voteCount = accountItems.getVoteCount()
-                listOf(
-                    HomeTab(10, "10 - 9 (" + voteCount[0] + ")"),
-                    HomeTab(8, "8 - 7 (" + voteCount[1] + ")"),
-                    HomeTab(6, "6 - 5 (" + voteCount[2] + ")"),
-                    HomeTab(4, "4 - 3 (" + voteCount[3] + ")"),
-                    HomeTab(2, "2 - 1 (" + voteCount[4] + ")")
-                )
-            }
-
-            HomeTabsFragment.WISHLIST -> {
-                val wishCount = accountItems.getWishCount()
-                listOf(
-                    HomeTab(Priority.HIGH, "High (" + wishCount[Priority.HIGH] + ")"),
-                    HomeTab(Priority.MEDIUM, "Medium (" + wishCount[Priority.MEDIUM] + ")"),
-                    HomeTab(Priority.LOW, "Low (" + wishCount[Priority.LOW] + ")"),
-                    HomeTab(Priority.BLACKLIST, "Blacklist (" + wishCount[Priority.BLACKLIST] + ")")
-                )
-            }
-            else -> emptyList()
-        }
+        val tabs = listOf(
+            HomeTab(Label.PLAYING.id, "Playing (" + accountItems.getLabelCount(Label.PLAYING.id) + ")"),
+            HomeTab(Label.FINISHED.id, "Finished (" + accountItems.getLabelCount(Label.FINISHED.id) + ")"),
+            HomeTab(Label.STALLED.id, "Stalled (" + accountItems.getLabelCount(Label.STALLED.id) + ")"),
+            HomeTab(Label.DROPPED.id, "Dropped (" + accountItems.getLabelCount(Label.DROPPED.id) + ")"),
+            HomeTab(Label.UNKNOWN.id, "Unknown (" + accountItems.getLabelCount(Label.UNKNOWN.id) + ")")
+        )
 
         /* Filtering and sorting account items for each tab */
-        val tabItems = mutableMapOf<Int, AccountItems>()
+        val tabItems = mutableMapOf<Long, AccountItems>()
         tabs.forEach { tab ->
             /* Each tab must work on a different copy of account items */
             /* #122 : to make DiffUtil work in the Adapter, the items must be deep copied here so the contents can be identified as different when changed from inside the app */
@@ -89,20 +61,15 @@ class HomeTabsViewModel constructor(application: Application) : BaseViewModel(ap
                     SORT_LENGTH -> vn.length
                     SORT_POPULARITY -> vn.popularity
                     SORT_RATING -> vn.rating
-                    SORT_STATUS -> tabAccountItems.vnlist[id]?.status
-                    SORT_VOTE -> tabAccountItems.votelist[id]?.vote
-                    SORT_PRIORITY -> tabAccountItems.wishlist[id]?.priority
+                    SORT_STATUS -> vn.title // TODO reimplement it properly
+                    SORT_VOTE -> vn.title // TODO reimplement it properly
+                    SORT_PRIORITY -> vn.title // TODO reimplement it properly
                     else -> id
                 }
             }
 
             tabAccountItems.vns = tabAccountItems.vns.filterKeys { vnId ->
-                when (listType) {
-                    HomeTabsFragment.VNLIST -> vnId in tabAccountItems.vnlist.filterValues { it.status == tab.value }
-                    HomeTabsFragment.VOTELIST -> vnId in tabAccountItems.votelist.filterValues { it.vote / 10 == tab.value || it.vote / 10 == tab.value - 1 }
-                    HomeTabsFragment.WISHLIST -> vnId in tabAccountItems.wishlist.filterValues { it.priority == tab.value }
-                    else -> true
-                }
+                vnId in tabAccountItems.userList.filterValues { tab.value in it.labelIds() }
             }.toList().sortedWith(if (Preferences.reverseSort) compareByDescending(sorter) else compareBy(sorter)).toMap()
 
             tabItems[tab.value] = tabAccountItems

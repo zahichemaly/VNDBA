@@ -12,20 +12,6 @@
             app:actionLayout="@layout/menu_counter" />
 
         <item
-            android:id="@id/votelistFragment"
-            android:icon="@drawable/ic_format_list_numbered_black_48dp"
-            android:menuCategory="secondary"
-            android:title="@string/my_votes"
-            app:actionLayout="@layout/menu_counter" />
-
-        <item
-            android:id="@id/wishlistFragment"
-            android:icon="@drawable/ic_wishlist"
-            android:menuCategory="secondary"
-            android:title="@string/my_wishlist"
-            app:actionLayout="@layout/menu_counter" />
-
-        <item
             android:id="@+id/nav_stats"
             android:icon="@drawable/ic_equalizer_black_48dp"
             android:menuCategory="secondary"

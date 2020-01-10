@@ -10,18 +10,12 @@ import javax.inject.Singleton
 @Singleton
 class AccountRepository @Inject constructor(
     var vnRepository: VNRepository,
-    var vnlistRepository: VnlistRepository,
-    var votelistRepository: VotelistRepository,
-    var wishlistRepository: WishlistRepository
+    var userListRepository: UserListRepository
 ) {
     suspend fun getItems() = coroutineScope {
-        val vnlistJob = async { vnlistRepository.getItems() }
-        val votelistJob = async { votelistRepository.getItems() }
-        val wishlistJob = async { wishlistRepository.getItems() }
-        val vnlist = vnlistJob.await()
-        val votelist = votelistJob.await()
-        val wishlist = wishlistJob.await()
-        val vns = vnRepository.getItems(vnlist.keys.union(votelist.keys).union(wishlist.keys), FLAGS_DETAILS)
-        AccountItems(vnlist, votelist, wishlist, vns)
+        val userListJob = async { userListRepository.getItems() }
+        val userList = userListJob.await()
+        val vns = vnRepository.getItems(userList.keys, FLAGS_DETAILS)
+        AccountItems(userList, vns)
     }
 }

@@ -16,7 +16,7 @@ class HomeTabsAdapter(fm: FragmentManager, private val type: Int) : BaseFragment
 
     override fun getItem(position: Int) = (fragments[position] ?: VNListFragment()).apply {
         arguments = Bundle().apply {
-            putInt(TAB_VALUE_ARG, tabs[position].value)
+            putLong(TAB_VALUE_ARG, tabs[position].value)
             putInt(HomeTabsFragment.LIST_TYPE_ARG, type)
         }
     }

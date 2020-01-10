@@ -6,15 +6,12 @@ import androidx.lifecycle.MutableLiveData
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.extensions.plusAssign
 import com.booboot.vndbandroid.model.vndb.AccountItems
+import com.booboot.vndbandroid.model.vndb.Label
+import com.booboot.vndbandroid.model.vndb.UserList
 import com.booboot.vndbandroid.model.vndb.VN
-import com.booboot.vndbandroid.model.vndb.Vnlist
-import com.booboot.vndbandroid.model.vndb.Votelist
-import com.booboot.vndbandroid.model.vndb.Wishlist
 import com.booboot.vndbandroid.repository.AccountRepository
+import com.booboot.vndbandroid.repository.UserListRepository
 import com.booboot.vndbandroid.repository.VNRepository
-import com.booboot.vndbandroid.repository.VnlistRepository
-import com.booboot.vndbandroid.repository.VotelistRepository
-import com.booboot.vndbandroid.repository.WishlistRepository
 import com.booboot.vndbandroid.ui.base.BaseViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import javax.inject.Inject
@@ -23,9 +20,7 @@ import kotlin.math.roundToInt
 class VNDetailsViewModel constructor(application: Application) : BaseViewModel(application) {
     @Inject lateinit var vnRepository: VNRepository
     @Inject lateinit var accountRepository: AccountRepository
-    @Inject lateinit var vnlistRepository: VnlistRepository
-    @Inject lateinit var votelistRepository: VotelistRepository
-    @Inject lateinit var wishlistRepository: WishlistRepository
+    @Inject lateinit var userListRepository: UserListRepository
 
     val vnData: MutableLiveData<VN> = MutableLiveData()
     val initErrorData: MutableLiveData<String> = MutableLiveData()
@@ -48,20 +43,39 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
 
     fun setNotes(notes: String) {
         val vnId = vnData.value?.id ?: return
-        val vnlist = accountData.value?.vnlist?.get(vnId)
-        setVnlist(vnlist?.copy(notes = notes) ?: Vnlist(vn = vnId, notes = notes))
+        val userList = accountData.value?.userList?.get(vnId)
+        val newUserList = userList?.copy(notes = notes) ?: UserList(vn = vnId, notes = notes)
+        setUserList(newUserList, mapOf("notes" to newUserList.notes))
     }
 
-    fun setStatus(status: Int) {
+    fun toggleLabel(label: Label, labelGroup: Set<Long> = emptySet()) {
         val vnId = vnData.value?.id ?: return
-        val vnlist = accountData.value?.vnlist?.get(vnId)
-        setVnlist(vnlist?.copy(status = status) ?: Vnlist(vn = vnId, status = status))
+        val userList = accountData.value?.userList?.get(vnId)
+        val labels = when {
+            userList?.labels == null -> setOf(label)
+            label.id in userList.labelIds() -> userList.labels.filter { label.id != it.id }.toSet() // Remove if already present
+            else -> userList.labels - userList.labels(labelGroup) + label // Remove other labels in the same group before adding it
+        }
+
+        val newUserList = userList?.copy(labels = labels) ?: UserList(vn = vnId, labels = labels)
+        setUserList(newUserList, mapOf("labels" to newUserList.labelIds()))
     }
 
-    fun setVote(vote: Int) {
+    fun setVote(_vote: Int, customVote: Boolean = false) {
         val vnId = vnData.value?.id ?: return
-        val votelist = accountData.value?.votelist?.get(vnId)
-        setVotelist(votelist?.copy(vote = vote) ?: Votelist(vn = vnId, vote = vote))
+        val userList = accountData.value?.userList?.get(vnId)
+        val vote = if (!customVote && _vote == userList?.vote) {
+            /* Remove if already present ; Add otherwise */
+            null
+        } else _vote
+
+        if (userList?.vote == vote) {
+            /* In case the user inputs "8.0" as a vote, still refreshes the UI so the custom vote EditText is cleared */
+            accountData += accountData.value
+        } else {
+            val newUserList = userList?.copy(vote = vote) ?: UserList(vn = vnId, vote = vote)
+            setUserList(newUserList, mapOf("vote" to newUserList.vote))
+        }
     }
 
     fun setCustomVote(voteText: String?) {
@@ -73,53 +87,11 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
 
         if (vote < 10 || vote > 100) return onError(Throwable("The vote must be between 1 and 10."))
 
-        setVote(vote)
+        setVote(vote, true)
     }
 
-    fun setPriority(priority: Int) = coroutine(JOB_SET_PRIORITY) {
-        val vnId = vnData.value?.id ?: return@coroutine
-        val wishlist = accountData.value?.wishlist?.get(vnId)
-        setWishlist(wishlist?.copy(priority = priority) ?: Wishlist(vn = vnId, priority = priority))
-    }
-
-    fun removeVnlist() = coroutine(JOB_REMOVE_VNLIST) {
-        val vnId = vnData.value?.id ?: return@coroutine
-        val vnlist = accountData.value?.vnlist?.get(vnId) ?: return@coroutine
-        vnlistRepository.deleteItem(vnlist)
-        accountData += accountRepository.getItems()
-    }
-
-    fun removeVotelist() = coroutine(JOB_REMOVE_VOTELIST) {
-        val vnId = vnData.value?.id ?: return@coroutine
-        val votelist = accountData.value?.votelist?.get(vnId) ?: return@coroutine
-        votelistRepository.deleteItem(votelist)
-        accountData += accountRepository.getItems()
-    }
-
-    fun removeWishlist() = coroutine(JOB_REMOVE_WISHLIST) {
-        val vnId = vnData.value?.id ?: return@coroutine
-        val wishlist = accountData.value?.wishlist?.get(vnId) ?: return@coroutine
-        wishlistRepository.deleteItem(wishlist)
-        accountData += accountRepository.getItems()
-    }
-
-    private fun setVnlist(vnlist: Vnlist) = coroutine(JOB_SET_VNLIST, accountData.value?.vnlist?.get(vnData.value?.id) == vnlist) {
-        vnlistRepository.setItem(vnlist)
-        accountData += accountRepository.getItems()
-    }
-
-    private fun setVotelist(votelist: Votelist) = coroutine(JOB_SET_VOTELIST) {
-        if (accountData.value?.votelist?.get(vnData.value?.id) == votelist) {
-            /* In case the user inputs "8.0" as a vote, still refreshes the UI so the custom vote EditText is cleared */
-            accountData += accountData.value
-        } else {
-            votelistRepository.setItem(votelist)
-            accountData += accountRepository.getItems()
-        }
-    }
-
-    private fun setWishlist(wishlist: Wishlist) = coroutine(JOB_SET_WISHLIST, accountData.value?.wishlist?.get(vnData.value?.id) == wishlist) {
-        wishlistRepository.setItem(wishlist)
+    private fun setUserList(userList: UserList, changesMap: Map<String, Any?>) = coroutine(JOB_SET_VNLIST, accountData.value?.userList?.get(vnData.value?.id) == userList) {
+        userListRepository.setItem(userList, changesMap)
         accountData += accountRepository.getItems()
     }
 
@@ -140,12 +112,6 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
         private const val DISPOSABLE_VN = "DISPOSABLE_VN"
         private const val CURRENT_PAGE = "CURRENT_PAGE"
         private const val SLIDESHOW_POSITION = "SLIDESHOW_POSITION"
-        private const val JOB_SET_WISHLIST = "JOB_SET_WISHLIST"
-        private const val JOB_SET_VOTELIST = "JOB_SET_VOTELIST"
         private const val JOB_SET_VNLIST = "JOB_SET_VNLIST"
-        private const val JOB_REMOVE_WISHLIST = "JOB_REMOVE_WISHLIST"
-        private const val JOB_REMOVE_VOTELIST = "JOB_REMOVE_VOTELIST"
-        private const val JOB_REMOVE_VNLIST = "JOB_REMOVE_VNLIST"
-        private const val JOB_SET_PRIORITY = "JOB_SET_PRIORITY"
     }
 }

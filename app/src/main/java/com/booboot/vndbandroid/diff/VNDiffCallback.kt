@@ -18,8 +18,6 @@ class VNDiffCallback(private var oldItems: AccountItems, private var newItems: A
         val oldVn = oldVns[oldItemPosition]
         val newVn = newVns[newItemPosition]
         return oldVn.equalsBasic(newVn)
-            && oldItems.vnlist[oldVn.id] == newItems.vnlist[newVn.id]
-            && oldItems.votelist[oldVn.id] == newItems.votelist[newVn.id]
-            && oldItems.wishlist[oldVn.id] == newItems.wishlist[newVn.id]
+            && oldItems.userList[oldVn.id] == newItems.userList[newVn.id]
     }
 }

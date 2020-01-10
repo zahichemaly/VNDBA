@@ -4,12 +4,9 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.showNsfwImage
+import com.booboot.vndbandroid.model.vndb.Label
+import com.booboot.vndbandroid.model.vndb.UserList
 import com.booboot.vndbandroid.model.vndb.VN
-import com.booboot.vndbandroid.model.vndb.Vnlist
-import com.booboot.vndbandroid.model.vndb.Votelist
-import com.booboot.vndbandroid.model.vndb.Wishlist
-import com.booboot.vndbandroid.model.vndbandroid.Priority
-import com.booboot.vndbandroid.model.vndbandroid.Status
 import com.booboot.vndbandroid.model.vndbandroid.Vote
 import com.booboot.vndbandroid.util.Utils
 import kotlinx.android.synthetic.main.nsfw_tag.view.*
@@ -24,9 +21,7 @@ class VNHolder(itemView: View, private val onVnClicked: (View, VN) -> Unit) : Re
 
     fun onBind(
         vn: VN,
-        vnlist: Vnlist?,
-        votelist: Votelist?,
-        wishlist: Wishlist?,
+        userList: UserList?,
         showFullDate: Boolean,
         showRank: Boolean,
         showRating: Boolean,
@@ -58,9 +53,9 @@ class VNHolder(itemView: View, private val onVnClicked: (View, VN) -> Unit) : Re
 
         title.text = titleText
         subtitle.text = subtitleText
-        statusButton.text = Status.toShortString(vnlist?.status)
-        wishlistButton.text = Priority.toShortString(wishlist?.priority)
-        votesButton.text = Vote.toShortString(votelist?.vote)
+        statusButton.text = Label.toShortString(userList?.firstStatus()?.id)
+        wishlistButton.text = Label.toShortString(userList?.firstWishlist()?.id)
+        votesButton.text = Vote.toShortString(userList?.vote)
     }
 
     override fun onClick(v: View?) {

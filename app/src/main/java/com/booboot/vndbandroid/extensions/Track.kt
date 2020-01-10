@@ -7,8 +7,6 @@ import com.crashlytics.android.Crashlytics
 object Track {
     fun tag(accountItems: AccountItems) {
         Crashlytics.setInt("VNS SIZE", accountItems.vns.size)
-        Crashlytics.setInt("VNLIST SIZE", accountItems.vnlist.size)
-        Crashlytics.setInt("VOTELIST SIZE", accountItems.votelist.size)
-        Crashlytics.setInt("WISHLIST SIZE", accountItems.wishlist.size)
+        Crashlytics.setInt("VNLIST SIZE", accountItems.userList.size)
     }
 }
