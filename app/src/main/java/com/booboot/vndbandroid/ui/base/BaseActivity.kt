@@ -22,7 +22,9 @@ abstract class BaseActivity : AppCompatActivity() {
         data ?: return
 
         when (resultCode) {
-            RESULT_ERROR -> showError(data.getStringExtra(EXTRA_ERROR_MESSAGE))
+            RESULT_ERROR -> data.getStringExtra(EXTRA_ERROR_MESSAGE)?.let { message ->
+                showError(message)
+            }
         }
     }
 }
