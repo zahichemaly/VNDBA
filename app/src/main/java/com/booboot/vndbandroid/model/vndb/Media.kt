@@ -1,10 +1,11 @@
 package com.booboot.vndbandroid.model.vndb
 
-import java.util.*
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class Media(
-        var medium: String = "",
-        var qty: Int = 0
+    var medium: String = "",
+    var qty: Int = 0
 ) {
     companion object {
         val FULL_TEXT: MutableMap<String, String> = mutableMapOf()

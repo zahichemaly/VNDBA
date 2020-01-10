@@ -8,7 +8,7 @@ import android.widget.Filterable
 import androidx.recyclerview.widget.DiffUtil
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.diff.VNDiffCallback
-import com.booboot.vndbandroid.model.vndb.AccountItems
+import com.booboot.vndbandroid.model.vndbandroid.AccountItems
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.ui.base.BaseAdapter
 import com.booboot.vndbandroid.ui.base.BaseFilter

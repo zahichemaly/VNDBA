@@ -1,6 +1,6 @@
 package com.booboot.vndbandroid.extensions
 
-import com.booboot.vndbandroid.model.vndb.AccountItems
+import com.booboot.vndbandroid.model.vndbandroid.AccountItems
 import com.crashlytics.android.Crashlytics
 
 // TODO GDPR

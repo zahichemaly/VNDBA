@@ -10,11 +10,14 @@
       "properties": [
         {
           "id": "1:3463677600939481993",
-          "name": "id"
+          "name": "id",
+          "type": 6,
+          "flags": 129
         },
         {
           "id": "2:2580067729205691475",
-          "name": "alias"
+          "name": "alias",
+          "type": 9
         }
       ],
       "relations": []
@@ -26,37 +29,48 @@
       "properties": [
         {
           "id": "1:905255653519582455",
-          "name": "id"
+          "name": "id",
+          "type": 6,
+          "flags": 129
         },
         {
           "id": "2:275636444477022418",
-          "name": "name"
+          "name": "name",
+          "type": 9
         },
         {
           "id": "3:4508707526710333784",
-          "name": "description"
+          "name": "description",
+          "type": 9
         },
         {
           "id": "4:5300204291946515729",
-          "name": "meta"
+          "name": "meta",
+          "type": 1,
+          "flags": 4
         },
         {
           "id": "5:9196017468127289406",
-          "name": "vns"
+          "name": "vns",
+          "type": 5,
+          "flags": 4
         },
         {
           "id": "6:2795276004158075612",
-          "name": "cat"
+          "name": "cat",
+          "type": 9
         }
       ],
       "relations": [
         {
           "id": "1:212511292863528476",
-          "name": "aliases"
+          "name": "aliases",
+          "targetId": "1:5727640067079510226"
         },
         {
           "id": "2:6239154917433058285",
-          "name": "parents"
+          "name": "parents",
+          "targetId": "3:2099568879449573628"
         }
       ]
     },
@@ -67,7 +81,9 @@
       "properties": [
         {
           "id": "1:5209586930397389710",
-          "name": "id"
+          "name": "id",
+          "type": 6,
+          "flags": 129
         }
       ],
       "relations": []
@@ -79,11 +95,14 @@
       "properties": [
         {
           "id": "1:416777893852061871",
-          "name": "id"
+          "name": "id",
+          "type": 6,
+          "flags": 129
         },
         {
           "id": "2:3232588614002497578",
-          "name": "alias"
+          "name": "alias",
+          "type": 9
         }
       ],
       "relations": []
@@ -95,33 +114,43 @@
       "properties": [
         {
           "id": "1:7879098999978363557",
-          "name": "id"
+          "name": "id",
+          "type": 6,
+          "flags": 129
         },
         {
           "id": "2:460791765555878929",
-          "name": "name"
+          "name": "name",
+          "type": 9
         },
         {
           "id": "3:7442792879486712567",
-          "name": "description"
+          "name": "description",
+          "type": 9
         },
         {
           "id": "4:2764148235316876797",
-          "name": "meta"
+          "name": "meta",
+          "type": 1,
+          "flags": 4
         },
         {
           "id": "5:2693393788243465705",
-          "name": "chars"
+          "name": "chars",
+          "type": 5,
+          "flags": 4
         }
       ],
       "relations": [
         {
           "id": "3:6949965739491798599",
-          "name": "aliases"
+          "name": "aliases",
+          "targetId": "4:8275220623806677493"
         },
         {
           "id": "4:2145276859790287325",
-          "name": "parents"
+          "name": "parents",
+          "targetId": "6:1291972672765963073"
         }
       ]
     },
@@ -132,7 +161,9 @@
       "properties": [
         {
           "id": "1:5326741755606834243",
-          "name": "id"
+          "name": "id",
+          "type": 6,
+          "flags": 129
         }
       ],
       "relations": []
@@ -144,27 +175,38 @@
       "properties": [
         {
           "id": "1:9107215934214280624",
-          "name": "id"
+          "name": "id",
+          "type": 6,
+          "flags": 129
         },
         {
           "id": "2:3299555161898871955",
-          "name": "image"
+          "name": "image",
+          "type": 9
         },
         {
           "id": "3:4444355029592788518",
-          "name": "rid"
+          "name": "rid",
+          "type": 5,
+          "flags": 4
         },
         {
           "id": "4:249523963857834551",
-          "name": "nsfw"
+          "name": "nsfw",
+          "type": 1,
+          "flags": 4
         },
         {
           "id": "5:7061439894772142000",
-          "name": "height"
+          "name": "height",
+          "type": 5,
+          "flags": 4
         },
         {
           "id": "6:9027566232535621607",
-          "name": "width"
+          "name": "width",
+          "type": 5,
+          "flags": 4
         }
       ],
       "relations": []
@@ -176,90 +218,120 @@
       "properties": [
         {
           "id": "1:316403505073278995",
-          "name": "id"
+          "name": "id",
+          "type": 6,
+          "flags": 129
         },
         {
           "id": "2:5799094865235637787",
-          "name": "title"
+          "name": "title",
+          "type": 9
         },
         {
           "id": "3:2705877022358414282",
-          "name": "original"
+          "name": "original",
+          "type": 9
         },
         {
           "id": "4:8792972496256884460",
-          "name": "released"
+          "name": "released",
+          "type": 9
         },
         {
           "id": "5:5545991733863390428",
-          "name": "aliases"
+          "name": "aliases",
+          "type": 9
         },
         {
           "id": "6:3541711333898125121",
-          "name": "length"
+          "name": "length",
+          "type": 5,
+          "flags": 2
         },
         {
           "id": "7:3310906440522709745",
-          "name": "description"
+          "name": "description",
+          "type": 9
         },
         {
           "id": "8:7934933907163166745",
-          "name": "image"
+          "name": "image",
+          "type": 9
         },
         {
           "id": "9:7561607626899923064",
-          "name": "image_nsfw"
+          "name": "image_nsfw",
+          "type": 1,
+          "flags": 4
         },
         {
           "id": "11:359216080782705193",
-          "name": "popularity"
+          "name": "popularity",
+          "type": 7,
+          "flags": 4
         },
         {
           "id": "12:5171438738332925710",
-          "name": "rating"
+          "name": "rating",
+          "type": 7,
+          "flags": 4
         },
         {
           "id": "13:1163517520452282823",
-          "name": "votecount"
+          "name": "votecount",
+          "type": 5,
+          "flags": 4
         },
         {
           "id": "14:8605111283783311503",
+          "name": "linksId",
           "indexId": "1:7375454516111027198",
-          "name": "linksId"
+          "type": 11,
+          "flags": 1548,
+          "relationTarget": "LinksDao"
         },
         {
           "id": "15:6140133650538773782",
-          "name": "flags"
+          "name": "flags",
+          "type": 5,
+          "flags": 4
         }
       ],
       "relations": [
         {
           "id": "5:3423473361525100159",
-          "name": "screens"
+          "name": "screens",
+          "targetId": "10:8047859267652497979"
         },
         {
           "id": "6:2048183445605003020",
-          "name": "tags"
+          "name": "tags",
+          "targetId": "12:3310468597704175954"
         },
         {
           "id": "7:5193514285912189364",
-          "name": "languages"
+          "name": "languages",
+          "targetId": "19:7060773822179915664"
         },
         {
           "id": "8:6004578287152691036",
-          "name": "orig_lang"
+          "name": "orig_lang",
+          "targetId": "20:2538702657423622984"
         },
         {
           "id": "9:8877722148301353548",
-          "name": "platforms"
+          "name": "platforms",
+          "targetId": "15:1283349800001857741"
         },
         {
           "id": "10:1831737150479148114",
-          "name": "anime"
+          "name": "anime",
+          "targetId": "17:6024506848087641739"
         },
         {
           "id": "11:6159569399506217024",
-          "name": "relations"
+          "name": "relations",
+          "targetId": "18:4951134021498746961"
         }
       ]
     },
@@ -270,25 +342,35 @@
       "properties": [
         {
           "id": "1:1430905045332429929",
-          "name": "id"
+          "name": "id",
+          "type": 6,
+          "flags": 129
         },
         {
           "id": "2:2263744153950994738",
+          "name": "tagId",
           "indexId": "3:7241531304257385670",
-          "name": "tagId"
+          "type": 6,
+          "flags": 12
         },
         {
           "id": "3:7734617761140334758",
-          "name": "score"
+          "name": "score",
+          "type": 7,
+          "flags": 4
         },
         {
           "id": "4:687193963527442749",
-          "name": "spoilerLevel"
+          "name": "spoilerLevel",
+          "type": 5,
+          "flags": 4
         },
         {
           "id": "5:4637973013447496361",
+          "name": "vnId",
           "indexId": "2:729468790343377297",
-          "name": "vnId"
+          "type": 6,
+          "flags": 12
         }
       ],
       "relations": []
@@ -300,11 +382,14 @@
       "properties": [
         {
           "id": "1:7125411083384653765",
-          "name": "id"
+          "name": "id",
+          "type": 6,
+          "flags": 129
         },
         {
           "id": "2:5898636249980689573",
-          "name": "value"
+          "name": "value",
+          "type": 9
         }
       ],
       "relations": []
@@ -316,31 +401,39 @@
       "properties": [
         {
           "id": "1:2177837704908675610",
-          "name": "id"
+          "name": "id",
+          "type": 6,
+          "flags": 1
         },
         {
           "id": "2:3996251816683733288",
-          "name": "wikipedia"
+          "name": "wikipedia",
+          "type": 9
         },
         {
           "id": "3:2279579490260673772",
-          "name": "encubed"
+          "name": "encubed",
+          "type": 9
         },
         {
           "id": "4:4548458072815912074",
-          "name": "renai"
+          "name": "renai",
+          "type": 9
         },
         {
           "id": "5:4723639850039064681",
-          "name": "homepage"
+          "name": "homepage",
+          "type": 9
         },
         {
           "id": "6:831557415732831702",
-          "name": "twitter"
+          "name": "twitter",
+          "type": 9
         },
         {
           "id": "7:3610033766620002162",
-          "name": "anidb"
+          "name": "anidb",
+          "type": 9
         }
       ],
       "relations": []
@@ -352,31 +445,41 @@
       "properties": [
         {
           "id": "1:1911363691383116133",
-          "name": "id"
+          "name": "id",
+          "type": 6,
+          "flags": 129
         },
         {
           "id": "2:2616384230599150802",
-          "name": "ann_id"
+          "name": "ann_id",
+          "type": 5,
+          "flags": 2
         },
         {
           "id": "3:978577393264536235",
-          "name": "nfo_id"
+          "name": "nfo_id",
+          "type": 9
         },
         {
           "id": "4:3289456521100676574",
-          "name": "title_romaji"
+          "name": "title_romaji",
+          "type": 9
         },
         {
           "id": "5:2171186552538281083",
-          "name": "title_kanji"
+          "name": "title_kanji",
+          "type": 9
         },
         {
           "id": "6:6909817961039027943",
-          "name": "year"
+          "name": "year",
+          "type": 5,
+          "flags": 2
         },
         {
           "id": "7:4283293253225572457",
-          "name": "type"
+          "name": "type",
+          "type": 9
         }
       ],
       "relations": []
@@ -388,23 +491,30 @@
       "properties": [
         {
           "id": "1:8401357457482778140",
-          "name": "id"
+          "name": "id",
+          "type": 6,
+          "flags": 129
         },
         {
           "id": "2:2733176720976584579",
-          "name": "relation"
+          "name": "relation",
+          "type": 9
         },
         {
           "id": "3:3297600381276981445",
-          "name": "title"
+          "name": "title",
+          "type": 9
         },
         {
           "id": "4:1194557052442066226",
-          "name": "original"
+          "name": "original",
+          "type": 9
         },
         {
           "id": "5:448121791854554544",
-          "name": "official"
+          "name": "official",
+          "type": 1,
+          "flags": 4
         }
       ],
       "relations": []
@@ -416,11 +526,14 @@
       "properties": [
         {
           "id": "1:8279861309452616978",
-          "name": "id"
+          "name": "id",
+          "type": 6,
+          "flags": 129
         },
         {
           "id": "2:845796808089238925",
-          "name": "value"
+          "name": "value",
+          "type": 9
         }
       ],
       "relations": []
@@ -432,11 +545,14 @@
       "properties": [
         {
           "id": "1:1663765358389354583",
-          "name": "id"
+          "name": "id",
+          "type": 6,
+          "flags": 129
         },
         {
           "id": "2:8743054631972700538",
-          "name": "value"
+          "name": "value",
+          "type": 9
         }
       ],
       "relations": []
@@ -448,11 +564,14 @@
       "properties": [
         {
           "id": "1:6085480714780093374",
-          "name": "id"
+          "name": "id",
+          "type": 6,
+          "flags": 129
         },
         {
           "id": "2:2789840205089620291",
-          "name": "label"
+          "name": "label",
+          "type": 9
         }
       ],
       "relations": []
@@ -464,41 +583,55 @@
       "properties": [
         {
           "id": "1:1123359440929066732",
-          "name": "vn"
+          "name": "vn",
+          "type": 6,
+          "flags": 129
         },
         {
           "id": "2:1871584832433272668",
-          "name": "added"
+          "name": "added",
+          "type": 6,
+          "flags": 4
         },
         {
           "id": "3:2025285071585579504",
-          "name": "lastmod"
+          "name": "lastmod",
+          "type": 6,
+          "flags": 4
         },
         {
           "id": "4:7606355681594938383",
-          "name": "voted"
+          "name": "voted",
+          "type": 6,
+          "flags": 2
         },
         {
           "id": "5:8412937718144885177",
-          "name": "vote"
+          "name": "vote",
+          "type": 5,
+          "flags": 2
         },
         {
           "id": "6:5537436679834181909",
-          "name": "notes"
+          "name": "notes",
+          "type": 9
         },
         {
           "id": "7:4281771169927270677",
-          "name": "started"
+          "name": "started",
+          "type": 9
         },
         {
           "id": "8:6667112339460356859",
-          "name": "finished"
+          "name": "finished",
+          "type": 9
         }
       ],
       "relations": [
         {
           "id": "12:4210767534704441546",
-          "name": "labels"
+          "name": "labels",
+          "targetId": "21:2628055573098783860"
         }
       ]
     }
@@ -507,8 +640,8 @@
   "lastIndexId": "3:7241531304257385670",
   "lastRelationId": "12:4210767534704441546",
   "lastSequenceId": "0:0",
-  "modelVersion": 4,
-  "modelVersionParserMinimum": 4,
+  "modelVersion": 5,
+  "modelVersionParserMinimum": 5,
   "retiredEntityUids": [
     2004469773461443688,
     3493308045902120423,

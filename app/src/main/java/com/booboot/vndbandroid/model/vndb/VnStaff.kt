@@ -1,14 +1,16 @@
 package com.booboot.vndbandroid.model.vndb
 
 import com.booboot.vndbandroid.R
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class VnStaff(
-        var sid: Int = 0,
-        var aid: Int = 0,
-        var name: String = "",
-        var original: String? = null,
-        var role: String = "",
-        var note: String? = null
+    var sid: Int = 0,
+    var aid: Int = 0,
+    var name: String = "",
+    var original: String? = null,
+    var role: String = "",
+    var note: String? = null
 ) {
     fun icon(): Int = when (role) {
         "songs" -> R.drawable.ic_mic_white_48dp

@@ -1,6 +1,6 @@
 package com.booboot.vndbandroid.repository
 
-import com.booboot.vndbandroid.model.vndb.AccountItems
+import com.booboot.vndbandroid.model.vndbandroid.AccountItems
 import com.booboot.vndbandroid.model.vndbandroid.FLAGS_DETAILS
 import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject

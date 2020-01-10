@@ -17,7 +17,7 @@ import com.booboot.vndbandroid.extensions.setupStatusBar
 import com.booboot.vndbandroid.extensions.setupToolbar
 import com.booboot.vndbandroid.extensions.statusBarHeight
 import com.booboot.vndbandroid.extensions.toggle
-import com.booboot.vndbandroid.model.vndb.AccountItems
+import com.booboot.vndbandroid.model.vndbandroid.AccountItems
 import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.booboot.vndbandroid.ui.vnlist.VNAdapter
 import com.booboot.vndbandroid.util.GridAutofitLayoutManager

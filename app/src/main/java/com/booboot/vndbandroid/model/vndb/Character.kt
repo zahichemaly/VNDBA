@@ -1,25 +1,27 @@
 package com.booboot.vndbandroid.model.vndb
 
+import com.squareup.moshi.JsonClass
 import java.util.*
 
+@JsonClass(generateAdapter = true)
 data class Character(
-        var id: Int = 0,
-        var name: String = "",
-        var original: String? = null,
-        private var _gender: String? = null,
-        private var _bloodt: String? = null,
-        var birthday: IntArray = IntArray(2),
-        var aliases: String? = null,
-        var description: String? = null,
-        var image: String? = null,
-        var bust: Int = 0,
-        var waist: Int = 0,
-        var hip: Int = 0,
-        var height: Int = 0,
-        var weight: Int = 0,
-        var traits: List<IntArray> = emptyList(),
-        var vns: List<Array<Any>> = emptyList(),
-        var voiced: List<CharacterVoiced> = emptyList()
+    var id: Int = 0,
+    var name: String = "",
+    var original: String? = null,
+    var _gender: String? = null,
+    var _bloodt: String? = null,
+    var birthday: IntArray = IntArray(2),
+    var aliases: String? = null,
+    var description: String? = null,
+    var image: String? = null,
+    var bust: Int = 0,
+    var waist: Int = 0,
+    var hip: Int = 0,
+    var height: Int = 0,
+    var weight: Int = 0,
+    var traits: List<IntArray> = emptyList(),
+    var vns: List<Array<Any>> = emptyList(),
+    var voiced: List<CharacterVoiced> = emptyList()
 ) {
     var gender = _gender
         set(gender) {

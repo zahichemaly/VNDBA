@@ -1,7 +1,7 @@
 package com.booboot.vndbandroid.diff
 
 import androidx.recyclerview.widget.DiffUtil
-import com.booboot.vndbandroid.model.vndb.AccountItems
+import com.booboot.vndbandroid.model.vndbandroid.AccountItems
 
 class VNDiffCallback(private var oldItems: AccountItems, private var newItems: AccountItems) : DiffUtil.Callback() {
     private val oldVns = oldItems.vns.values.toList()

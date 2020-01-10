@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.booboot.vndbandroid.extensions.asyncLazy
 import com.booboot.vndbandroid.extensions.plusAssign
 import com.booboot.vndbandroid.extensions.transaction
-import com.booboot.vndbandroid.model.vndb.AccountItems
+import com.booboot.vndbandroid.model.vndbandroid.AccountItems
 import com.booboot.vndbandroid.model.vndbandroid.FLAGS_DETAILS
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.model.vndbandroid.SyncData

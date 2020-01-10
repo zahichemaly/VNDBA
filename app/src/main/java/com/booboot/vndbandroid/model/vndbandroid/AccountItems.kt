@@ -1,4 +1,7 @@
-package com.booboot.vndbandroid.model.vndb
+package com.booboot.vndbandroid.model.vndbandroid
+
+import com.booboot.vndbandroid.model.vndb.UserList
+import com.booboot.vndbandroid.model.vndb.VN
 
 data class AccountItems(
     var userList: Map<Long, UserList> = emptyMap(),

@@ -37,7 +37,7 @@ import kotlin.math.roundToLong
 @Singleton
 class VNDBServer @Inject constructor(private val moshi: Moshi) {
     private fun connect(socketIndex: Int) = try {
-        "connect TCP ON " + Thread.currentThread().id + " SOCKET $socketIndex".log()
+        ("connect TCP ON " + Thread.currentThread().id + " SOCKET $socketIndex").log()
         val sf = SSLSocketFactory.getDefault()
         val socket = sf.createSocket(HOST, PORT) as SSLSocket
         socket.keepAlive = false
@@ -129,7 +129,7 @@ class VNDBServer @Inject constructor(private val moshi: Moshi) {
                 val input = InputStreamReader(socket.inputStream)
 
                 do {
-                    query + " ON " + Thread.currentThread().id + " SOCKET ${options.socketIndex}".log()
+                    (query + " ON " + Thread.currentThread().id + " SOCKET ${options.socketIndex}").log()
                     if (input.ready()) while (input.read() > -1);
                     output.flush()
                     output.write(query.toByteArray(charset("UTF-8")))

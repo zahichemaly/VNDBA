@@ -5,7 +5,7 @@ import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.extensions.plusAssign
-import com.booboot.vndbandroid.model.vndb.AccountItems
+import com.booboot.vndbandroid.model.vndbandroid.AccountItems
 import com.booboot.vndbandroid.model.vndb.Label
 import com.booboot.vndbandroid.model.vndb.UserList
 import com.booboot.vndbandroid.model.vndb.VN

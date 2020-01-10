@@ -27,7 +27,7 @@ import com.booboot.vndbandroid.extensions.setupStatusBar
 import com.booboot.vndbandroid.extensions.setupToolbar
 import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.extensions.toggleBottomSheet
-import com.booboot.vndbandroid.model.vndb.AccountItems
+import com.booboot.vndbandroid.model.vndbandroid.AccountItems
 import com.booboot.vndbandroid.model.vndb.Label.Companion.BLACKLIST
 import com.booboot.vndbandroid.model.vndb.Label.Companion.DROPPED
 import com.booboot.vndbandroid.model.vndb.Label.Companion.FINISHED

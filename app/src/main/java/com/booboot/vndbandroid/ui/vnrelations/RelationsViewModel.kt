@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.diff.RelationsDiffCallback
 import com.booboot.vndbandroid.extensions.plusAssign
-import com.booboot.vndbandroid.model.vndb.AccountItems
+import com.booboot.vndbandroid.model.vndbandroid.AccountItems
 import com.booboot.vndbandroid.model.vndb.RELATIONS
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndbandroid.FLAGS_DETAILS
