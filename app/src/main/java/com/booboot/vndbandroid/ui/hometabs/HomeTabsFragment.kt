@@ -123,7 +123,7 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
         }
     }
 
-    private fun update(force: Boolean = true) = viewModel.getTabTitles(type, force)
+    private fun update(force: Boolean = true) = viewModel.getTabTitles(force)
 
     private fun showTabs(vnlistData: VnlistData) {
         if (viewModel.currentPage >= 0) viewPager.currentItem = viewModel.currentPage
@@ -198,8 +198,6 @@ class HomeTabsFragment : BaseFragment<HomeTabsViewModel>(), TabLayout.OnTabSelec
         const val LIST_TYPE_ARG = "LIST_TYPE_ARG"
         const val TAB_VALUE_ARG = "TAB_VALUE_ARG"
         const val SAVED_FILTER_STATE = "SAVED_FILTER_STATE"
-        const val VNLIST = 1
-        const val VOTELIST = 2
-        const val WISHLIST = 3
+        const val USERLIST = 1
     }
 }

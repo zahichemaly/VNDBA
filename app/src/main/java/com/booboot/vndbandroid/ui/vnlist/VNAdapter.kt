@@ -52,9 +52,7 @@ class VNAdapter(
         val vn = filteredVns.vns.values.toList()[position]
         holder.onBind(
             vn,
-            filteredVns.vnlist[vn.id],
-            filteredVns.votelist[vn.id],
-            filteredVns.wishlist[vn.id],
+            filteredVns.userList[vn.id],
             showFullDate,
             showRank,
             showRating,

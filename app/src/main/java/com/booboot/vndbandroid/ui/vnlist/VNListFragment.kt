@@ -12,11 +12,11 @@ import com.booboot.vndbandroid.extensions.home
 import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.startParentEnterTransition
-import com.booboot.vndbandroid.model.vndbandroid.Status
+import com.booboot.vndbandroid.model.vndb.Label
 import com.booboot.vndbandroid.model.vndbandroid.VnlistData
 import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment
-import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment.Companion.VNLIST
+import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment.Companion.USERLIST
 import com.booboot.vndbandroid.util.GridAutofitLayoutManager
 import com.booboot.vndbandroid.util.Pixels
 import kotlinx.android.synthetic.main.home_tabs_fragment.*
@@ -25,14 +25,14 @@ import kotlinx.android.synthetic.main.vn_list_fragment.*
 class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRefreshListener {
     override val layout: Int = R.layout.vn_list_fragment
     private val adapter by lazy { VNAdapter(::onVnClicked, filteredVns = viewModel.filteredVns) }
-    private var tabValue: Int = 0
+    private var tabValue: Long = 0
     private var listType: Int = 0
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val context = context ?: return
 
-        tabValue = arguments?.getInt(HomeTabsFragment.TAB_VALUE_ARG) ?: Status.PLAYING
-        listType = arguments?.getInt(HomeTabsFragment.LIST_TYPE_ARG) ?: VNLIST
+        tabValue = arguments?.getLong(HomeTabsFragment.TAB_VALUE_ARG) ?: Label.PLAYING.id
+        listType = arguments?.getInt(HomeTabsFragment.LIST_TYPE_ARG) ?: USERLIST
 
         viewModel = ViewModelProviders.of(this).get(VNListViewModel::class.java)
         viewModel.errorData.observeOnce(this, ::showError)

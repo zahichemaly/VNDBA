@@ -39,9 +39,7 @@ class RelationsAdapter(
             holder.onBind(
                 relation,
                 relationsData.relations[relation.id],
-                relationsData.items.vnlist[relation.id],
-                relationsData.items.votelist[relation.id],
-                relationsData.items.wishlist[relation.id]
+                relationsData.items.userList[relation.id]
             )
         }
     }

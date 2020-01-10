@@ -7,7 +7,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
@@ -29,10 +28,17 @@ import com.booboot.vndbandroid.extensions.setupToolbar
 import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.extensions.toggleBottomSheet
 import com.booboot.vndbandroid.model.vndb.AccountItems
+import com.booboot.vndbandroid.model.vndb.Label.Companion.BLACKLIST
+import com.booboot.vndbandroid.model.vndb.Label.Companion.DROPPED
+import com.booboot.vndbandroid.model.vndb.Label.Companion.FINISHED
+import com.booboot.vndbandroid.model.vndb.Label.Companion.PLAYING
+import com.booboot.vndbandroid.model.vndb.Label.Companion.STALLED
+import com.booboot.vndbandroid.model.vndb.Label.Companion.STATUSES
+import com.booboot.vndbandroid.model.vndb.Label.Companion.UNKNOWN
+import com.booboot.vndbandroid.model.vndb.Label.Companion.WISHLIST
+import com.booboot.vndbandroid.model.vndb.Label.Companion.WISHLISTS
 import com.booboot.vndbandroid.model.vndb.Screen
 import com.booboot.vndbandroid.model.vndb.VN
-import com.booboot.vndbandroid.model.vndbandroid.Priority
-import com.booboot.vndbandroid.model.vndbandroid.Status
 import com.booboot.vndbandroid.model.vndbandroid.Vote
 import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.booboot.vndbandroid.ui.slideshow.SlideshowAdapter
@@ -52,8 +58,6 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
     private var vnId: Long = 0
 
     lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
-    private lateinit var votelistViews: List<View?>
-    private lateinit var wishlistViews: List<View?>
     private lateinit var bottomSheetButtons: List<View?>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -100,11 +104,9 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
         tabLayout.setupWithViewPager(viewPager)
 
         /* View groups */
-        votelistViews = listOf(iconContentVote, textContentVote, flexboxVote, buttonRemoveVote)
-        wishlistViews = listOf(iconContentWishlist, textContentWishlist, flexboxWishlist, buttonRemoveWishlist)
-        bottomSheetButtons = listOf(textNotes, buttonPlaying, buttonFinished, buttonStalled, buttonDropped, buttonUnknown, buttonRemoveStatus,
-            buttonVote1, buttonVote2, buttonVote3, buttonVote4, buttonVote5, buttonVote6, buttonVote7, buttonVote8, buttonVote9, buttonVote10, inputCustomVote, buttonRemoveVote,
-            buttonWishlistHigh, buttonWishlistMedium, buttonWishlistLow, buttonWishlistBlacklist, buttonRemoveWishlist)
+        bottomSheetButtons = listOf(textNotes, buttonPlaying, buttonFinished, buttonStalled, buttonDropped, buttonUnknown,
+            buttonVote1, buttonVote2, buttonVote3, buttonVote4, buttonVote5, buttonVote6, buttonVote7, buttonVote8, buttonVote9, buttonVote10, inputCustomVote,
+            buttonWishlistHigh, buttonWishlistBlacklist)
 
         /* Bottom sheet */
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
@@ -148,54 +150,47 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
         val activity = home() ?: return
         items ?: return
 
-        val vnlist = items.vnlist[vnId]
-        val wishlist = items.wishlist[vnId]
-        val votelist = items.votelist[vnId]
+        val userList = items.userList[vnId]
+        val status = userList?.labels(STATUSES) ?: listOf()
+        val wishlist = userList?.labels(WISHLISTS) ?: listOf()
+        val vote = Vote.toShortString(userList?.vote, null)
+        val labelIds = userList?.labelIds() ?: setOf()
 
-        val status = Status.toString(vnlist?.status)
-        val priority = Priority.toString(wishlist?.priority)
-        val vote = Vote.toShortString(votelist?.vote, null)
-
-        textAddToList.text = when {
-            status == null && priority == null && vote == null -> getString(R.string.add_to_your_lists)
+        textAddToList.text = when (userList) {
+            null -> getString(R.string.add_to_your_lists)
             else -> getString(R.string.edit_your_lists)
         }
 
-        textStatus.text = status
-        textWishlist.text = priority
+        textStatus.text = userList?.firstStatus()?.label
+        textWishlist.text = userList?.firstWishlist()?.label
         votesButton.text = vote ?: getString(R.string.dash)
 
-        iconStatus.toggle(status != null)
-        textStatus.toggle(status != null)
-        iconWishlist.toggle(priority != null)
-        textWishlist.toggle(priority != null)
+        iconStatus.toggle(status.isNotEmpty())
+        textStatus.toggle(status.isNotEmpty())
+        iconWishlist.toggle(wishlist.isNotEmpty())
+        textWishlist.toggle(wishlist.isNotEmpty())
 
-        votesButton.background = ContextCompat.getDrawable(activity, Vote.getDrawableColor10(votelist?.vote))
+        votesButton.background = ContextCompat.getDrawable(activity, Vote.getDrawableColor10(userList?.vote))
 
-        textNotes.setText(vnlist?.notes, TextView.BufferType.EDITABLE)
-        buttonPlaying.selectIf(vnlist?.status == Status.PLAYING)
-        buttonFinished.selectIf(vnlist?.status == Status.FINISHED)
-        buttonStalled.selectIf(vnlist?.status == Status.STALLED)
-        buttonDropped.selectIf(vnlist?.status == Status.DROPPED)
-        buttonUnknown.selectIf(vnlist?.status == Status.UNKNOWN)
-        buttonVote1.selectIf(votelist?.vote == 10)
-        buttonVote2.selectIf(votelist?.vote == 20)
-        buttonVote3.selectIf(votelist?.vote == 30)
-        buttonVote4.selectIf(votelist?.vote == 40)
-        buttonVote5.selectIf(votelist?.vote == 50)
-        buttonVote6.selectIf(votelist?.vote == 60)
-        buttonVote7.selectIf(votelist?.vote == 70)
-        buttonVote8.selectIf(votelist?.vote == 80)
-        buttonVote9.selectIf(votelist?.vote == 90)
-        buttonVote10.selectIf(votelist?.vote == 100)
-        inputCustomVote.setText(if (votelist?.vote?.rem(10) == 0) null else Vote.toShortString(votelist?.vote, null))
-        buttonWishlistHigh.selectIf(wishlist?.priority == Priority.HIGH)
-        buttonWishlistMedium.selectIf(wishlist?.priority == Priority.MEDIUM)
-        buttonWishlistLow.selectIf(wishlist?.priority == Priority.LOW)
-        buttonWishlistBlacklist.selectIf(wishlist?.priority == Priority.BLACKLIST)
-
-        votelistViews.forEach { it?.isVisible = wishlist == null || votelist != null }
-        wishlistViews.forEach { it?.isVisible = votelist == null || wishlist != null }
+        textNotes.setText(userList?.notes, TextView.BufferType.EDITABLE)
+        buttonPlaying.selectIf(PLAYING.id in labelIds)
+        buttonFinished.selectIf(FINISHED.id in labelIds)
+        buttonStalled.selectIf(STALLED.id in labelIds)
+        buttonDropped.selectIf(DROPPED.id in labelIds)
+        buttonUnknown.selectIf(UNKNOWN.id in labelIds)
+        buttonVote1.selectIf(userList?.vote == 10)
+        buttonVote2.selectIf(userList?.vote == 20)
+        buttonVote3.selectIf(userList?.vote == 30)
+        buttonVote4.selectIf(userList?.vote == 40)
+        buttonVote5.selectIf(userList?.vote == 50)
+        buttonVote6.selectIf(userList?.vote == 60)
+        buttonVote7.selectIf(userList?.vote == 70)
+        buttonVote8.selectIf(userList?.vote == 80)
+        buttonVote9.selectIf(userList?.vote == 90)
+        buttonVote10.selectIf(userList?.vote == 100)
+        inputCustomVote.setText(if (userList?.vote?.rem(10) == 0) null else vote)
+        buttonWishlistHigh.selectIf(WISHLIST.id in labelIds)
+        buttonWishlistBlacklist.selectIf(BLACKLIST.id in labelIds)
     }
 
     override fun showLoading(loading: Int?) {
@@ -214,12 +209,11 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
         when (view.id) {
             R.id.bottomSheetHeader -> bottomSheet.toggleBottomSheet()
 
-            R.id.buttonPlaying -> viewModel.setStatus(Status.PLAYING)
-            R.id.buttonFinished -> viewModel.setStatus(Status.FINISHED)
-            R.id.buttonStalled -> viewModel.setStatus(Status.STALLED)
-            R.id.buttonDropped -> viewModel.setStatus(Status.DROPPED)
-            R.id.buttonUnknown -> viewModel.setStatus(Status.UNKNOWN)
-            R.id.buttonRemoveStatus -> viewModel.removeVnlist()
+            R.id.buttonPlaying -> viewModel.toggleLabel(PLAYING, STATUSES)
+            R.id.buttonFinished -> viewModel.toggleLabel(FINISHED, STATUSES)
+            R.id.buttonStalled -> viewModel.toggleLabel(STALLED, STATUSES)
+            R.id.buttonDropped -> viewModel.toggleLabel(DROPPED, STATUSES)
+            R.id.buttonUnknown -> viewModel.toggleLabel(UNKNOWN, STATUSES)
 
             R.id.buttonVote1 -> viewModel.setVote(10)
             R.id.buttonVote2 -> viewModel.setVote(20)
@@ -231,13 +225,9 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
             R.id.buttonVote8 -> viewModel.setVote(80)
             R.id.buttonVote9 -> viewModel.setVote(90)
             R.id.buttonVote10 -> viewModel.setVote(100)
-            R.id.buttonRemoveVote -> viewModel.removeVotelist()
 
-            R.id.buttonWishlistHigh -> viewModel.setPriority(Priority.HIGH)
-            R.id.buttonWishlistMedium -> viewModel.setPriority(Priority.MEDIUM)
-            R.id.buttonWishlistLow -> viewModel.setPriority(Priority.LOW)
-            R.id.buttonWishlistBlacklist -> viewModel.setPriority(Priority.BLACKLIST)
-            R.id.buttonRemoveWishlist -> viewModel.removeWishlist()
+            R.id.buttonWishlistHigh -> viewModel.toggleLabel(WISHLIST, WISHLISTS)
+            R.id.buttonWishlistBlacklist -> viewModel.toggleLabel(BLACKLIST, WISHLISTS)
         }
     }
 

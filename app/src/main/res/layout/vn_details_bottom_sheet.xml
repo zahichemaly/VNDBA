@@ -176,10 +176,10 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="16dp"
                 app:dividerDrawable="@drawable/flexbox_divider_8dp"
                 app:flexWrap="wrap"
-                app:layout_constraintEnd_toStartOf="@id/buttonRemoveStatus"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@id/iconContentStatus"
                 app:layout_constraintTop_toBottomOf="@id/iconContentStatus"
                 app:showDividerVertical="middle">
@@ -246,21 +246,6 @@
             </com.google.android.flexbox.FlexboxLayout>
 
             <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/buttonRemoveStatus"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginEnd="16dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
-                android:padding="6dp"
-                app:layout_constraintBottom_toBottomOf="@id/flexboxStatus"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/flexboxStatus"
-                app:srcCompat="@drawable/ic_delete_forever_black_24dp"
-                app:tint="?android:attr/textColorPrimary" />
-
-            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/iconContentVote"
                 android:layout_width="22dp"
                 android:layout_height="22dp"
@@ -287,10 +272,10 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="16dp"
                 app:dividerDrawable="@drawable/flexbox_divider_8dp"
                 app:flexWrap="wrap"
-                app:layout_constraintEnd_toStartOf="@id/buttonRemoveVote"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@id/iconContentVote"
                 app:layout_constraintTop_toBottomOf="@id/iconContentVote"
                 app:showDividerVertical="middle">
@@ -425,21 +410,6 @@
 
             </com.google.android.flexbox.FlexboxLayout>
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/buttonRemoveVote"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginEnd="16dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
-                android:padding="6dp"
-                app:layout_constraintBottom_toBottomOf="@id/flexboxVote"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/flexboxVote"
-                app:srcCompat="@drawable/ic_delete_forever_black_24dp"
-                app:tint="?android:attr/textColorPrimary" />
-
             <androidx.constraintlayout.widget.Barrier
                 android:id="@+id/barrierVote"
                 android:layout_width="match_parent"
@@ -474,10 +444,10 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="16dp"
                 app:dividerDrawable="@drawable/flexbox_divider_8dp"
                 app:flexWrap="wrap"
-                app:layout_constraintEnd_toStartOf="@id/buttonRemoveWishlist"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@id/iconContentWishlist"
                 app:layout_constraintTop_toBottomOf="@id/iconContentWishlist"
                 app:showDividerVertical="middle">
@@ -495,30 +465,6 @@
                     app:strokeColor="@color/playing" />
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonWishlistMedium"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:text="@string/medium"
-                    android:textAllCaps="false"
-                    android:textColor="@color/stalled"
-                    android:textSize="12sp"
-                    app:rippleColor="@color/stalled"
-                    app:strokeColor="@color/stalled" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonWishlistLow"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:text="@string/low"
-                    android:textAllCaps="false"
-                    android:textColor="@color/dropped"
-                    android:textSize="12sp"
-                    app:rippleColor="@color/dropped"
-                    app:strokeColor="@color/dropped" />
-
-                <com.google.android.material.button.MaterialButton
                     android:id="@+id/buttonWishlistBlacklist"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="wrap_content"
@@ -530,21 +476,6 @@
                     app:rippleColor="@color/unknown"
                     app:strokeColor="@color/unknown" />
             </com.google.android.flexbox.FlexboxLayout>
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/buttonRemoveWishlist"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginEnd="16dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
-                android:padding="6dp"
-                app:layout_constraintBottom_toBottomOf="@id/flexboxWishlist"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/flexboxWishlist"
-                app:srcCompat="@drawable/ic_delete_forever_black_24dp"
-                app:tint="?android:attr/textColorPrimary" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

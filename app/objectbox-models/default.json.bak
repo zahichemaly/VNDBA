@@ -329,7 +329,7 @@
     },
     {
       "id": "12:3310468597704175954",
-      "lastPropertyId": "4:687193963527442749",
+      "lastPropertyId": "5:4637973013447496361",
       "name": "VNTagDao",
       "properties": [
         {
@@ -338,6 +338,7 @@
         },
         {
           "id": "2:2263744153950994738",
+          "indexId": "3:7241531304257385670",
           "name": "tagId"
         },
         {
@@ -347,38 +348,11 @@
         {
           "id": "4:687193963527442749",
           "name": "spoilerLevel"
-        }
-      ],
-      "relations": []
-    },
-    {
-      "id": "13:2004469773461443688",
-      "lastPropertyId": "2:3742630984561189864",
-      "name": "LanguagaDao",
-      "properties": [
-        {
-          "id": "1:2773197008656919714",
-          "name": "id"
         },
         {
-          "id": "2:3742630984561189864",
-          "name": "value"
-        }
-      ],
-      "relations": []
-    },
-    {
-      "id": "14:3493308045902120423",
-      "lastPropertyId": "2:7444683997660937398",
-      "name": "OriginalLanguagaDao",
-      "properties": [
-        {
-          "id": "1:9097837578298024101",
-          "name": "id"
-        },
-        {
-          "id": "2:7444683997660937398",
-          "name": "value"
+          "id": "5:4637973013447496361",
+          "indexId": "2:729468790343377297",
+          "name": "vnId"
         }
       ],
       "relations": []
@@ -498,18 +472,57 @@
         }
       ],
       "relations": []
+    },
+    {
+      "id": "19:7060773822179915664",
+      "lastPropertyId": "2:845796808089238925",
+      "name": "LanguageDao",
+      "properties": [
+        {
+          "id": "1:8279861309452616978",
+          "name": "id"
+        },
+        {
+          "id": "2:845796808089238925",
+          "name": "value"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "20:2538702657423622984",
+      "lastPropertyId": "2:8743054631972700538",
+      "name": "OriginalLanguageDao",
+      "properties": [
+        {
+          "id": "1:1663765358389354583",
+          "name": "id"
+        },
+        {
+          "id": "2:8743054631972700538",
+          "name": "value"
+        }
+      ],
+      "relations": []
     }
   ],
-  "lastEntityId": "18:4951134021498746961",
-  "lastIndexId": "1:7375454516111027198",
+  "lastEntityId": "20:2538702657423622984",
+  "lastIndexId": "3:7241531304257385670",
   "lastRelationId": "11:6159569399506217024",
   "lastSequenceId": "0:0",
   "modelVersion": 4,
   "modelVersionParserMinimum": 4,
-  "retiredEntityUids": [],
+  "retiredEntityUids": [
+    2004469773461443688,
+    3493308045902120423
+  ],
   "retiredIndexUids": [],
   "retiredPropertyUids": [
-    4299097524267281048
+    4299097524267281048,
+    2773197008656919714,
+    3742630984561189864,
+    9097837578298024101,
+    7444683997660937398
   ],
   "retiredRelationUids": [],
   "version": 1

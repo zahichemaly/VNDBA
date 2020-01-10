@@ -40,15 +40,9 @@ class RelationsDiffCallback(private var oldItems: RelationsData, private var new
                 val oldRelationVn = oldItems.relations[oldRelation?.id ?: 0]
                 val newRelationVn = newItems.relations[newRelation?.id ?: 0]
                 if (oldRelationVn?.equalsBasic(newRelationVn) != true) return false
-                val oldVnlist = oldItems.items.vnlist[oldRelation?.id ?: 0]
-                val newVnlist = newItems.items.vnlist[newRelation?.id ?: 0]
-                if (oldVnlist != newVnlist) return false
-                val oldVotelist = oldItems.items.votelist[oldRelation?.id ?: 0]
-                val newVotelist = newItems.items.votelist[newRelation?.id ?: 0]
-                if (oldVotelist != newVotelist) return false
-                val oldWishlist = oldItems.items.wishlist[oldRelation?.id ?: 0]
-                val newWishlist = newItems.items.wishlist[newRelation?.id ?: 0]
-                if (oldWishlist != newWishlist) return false
+                val oldUserList = oldItems.items.userList[oldRelation?.id ?: 0]
+                val newUserList = newItems.items.userList[newRelation?.id ?: 0]
+                if (oldUserList != newUserList) return false
                 true
             }
         }
