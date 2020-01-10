@@ -28,3 +28,16 @@ fun AppBarLayout.setStatusBarThemeForCollapsingToolbar(activity: AppCompatActivi
             }
         }
     })
+
+fun AppBarLayout.setStatusBarThemeForToolbar(activity: AppCompatActivity, toolbar: Toolbar) =
+    addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { _, offset ->
+        if (activity.statusBarHeight() + toolbar.height + offset > 0) {
+            /* Toolbar is collapsing: removing the status bar's translucence and adding the light flag */
+            activity.window.statusBarColor = ContextCompat.getColor(activity, android.R.color.transparent)
+            toolbar.setBackgroundColor(ContextCompat.getColor(activity, android.R.color.transparent))
+        } else {
+            /* Toolbar is expanding: adding the status bar's translucence and removing the light flag */
+            activity.window.statusBarColor = ContextCompat.getColor(activity, R.color.tabBackgroundColor)
+            toolbar.setBackgroundColor(ContextCompat.getColor(activity, R.color.tabBackgroundColor))
+        }
+    })

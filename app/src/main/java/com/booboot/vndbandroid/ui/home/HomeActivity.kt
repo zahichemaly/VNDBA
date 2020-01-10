@@ -22,7 +22,7 @@ import com.booboot.vndbandroid.model.vndbandroid.AccountItems
 import com.booboot.vndbandroid.model.vndbandroid.NOT_SET
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.ui.base.BaseActivity
-import com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment
+import com.booboot.vndbandroid.ui.vnlist.VNListFragment
 import com.booboot.vndbandroid.ui.login.LoginActivity
 import com.booboot.vndbandroid.ui.vndetails.VNDetailsFragment
 import kotlinx.android.synthetic.main.home_activity.*
@@ -95,7 +95,7 @@ class HomeActivity : BaseActivity() {
             return drawer.closeDrawer(GravityCompat.START)
 
         when (val fragment = currentFragment()) {
-            is HomeTabsFragment -> if (fragment.sortBottomSheetBehavior.isOpen()) {
+            is VNListFragment -> if (fragment.sortBottomSheetBehavior.isOpen()) {
                 fragment.sortBottomSheet?.toggleBottomSheet()
                 return
             }
