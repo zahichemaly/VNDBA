@@ -74,7 +74,6 @@ class SlideshowFragment : BaseFragment<SlideshowViewModel>(), ViewPager.OnPageCh
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            android.R.id.home -> finish()
             R.id.action_download -> downloadScreenshot(DOWNLOAD_SCREENSHOT_PERMISSION)
             R.id.action_share -> downloadScreenshot(SHARE_SCREENSHOT_PERMISSION)
         }
