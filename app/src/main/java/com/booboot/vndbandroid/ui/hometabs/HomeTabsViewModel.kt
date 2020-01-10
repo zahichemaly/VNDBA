@@ -68,9 +68,12 @@ class HomeTabsViewModel constructor(application: Application) : BaseViewModel(ap
                 }
             }
 
-            tabAccountItems.vns = tabAccountItems.vns.filterKeys { vnId ->
-                vnId in tabAccountItems.userList.filterValues { tab.value in it.labelIds() }
-            }.toList().sortedWith(if (Preferences.reverseSort) compareByDescending(sorter) else compareBy(sorter)).toMap()
+            val filteredUserList = tabAccountItems.userList.filterValues { tab.value in it.labelIds() }
+            tabAccountItems.vns = tabAccountItems.vns
+                .filterKeys { vnId -> vnId in filteredUserList }
+                .toList()
+                .sortedWith(if (Preferences.reverseSort) compareByDescending(sorter) else compareBy(sorter))
+                .toMap()
 
             tabItems[tab.value] = tabAccountItems
         }
