@@ -49,6 +49,10 @@ fun View.setPaddingBottom(bottom: Int) {
     setPadding(paddingLeft, paddingTop, paddingRight, bottom)
 }
 
+fun View.setPaddingTop(top: Int) {
+    setPadding(paddingLeft, top, paddingRight, paddingBottom)
+}
+
 fun View.addPaddingTop(top: Int) {
     setPadding(paddingLeft, paddingTop + top, paddingRight, paddingBottom)
 }

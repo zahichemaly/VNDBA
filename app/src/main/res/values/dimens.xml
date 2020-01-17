@@ -15,4 +15,5 @@
     <dimen name="bottom_sheet_peek_with_margin">72dp</dimen>
     <dimen name="bottom_sheet_elevation">8dp</dimen>
     <dimen name="bottom_sheet_top_radius">8dp</dimen>
+    <dimen name="floating_search_bar_height">78dp</dimen>
 </resources>

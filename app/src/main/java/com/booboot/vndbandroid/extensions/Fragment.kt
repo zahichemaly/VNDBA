@@ -5,6 +5,7 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.annotation.DimenRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
@@ -56,3 +57,5 @@ fun Fragment.postponeEnterTransitionIfExists() {
 fun Fragment.removeFocus() = activity?.removeFocus()
 
 fun Fragment.statusBarHeight() = context?.statusBarHeight() ?: 0
+
+fun Fragment.dimen(@DimenRes resId: Int) = resources.getDimensionPixelSize(resId)

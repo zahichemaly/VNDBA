@@ -10,19 +10,21 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:layout_marginTop="-68dp">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/vnList"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:clipToPadding="false"
-            android:paddingTop="72dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:listitem="@layout/vn_card" />
+            tools:listitem="@layout/vn_card"
+            tools:paddingTop="-72dp" />
 
         <com.booboot.vndbandroid.util.view.BackgroundInfo
             android:id="@+id/backgroundInfo"
@@ -40,152 +42,13 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/searchBarCardView"
+    <com.booboot.vndbandroid.util.view.FloatingSearchToolbar
+        android:id="@+id/floatingSearchBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/floating_bottom_sheet_margin"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="@dimen/floating_bottom_sheet_margin"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="8dp">
+        app:elevation="0dp"
+        app:hideOnScroll="true"
+        app:hintText="@string/search_hint"
+        app:startIcon="@drawable/ic_search_24dp" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/searchBarParent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:animateLayoutChanges="true">
-
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:contentInsetEnd="0dp"
-                app:contentInsetEndWithActions="0dp"
-                app:contentInsetStart="0dp"
-                app:contentInsetStartWithNavigation="0dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_scrollFlags="scroll|enterAlways"
-                app:title=" "
-                app:titleMarginStart="0dp">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/searchBarTextInputLayout"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:paddingStart="-12dp"
-                        android:paddingEnd="-4dp"
-                        android:textColorHint="?attr/colorAccent"
-                        app:boxBackgroundColor="?attr/colorBackgroundFloating"
-                        app:boxStrokeColor="@color/selector_color_background_floating"
-                        app:endIconDrawable="@drawable/ic_clear_48dp"
-                        app:endIconMode="custom"
-                        app:hintEnabled="false"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:startIconDrawable="@drawable/ic_search_24dp">
-
-                        <com.booboot.vndbandroid.util.view.TextInputEditText
-                            android:id="@+id/searchBar"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:drawablePadding="-8dp"
-                            android:gravity="center_vertical"
-                            android:hint="@string/search_hint"
-                            android:imeOptions="actionDone|flagNoExtractUi"
-                            android:maxLines="1"
-                            android:paddingEnd="38dp"
-                            android:singleLine="true"
-                            android:textColorHighlight="@color/bluray"
-                            tools:ignore="RtlSymmetry" />
-
-                    </com.google.android.material.textfield.TextInputLayout>
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </androidx.appcompat.widget.Toolbar>
-
-            <androidx.core.widget.NestedScrollView
-                android:id="@+id/advancedSearchLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/toolbar"
-                tools:visibility="gone">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clipToPadding="false"
-                    android:paddingBottom="16dp">
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/pageLayout"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_marginEnd="12dp"
-                        android:hint="@string/start_from_page"
-                        android:textColorHint="?attr/colorAccent"
-                        app:boxBackgroundColor="?attr/colorBackgroundFloating"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
-
-                        <com.booboot.vndbandroid.util.view.TextInputEditText
-                            android:id="@+id/page"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:imeOptions="actionNext|flagNoExtractUi"
-                            android:inputType="number"
-                            android:maxLines="1"
-                            android:textAlignment="center"
-                            android:textSize="13sp"
-                            android:textStyle="bold"
-                            tools:text="8" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/pageLayout2"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_marginTop="12dp"
-                        android:layout_marginEnd="12dp"
-                        android:hint="@string/start_from_page"
-                        android:textColorHint="?attr/colorAccent"
-                        app:boxBackgroundColor="?attr/colorBackgroundFloating"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/pageLayout">
-
-                        <com.booboot.vndbandroid.util.view.TextInputEditText
-                            android:id="@+id/page2"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:imeOptions="actionDone|flagNoExtractUi"
-                            android:inputType="number"
-                            android:maxLines="1"
-                            android:textAlignment="center"
-                            android:textSize="13sp"
-                            android:textStyle="bold"
-                            tools:text="8" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </androidx.core.widget.NestedScrollView>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
