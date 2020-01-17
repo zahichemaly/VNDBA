@@ -25,7 +25,7 @@ class SearchViewModel constructor(application: Application) : BaseViewModel(appl
         (application as App).appComponent.inject(this)
     }
 
-    fun search(query: String) = coroutine(JOB_SEARCH) {
+    fun search(query: String) = coroutine(JOB_SEARCH, skip = query.isEmpty()) {
         /* Getting account items so we can show whether the results are in the user's lists */
         val accountItemsJob = async { accountRepository.getItems() }
         val vnJob = async { vnRepository.search(currentPage, query) }
