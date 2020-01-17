@@ -54,7 +54,6 @@ class SearchFragment : BaseFragment<SearchViewModel>() {
         }
 
         adapter.onUpdate = ::onAdapterUpdate
-        vnList.setHasFixedSize(true)
         vnList.layoutManager = GridAutofitLayoutManager(activity, Pixels.px(300))
         vnList.adapter = adapter
 
