@@ -19,7 +19,7 @@ import com.booboot.vndbandroid.ui.vndetails.VNDetailsFragment
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.progress_bar.*
 import kotlinx.android.synthetic.main.vn_card.view.*
-import kotlinx.android.synthetic.main.vn_list_fragment.*
+import kotlinx.android.synthetic.main.vnlist_fragment.*
 
 abstract class BaseFragment<T : BaseViewModel> : Fragment() {
     abstract val layout: Int
