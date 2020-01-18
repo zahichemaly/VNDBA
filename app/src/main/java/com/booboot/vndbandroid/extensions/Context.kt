@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.net.Uri
@@ -74,10 +75,12 @@ fun Context.dayNightTheme(): String {
     return themeName.string.toString()
 }
 
-fun Context.statusBarHeight(): Int {
-    val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
+fun Context.statusBarHeight() = resources.statusBarHeight()
+
+fun Resources.statusBarHeight(): Int {
+    val resourceId = getIdentifier("status_bar_height", "dimen", "android")
     return if (resourceId > 0) {
-        resources.getDimensionPixelSize(resourceId)
+        getDimensionPixelSize(resourceId)
     } else 0
 }
 

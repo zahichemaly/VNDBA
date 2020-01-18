@@ -56,6 +56,6 @@ fun Fragment.postponeEnterTransitionIfExists() {
 
 fun Fragment.removeFocus() = activity?.removeFocus()
 
-fun Fragment.statusBarHeight() = context?.statusBarHeight() ?: 0
+fun Fragment.statusBarHeight() = resources.statusBarHeight()
 
 fun Fragment.dimen(@DimenRes resId: Int) = resources.getDimensionPixelSize(resId)

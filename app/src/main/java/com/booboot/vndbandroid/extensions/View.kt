@@ -6,6 +6,7 @@ import android.view.View.GONE
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import androidx.annotation.DimenRes
 import androidx.core.view.isVisible
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -56,3 +57,7 @@ fun View.setPaddingTop(top: Int) {
 fun View.addPaddingTop(top: Int) {
     setPadding(paddingLeft, paddingTop + top, paddingRight, paddingBottom)
 }
+
+fun View.statusBarHeight() = resources.statusBarHeight()
+
+fun View.dimen(@DimenRes resId: Int) = resources.getDimensionPixelSize(resId)
