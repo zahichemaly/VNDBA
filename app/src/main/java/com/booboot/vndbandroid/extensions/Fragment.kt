@@ -16,8 +16,8 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.ui.home.HomeActivity
+import kotlinx.android.synthetic.main.floating_search_toolbar.*
 import kotlinx.android.synthetic.main.home_activity.*
-import kotlinx.android.synthetic.main.vnlist_fragment.*
 
 fun Fragment.home() = activity as? HomeActivity?
 

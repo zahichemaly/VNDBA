@@ -7,71 +7,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appBarLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?android:attr/windowBackground">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:animateLayoutChanges="true"
-            android:background="?android:attr/windowBackground"
-            app:layout_scrollFlags="scroll|enterAlways"
-            app:title=" ">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/filterBarLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <com.booboot.vndbandroid.util.view.TextInputEditText
-                    android:id="@+id/filterBar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginTop="4dp"
-                    android:drawableStart="@drawable/ic_filter_list_24dp"
-                    android:drawablePadding="6dp"
-                    android:drawableTint="?android:attr/textColorSecondary"
-                    android:gravity="center_vertical"
-                    android:hint="@string/action_filter_hint"
-                    android:imeOptions="actionDone|flagNoExtractUi"
-                    android:inputType="textFilter"
-                    android:maxLines="1"
-                    android:paddingEnd="34dp"
-                    android:paddingBottom="16dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:ignore="RtlSymmetry" />
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/filterBarClear"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginEnd="4dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:padding="4dp"
-                    app:layout_constraintEnd_toEndOf="@id/filterBar"
-                    app:layout_constraintTop_toTopOf="@id/filterBar"
-                    app:srcCompat="@drawable/ic_clear_48dp"
-                    app:tint="?android:attr/textColorSecondary" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.appcompat.widget.Toolbar>
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:paddingStart="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        android:paddingEnd="0dp"
-        android:paddingBottom="@dimen/activity_vertical_margin"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:layout_marginTop="-68dp">
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/refreshLayout"
@@ -93,7 +34,8 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:listitem="@layout/vn_card" />
+                    tools:listitem="@layout/vn_card"
+                    tools:paddingTop="68dp" />
 
                 <!--<com.pluscubed.recyclerfastscroll.RecyclerFastScroller-->
                 <!--android:id="@+id/fastScroller"-->
@@ -119,7 +61,16 @@
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <include layout="@layout/progress_bar" />
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.booboot.vndbandroid.util.view.FloatingSearchToolbar
+        android:id="@+id/floatingSearchBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:elevation="0dp"
+        app:hideOnScroll="true"
+        app:hintText="@string/action_filter_hint"
+        app:startIcon="@drawable/ic_filter_list_24dp" />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/floatingSearchButton"

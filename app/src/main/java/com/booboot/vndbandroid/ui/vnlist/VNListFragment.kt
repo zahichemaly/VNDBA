@@ -5,7 +5,6 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -17,14 +16,9 @@ import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.onStateChanged
 import com.booboot.vndbandroid.extensions.postponeEnterTransitionIfExists
-import com.booboot.vndbandroid.extensions.removeFocus
 import com.booboot.vndbandroid.extensions.selectIf
-import com.booboot.vndbandroid.extensions.setFocus
-import com.booboot.vndbandroid.extensions.setStatusBarThemeForToolbar
-import com.booboot.vndbandroid.extensions.setTextChangedListener
 import com.booboot.vndbandroid.extensions.setupStatusBar
 import com.booboot.vndbandroid.extensions.setupToolbar
-import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.extensions.toggleBottomSheet
 import com.booboot.vndbandroid.model.vndbandroid.AccountItems
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
@@ -40,6 +34,7 @@ import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.booboot.vndbandroid.util.GridAutofitLayoutManager
 import com.booboot.vndbandroid.util.Pixels
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import kotlinx.android.synthetic.main.floating_search_toolbar.*
 import kotlinx.android.synthetic.main.sort_bottom_sheet.*
 import kotlinx.android.synthetic.main.vnlist_fragment.*
 
@@ -61,9 +56,9 @@ class VNListFragment : BaseFragment<VNListViewModel>(), View.OnClickListener, Sw
             setQuery(getString(SAVED_FILTER_STATE) ?: "", true)
         }
 
-        setupStatusBar(true)
+        setupStatusBar(true, searchBarCardView)
         setupToolbar()
-        appBarLayout.setStatusBarThemeForToolbar(activity, toolbar)
+        floatingSearchBar.setupWithContainer(constraintLayout, vnList)
 
         viewModel = ViewModelProviders.of(this).get(VNListViewModel::class.java)
         viewModel.restoreState(savedInstanceState)
@@ -85,17 +80,7 @@ class VNListFragment : BaseFragment<VNListViewModel>(), View.OnClickListener, Sw
         sortBottomSheetBehavior.state = viewModel.sortBottomSheetState
         sortBottomSheetBehavior.onStateChanged(onStateChanged = { viewModel.sortBottomSheetState = it })
 
-        filterBarLayout.isVisible = home()?.viewModel?.filterData?.value.isNullOrEmpty() == false
-        filterBar.setTextChangedListener { setQuery(it) }
-        filterBar.setText(home()?.viewModel?.filterData?.value)
-        filterBarClear.setOnClickListener {
-            if (filterBar.text.isNullOrEmpty()) {
-                toggleFilterBar()
-            } else {
-                filterBar.text = null
-            }
-        }
-
+        floatingSearchBar.setTextChangedListener { setQuery(it) }
         sortBottomSheetHeader.setOnClickListener(this)
         floatingSearchButton.setOnClickListener(this)
 
@@ -113,16 +98,6 @@ class VNListFragment : BaseFragment<VNListViewModel>(), View.OnClickListener, Sw
         refreshLayout.setColorSchemeColors(activity.getThemeColor(R.attr.colorAccent))
 
         showSort()
-    }
-
-    private fun toggleFilterBar() {
-        filterBarLayout.toggle()
-        if (filterBarLayout.isVisible) {
-            filterBar?.setFocus()
-        } else {
-            filterBar?.text = null
-            filterBar?.removeFocus()
-        }
     }
 
     private fun update(force: Boolean = true) = viewModel.getVns(force)
@@ -166,13 +141,13 @@ class VNListFragment : BaseFragment<VNListViewModel>(), View.OnClickListener, Sw
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.home_tabs_fragment, menu)
+        inflater.inflate(R.menu.vnlist_fragment, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.action_sort -> sortBottomSheet.toggleBottomSheet()
-            R.id.action_filter -> toggleFilterBar()
+            R.id.action_advanced_search -> {
+            } // TODO
         }
         return super.onOptionsItemSelected(item)
     }

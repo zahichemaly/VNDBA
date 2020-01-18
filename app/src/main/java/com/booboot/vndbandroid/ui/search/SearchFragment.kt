@@ -43,7 +43,7 @@ class SearchFragment : BaseFragment<SearchViewModel>() {
         viewModel.errorData.observeOnce(this, ::showError)
         viewModel.searchData.observeNonNull(this, ::showSearch)
 
-        floatingSearchBar.setupWithRecyclerView(vnList, constraintLayout)
+        floatingSearchBar.setupWithContainer(constraintLayout, vnList)
         adapter.onUpdate = ::onAdapterUpdate
         vnList.setHasFixedSize(true)
         vnList.layoutManager = GridAutofitLayoutManager(activity, Pixels.px(300))
