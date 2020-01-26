@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.AttrRes
 import androidx.core.content.ContextCompat
+import androidx.core.view.marginBottom
 import androidx.core.view.updateLayoutParams
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.booboot.vndbandroid.R
@@ -13,10 +14,10 @@ import com.booboot.vndbandroid.extensions.dimen
 import com.booboot.vndbandroid.extensions.setPaddingTop
 import com.booboot.vndbandroid.extensions.setTextChangedListener
 import com.booboot.vndbandroid.extensions.statusBarHeight
+import com.booboot.vndbandroid.util.Pixels
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
 import kotlinx.android.synthetic.main.floating_search_toolbar.view.*
-import kotlin.math.roundToInt
 
 class FloatingSearchToolbar @JvmOverloads constructor(
     context: Context,
@@ -52,8 +53,11 @@ class FloatingSearchToolbar @JvmOverloads constructor(
         container.updateLayoutParams<MarginLayoutParams> {
             topMargin = -paddingTop
         }
-        val refreshLayout = container.findViewById<SwipeRefreshLayout>(R.id.refreshLayout)
-        refreshLayout?.setProgressViewOffset(false, refreshLayout.progressViewStartOffset + paddingTop, (refreshLayout.progressViewEndOffset + 0.75 * paddingTop).roundToInt())
+
+        container.findViewById<SwipeRefreshLayout>(R.id.refreshLayout)?.let { refreshLayout ->
+            val startOffset = refreshLayout.progressViewStartOffset + paddingTop - searchBarCardView.marginBottom
+            refreshLayout.setProgressViewOffset(false, startOffset, startOffset + Pixels.px(75))
+        }
 
         searchBarTextInputLayout.isEndIconVisible = false
         setTextChangedListener()

@@ -11,8 +11,7 @@
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:layout_marginTop="-68dp">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/refreshLayout"
@@ -34,8 +33,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:listitem="@layout/vn_card"
-                    tools:paddingTop="68dp" />
+                    tools:listitem="@layout/vn_card"/>
 
                 <!--<com.pluscubed.recyclerfastscroll.RecyclerFastScroller-->
                 <!--android:id="@+id/fastScroller"-->
