@@ -14,7 +14,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import androidx.core.app.NotificationCompat
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager.widget.ViewPager
 import com.booboot.vndbandroid.App
@@ -47,7 +47,7 @@ class SlideshowFragment : BaseFragment<SlideshowViewModel>(), ViewPager.OnPageCh
         setupToolbar()
         setupStatusBar(true)
 
-        viewModel = ViewModelProviders.of(this).get(SlideshowViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(SlideshowViewModel::class.java)
         viewModel.restoreState(savedInstanceState)
         viewModel.errorData.observeOnce(this, ::showError)
         viewModel.loadingData.observeNonNull(this, ::showLoading)

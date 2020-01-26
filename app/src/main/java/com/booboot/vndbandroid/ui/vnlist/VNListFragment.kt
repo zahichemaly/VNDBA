@@ -5,7 +5,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.booboot.vndbandroid.R
@@ -60,7 +60,7 @@ class VNListFragment : BaseFragment<VNListViewModel>(), View.OnClickListener, Sw
         setupToolbar()
         floatingSearchBar.setupWithContainer(constraintLayout, vnList)
 
-        viewModel = ViewModelProviders.of(this).get(VNListViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(VNListViewModel::class.java)
         viewModel.restoreState(savedInstanceState)
         viewModel.vnlistData.observeNonNull(this, ::showVns)
         viewModel.sortData.observeOnce(this) {

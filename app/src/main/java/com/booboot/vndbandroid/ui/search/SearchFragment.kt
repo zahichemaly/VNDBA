@@ -6,7 +6,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.core.view.isVisible
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.home
 import com.booboot.vndbandroid.extensions.observeNonNull
@@ -38,7 +38,7 @@ class SearchFragment : BaseFragment<SearchViewModel>() {
         setupToolbar()
         activity.supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        viewModel = ViewModelProviders.of(this).get(SearchViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(SearchViewModel::class.java)
         viewModel.loadingData.observeNonNull(this, ::showLoading)
         viewModel.errorData.observeOnce(this, ::showError)
         viewModel.searchData.observeNonNull(this, ::showSearch)

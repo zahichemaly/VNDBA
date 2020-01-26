@@ -8,7 +8,7 @@ import android.view.View
 import androidx.asynclayoutinflater.view.AsyncLayoutInflater
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.adjustAlpha
@@ -41,7 +41,7 @@ class SummaryFragment : BaseFragment<SummaryViewModel>() {
         if (activity == null) return
 
         val vnId = arguments?.getLong(VNDetailsFragment.EXTRA_VN_ID) ?: 0
-        viewModel = ViewModelProviders.of(this).get(SummaryViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(SummaryViewModel::class.java)
         viewModel.summaryData.observeNonNull(this, ::showVn)
         viewModel.loadingData.observeNonNull(this) { vnDetailsFragment()?.showLoading(it) }
         viewModel.errorData.observeOnce(this, ::showError)

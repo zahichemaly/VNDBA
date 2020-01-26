@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.widget.TextView
 import androidx.core.view.GravityCompat
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
@@ -22,9 +22,9 @@ import com.booboot.vndbandroid.model.vndbandroid.AccountItems
 import com.booboot.vndbandroid.model.vndbandroid.NOT_SET
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.ui.base.BaseActivity
-import com.booboot.vndbandroid.ui.vnlist.VNListFragment
 import com.booboot.vndbandroid.ui.login.LoginActivity
 import com.booboot.vndbandroid.ui.vndetails.VNDetailsFragment
+import com.booboot.vndbandroid.ui.vnlist.VNListFragment
 import kotlinx.android.synthetic.main.home_activity.*
 import kotlinx.android.synthetic.main.sort_bottom_sheet.*
 import kotlinx.android.synthetic.main.vn_details_bottom_sheet.*
@@ -50,7 +50,7 @@ class HomeActivity : BaseActivity() {
                 remove(SHOULD_SYNC)
             }
 
-            viewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
+            viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
             viewModel.loadingData.observeNonNull(this, ::showLoading)
             viewModel.accountData.observeNonNull(this, ::showAccount)
             viewModel.errorData.observeOnce(this, ::showError)

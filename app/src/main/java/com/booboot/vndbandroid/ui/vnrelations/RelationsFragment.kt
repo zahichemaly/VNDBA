@@ -2,7 +2,7 @@ package com.booboot.vndbandroid.ui.vnrelations
 
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.home
 import com.booboot.vndbandroid.extensions.observeNonNull
@@ -28,7 +28,7 @@ class RelationsFragment : BaseFragment<RelationsViewModel>() {
         recyclerView.adapter = adapter
 
         val vnId = arguments?.getLong(VNDetailsFragment.EXTRA_VN_ID) ?: 0
-        viewModel = ViewModelProviders.of(this).get(RelationsViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(RelationsViewModel::class.java)
         viewModel.relationsData.observeNonNull(this, ::showRelations)
         viewModel.errorData.observeOnce(this, ::showError)
         home()?.viewModel?.accountData?.observeNonNull(this) { viewModel.loadVn(vnId, adapter.relationsData) }

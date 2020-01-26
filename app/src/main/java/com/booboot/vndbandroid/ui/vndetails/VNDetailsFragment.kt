@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager.widget.ViewPager
 import com.booboot.vndbandroid.R
@@ -27,7 +27,6 @@ import com.booboot.vndbandroid.extensions.setupStatusBar
 import com.booboot.vndbandroid.extensions.setupToolbar
 import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.extensions.toggleBottomSheet
-import com.booboot.vndbandroid.model.vndbandroid.AccountItems
 import com.booboot.vndbandroid.model.vndb.Label.Companion.BLACKLIST
 import com.booboot.vndbandroid.model.vndb.Label.Companion.DROPPED
 import com.booboot.vndbandroid.model.vndb.Label.Companion.FINISHED
@@ -39,6 +38,7 @@ import com.booboot.vndbandroid.model.vndb.Label.Companion.WISHLIST
 import com.booboot.vndbandroid.model.vndb.Label.Companion.WISHLISTS
 import com.booboot.vndbandroid.model.vndb.Screen
 import com.booboot.vndbandroid.model.vndb.VN
+import com.booboot.vndbandroid.model.vndbandroid.AccountItems
 import com.booboot.vndbandroid.model.vndbandroid.Vote
 import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.booboot.vndbandroid.ui.slideshow.SlideshowAdapter
@@ -86,7 +86,7 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
             }
         }
 
-        viewModel = ViewModelProviders.of(this).get(VNDetailsViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(VNDetailsViewModel::class.java)
         viewModel.restoreState(savedInstanceState)
         viewModel.accountData = home()?.viewModel?.accountData ?: return
         viewModel.loadingData.observeNonNull(this, ::showLoading)

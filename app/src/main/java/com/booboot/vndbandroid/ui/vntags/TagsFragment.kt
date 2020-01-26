@@ -3,7 +3,7 @@ package com.booboot.vndbandroid.ui.vntags
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
@@ -39,7 +39,7 @@ class TagsFragment : BaseFragment<TagsViewModel>(), TagsAdapter.Callback {
 
         val vnId = arguments?.getLong(VNDetailsFragment.EXTRA_VN_ID) ?: 0
 
-        viewModel = ViewModelProviders.of(this).get(TagsViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(TagsViewModel::class.java)
         viewModel.errorData.observeOnce(this, ::showError)
         viewModel.tagsData.observeNonNull(this, ::showTags)
 
