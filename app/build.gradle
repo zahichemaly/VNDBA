@@ -33,6 +33,10 @@ android {
         ]
     }
 
+    androidExtensions {
+        experimental = true
+    }
+
     signingConfigs {
         release {
             storeFile file(RELEASE_STORE_FILE)
