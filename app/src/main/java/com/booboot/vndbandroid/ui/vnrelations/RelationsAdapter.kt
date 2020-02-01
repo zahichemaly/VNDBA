@@ -14,11 +14,11 @@ class RelationsAdapter(
     private val onAnimeClicked: (Anime) -> Unit,
     private val onRelationClicked: (View, VN?) -> Unit
 ) : BaseAdapter<RecyclerView.ViewHolder>() {
-    var relationsData: RelationsData = RelationsData()
+    var relationsData = RelationsData()
         set(value) {
             field = value
             onUpdateInternal()
-            value.diffResult?.dispatchUpdatesTo(this@RelationsAdapter) ?: notifyChanged()
+            value.diffResult?.dispatchUpdatesTo(this) ?: notifyChanged()
         }
 
     override fun getItemViewType(position: Int) = RelationsDiffCallback.getItemViewType(position, relationsData.vn)

@@ -6,6 +6,7 @@ import androidx.core.text.HtmlCompat
 import com.booboot.vndbandroid.BuildConfig
 import com.booboot.vndbandroid.api.VNDBServer
 import com.booboot.vndbandroid.model.vndb.Tag
+import java.util.*
 
 fun String.format(urlScheme: String): Spanned {
     var formatted = replace("\\[url=(.*)](.*)\\[/url]".toRegex(), "<a href=\"$urlScheme://$1\">$2</a>")
@@ -36,3 +37,5 @@ fun String.log() {
         Log.e(VNDBServer.CLIENT, this)
     }
 }
+
+fun String.lowerCase() = toLowerCase(Locale.US)

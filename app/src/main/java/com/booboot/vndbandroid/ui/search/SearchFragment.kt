@@ -14,9 +14,9 @@ import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.onSubmitListener
 import com.booboot.vndbandroid.extensions.setupStatusBar
 import com.booboot.vndbandroid.extensions.setupToolbar
-import com.booboot.vndbandroid.model.vndbandroid.AccountItems
 import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.booboot.vndbandroid.ui.vnlist.VNAdapter
+import com.booboot.vndbandroid.ui.vnlist.VnlistData
 import com.booboot.vndbandroid.util.GridAutofitLayoutManager
 import com.booboot.vndbandroid.util.Pixels
 import kotlinx.android.synthetic.main.floating_search_toolbar.*
@@ -24,7 +24,7 @@ import kotlinx.android.synthetic.main.search_fragment.*
 
 class SearchFragment : BaseFragment<SearchViewModel>() {
     override val layout: Int = R.layout.search_fragment
-    private val adapter by lazy { VNAdapter(::onVnClicked, filteredVns = viewModel.filteredVns) }
+    private val adapter by lazy { VNAdapter(::onVnClicked) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,14 +67,13 @@ class SearchFragment : BaseFragment<SearchViewModel>() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun showSearch(items: AccountItems) {
+    private fun showSearch(searchData: VnlistData) {
         vnList.isVisible = true
-        adapter.items = items
+        adapter.data = searchData
     }
 
     override fun onAdapterUpdate(empty: Boolean) {
         super.onAdapterUpdate(empty)
         vnList.isVisible = !empty
-        viewModel.filteredVns = adapter.filteredVns
     }
 }

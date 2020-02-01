@@ -1,15 +1,12 @@
 package com.booboot.vndbandroid.ui.home
 
 import android.app.Application
-import androidx.lifecycle.MutableLiveData
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.api.VNDBServer
 import com.booboot.vndbandroid.extensions.plusAssign
 import com.booboot.vndbandroid.ui.base.StartupSyncViewModel
 
 class HomeViewModel constructor(application: Application) : StartupSyncViewModel(application) {
-    val filterData: MutableLiveData<String> = MutableLiveData()
-
     init {
         (application as App).appComponent.inject(this)
     }

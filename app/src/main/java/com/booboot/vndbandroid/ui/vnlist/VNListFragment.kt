@@ -20,7 +20,6 @@ import com.booboot.vndbandroid.extensions.selectIf
 import com.booboot.vndbandroid.extensions.setupStatusBar
 import com.booboot.vndbandroid.extensions.setupToolbar
 import com.booboot.vndbandroid.extensions.toggleBottomSheet
-import com.booboot.vndbandroid.model.vndbandroid.AccountItems
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.model.vndbandroid.SORT_ID
 import com.booboot.vndbandroid.model.vndbandroid.SORT_LENGTH
@@ -42,7 +41,7 @@ class VNListFragment : BaseFragment<VNListViewModel>(), View.OnClickListener, Sw
     override val layout: Int = R.layout.vnlist_fragment
     lateinit var sortBottomSheetBehavior: BottomSheetBehavior<View>
     private lateinit var sortBottomSheetButtons: List<View>
-    private val adapter by lazy { VNAdapter(::onVnClicked, filteredVns = viewModel.filteredVns) }
+    private val adapter by lazy { VNAdapter(::onVnClicked) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,10 +50,6 @@ class VNListFragment : BaseFragment<VNListViewModel>(), View.OnClickListener, Sw
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val activity = home() ?: return
-
-        savedInstanceState?.apply {
-            setQuery(getString(SAVED_FILTER_STATE) ?: "", true)
-        }
 
         setupStatusBar(true, searchBarCardView)
         setupToolbar()
@@ -69,7 +64,6 @@ class VNListFragment : BaseFragment<VNListViewModel>(), View.OnClickListener, Sw
         }
         viewModel.errorData.observeOnce(this, ::showError)
         home()?.viewModel?.accountData?.observeNonNull(this) { update() }
-        home()?.viewModel?.filterData?.observeNonNull(this, ::filter)
         home()?.viewModel?.loadingData?.observeNonNull(this, ::showLoading)
 
         if (viewModel.vnlistData.value != null) {
@@ -80,7 +74,7 @@ class VNListFragment : BaseFragment<VNListViewModel>(), View.OnClickListener, Sw
         sortBottomSheetBehavior.state = viewModel.sortBottomSheetState
         sortBottomSheetBehavior.onStateChanged(onStateChanged = { viewModel.sortBottomSheetState = it })
 
-        floatingSearchBar.setTextChangedListener { setQuery(it) }
+        floatingSearchBar.setTextChangedListener { viewModel.getVns(_filter = it) }
         sortBottomSheetHeader.setOnClickListener(this)
         floatingSearchButton.setOnClickListener(this)
 
@@ -100,24 +94,14 @@ class VNListFragment : BaseFragment<VNListViewModel>(), View.OnClickListener, Sw
         showSort()
     }
 
-    private fun update(force: Boolean = true) = viewModel.getVns(force)
+    private fun update() = viewModel.getVns()
 
-    private fun showVns(accountItems: AccountItems) {
-        adapter.filterString = home()?.viewModel?.filterData?.value ?: ""
-        adapter.items = accountItems
+    private fun showVns(vnlistData: VnlistData) {
+        adapter.data = vnlistData
 
         view?.post {
             startPostponedEnterTransition()
         }
-    }
-
-    override fun onAdapterUpdate(empty: Boolean) {
-        super.onAdapterUpdate(empty)
-        viewModel.filteredVns = adapter.filteredVns
-    }
-
-    private fun filter(search: CharSequence) {
-        adapter.filter.filter(search)
     }
 
     override fun onRefresh() {
@@ -166,17 +150,5 @@ class VNListFragment : BaseFragment<VNListViewModel>(), View.OnClickListener, Sw
             R.id.buttonSortPriority -> viewModel.setSort(SORT_PRIORITY)
             R.id.floatingSearchButton -> findNavController().navigate(R.id.searchFragment)
         }
-    }
-
-    private fun query() = home()?.viewModel?.filterData?.value
-
-    private fun setQuery(search: String, setOnlyIfNull: Boolean = false) {
-        if (!setOnlyIfNull || query() == null) {
-            home()?.viewModel?.filterData?.value = search
-        }
-    }
-
-    companion object {
-        const val SAVED_FILTER_STATE = "SAVED_FILTER_STATE"
     }
 }
