@@ -26,8 +26,8 @@ fun Fragment.setupToolbar() {
     home()?.setupActionBarWithNavController(findNavController(), home()?.drawer)
 }
 
-fun Fragment.setupStatusBar(drawBehind: Boolean = false, _toolbar: View? = null) = view?.post {
-    val activity = activity ?: return@post
+fun Fragment.setupStatusBar(drawBehind: Boolean = false, _toolbar: View? = null) {
+    val activity = activity ?: return
     val toolbar = if (!drawBehind) {
         activity.window.statusBarColor = Color.TRANSPARENT
         view
