@@ -8,4 +8,8 @@
     <color name="slideshowBackground">@color/black</color>
     <color name="textColorPrimary">@color/white</color>
     <color name="textColorPrimaryReverse">@color/textColorPrimaryBlack</color>
+
+    <!-- Misc colors -->
+    <color name="sortSection">#7ecb20</color>
+    <color name="filterSection">#b47cff</color>
 </resources>

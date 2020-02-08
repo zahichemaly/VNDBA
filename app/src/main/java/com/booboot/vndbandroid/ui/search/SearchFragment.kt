@@ -23,7 +23,7 @@ import kotlinx.android.synthetic.main.floating_search_toolbar.*
 import kotlinx.android.synthetic.main.search_fragment.*
 
 class SearchFragment : BaseFragment<SearchViewModel>() {
-    override val layout: Int = R.layout.search_fragment
+    override val layout = R.layout.search_fragment
     private val adapter by lazy { VNAdapter(::onVnClicked) }
 
     override fun onCreate(savedInstanceState: Bundle?) {

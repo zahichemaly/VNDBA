@@ -103,9 +103,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
         app:cardBackgroundColor="?android:attr/windowBackground"
         app:cardElevation="2dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">

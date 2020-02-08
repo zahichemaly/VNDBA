@@ -1,7 +1,6 @@
 package com.booboot.vndbandroid.ui.vnlist
 
 import android.app.Application
-import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import com.booboot.vndbandroid.App
@@ -22,24 +21,26 @@ import com.booboot.vndbandroid.model.vndbandroid.SORT_VOTE
 import com.booboot.vndbandroid.model.vndbandroid.SortOptions
 import com.booboot.vndbandroid.repository.AccountRepository
 import com.booboot.vndbandroid.ui.base.BaseViewModel
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import javax.inject.Inject
 
 class VNListViewModel constructor(application: Application) : BaseViewModel(application) {
     @Inject lateinit var accountRepository: AccountRepository
     val vnlistData = MutableLiveData<VnlistData>()
-    val sortData = MutableLiveData<Preferences>()
 
-    var sortBottomSheetState = BottomSheetBehavior.STATE_HIDDEN
-
-    var filter: String = ""
+    var filter = ""
 
     init {
         (application as App).appComponent.inject(this)
     }
 
-    fun getVns(_filter: String = "") {
+    fun getVns(
+        _filter: String = filter,
+        @SortOptions _sort: Int = Preferences.sort,
+        _reverseSort: Boolean = Preferences.reverseSort
+    ) {
         filter = _filter.lowerCase()
+        Preferences.sort = _sort
+        Preferences.reverseSort = _reverseSort
 
         coroutine(JOB_GET_VNS) {
             /* #122 : to make DiffUtil work in the Adapter, the items must be deep copied here so the contents can be identified as different when changed from inside the app */
@@ -72,30 +73,8 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
         }
     }
 
-    fun setSort(@SortOptions sort: Int) {
-        Preferences.sort = sort
-        sortData.value = Preferences
-    }
-
-    fun reverseSort() {
-        Preferences.reverseSort = !Preferences.reverseSort
-        sortData.value = Preferences
-    }
-
-    override fun restoreState(state: Bundle?) {
-        super.restoreState(state)
-        state ?: return
-        sortBottomSheetState = state.getInt(SORT_BOTTOM_SHEET_STATE)
-    }
-
-    override fun saveState(state: Bundle) {
-        super.saveState(state)
-        state.putInt(SORT_BOTTOM_SHEET_STATE, sortBottomSheetState)
-    }
-
     companion object {
         private const val JOB_GET_VNS = "JOB_GET_VNS"
-        private const val SORT_BOTTOM_SHEET_STATE = "SORT_BOTTOM_SHEET_STATE"
     }
 }
 

@@ -102,7 +102,7 @@
     <string name="low">Low</string>
     <string name="blacklist">Blacklist</string>
     <string name="add_notes">Add notes</string>
-    <string name="sort_vns_by">Sort VNs by…</string>
+    <string name="sort_vns_by">Sort my VNs by…</string>
     <string name="id">ID</string>
     <string name="release_date">Release date</string>
     <string name="length">Length</string>
@@ -135,4 +135,6 @@ Check your filters or add a new one!</string>
     <string name="start_from_page">Start from page</string>
     <string name="action_advanced_search">Advanced search</string>
     <string name="empty_search_text">No results found. Try to change your query or advanced search parameters.</string>
+    <string name="advanced_filters">Advanced filters</string>
+    <string name="filter_vns_by">Filter my VNs by…</string>
 </resources>

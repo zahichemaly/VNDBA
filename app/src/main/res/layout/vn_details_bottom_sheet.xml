@@ -53,12 +53,12 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
+                android:text="@string/add_to_your_lists"
                 android:textColor="@color/transparent80White"
                 app:layout_constraintBottom_toBottomOf="@id/iconArrow"
                 app:layout_constraintEnd_toStartOf="@id/statusLayout"
                 app:layout_constraintStart_toEndOf="@id/iconArrow"
-                app:layout_constraintTop_toTopOf="@id/iconArrow"
-                tools:text="Add to your lists" />
+                app:layout_constraintTop_toTopOf="@id/iconArrow" />
 
             <RelativeLayout
                 android:id="@+id/statusLayout"

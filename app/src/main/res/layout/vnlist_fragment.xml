@@ -28,18 +28,12 @@
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:clipToPadding="false"
-                    android:paddingEnd="@dimen/activity_horizontal_margin"
+                    android:paddingBottom="@dimen/bottom_sheet_peek"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:listitem="@layout/vn_card"/>
-
-                <!--<com.pluscubed.recyclerfastscroll.RecyclerFastScroller-->
-                <!--android:id="@+id/fastScroller"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="match_parent"-->
-                <!--android:layout_gravity="end"/>-->
+                    tools:listitem="@layout/vn_card" />
 
                 <com.booboot.vndbandroid.util.view.BackgroundInfo
                     android:id="@+id/backgroundInfo"
@@ -70,15 +64,5 @@
         app:hintText="@string/action_filter_hint"
         app:startIcon="@drawable/ic_filter_list_24dp" />
 
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/floatingSearchButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_margin="@dimen/fab_margin"
-        android:text="@string/search_hint"
-        android:textAllCaps="false"
-        app:icon="@drawable/ic_search_white_48dp" />
-
-    <include layout="@layout/sort_bottom_sheet" />
+    <include layout="@layout/filter_bottom_sheet" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

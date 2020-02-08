@@ -26,7 +26,6 @@ import com.booboot.vndbandroid.ui.login.LoginActivity
 import com.booboot.vndbandroid.ui.vndetails.VNDetailsFragment
 import com.booboot.vndbandroid.ui.vnlist.VNListFragment
 import kotlinx.android.synthetic.main.home_activity.*
-import kotlinx.android.synthetic.main.sort_bottom_sheet.*
 import kotlinx.android.synthetic.main.vn_details_bottom_sheet.*
 
 class HomeActivity : BaseActivity() {
@@ -95,8 +94,8 @@ class HomeActivity : BaseActivity() {
             return drawer.closeDrawer(GravityCompat.START)
 
         when (val fragment = currentFragment()) {
-            is VNListFragment -> if (fragment.sortBottomSheetBehavior.isOpen()) {
-                fragment.sortBottomSheet?.toggleBottomSheet()
+            is VNListFragment -> if (fragment.bottomSheetBehavior.isOpen()) {
+                fragment.bottomSheet?.toggleBottomSheet()
                 return
             }
             is VNDetailsFragment -> if (fragment.bottomSheetBehavior.isOpen()) {
