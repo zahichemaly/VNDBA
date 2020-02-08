@@ -11,8 +11,8 @@
     <dimen name="tabLayoutHeight">48dp</dimen>
     <dimen name="bottom_sheet_margin">0dp</dimen>
     <dimen name="floating_bottom_sheet_margin">12dp</dimen>
-    <dimen name="bottom_sheet_peek">64dp</dimen>
-    <dimen name="bottom_sheet_peek_with_margin">72dp</dimen>
+    <dimen name="bottom_sheet_peek">60dp</dimen>
+    <dimen name="bottom_sheet_peek_with_margin">68dp</dimen>
     <dimen name="bottom_sheet_elevation">8dp</dimen>
     <dimen name="bottom_sheet_top_radius">8dp</dimen>
     <dimen name="floating_search_bar_height">78dp</dimen>
