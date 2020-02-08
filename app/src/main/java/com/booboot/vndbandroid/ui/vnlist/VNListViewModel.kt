@@ -26,6 +26,7 @@ import javax.inject.Inject
 class VNListViewModel constructor(application: Application) : BaseViewModel(application) {
     @Inject lateinit var accountRepository: AccountRepository
     val vnlistData = MutableLiveData<VnlistData>()
+    val scrollToTopData = MutableLiveData<Boolean>()
 
     var filter = ""
 
@@ -36,7 +37,8 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
     fun getVns(
         _filter: String = filter,
         @SortOptions _sort: Int = Preferences.sort,
-        _reverseSort: Boolean = Preferences.reverseSort
+        _reverseSort: Boolean = Preferences.reverseSort,
+        scrollToTop: Boolean = true
     ) {
         filter = _filter.lowerCase()
         Preferences.sort = _sort
@@ -70,6 +72,7 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
                 val diffCallback = VNDiffCallback(vnlistData.value?.items ?: AccountItems(), items)
                 diffResult = DiffUtil.calculateDiff(diffCallback)
             }
+            scrollToTopData += scrollToTop
         }
     }
 

@@ -35,6 +35,7 @@ import com.booboot.vndbandroid.util.Pixels
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.filter_bottom_sheet.*
 import kotlinx.android.synthetic.main.floating_search_toolbar.*
+import kotlinx.android.synthetic.main.floating_search_toolbar.view.*
 import kotlinx.android.synthetic.main.vnlist_fragment.*
 
 class VNListFragment : BaseFragment<VNListViewModel>(), View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
@@ -57,6 +58,7 @@ class VNListFragment : BaseFragment<VNListViewModel>(), View.OnClickListener, Sw
         viewModel = ViewModelProvider(this).get(VNListViewModel::class.java)
         viewModel.restoreState(savedInstanceState)
         viewModel.vnlistData.observeNonNull(this, ::showVns)
+        viewModel.scrollToTopData.observeOnce(this) { if (it) scrollToTop() }
         viewModel.errorData.observeOnce(this, ::showError)
         home()?.viewModel?.accountData?.observeNonNull(this) { update() }
         home()?.viewModel?.loadingData?.observeNonNull(this, ::showLoading)
@@ -74,7 +76,7 @@ class VNListFragment : BaseFragment<VNListViewModel>(), View.OnClickListener, Sw
             onExpanding = { iconArrow.setImageResource(R.drawable.ic_keyboard_arrow_up_white_24dp) }
         )
 
-        floatingSearchBar.setTextChangedListener { viewModel.getVns(_filter = it) }
+        floatingSearchBar.setTextChangedListener { viewModel.getVns(_filter = it, scrollToTop = floatingSearchBar.searchBar.hasFocus()) }
         bottomSheetHeader.setOnClickListener(this)
 
         listOf<View>(buttonReverseSort, buttonSortID, buttonSortReleaseDate, buttonSortLength, buttonSortPopularity, buttonSortRating, buttonSortStatus, buttonSortVote, buttonSortPriority).forEach {
@@ -91,7 +93,7 @@ class VNListFragment : BaseFragment<VNListViewModel>(), View.OnClickListener, Sw
         refreshLayout.setColorSchemeColors(activity.getThemeColor(R.attr.colorAccent))
     }
 
-    private fun update() = viewModel.getVns()
+    private fun update() = viewModel.getVns(scrollToTop = false)
 
     private fun showVns(vnlistData: VnlistData) {
         adapter.data = vnlistData
@@ -117,6 +119,7 @@ class VNListFragment : BaseFragment<VNListViewModel>(), View.OnClickListener, Sw
 
     override fun scrollToTop() {
         vnList.scrollToPosition(0)
+        floatingSearchBar.setExpanded(true, true)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
