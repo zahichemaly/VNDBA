@@ -7,17 +7,16 @@ import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.diff.VNDiffCallback
 import com.booboot.vndbandroid.extensions.lowerCase
 import com.booboot.vndbandroid.extensions.plusAssign
+import com.booboot.vndbandroid.extensions.upperCase
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndbandroid.AccountItems
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.model.vndbandroid.SORT_LENGTH
 import com.booboot.vndbandroid.model.vndbandroid.SORT_POPULARITY
-import com.booboot.vndbandroid.model.vndbandroid.SORT_PRIORITY
 import com.booboot.vndbandroid.model.vndbandroid.SORT_RATING
 import com.booboot.vndbandroid.model.vndbandroid.SORT_RELEASE_DATE
 import com.booboot.vndbandroid.model.vndbandroid.SORT_STATUS
 import com.booboot.vndbandroid.model.vndbandroid.SORT_TITLE
-import com.booboot.vndbandroid.model.vndbandroid.SORT_VOTE
 import com.booboot.vndbandroid.model.vndbandroid.SortOptions
 import com.booboot.vndbandroid.repository.AccountRepository
 import com.booboot.vndbandroid.ui.base.BaseViewModel
@@ -48,24 +47,22 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
             /* #122 : to make DiffUtil work in the Adapter, the items must be deep copied here so the contents can be identified as different when changed from inside the app */
             val accountItems = accountRepository.getItems().deepCopy()
 
-            val sorter: (Pair<Long, VN>) -> Comparable<*>? = { (id, vn) ->
-                when (Preferences.sort) {
-                    SORT_TITLE -> vn.title
-                    SORT_RELEASE_DATE -> vn.released
-                    SORT_LENGTH -> vn.length
-                    SORT_POPULARITY -> vn.popularity
-                    SORT_RATING -> vn.rating
-                    SORT_STATUS -> vn.title // TODO reimplement it properly
-                    SORT_VOTE -> vn.title // TODO reimplement it properly
-                    SORT_PRIORITY -> vn.title // TODO reimplement it properly
-                    else -> id
-                }
+            val sorter: Comparator<(Pair<Long, VN>)> = when (Preferences.sort) {
+                SORT_TITLE -> compare(nullsLast()) { (_, vn) -> vn.title.trim().upperCase() }
+                SORT_RELEASE_DATE -> compare(nullsFirst()) { (_, vn) -> vn.released }
+                SORT_LENGTH -> compare(nullsLast()) { (_, vn) -> vn.length }
+                SORT_POPULARITY -> compare(nullsLast()) { (_, vn) -> vn.popularity }
+                SORT_RATING -> compare(nullsLast()) { (_, vn) -> vn.rating }
+                SORT_STATUS -> compare(nullsLast()) { (_, vn) -> accountItems.userList[vn.id]?.firstStatus() }
+//                SORT_VOTE -> vn.title // TODO reimplement it properly
+//                SORT_PRIORITY -> vn.title // TODO reimplement it properly
+                else -> compare(nullsLast()) { (id, _) -> id }
             }
 
             accountItems.vns = accountItems.vns
                 .filterValues { vn -> vn.title.trim().lowerCase().contains(filter) }
                 .toList()
-                .sortedWith(if (Preferences.reverseSort) compareByDescending(sorter) else compareBy(sorter))
+                .sortedWith(sorter)
                 .toMap()
 
             vnlistData += VnlistData(accountItems).apply {
@@ -75,6 +72,9 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
             scrollToTopData += scrollToTop
         }
     }
+
+    private fun <T> compare(comparator: Comparator<in T>, sorter: (Pair<Long, VN>) -> T) =
+        if (Preferences.reverseSort) compareByDescending(comparator, sorter) else compareBy(comparator, sorter)
 
     companion object {
         private const val JOB_GET_VNS = "JOB_GET_VNS"

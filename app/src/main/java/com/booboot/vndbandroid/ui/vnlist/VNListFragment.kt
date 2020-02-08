@@ -28,6 +28,7 @@ import com.booboot.vndbandroid.model.vndbandroid.SORT_PRIORITY
 import com.booboot.vndbandroid.model.vndbandroid.SORT_RATING
 import com.booboot.vndbandroid.model.vndbandroid.SORT_RELEASE_DATE
 import com.booboot.vndbandroid.model.vndbandroid.SORT_STATUS
+import com.booboot.vndbandroid.model.vndbandroid.SORT_TITLE
 import com.booboot.vndbandroid.model.vndbandroid.SORT_VOTE
 import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.booboot.vndbandroid.util.GridAutofitLayoutManager
@@ -80,7 +81,7 @@ class VNListFragment : BaseFragment<VNListViewModel>(), View.OnClickListener, Sw
         floatingSearchBar.setTextChangedListener { viewModel.getVns(_filter = it, scrollToTop = floatingSearchBar.searchBar.hasFocus()) }
         bottomSheetHeader.setOnClickListener(this)
 
-        listOf<View>(buttonReverseSort, buttonSortID, buttonSortReleaseDate, buttonSortLength, buttonSortPopularity, buttonSortRating, buttonSortStatus, buttonSortVote, buttonSortPriority).forEach {
+        listOf<View>(buttonReverseSort, buttonSortID, buttonSortTitle, buttonSortReleaseDate, buttonSortLength, buttonSortPopularity, buttonSortRating, buttonSortStatus, buttonSortVote, buttonSortPriority).forEach {
             it.setOnClickListener(this)
         }
 
@@ -98,10 +99,12 @@ class VNListFragment : BaseFragment<VNListViewModel>(), View.OnClickListener, Sw
     private fun update() = viewModel.getVns(scrollToTop = false)
 
     private fun showVns(vnlistData: VnlistData) {
+        adapter.sort = Preferences.sort
         adapter.data = vnlistData
 
         buttonReverseSort.isChecked = Preferences.reverseSort
         buttonSortID?.selectIf(Preferences.sort == SORT_ID, R.color.textColorPrimaryReverse)
+        buttonSortTitle?.selectIf(Preferences.sort == SORT_TITLE, R.color.textColorPrimaryReverse)
         buttonSortReleaseDate?.selectIf(Preferences.sort == SORT_RELEASE_DATE, R.color.textColorPrimaryReverse)
         buttonSortLength?.selectIf(Preferences.sort == SORT_LENGTH, R.color.textColorPrimaryReverse)
         buttonSortPopularity?.selectIf(Preferences.sort == SORT_POPULARITY, R.color.textColorPrimaryReverse)
@@ -140,6 +143,7 @@ class VNListFragment : BaseFragment<VNListViewModel>(), View.OnClickListener, Sw
             R.id.bottomSheetHeader -> bottomSheet.toggleBottomSheet()
             R.id.buttonReverseSort -> viewModel.getVns(_reverseSort = !Preferences.reverseSort)
             R.id.buttonSortID -> viewModel.getVns(_sort = SORT_ID)
+            R.id.buttonSortTitle -> viewModel.getVns(_sort = SORT_TITLE)
             R.id.buttonSortReleaseDate -> viewModel.getVns(_sort = SORT_RELEASE_DATE)
             R.id.buttonSortLength -> viewModel.getVns(_sort = SORT_LENGTH)
             R.id.buttonSortPopularity -> viewModel.getVns(_sort = SORT_POPULARITY)

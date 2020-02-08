@@ -131,6 +131,18 @@
                     app:strokeColor="@color/textColorPrimary" />
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonSortTitle"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="@string/title"
+                    android:textAllCaps="false"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="12sp"
+                    app:rippleColor="@color/textColorPrimary"
+                    app:strokeColor="@color/textColorPrimary" />
+
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/buttonSortReleaseDate"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="wrap_content"

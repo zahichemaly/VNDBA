@@ -137,4 +137,5 @@ Check your filters or add a new one!</string>
     <string name="empty_search_text">No results found. Try to change your query or advanced search parameters.</string>
     <string name="advanced_filters">Advanced filters</string>
     <string name="filter_vns_by">Filter my VNs by…</string>
+    <string name="title">Title</string>
 </resources>

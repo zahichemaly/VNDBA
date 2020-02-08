@@ -39,3 +39,5 @@ fun String.log() {
 }
 
 fun String.lowerCase() = toLowerCase(Locale.US)
+
+fun String.upperCase() = toUpperCase(Locale.US)
