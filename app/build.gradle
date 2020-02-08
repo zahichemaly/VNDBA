@@ -83,6 +83,7 @@ dependencies {
     implementation "androidx.browser:browser:1.2.0"
     implementation 'com.google.android:flexbox:1.1.0'
     implementation 'pub.devrel:easypermissions:2.0.0'
+    implementation 'me.zhanghai.android.fastscroll:library:1.1.0'
 
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
     implementation "androidx.lifecycle:lifecycle-common-java8:2.2.0"
