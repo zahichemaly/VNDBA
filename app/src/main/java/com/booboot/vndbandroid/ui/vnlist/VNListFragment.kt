@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.extensions.fastScroll
 import com.booboot.vndbandroid.extensions.getThemeColor
 import com.booboot.vndbandroid.extensions.home
 import com.booboot.vndbandroid.extensions.observeNonNull
@@ -38,7 +39,6 @@ import kotlinx.android.synthetic.main.filter_bottom_sheet.*
 import kotlinx.android.synthetic.main.floating_search_toolbar.*
 import kotlinx.android.synthetic.main.floating_search_toolbar.view.*
 import kotlinx.android.synthetic.main.vnlist_fragment.*
-import me.zhanghai.android.fastscroll.FastScrollerBuilder
 
 class VNListFragment : BaseFragment<VNListViewModel>(), View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
     override val layout: Int = R.layout.vnlist_fragment
@@ -89,7 +89,7 @@ class VNListFragment : BaseFragment<VNListViewModel>(), View.OnClickListener, Sw
         vnList.setHasFixedSize(true)
         vnList.layoutManager = GridAutofitLayoutManager(activity, Pixels.px(300))
         vnList.adapter = adapter
-        FastScrollerBuilder(vnList).useMd2Style().build()
+        vnList.fastScroll()
 
         backgroundInfo.setButtonOnClickListener { findNavController().navigate(R.id.searchFragment) }
         refreshLayout.setOnRefreshListener(this)

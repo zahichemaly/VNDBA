@@ -14,6 +14,7 @@ import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.adjustAlpha
 import com.booboot.vndbandroid.extensions.darken
 import com.booboot.vndbandroid.extensions.dayNightTheme
+import com.booboot.vndbandroid.extensions.fastScroll
 import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.openURL
@@ -46,6 +47,8 @@ class SummaryFragment : BaseFragment<SummaryViewModel>() {
         viewModel.loadingData.observeNonNull(this) { vnDetailsFragment()?.showLoading(it) }
         viewModel.errorData.observeOnce(this, ::showError)
         viewModel.loadVn(vnId, false)
+
+        scrollView.fastScroll()
     }
 
     private fun showVn(summaryVN: SummaryVN) {

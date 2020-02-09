@@ -5,6 +5,7 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.extensions.fastScroll
 import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.startParentEnterTransition
@@ -36,6 +37,7 @@ class TagsFragment : BaseFragment<TagsViewModel>(), TagsAdapter.Callback {
         recyclerView.layoutManager = flexbox
         tagsAdapter.onUpdate = ::onAdapterUpdate
         recyclerView.adapter = tagsAdapter
+        recyclerView.fastScroll()
 
         val vnId = arguments?.getLong(VNDetailsFragment.EXTRA_VN_ID) ?: 0
 

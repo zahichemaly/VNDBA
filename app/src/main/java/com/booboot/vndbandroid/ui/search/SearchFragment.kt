@@ -8,6 +8,7 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.extensions.fastScroll
 import com.booboot.vndbandroid.extensions.home
 import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
@@ -48,6 +49,7 @@ class SearchFragment : BaseFragment<SearchViewModel>() {
         vnList.setHasFixedSize(true)
         vnList.layoutManager = GridAutofitLayoutManager(activity, Pixels.px(300))
         vnList.adapter = adapter
+        vnList.fastScroll()
 
         searchBar.onSubmitListener {
             searchBar?.clearFocus()
