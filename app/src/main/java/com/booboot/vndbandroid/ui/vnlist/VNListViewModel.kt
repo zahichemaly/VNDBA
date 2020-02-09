@@ -13,10 +13,12 @@ import com.booboot.vndbandroid.model.vndbandroid.AccountItems
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.model.vndbandroid.SORT_LENGTH
 import com.booboot.vndbandroid.model.vndbandroid.SORT_POPULARITY
+import com.booboot.vndbandroid.model.vndbandroid.SORT_PRIORITY
 import com.booboot.vndbandroid.model.vndbandroid.SORT_RATING
 import com.booboot.vndbandroid.model.vndbandroid.SORT_RELEASE_DATE
 import com.booboot.vndbandroid.model.vndbandroid.SORT_STATUS
 import com.booboot.vndbandroid.model.vndbandroid.SORT_TITLE
+import com.booboot.vndbandroid.model.vndbandroid.SORT_VOTE
 import com.booboot.vndbandroid.model.vndbandroid.SortOptions
 import com.booboot.vndbandroid.repository.AccountRepository
 import com.booboot.vndbandroid.ui.base.BaseViewModel
@@ -54,8 +56,8 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
                 SORT_POPULARITY -> compare(nullsLast()) { (_, vn) -> vn.popularity }
                 SORT_RATING -> compare(nullsLast()) { (_, vn) -> vn.rating }
                 SORT_STATUS -> compare(nullsLast()) { (_, vn) -> accountItems.userList[vn.id]?.firstStatus() }
-//                SORT_VOTE -> vn.title // TODO reimplement it properly
-//                SORT_PRIORITY -> vn.title // TODO reimplement it properly
+                SORT_PRIORITY -> compare(nullsLast()) { (_, vn) -> accountItems.userList[vn.id]?.firstWishlist() }
+                SORT_VOTE -> compare(nullsFirst()) { (_, vn) -> accountItems.userList[vn.id]?.vote }
                 else -> compare(nullsLast()) { (id, _) -> id }
             }
 
