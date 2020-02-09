@@ -11,5 +11,4 @@ fun ViewGroup.inflate(layoutRes: Int, theme: Int = -1): View {
     return LayoutInflater.from(context).inflate(layoutRes, this, false)
 }
 
-fun ViewGroup.fastScroll(config: FastScrollerBuilder.() -> Unit = {}) = FastScrollerBuilder(this).useMd2Style().apply { config()
-setPadding()}.build()
+fun ViewGroup.fastScroll(config: FastScrollerBuilder.() -> Unit = {}) = FastScrollerBuilder(this).useMd2Style().apply { config() }.build()
