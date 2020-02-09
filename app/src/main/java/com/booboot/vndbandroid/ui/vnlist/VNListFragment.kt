@@ -10,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.fastScroll
+import com.booboot.vndbandroid.extensions.fixForFastScroll
 import com.booboot.vndbandroid.extensions.getThemeColor
 import com.booboot.vndbandroid.extensions.home
 import com.booboot.vndbandroid.extensions.observeNonNull
@@ -79,6 +80,7 @@ class VNListFragment : BaseFragment<VNListViewModel>(), View.OnClickListener, Sw
         )
 
         floatingSearchBar.setTextChangedListener { viewModel.getVns(_filter = it, scrollToTop = floatingSearchBar.searchBar.hasFocus()) }
+        floatingSearchBar.fixForFastScroll(constraintLayout)
         bottomSheetHeader.setOnClickListener(this)
 
         listOf<View>(buttonReverseSort, buttonSortID, buttonSortTitle, buttonSortReleaseDate, buttonSortLength, buttonSortPopularity, buttonSortRating, buttonSortStatus, buttonSortVote, buttonSortPriority).forEach {

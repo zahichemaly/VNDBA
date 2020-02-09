@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.extensions.fastScroll
 import com.booboot.vndbandroid.extensions.home
 import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
@@ -32,6 +33,8 @@ class RelationsFragment : BaseFragment<RelationsViewModel>() {
         viewModel.relationsData.observeNonNull(this, ::showRelations)
         viewModel.errorData.observeOnce(this, ::showError)
         home()?.viewModel?.accountData?.observeNonNull(this) { viewModel.loadVn(vnId, adapter.relationsData) }
+
+        recyclerView.fastScroll()
     }
 
     private fun showRelations(relationsData: RelationsData) {

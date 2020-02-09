@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager.widget.ViewPager
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.extensions.fixForFastScroll
 import com.booboot.vndbandroid.extensions.home
 import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
@@ -118,6 +119,7 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
             },
             onExpanding = { iconArrow.setImageResource(R.drawable.ic_keyboard_arrow_up_white_24dp) }
         )
+        appBarLayout.fixForFastScroll(viewPager)
         appBarLayout.updateLayoutParams<CoordinatorLayout.LayoutParams> {
             behavior = StopFocusStealingAppBarBehavior(bottomSheet)
         }

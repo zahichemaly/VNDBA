@@ -1,6 +1,7 @@
 package com.booboot.vndbandroid.extensions
 
 import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
@@ -41,3 +42,10 @@ fun AppBarLayout.setStatusBarThemeForToolbar(activity: AppCompatActivity, toolba
             toolbar.setBackgroundColor(ContextCompat.getColor(activity, R.color.tabBackgroundColor))
         }
     })
+
+fun AppBarLayout.fixForFastScroll(container: ViewGroup) {
+    val contentLayoutInitialPaddingBottom = container.paddingBottom
+    addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { _, offset ->
+        container.setPaddingBottom(contentLayoutInitialPaddingBottom + totalScrollRange + offset)
+    })
+}
