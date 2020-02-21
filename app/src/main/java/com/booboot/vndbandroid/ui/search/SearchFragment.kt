@@ -9,7 +9,6 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.fastScroll
-import com.booboot.vndbandroid.extensions.fixForFastScroll
 import com.booboot.vndbandroid.extensions.home
 import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
@@ -46,7 +45,6 @@ class SearchFragment : BaseFragment<SearchViewModel>() {
         viewModel.searchData.observeNonNull(this, ::showSearch)
 
         floatingSearchBar.setupWithContainer(constraintLayout, vnList)
-        floatingSearchBar.fixForFastScroll(constraintLayout)
         adapter.onUpdate = ::onAdapterUpdate
         vnList.setHasFixedSize(true)
         vnList.layoutManager = GridAutofitLayoutManager(activity, Pixels.px(300))

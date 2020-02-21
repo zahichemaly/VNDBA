@@ -11,6 +11,7 @@ import androidx.core.view.updateLayoutParams
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.dimen
+import com.booboot.vndbandroid.extensions.fixForFastScroll
 import com.booboot.vndbandroid.extensions.setPaddingTop
 import com.booboot.vndbandroid.extensions.setTextChangedListener
 import com.booboot.vndbandroid.extensions.statusBarHeight
@@ -64,6 +65,8 @@ class FloatingSearchToolbar @JvmOverloads constructor(
         searchBarTextInputLayout.setEndIconOnClickListener {
             searchBar.text = null
         }
+
+        fixForFastScroll(container, scrollingChild)
     }
 
     fun setTextChangedListener(onTextChanged: (String) -> Unit = {}) = searchBar.setTextChangedListener {

@@ -43,9 +43,11 @@ fun AppBarLayout.setStatusBarThemeForToolbar(activity: AppCompatActivity, toolba
         }
     })
 
-fun AppBarLayout.fixForFastScroll(container: ViewGroup) {
-    val contentLayoutInitialPaddingBottom = container.paddingBottom
+fun AppBarLayout.fixForFastScroll(container: ViewGroup, scrollingChild: View? = null) {
+    val initialPaddingBottom = container.paddingBottom
+    val initialPaddingTop = scrollingChild?.paddingTop ?: 0
     addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { _, offset ->
-        container.setPaddingBottom(contentLayoutInitialPaddingBottom + totalScrollRange + offset)
+        container.setPaddingBottom(initialPaddingBottom + totalScrollRange + offset)
+        scrollingChild?.setPaddingTop(initialPaddingTop - offset)
     })
 }
