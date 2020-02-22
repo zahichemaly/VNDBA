@@ -1,10 +1,10 @@
 package com.booboot.vndbandroid.diff
 
 import androidx.recyclerview.widget.DiffUtil
-import com.booboot.vndbandroid.model.vndbandroid.VNDetailsTags
+import com.booboot.vndbandroid.model.vndbandroid.Sections
 import com.booboot.vndbandroid.model.vndbandroid.VNTag
 
-class VNDetailsTagsDiffCallback(private var oldItems: VNDetailsTags, private var newItems: VNDetailsTags) : DiffUtil.Callback() {
+class SectionsVNTagDiffCallback(private var oldItems: Sections<VNTag>, private var newItems: Sections<VNTag>) : DiffUtil.Callback() {
     override fun getOldListSize() = oldItems.count()
 
     override fun getNewListSize() = newItems.count()

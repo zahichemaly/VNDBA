@@ -8,7 +8,7 @@ import com.booboot.vndbandroid.extensions.fastScroll
 import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.startParentEnterTransition
-import com.booboot.vndbandroid.model.vndbandroid.VNDetailsTags
+import com.booboot.vndbandroid.model.vndbandroid.Sections
 import com.booboot.vndbandroid.model.vndbandroid.VNTag
 import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.booboot.vndbandroid.ui.vndetails.VNDetailsFragment
@@ -42,7 +42,7 @@ class TagsFragment : BaseFragment<TagsViewModel>() {
         viewModel.loadTags(vnId, false)
     }
 
-    private fun showTags(tags: VNDetailsTags) {
+    private fun showTags(tags: Sections<VNTag>) {
         tagsAdapter.items = tags
         startParentEnterTransition()
     }

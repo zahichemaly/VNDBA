@@ -6,7 +6,7 @@ import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.extensions.plusAssign
 import com.booboot.vndbandroid.model.vndb.Tag
 import com.booboot.vndbandroid.model.vndbandroid.Genre
-import com.booboot.vndbandroid.model.vndbandroid.VNDetailsTags
+import com.booboot.vndbandroid.model.vndbandroid.Sections
 import com.booboot.vndbandroid.model.vndbandroid.VNTag
 import com.booboot.vndbandroid.repository.TagsRepository
 import com.booboot.vndbandroid.repository.VNRepository
@@ -17,8 +17,8 @@ import javax.inject.Inject
 class TagsViewModel constructor(application: Application) : BaseViewModel(application) {
     @Inject lateinit var vnRepository: VNRepository
     @Inject lateinit var tagsRepository: TagsRepository
-    val tagsData: MutableLiveData<VNDetailsTags> = MutableLiveData()
-    private val fullTagsData: MutableLiveData<VNDetailsTags> = MutableLiveData()
+    val tagsData: MutableLiveData<Sections<VNTag>> = MutableLiveData()
+    private val fullTagsData: MutableLiveData<Sections<VNTag>> = MutableLiveData()
 
     init {
         (application as App).appComponent.inject(this)
@@ -38,7 +38,7 @@ class TagsViewModel constructor(application: Application) : BaseViewModel(applic
             Tag.KEY_POPULAR to sortedTags.take(10)
         )
         categories.putAll(sortedTags.groupBy { it.tag.cat })
-        val vnDetailsTags = VNDetailsTags(categories.filterValues { it.isNotEmpty() }.toSortedMap(compareBy { Tag.CATEGORIES.keys.indexOf(it) }))
+        val vnDetailsTags = Sections(categories.filterValues { it.isNotEmpty() }.toSortedMap(compareBy { Tag.CATEGORIES.keys.indexOf(it) }))
         tagsData += vnDetailsTags
         fullTagsData += vnDetailsTags
     }

@@ -5,8 +5,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.booboot.vndbandroid.R
-import com.booboot.vndbandroid.diff.VNDetailsTagsDiffCallback
-import com.booboot.vndbandroid.model.vndbandroid.VNDetailsTags
+import com.booboot.vndbandroid.diff.SectionsVNTagDiffCallback
+import com.booboot.vndbandroid.model.vndbandroid.Sections
 import com.booboot.vndbandroid.model.vndbandroid.VNTag
 import com.booboot.vndbandroid.ui.base.BaseAdapter
 
@@ -14,9 +14,9 @@ class TagsAdapter(
     private val onTitleClicked: (String) -> Unit,
     private val onTagClicked: (VNTag) -> Unit
 ) : BaseAdapter<RecyclerView.ViewHolder>() {
-    var items = VNDetailsTags()
+    var items = Sections<VNTag>()
         set(value) {
-            val diffResult = DiffUtil.calculateDiff(VNDetailsTagsDiffCallback(field, value))
+            val diffResult = DiffUtil.calculateDiff(SectionsVNTagDiffCallback(field, value))
             field = value
             onUpdateInternal()
             diffResult.dispatchUpdatesTo(this)
