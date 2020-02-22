@@ -13,4 +13,5 @@
     android:elevation="0dp"
     app:tabGravity="center"
     app:tabInlineLabel="true"
-    app:tabMode="fixed" />
+    app:tabMode="fixed"
+    app:tabTextAppearance="@style/Tab" />

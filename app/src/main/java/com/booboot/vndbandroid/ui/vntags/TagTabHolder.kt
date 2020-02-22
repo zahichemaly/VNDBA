@@ -5,9 +5,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.model.vndb.Tag
 import com.google.android.material.tabs.TabLayout
+import kotlinx.android.extensions.LayoutContainer
+import kotlinx.android.synthetic.main.collapsing_tab.*
 import kotlinx.android.synthetic.main.collapsing_tab.view.*
 
-class TagTabHolder(itemView: View, private val callback: TagsAdapter.Callback) : RecyclerView.ViewHolder(itemView), TabLayout.OnTabSelectedListener {
+class TagTabHolder(
+    override val containerView: View,
+    private val onTitleClicked: (String) -> Unit
+) : RecyclerView.ViewHolder(containerView), LayoutContainer, TabLayout.OnTabSelectedListener {
     private lateinit var title: String
     private var collapsed: Boolean = false
 
@@ -15,14 +20,12 @@ class TagTabHolder(itemView: View, private val callback: TagsAdapter.Callback) :
         itemView.tabLayout.addOnTabSelectedListener(this)
     }
 
-    fun onBind(title: String, collapsed: Boolean) = with(itemView) {
-        this@TagTabHolder.title = title
-        this@TagTabHolder.collapsed = collapsed
+    fun onBind(_title: String, _collapsed: Boolean) {
+        title = _title
+        collapsed = _collapsed
 
         val fullTitle = Tag.getCategoryName(title)
-        if (tabLayout.getTabAt(0)?.text == fullTitle) {
-            /* Trying to bind the same tab: nothing to do atm */
-        } else {
+        if (tabLayout.getTabAt(0)?.text != fullTitle) {
             tabLayout.removeAllTabs()
             tabLayout.addTab(tabLayout.newTab().setText(fullTitle).setCollapsedIcon())
         }
@@ -31,7 +34,7 @@ class TagTabHolder(itemView: View, private val callback: TagsAdapter.Callback) :
     override fun onTabReselected(tab: TabLayout.Tab) {
         collapsed = !collapsed
         tab.setCollapsedIcon()
-        callback.onTitleClicked(title)
+        onTitleClicked(title)
     }
 
     override fun onTabUnselected(tab: TabLayout.Tab) {

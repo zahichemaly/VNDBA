@@ -19,9 +19,9 @@ import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import kotlinx.android.synthetic.main.tags_fragment.*
 
-class TagsFragment : BaseFragment<TagsViewModel>(), TagsAdapter.Callback {
+class TagsFragment : BaseFragment<TagsViewModel>() {
     override val layout = R.layout.tags_fragment
-    private val tagsAdapter by lazy { TagsAdapter(this) }
+    private val tagsAdapter = TagsAdapter(::onTitleClicked, ::onTagClicked)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val activity = activity ?: return
@@ -55,11 +55,11 @@ class TagsFragment : BaseFragment<TagsViewModel>(), TagsAdapter.Callback {
         startParentEnterTransition()
     }
 
-    override fun onTitleClicked(title: String) {
+    private fun onTitleClicked(title: String) {
         viewModel.collapseTags(title)
     }
 
-    override fun onChipClicked(tag: VNTag) {
+    private fun onTagClicked(tag: VNTag) {
     }
 
     override fun scrollToTop() {

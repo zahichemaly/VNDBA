@@ -18,8 +18,8 @@ data class VNDetailsTags(
         var i = 0
         all.forEach {
             if (i++ == position) return it.key
-            it.value.forEach {
-                if (i++ == position) return it
+            it.value.forEach { vnTag ->
+                if (i++ == position) return vnTag
             }
         }
         return null
