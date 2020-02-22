@@ -2,7 +2,6 @@ package com.booboot.vndbandroid.ui.vntags
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.fastScroll
@@ -14,7 +13,6 @@ import com.booboot.vndbandroid.model.vndbandroid.VNTag
 import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.booboot.vndbandroid.ui.vndetails.VNDetailsFragment
 import com.google.android.flexbox.AlignItems
-import com.google.android.flexbox.FlexboxItemDecoration
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import kotlinx.android.synthetic.main.tags_fragment.*
@@ -24,15 +22,9 @@ class TagsFragment : BaseFragment<TagsViewModel>() {
     private val tagsAdapter = TagsAdapter(::onTitleClicked, ::onTagClicked)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val activity = activity ?: return
-
         val flexbox = FlexboxLayoutManager(context)
         flexbox.alignItems = AlignItems.FLEX_START
-        flexbox.justifyContent = JustifyContent.CENTER
-        val itemDecoration = FlexboxItemDecoration(activity)
-        itemDecoration.setDrawable(ContextCompat.getDrawable(activity, R.drawable.flexbox_divider_8dp))
-        itemDecoration.setOrientation(FlexboxItemDecoration.BOTH)
-        recyclerView.addItemDecoration(itemDecoration)
+        flexbox.justifyContent = JustifyContent.SPACE_EVENLY
 
         recyclerView.layoutManager = flexbox
         tagsAdapter.onUpdate = ::onAdapterUpdate
