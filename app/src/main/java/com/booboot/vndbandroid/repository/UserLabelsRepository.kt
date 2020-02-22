@@ -14,7 +14,7 @@ import javax.inject.Singleton
 @Singleton
 open class UserLabelsRepository @Inject constructor(var boxStore: BoxStore, var vndbServer: VNDBServer) : Repository<UserLabel>() {
     private fun addItemsToDB(items: List<UserLabel>) {
-        boxStore.save(true) { items.map { UserLabelDao(it, boxStore) } }
+        boxStore.save(true) { items.map { UserLabelDao(it) } }
     }
 
     override suspend fun getItems(cachePolicy: CachePolicy<Map<Long, UserLabel>>) = cachePolicy

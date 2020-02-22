@@ -1,7 +1,6 @@
 package com.booboot.vndbandroid.dao
 
 import com.booboot.vndbandroid.model.vndb.UserLabel
-import io.objectbox.BoxStore
 import io.objectbox.annotation.Entity
 import io.objectbox.annotation.Id
 
@@ -11,7 +10,7 @@ class UserLabelDao() {
     var label: String = ""
     var private: Boolean = false
 
-    constructor(userLabel: UserLabel, boxStore: BoxStore) : this() {
+    constructor(userLabel: UserLabel) : this() {
         id = userLabel.id
         label = userLabel.label
         private = userLabel.private
