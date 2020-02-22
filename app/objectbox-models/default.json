@@ -634,9 +634,28 @@
           "targetId": "21:2628055573098783860"
         }
       ]
+    },
+    {
+      "id": "23:1881907208603431416",
+      "lastPropertyId": "2:117533857002110246",
+      "name": "UserLabelDao",
+      "properties": [
+        {
+          "id": "1:484036881324969702",
+          "name": "id",
+          "type": 6,
+          "flags": 129
+        },
+        {
+          "id": "2:117533857002110246",
+          "name": "label",
+          "type": 9
+        }
+      ],
+      "relations": []
     }
   ],
-  "lastEntityId": "22:5946774387263915244",
+  "lastEntityId": "23:1881907208603431416",
   "lastIndexId": "3:7241531304257385670",
   "lastRelationId": "12:4210767534704441546",
   "lastSequenceId": "0:0",

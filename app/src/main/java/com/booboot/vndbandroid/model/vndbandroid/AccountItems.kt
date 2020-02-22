@@ -1,10 +1,12 @@
 package com.booboot.vndbandroid.model.vndbandroid
 
+import com.booboot.vndbandroid.model.vndb.UserLabel
 import com.booboot.vndbandroid.model.vndb.UserList
 import com.booboot.vndbandroid.model.vndb.VN
 
 data class AccountItems(
     var userList: Map<Long, UserList> = emptyMap(),
+    var userLabels: Map<Long, UserLabel> = emptyMap(),
     var vns: Map<Long, VN> = emptyMap()
 ) {
     fun getLabelCount(vararg ids: Long) = userList.count { userList ->

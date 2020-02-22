@@ -20,7 +20,7 @@ open class UserListRepository @Inject constructor(var boxStore: BoxStore, var vn
 
     override suspend fun getItems(cachePolicy: CachePolicy<Map<Long, UserList>>) = cachePolicy
         .fetchFromMemory { items }
-        .fetchFromDatabase { boxStore.get<UserListDao, List<UserList>> { it.all.map { vnlistDao -> vnlistDao.toBo() } }.associateBy { it.vn } }
+        .fetchFromDatabase { boxStore.get<UserListDao, List<UserList>> { it.all.map { userListDao -> userListDao.toBo() } }.associateBy { it.vn } }
         .fetchFromNetwork {
             vndbServer
                 .get<UserList>("ulist", "basic,labels", "(uid = 0)", Options(results = 100, fetchAllPages = true), type())
