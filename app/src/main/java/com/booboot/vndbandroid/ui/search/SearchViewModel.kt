@@ -34,10 +34,8 @@ class SearchViewModel constructor(application: Application) : BaseViewModel(appl
         val accountItems = accountItemsJob.await().apply {
             vns = vnJob.await()
         }
-        searchData += VnlistData(accountItems).apply {
-            val diffCallback = VNDiffCallback(searchData.value?.items ?: AccountItems(), items)
-            diffResult = DiffUtil.calculateDiff(diffCallback)
-        }
+        val diffResult = DiffUtil.calculateDiff(VNDiffCallback(searchData.value?.items ?: AccountItems(), accountItems))
+        searchData += VnlistData(accountItems, diffResult)
     }
 
     override fun restoreState(state: Bundle?) {

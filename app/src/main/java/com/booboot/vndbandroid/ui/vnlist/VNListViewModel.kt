@@ -62,15 +62,16 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
             }
 
             accountItems.vns = accountItems.vns
-                .filterValues { vn -> vn.title.trim().lowerCase().contains(filter) }
+                .run {
+                    if (filter.isEmpty()) this
+                    else filterValues { vn -> vn.title.trim().lowerCase().contains(filter) }
+                }
                 .toList()
                 .sortedWith(sorter)
                 .toMap()
 
-            vnlistData += VnlistData(accountItems).apply {
-                val diffCallback = VNDiffCallback(vnlistData.value?.items ?: AccountItems(), items)
-                diffResult = DiffUtil.calculateDiff(diffCallback)
-            }
+            val diffResult = DiffUtil.calculateDiff(VNDiffCallback(vnlistData.value?.items ?: AccountItems(), accountItems))
+            vnlistData += VnlistData(accountItems, diffResult)
             scrollToTopData += scrollToTop
         }
     }
