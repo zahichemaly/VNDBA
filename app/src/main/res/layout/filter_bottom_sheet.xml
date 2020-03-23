@@ -2,6 +2,7 @@
 <com.booboot.vndbandroid.util.view.FrameLayoutKeyboardSupport
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bottomSheet"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -14,252 +15,56 @@
     app:behavior_peekHeight="@dimen/bottom_sheet_peek"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-    <androidx.core.widget.NestedScrollView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:paddingBottom="16dp">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
+        <View
+            android:id="@+id/bottomSheetHeader"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/bottom_sheet_peek"
+            android:background="@drawable/bottom_sheet_header_background"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iconArrow"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_marginStart="12dp"
+            app:layout_constraintBottom_toBottomOf="@id/bottomSheetHeader"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/bottomSheetHeader"
+            app:srcCompat="@drawable/ic_keyboard_arrow_down_white_24dp"
+            app:tint="@color/transparent80White" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/textAddToList"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:clipToPadding="false"
-            android:paddingBottom="16dp">
+            android:layout_marginStart="8dp"
+            android:text="@string/advanced_filters"
+            android:textColor="@color/transparent80White"
+            app:layout_constraintBottom_toBottomOf="@id/iconArrow"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/iconArrow"
+            app:layout_constraintTop_toTopOf="@id/iconArrow" />
 
-            <View
-                android:id="@+id/bottomSheetHeader"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/bottom_sheet_peek"
-                android:background="@drawable/bottom_sheet_header_background"
-                android:clickable="true"
-                android:focusable="true"
-                android:foreground="?attr/selectableItemBackground"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/iconArrow"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:layout_marginStart="12dp"
-                app:layout_constraintBottom_toBottomOf="@id/bottomSheetHeader"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/bottomSheetHeader"
-                app:srcCompat="@drawable/ic_keyboard_arrow_down_white_24dp"
-                app:tint="@color/transparent80White" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/textAddToList"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="@string/advanced_filters"
-                android:textColor="@color/transparent80White"
-                app:layout_constraintBottom_toBottomOf="@id/iconArrow"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/iconArrow"
-                app:layout_constraintTop_toTopOf="@id/iconArrow" />
-
-            <View
-                android:layout_width="2dp"
-                android:layout_height="0dp"
-                android:background="@color/sortSection"
-                app:layout_constraintBottom_toBottomOf="@id/flexboxStatus"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/textSort" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:alpha="0.05"
-                android:background="@color/sortSection"
-                app:layout_constraintBottom_toBottomOf="@id/flexboxStatus"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/textSort" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/textSort"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginEnd="12dp"
-                android:text="@string/sort_vns_by"
-                android:textColor="@color/sortSection"
-                android:textSize="18sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/bottomSheetHeader" />
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/buttonReverseSort"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="12dp"
-                android:text="@string/reverse_order"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textSort" />
-
-            <com.google.android.flexbox.FlexboxLayout
-                android:id="@+id/flexboxStatus"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="12dp"
-                app:dividerDrawable="@drawable/flexbox_divider_8dp"
-                app:flexWrap="wrap"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/buttonReverseSort"
-                app:showDividerVertical="middle">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonSortID"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:text="@string/id"
-                    android:textAllCaps="false"
-                    android:textColor="@color/textColorPrimary"
-                    android:textSize="12sp"
-                    app:rippleColor="@color/textColorPrimary"
-                    app:strokeColor="@color/textColorPrimary" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonSortTitle"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:text="@string/title"
-                    android:textAllCaps="false"
-                    android:textColor="@color/textColorPrimary"
-                    android:textSize="12sp"
-                    app:rippleColor="@color/textColorPrimary"
-                    app:strokeColor="@color/textColorPrimary" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonSortReleaseDate"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:text="@string/release_date"
-                    android:textAllCaps="false"
-                    android:textColor="@color/textColorPrimary"
-                    android:textSize="12sp"
-                    app:rippleColor="@color/textColorPrimary"
-                    app:strokeColor="@color/textColorPrimary" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonSortLength"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:text="@string/length"
-                    android:textAllCaps="false"
-                    android:textColor="@color/textColorPrimary"
-                    android:textSize="12sp"
-                    app:rippleColor="@color/textColorPrimary"
-                    app:strokeColor="@color/textColorPrimary" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonSortPopularity"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:text="@string/popularity"
-                    android:textAllCaps="false"
-                    android:textColor="@color/textColorPrimary"
-                    android:textSize="12sp"
-                    app:rippleColor="@color/textColorPrimary"
-                    app:strokeColor="@color/textColorPrimary" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonSortRating"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:text="@string/rating"
-                    android:textAllCaps="false"
-                    android:textColor="@color/textColorPrimary"
-                    android:textSize="12sp"
-                    app:rippleColor="@color/textColorPrimary"
-                    app:strokeColor="@color/textColorPrimary" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonSortStatus"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:text="@string/status"
-                    android:textAllCaps="false"
-                    android:textColor="@color/textColorPrimary"
-                    android:textSize="12sp"
-                    app:rippleColor="@color/textColorPrimary"
-                    app:strokeColor="@color/textColorPrimary" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonSortVote"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:text="@string/vote"
-                    android:textAllCaps="false"
-                    android:textColor="@color/textColorPrimary"
-                    android:textSize="12sp"
-                    app:rippleColor="@color/textColorPrimary"
-                    app:strokeColor="@color/textColorPrimary" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonSortPriority"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:text="@string/priority"
-                    android:textAllCaps="false"
-                    android:textColor="@color/textColorPrimary"
-                    android:textSize="12sp"
-                    app:rippleColor="@color/textColorPrimary"
-                    app:strokeColor="@color/textColorPrimary" />
-            </com.google.android.flexbox.FlexboxLayout>
-
-            <View
-                android:layout_width="2dp"
-                android:layout_height="0dp"
-                android:background="@color/filterSection"
-                app:layout_constraintBottom_toBottomOf="@id/textFilter"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/textFilter" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:alpha="0.05"
-                android:background="@color/filterSection"
-                app:layout_constraintBottom_toBottomOf="@id/textFilter"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/textFilter" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/textFilter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginEnd="12dp"
-                android:text="@string/filter_vns_by"
-                android:textColor="@color/filterSection"
-                android:textSize="18sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/flexboxStatus" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.core.widget.NestedScrollView>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/filters"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/bottomSheetHeader"
+            tools:listitem="@layout/filter_title" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </com.booboot.vndbandroid.util.view.FrameLayoutKeyboardSupport>

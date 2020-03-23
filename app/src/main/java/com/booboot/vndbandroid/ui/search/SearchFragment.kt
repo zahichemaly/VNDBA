@@ -15,9 +15,9 @@ import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.onSubmitListener
 import com.booboot.vndbandroid.extensions.setupStatusBar
 import com.booboot.vndbandroid.extensions.setupToolbar
+import com.booboot.vndbandroid.model.vndbandroid.VnlistData
 import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.booboot.vndbandroid.ui.vnlist.VNAdapter
-import com.booboot.vndbandroid.ui.vnlist.VnlistData
 import com.booboot.vndbandroid.util.GridAutofitLayoutManager
 import com.booboot.vndbandroid.util.Pixels
 import kotlinx.android.synthetic.main.floating_search_toolbar.*

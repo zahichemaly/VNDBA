@@ -8,10 +8,10 @@ import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.diff.VNDiffCallback
 import com.booboot.vndbandroid.extensions.plusAssign
 import com.booboot.vndbandroid.model.vndbandroid.AccountItems
+import com.booboot.vndbandroid.model.vndbandroid.VnlistData
 import com.booboot.vndbandroid.repository.AccountRepository
 import com.booboot.vndbandroid.repository.VNRepository
 import com.booboot.vndbandroid.ui.base.BaseViewModel
-import com.booboot.vndbandroid.ui.vnlist.VnlistData
 import kotlinx.coroutines.async
 import javax.inject.Inject
 

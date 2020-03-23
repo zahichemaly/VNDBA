@@ -15,6 +15,7 @@ import com.booboot.vndbandroid.model.vndbandroid.SORT_STATUS
 import com.booboot.vndbandroid.model.vndbandroid.SORT_TITLE
 import com.booboot.vndbandroid.model.vndbandroid.SORT_VOTE
 import com.booboot.vndbandroid.model.vndbandroid.SortOptions
+import com.booboot.vndbandroid.model.vndbandroid.VnlistData
 import com.booboot.vndbandroid.model.vndbandroid.Vote
 import com.booboot.vndbandroid.ui.base.BaseAdapter
 import com.booboot.vndbandroid.util.Utils
@@ -35,7 +36,7 @@ class VNAdapter(
             onUpdateInternal()
             value.diffResult?.dispatchUpdatesTo(this) ?: notifyChanged()
         }
-    @SortOptions var sort = -1
+    @SortOptions var sort = -1L
 
     init {
         setHasStableIds(true)

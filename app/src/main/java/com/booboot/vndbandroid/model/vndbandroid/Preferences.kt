@@ -12,7 +12,7 @@ object Preferences : KotprefModel() {
     var useCustomTabs by booleanPref(true, key = context.getString(R.string.pref_key_browser))
     var nsfw by booleanPref(key = context.getString(R.string.pref_key_nsfw))
     var nightMode by intPref(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM, "NIGHT_MODE") // Don't use R.string.pref_key_night_mode because not an int!
-    var sort by intPref(SORT_ID, key = "SORT")
+    var sort by longPref(SORT_ID, key = "SORT")
     var reverseSort by booleanPref(false, key = "REVERSE_SORT")
     var gdprCrashlytics by intPref(NOT_SET, key = "GDPR_CRASHLYTICS")
     var loginHelpSeen by booleanPref(false, key = "LOGIN_HELP_SEEN")

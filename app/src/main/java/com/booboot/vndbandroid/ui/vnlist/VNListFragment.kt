@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -17,33 +18,32 @@ import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.onStateChanged
 import com.booboot.vndbandroid.extensions.postponeEnterTransitionIfExists
 import com.booboot.vndbandroid.extensions.removeFocus
-import com.booboot.vndbandroid.extensions.selectIf
 import com.booboot.vndbandroid.extensions.setupStatusBar
 import com.booboot.vndbandroid.extensions.setupToolbar
 import com.booboot.vndbandroid.extensions.toggleBottomSheet
+import com.booboot.vndbandroid.model.vndbandroid.FilterData
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
-import com.booboot.vndbandroid.model.vndbandroid.SORT_ID
-import com.booboot.vndbandroid.model.vndbandroid.SORT_LENGTH
-import com.booboot.vndbandroid.model.vndbandroid.SORT_POPULARITY
-import com.booboot.vndbandroid.model.vndbandroid.SORT_PRIORITY
-import com.booboot.vndbandroid.model.vndbandroid.SORT_RATING
-import com.booboot.vndbandroid.model.vndbandroid.SORT_RELEASE_DATE
-import com.booboot.vndbandroid.model.vndbandroid.SORT_STATUS
-import com.booboot.vndbandroid.model.vndbandroid.SORT_TITLE
-import com.booboot.vndbandroid.model.vndbandroid.SORT_VOTE
+import com.booboot.vndbandroid.model.vndbandroid.SortItem
+import com.booboot.vndbandroid.model.vndbandroid.VnlistData
 import com.booboot.vndbandroid.ui.base.BaseFragment
+import com.booboot.vndbandroid.ui.filters.FiltersAdapter
 import com.booboot.vndbandroid.util.GridAutofitLayoutManager
 import com.booboot.vndbandroid.util.Pixels
+import com.google.android.flexbox.AlignItems
+import com.google.android.flexbox.FlexboxItemDecoration
+import com.google.android.flexbox.FlexboxLayoutManager
+import com.google.android.flexbox.JustifyContent
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.filter_bottom_sheet.*
 import kotlinx.android.synthetic.main.floating_search_toolbar.*
 import kotlinx.android.synthetic.main.floating_search_toolbar.view.*
 import kotlinx.android.synthetic.main.vnlist_fragment.*
 
-class VNListFragment : BaseFragment<VNListViewModel>(), View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
+class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRefreshListener {
     override val layout: Int = R.layout.vnlist_fragment
     lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
     private val adapter by lazy { VNAdapter(::onVnClicked) }
+    private val filtersAdapter by lazy { FiltersAdapter(::onSortClicked) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +60,7 @@ class VNListFragment : BaseFragment<VNListViewModel>(), View.OnClickListener, Sw
         viewModel = ViewModelProvider(this).get(VNListViewModel::class.java)
         viewModel.restoreState(savedInstanceState)
         viewModel.vnlistData.observeNonNull(this, ::showVns)
+        viewModel.filterData.observeNonNull(this, ::showFilters)
         viewModel.scrollToTopData.observeOnce(this) { if (it) scrollToTop() }
         viewModel.errorData.observeOnce(this, ::showError)
         home()?.viewModel?.accountData?.observeNonNull(this) { update() }
@@ -79,11 +80,7 @@ class VNListFragment : BaseFragment<VNListViewModel>(), View.OnClickListener, Sw
         )
 
         floatingSearchBar.setTextChangedListener { viewModel.getVns(_filter = it, scrollToTop = floatingSearchBar.searchBar.hasFocus()) }
-        bottomSheetHeader.setOnClickListener(this)
-
-        listOf<View>(buttonReverseSort, buttonSortID, buttonSortTitle, buttonSortReleaseDate, buttonSortLength, buttonSortPopularity, buttonSortRating, buttonSortStatus, buttonSortVote, buttonSortPriority).forEach {
-            it.setOnClickListener(this)
-        }
+        bottomSheetHeader.setOnClickListener { bottomSheet.toggleBottomSheet() }
 
         adapter.onUpdate = ::onAdapterUpdate
         vnList.setHasFixedSize(true)
@@ -94,6 +91,17 @@ class VNListFragment : BaseFragment<VNListViewModel>(), View.OnClickListener, Sw
         backgroundInfo.setButtonOnClickListener { findNavController().navigate(R.id.searchFragment) }
         refreshLayout.setOnRefreshListener(this)
         refreshLayout.setColorSchemeColors(activity.getThemeColor(R.attr.colorAccent))
+
+        filters.layoutManager = FlexboxLayoutManager(activity).apply {
+            alignItems = AlignItems.FLEX_START
+            justifyContent = JustifyContent.FLEX_START
+        }
+        filters.addItemDecoration(FlexboxItemDecoration(activity).apply {
+            setDrawable(ContextCompat.getDrawable(activity, R.drawable.flexbox_divider_8dp))
+            setOrientation(FlexboxItemDecoration.VERTICAL)
+        })
+
+        filters.adapter = filtersAdapter
     }
 
     private fun update() = viewModel.getVns(scrollToTop = false)
@@ -102,20 +110,13 @@ class VNListFragment : BaseFragment<VNListViewModel>(), View.OnClickListener, Sw
         adapter.sort = Preferences.sort
         adapter.data = vnlistData
 
-        buttonReverseSort.isChecked = Preferences.reverseSort
-        buttonSortID?.selectIf(Preferences.sort == SORT_ID, R.color.textColorPrimaryReverse)
-        buttonSortTitle?.selectIf(Preferences.sort == SORT_TITLE, R.color.textColorPrimaryReverse)
-        buttonSortReleaseDate?.selectIf(Preferences.sort == SORT_RELEASE_DATE, R.color.textColorPrimaryReverse)
-        buttonSortLength?.selectIf(Preferences.sort == SORT_LENGTH, R.color.textColorPrimaryReverse)
-        buttonSortPopularity?.selectIf(Preferences.sort == SORT_POPULARITY, R.color.textColorPrimaryReverse)
-        buttonSortRating?.selectIf(Preferences.sort == SORT_RATING, R.color.textColorPrimaryReverse)
-        buttonSortStatus?.selectIf(Preferences.sort == SORT_STATUS, R.color.textColorPrimaryReverse)
-        buttonSortVote?.selectIf(Preferences.sort == SORT_VOTE, R.color.textColorPrimaryReverse)
-        buttonSortPriority?.selectIf(Preferences.sort == SORT_PRIORITY, R.color.textColorPrimaryReverse)
-
         view?.post {
             startPostponedEnterTransition()
         }
+    }
+
+    private fun showFilters(filterData: FilterData) {
+        filtersAdapter.data = filterData
     }
 
     override fun onRefresh() {
@@ -138,19 +139,7 @@ class VNListFragment : BaseFragment<VNListViewModel>(), View.OnClickListener, Sw
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onClick(view: View) {
-        when (view.id) {
-            R.id.bottomSheetHeader -> bottomSheet.toggleBottomSheet()
-            R.id.buttonReverseSort -> viewModel.getVns(_reverseSort = !Preferences.reverseSort)
-            R.id.buttonSortID -> viewModel.getVns(_sort = SORT_ID)
-            R.id.buttonSortTitle -> viewModel.getVns(_sort = SORT_TITLE)
-            R.id.buttonSortReleaseDate -> viewModel.getVns(_sort = SORT_RELEASE_DATE)
-            R.id.buttonSortLength -> viewModel.getVns(_sort = SORT_LENGTH)
-            R.id.buttonSortPopularity -> viewModel.getVns(_sort = SORT_POPULARITY)
-            R.id.buttonSortRating -> viewModel.getVns(_sort = SORT_RATING)
-            R.id.buttonSortStatus -> viewModel.getVns(_sort = SORT_STATUS)
-            R.id.buttonSortVote -> viewModel.getVns(_sort = SORT_VOTE)
-            R.id.buttonSortPriority -> viewModel.getVns(_sort = SORT_PRIORITY)
-        }
+    private fun onSortClicked(item: SortItem) {
+        viewModel.getVns(_sort = item.id)
     }
 }
