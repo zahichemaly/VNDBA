@@ -6,7 +6,7 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@id/vnlistFragment"
-            android:icon="@drawable/ic_list_black_48dp"
+            android:icon="@drawable/ic_list_48dp"
             android:menuCategory="secondary"
             android:title="@string/my_visual_novel_list"
             app:actionLayout="@layout/menu_counter" />
