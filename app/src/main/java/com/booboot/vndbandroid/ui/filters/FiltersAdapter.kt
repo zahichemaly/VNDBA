@@ -1,56 +1,85 @@
 package com.booboot.vndbandroid.ui.filters
 
-import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import com.booboot.vndbandroid.R
-import com.booboot.vndbandroid.extensions.inflate
-import com.booboot.vndbandroid.model.vndbandroid.FilterCheckbox
-import com.booboot.vndbandroid.model.vndbandroid.FilterData
-import com.booboot.vndbandroid.model.vndbandroid.FilterTitle
-import com.booboot.vndbandroid.model.vndbandroid.SortItem
-import com.booboot.vndbandroid.ui.base.BaseAdapter
+import com.booboot.vndbandroid.extensions.selectIf
+import com.xwray.groupie.ExpandableGroup
+import com.xwray.groupie.ExpandableItem
+import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
+import com.xwray.groupie.kotlinandroidextensions.Item
+import kotlinx.android.synthetic.main.filter_button.*
+import kotlinx.android.synthetic.main.filter_checkbox.*
+import kotlinx.android.synthetic.main.filter_title.*
 
-class FiltersAdapter(
-    private val onSortClicked: (SortItem) -> Unit
-) : BaseAdapter<RecyclerView.ViewHolder>() {
-    var data = FilterData()
-        set(value) {
-            field = value
-            onUpdateInternal()
-            value.diffResult?.dispatchUpdatesTo(this) ?: notifyChanged()
-        }
+data class FilterTitleItem(
+    val _id: Long,
+    @StringRes val title: Int,
+    @DrawableRes val icon: Int
+) : Item(), ExpandableItem {
+    private lateinit var expandableGroup: ExpandableGroup
 
-    init {
-        setHasStableIds(true)
-    }
+    override fun bind(viewHolder: GroupieViewHolder, position: Int) {
+        viewHolder.apply {
+            titleView.setText(title)
+            iconView.setImageResource(icon)
+            update()
 
-    override fun getItemViewType(position: Int) = when (data.items[position]) {
-        is FilterTitle -> FILTER_TITLE
-        is FilterCheckbox -> FILTER_CHECKBOX
-        is SortItem -> SORT_ITEM
-        else -> FILTER_TITLE
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder = when (viewType) {
-        FILTER_TITLE -> FilterTitleHolder(parent.inflate(R.layout.filter_title))
-        FILTER_CHECKBOX -> FilterCheckboxHolder(parent.inflate(R.layout.filter_checkbox))
-        else -> SortItemHolder(parent.inflate(R.layout.filter_button), onSortClicked)
-    }
-
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val item = data.items[position]
-        when (holder) {
-            is FilterTitleHolder -> holder.bind(item as FilterTitle)
-            is FilterCheckboxHolder -> holder.bind(item as FilterCheckbox)
-            is SortItemHolder -> holder.bind(item as SortItem)
+            containerView.setOnClickListener {
+                expandableGroup.onToggleExpanded()
+                update()
+            }
         }
     }
 
-    override fun getItemCount() = data.items.size
+    private fun GroupieViewHolder.update() {
+        arrow.setImageResource(if (expandableGroup.isExpanded) R.drawable.ic_keyboard_arrow_up_24dp else R.drawable.ic_keyboard_arrow_down_24dp)
+    }
 
-    override fun getItemId(position: Int) = data.items[position].id
+    override fun getLayout() = R.layout.filter_title
+
+    override fun setExpandableGroup(onToggleListener: ExpandableGroup) {
+        expandableGroup = onToggleListener
+    }
+
+    override fun getId() = _id
 }
 
-const val FILTER_TITLE = 1
-const val FILTER_CHECKBOX = 2
-const val SORT_ITEM = 3
+data class SortItem(
+    private val _id: Long,
+    @StringRes val title: Int,
+    val selected: Boolean
+) : Item() {
+    var onSortClicked: (SortItem) -> Unit = {}
+
+    override fun bind(viewHolder: GroupieViewHolder, position: Int) {
+        viewHolder.apply {
+            filterButton.setText(title)
+            filterButton.selectIf(selected, R.color.textColorPrimaryReverse)
+            filterButton.rippleColor = filterButton.strokeColor
+            filterButton.setOnClickListener { onSortClicked(this@SortItem) }
+        }
+    }
+
+    override fun getId() = _id
+    override fun getLayout() = R.layout.filter_button
+}
+
+data class FilterCheckboxItem(
+    private val _id: Long,
+    @StringRes val title: Int,
+    val selected: Boolean
+) : Item() {
+    var onClicked: (FilterCheckboxItem) -> Unit = {}
+
+    override fun bind(viewHolder: GroupieViewHolder, position: Int) {
+        viewHolder.apply {
+            filterCheckbox.setText(title)
+            filterCheckbox.isChecked = selected
+            filterCheckbox.setOnClickListener { onClicked(this@FilterCheckboxItem) }
+        }
+    }
+
+    override fun getId() = _id
+    override fun getLayout() = R.layout.filter_checkbox
+}

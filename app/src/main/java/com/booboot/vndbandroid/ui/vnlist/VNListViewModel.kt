@@ -5,18 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.R
-import com.booboot.vndbandroid.diff.FilterDiffCallback
 import com.booboot.vndbandroid.diff.VNDiffCallback
 import com.booboot.vndbandroid.extensions.lowerCase
 import com.booboot.vndbandroid.extensions.plusAssign
 import com.booboot.vndbandroid.extensions.upperCase
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndbandroid.AccountItems
-import com.booboot.vndbandroid.model.vndbandroid.FilterCheckbox
 import com.booboot.vndbandroid.model.vndbandroid.FilterData
-import com.booboot.vndbandroid.model.vndbandroid.FilterTitle
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
-import com.booboot.vndbandroid.model.vndbandroid.SORT_ID
 import com.booboot.vndbandroid.model.vndbandroid.SORT_LENGTH
 import com.booboot.vndbandroid.model.vndbandroid.SORT_POPULARITY
 import com.booboot.vndbandroid.model.vndbandroid.SORT_PRIORITY
@@ -25,11 +21,13 @@ import com.booboot.vndbandroid.model.vndbandroid.SORT_RELEASE_DATE
 import com.booboot.vndbandroid.model.vndbandroid.SORT_STATUS
 import com.booboot.vndbandroid.model.vndbandroid.SORT_TITLE
 import com.booboot.vndbandroid.model.vndbandroid.SORT_VOTE
-import com.booboot.vndbandroid.model.vndbandroid.SortItem
 import com.booboot.vndbandroid.model.vndbandroid.SortOptions
 import com.booboot.vndbandroid.model.vndbandroid.VnlistData
 import com.booboot.vndbandroid.repository.AccountRepository
 import com.booboot.vndbandroid.ui.base.BaseViewModel
+import com.booboot.vndbandroid.ui.filters.FilterTitleItem
+import com.xwray.groupie.ExpandableGroup
+import com.xwray.groupie.Section
 import javax.inject.Inject
 
 class VNListViewModel constructor(application: Application) : BaseViewModel(application) {
@@ -39,9 +37,16 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
     val scrollToTopData = MutableLiveData<Boolean>()
 
     var filter = ""
+    val sortGroup: ExpandableGroup
+    val sortSection = Section()
+    val filterGroup: ExpandableGroup
 
     init {
         (application as App).appComponent.inject(this)
+        sortGroup = ExpandableGroup(FilterTitleItem(-1, R.string.sort_vns_by, R.drawable.ic_sort_24dp), true).apply {
+            add(sortSection)
+        }
+        filterGroup = ExpandableGroup(FilterTitleItem(-2, R.string.filter_vns_by, R.drawable.ic_filter_list_24dp), true)
     }
 
     fun getVns(
@@ -79,26 +84,9 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
                 .sortedWith(sorter)
                 .toMap()
 
-            val filters = listOf(
-                FilterTitle(-1, R.string.sort_vns_by, R.drawable.ic_filter_list_24dp, 0),
-                FilterCheckbox(-2, R.string.reverse_order, _reverseSort).apply {
-                    onClicked = { getVns(_reverseSort = !selected) }
-                },
-                SortItem(SORT_ID, R.string.id, _sort == SORT_ID),
-                SortItem(SORT_TITLE, R.string.title, _sort == SORT_TITLE),
-                SortItem(SORT_RELEASE_DATE, R.string.release_date, _sort == SORT_RELEASE_DATE),
-                SortItem(SORT_LENGTH, R.string.length, _sort == SORT_LENGTH),
-                SortItem(SORT_POPULARITY, R.string.popularity, _sort == SORT_POPULARITY),
-                SortItem(SORT_RATING, R.string.rating, _sort == SORT_RATING),
-                SortItem(SORT_STATUS, R.string.status, _sort == SORT_STATUS),
-                SortItem(SORT_VOTE, R.string.vote, _sort == SORT_VOTE),
-                SortItem(SORT_PRIORITY, R.string.priority, _sort == SORT_PRIORITY)
-            )
-
             val diffResult = DiffUtil.calculateDiff(VNDiffCallback(vnlistData.value?.items ?: AccountItems(), accountItems))
-            val filterDiffResult = DiffUtil.calculateDiff(FilterDiffCallback(filterData.value?.items ?: listOf(), filters))
             vnlistData += VnlistData(accountItems, diffResult)
-            filterData += FilterData(filters, filterDiffResult)
+            filterData += FilterData(_sort, _reverseSort)
             scrollToTopData += scrollToTop
         }
     }

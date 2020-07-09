@@ -2,8 +2,11 @@
 <androidx.appcompat.widget.SwitchCompat
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/button"
+    android:id="@+id/filterCheckbox"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/bottom_sheet_side_margin_negative"
     android:layout_marginTop="4dp"
+    android:layout_marginEnd="@dimen/bottom_sheet_side_margin_negative"
+    android:paddingHorizontal="@dimen/bottom_sheet_side_margin"
     tools:text="@string/reverse_order" />
