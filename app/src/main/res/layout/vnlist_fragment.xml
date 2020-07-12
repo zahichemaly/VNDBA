@@ -59,5 +59,12 @@
         app:hintText="@string/action_filter_hint"
         app:startIcon="@drawable/ic_filter_list_24dp" />
 
-    <include layout="@layout/filter_bottom_sheet" />
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="250dp">
+
+        <include layout="@layout/filter_bottom_sheet" />
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

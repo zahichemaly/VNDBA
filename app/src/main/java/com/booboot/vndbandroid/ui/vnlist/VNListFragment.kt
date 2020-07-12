@@ -12,6 +12,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.extensions.addPaddingBottomIfCanScroll
+import com.booboot.vndbandroid.extensions.dimen
 import com.booboot.vndbandroid.extensions.fastScroll
 import com.booboot.vndbandroid.extensions.getThemeColor
 import com.booboot.vndbandroid.extensions.home
@@ -125,6 +127,7 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
             setOrientation(FlexboxItemDecoration.VERTICAL)
         })
         filters.adapter = filtersAdapter
+        filters.addPaddingBottomIfCanScroll(viewLifecycleOwner, Pixels.px(16), dimen(R.dimen.bottom_sheet_peek))
     }
 
     private fun update() = viewModel.getVns(scrollToTop = false)
