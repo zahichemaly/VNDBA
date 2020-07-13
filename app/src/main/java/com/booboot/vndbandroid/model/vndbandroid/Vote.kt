@@ -12,7 +12,7 @@ object Vote {
     const val DEFAULT = "Add a vote"
     private val VOTE_FORMAT = DecimalFormat("#.#")
 
-    private fun outOf10(vote: Int?) = if (vote == null) 0f else vote / 10f
+    fun outOf10(vote: Int?) = if (vote == null) 0f else vote / 10f
 
     fun toString(vote: Int) =
         if (vote < 1) DEFAULT else toShortString(vote) + " (" + getName(outOf10(vote)) + ")"

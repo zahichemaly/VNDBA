@@ -138,4 +138,7 @@ Check your filters or add a new one!</string>
     <string name="advanced_filters">Advanced filters</string>
     <string name="filter_vns_by">Filter my VNs by…</string>
     <string name="title">Title</string>
+    <string name="votes">Votes</string>
+    <string name="category_custom_labels">My labels</string>
+    <string name="any_vote">Any vote</string>
 </resources>

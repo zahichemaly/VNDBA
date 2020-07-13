@@ -25,6 +25,7 @@ open class UserLabelsRepository @Inject constructor(var boxStore: BoxStore, var 
                 .get<UserLabel>("ulist-labels", "basic", "(uid = 0)", Options(results = 25, fetchAllPages = true), type())
                 .items
                 .associateBy { it.id }
+                .toSortedMap()
         }
         .putInMemory { items = it.toMutableMap() }
         .putInDatabase { addItemsToDB(it.values.toList()) }

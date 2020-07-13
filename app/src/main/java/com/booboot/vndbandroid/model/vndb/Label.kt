@@ -17,9 +17,13 @@ data class Label(
         val DROPPED = Label(4L, "Dropped")
         val WISHLIST = Label(5L, "Wishlist")
         val BLACKLIST = Label(6L, "Blacklist")
+        val VOTED = Label(7L, "Voted")
+        private const val VOTE_ID = -20100L
+        val VOTES = mutableListOf<Label>().apply { for (i in 1..10) add(Label(VOTE_ID + i, "$i")) }
 
         val STATUSES = linkedSetOf(PLAYING.id, FINISHED.id, STALLED.id, DROPPED.id, UNKNOWN.id)
         val WISHLISTS = linkedSetOf(WISHLIST.id, BLACKLIST.id)
+        val VOTELISTS = VOTES.map { it.id }
         val ALL = STATUSES.plus(WISHLISTS)
 
         fun toShortString(status: Long?): String = when (status) {
@@ -32,6 +36,8 @@ data class Label(
             BLACKLIST.id -> "B"
             else -> App.context.getString(R.string.dash)
         }
+
+        fun voteIdToVote(voteId: Long) = voteId - VOTE_ID
     }
 
     override fun compareTo(other: Label): Int {

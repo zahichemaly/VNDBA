@@ -112,12 +112,12 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
         refreshLayout.setColorSchemeColors(activity.getThemeColor(R.attr.colorAccent))
 
         filters.layoutManager = FlexboxLayoutManager(activity).apply {
-            alignItems = AlignItems.FLEX_START
+            alignItems = AlignItems.CENTER
             justifyContent = JustifyContent.FLEX_START
         }
         filters.addItemDecoration(object : FlexboxItemDecoration(activity) {
             override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) =
-                if (view.id != R.id.filterButton) {
+                if (view.id !in setOf(R.id.labelButton, R.id.voteButton, R.id.sortButton)) {
                     outRect.set(0, 0, 0, 0)
                 } else {
                     super.getItemOffsets(outRect, view, parent, state)
@@ -144,7 +144,7 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
     private fun showFilters(filterData: FilterData) {
         viewModel.sortSection.update(listOf(
             FilterCheckboxItem(-3, R.string.reverse_order, filterData.reverseSort).apply {
-                onClicked = { viewModel.getVns(_reverseSort = !selected) }
+                onClicked = { viewModel.getVns(reverseSort = !selected) }
             }
         ) + listOf(
             SortItem(SORT_ID, R.string.id, filterData.sort == SORT_ID),
@@ -158,6 +158,10 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
             SortItem(SORT_PRIORITY, R.string.priority, filterData.sort == SORT_PRIORITY)
         ).onEach { sortItem ->
             sortItem.onSortClicked = ::onSortClicked
+        })
+
+        viewModel.filterSection.update(filterData.categorizedLabels.flatMap { (subtitle, labels) ->
+            listOf(subtitle) + labels
         })
     }
 
@@ -182,6 +186,6 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
     }
 
     private fun onSortClicked(item: SortItem) {
-        viewModel.getVns(_sort = item.id)
+        viewModel.getVns(sort = item.id)
     }
 }
