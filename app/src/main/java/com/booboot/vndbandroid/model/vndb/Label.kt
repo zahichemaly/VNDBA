@@ -10,6 +10,7 @@ data class Label(
     var label: String
 ) : Comparable<Label> {
     companion object {
+        /* VNDB official labels */
         val UNKNOWN = Label(0L, "Unknown")
         val PLAYING = Label(1L, "Playing")
         val FINISHED = Label(2L, "Finished")
@@ -18,12 +19,20 @@ data class Label(
         val WISHLIST = Label(5L, "Wishlist")
         val BLACKLIST = Label(6L, "Blacklist")
         val VOTED = Label(7L, "Voted")
+
+        /* Custom labels */
         private const val VOTE_ID = -20100L
+        val NO_VOTE = Label(-30100L, "No vote")
+        val NO_LABELS = -30101L
+        val CLEAR_LABELS = -30102L
         val VOTES = mutableListOf<Label>().apply { for (i in 1..10) add(Label(VOTE_ID + i, "$i")) }
 
+        /* Notable collections of label ids */
         val STATUSES = linkedSetOf(PLAYING.id, FINISHED.id, STALLED.id, DROPPED.id, UNKNOWN.id)
         val WISHLISTS = linkedSetOf(WISHLIST.id, BLACKLIST.id)
         val VOTELISTS = VOTES.map { it.id }
+        val VOTE_CONTROLS = linkedSetOf(VOTED.id, NO_VOTE.id)
+        val ALL_VOTES = VOTELISTS + VOTE_CONTROLS
         val ALL = STATUSES.plus(WISHLISTS)
 
         fun toShortString(status: Long?): String = when (status) {

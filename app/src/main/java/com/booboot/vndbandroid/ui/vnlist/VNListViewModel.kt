@@ -10,6 +10,7 @@ import com.booboot.vndbandroid.extensions.addOrCreate
 import com.booboot.vndbandroid.extensions.lowerCase
 import com.booboot.vndbandroid.extensions.plusAssign
 import com.booboot.vndbandroid.extensions.upperCase
+import com.booboot.vndbandroid.model.vndb.Label.Companion.NO_LABELS
 import com.booboot.vndbandroid.model.vndb.Label.Companion.STATUSES
 import com.booboot.vndbandroid.model.vndb.Label.Companion.VOTED
 import com.booboot.vndbandroid.model.vndb.Label.Companion.VOTES
@@ -30,6 +31,7 @@ import com.booboot.vndbandroid.model.vndbandroid.SORT_VOTE
 import com.booboot.vndbandroid.model.vndbandroid.SortOptions
 import com.booboot.vndbandroid.model.vndbandroid.VnlistData
 import com.booboot.vndbandroid.repository.AccountRepository
+import com.booboot.vndbandroid.repository.UserLabelsRepository
 import com.booboot.vndbandroid.ui.base.BaseViewModel
 import com.booboot.vndbandroid.ui.filters.FilterSubtitleItem
 import com.booboot.vndbandroid.ui.filters.FilterTitleItem
@@ -43,6 +45,8 @@ import javax.inject.Inject
 
 class VNListViewModel constructor(application: Application) : BaseViewModel(application) {
     @Inject lateinit var accountRepository: AccountRepository
+    @Inject lateinit var userLabelsRepository: UserLabelsRepository
+
     val vnlistData = MutableLiveData<VnlistData>()
     val filterData = MutableLiveData<FilterData>()
     val scrollToTopData = MutableLiveData<Boolean>()
@@ -66,7 +70,7 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
     fun getVns(
         _filter: String = filter,
         @SortOptions sort: Long = Preferences.sort,
-        label: Long = -1,
+        selectedLabelId: Long = NO_LABELS,
         reverseSort: Boolean = Preferences.reverseSort,
         scrollToTop: Boolean = true
     ) {
@@ -75,8 +79,11 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
         Preferences.reverseSort = reverseSort
 
         coroutine(JOB_GET_VNS) {
+            val selectedFiltersJob = async { userLabelsRepository.selectAsFilter(selectedLabelId) }
+
             /* #122 : to make DiffUtil work in the Adapter, the items must be deep copied here so the contents can be identified as different when changed from inside the app */
             val accountItems = accountRepository.getItems().deepCopy()
+            val selectedFilters = selectedFiltersJob.await()
 
             val sortJob = async {
                 val sorter: Comparator<(Pair<Long, VN>)> = when (Preferences.sort) {
@@ -92,12 +99,7 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
                 }
 
                 accountItems.vns = accountItems.vns
-                    .run {
-                        if (filter.isEmpty() && label < 0) this
-                        else filterValues { vn ->
-                            vn.filterTitle(filter) && accountItems.filterLabel(vn.id, label)
-                        }
-                    }
+                    .filterValues { vn -> vn.filterTitle(filter) && accountItems.filterLabel(vn.id, selectedFilters) }
                     .toList()
                     .sortedWith(sorter)
                     .toMap()
@@ -106,21 +108,22 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
             val categorizedLabels = linkedMapOf<FilterSubtitleItem, MutableList<Item>>()
             val labelsJob = async {
                 accountItems.userLabels.values.forEach { userLabel ->
-                    val labelItem = LabelItem(userLabel, userLabel.id == label).apply { onLabelClicked = ::onLabelClicked }
-                    when (userLabel.id) {
-                        in STATUSES -> categorizedLabels.addOrCreate(FilterSubtitleItem(R.drawable.ic_list_48dp, R.string.status), labelItem)
-                        in WISHLISTS -> categorizedLabels.addOrCreate(FilterSubtitleItem(R.drawable.ic_wishlist, R.string.wishlist), labelItem)
-                        VOTED.id -> {
+                    val selectedAsFilter = userLabel.id in selectedFilters
+                    val labelItem = LabelItem(userLabel, selectedAsFilter).apply { onLabelClicked = ::onLabelClicked }
+                    when {
+                        userLabel.id in STATUSES -> categorizedLabels.addOrCreate(FilterSubtitleItem(R.drawable.ic_list_48dp, R.string.status), labelItem)
+                        userLabel.id in WISHLISTS -> categorizedLabels.addOrCreate(FilterSubtitleItem(R.drawable.ic_wishlist, R.string.wishlist), labelItem)
+                        userLabel.id == VOTED.id -> {
                             val subtitleItem = FilterSubtitleItem(R.drawable.ic_format_list_numbered_48dp, R.string.votes)
                             /* Votes from 1 to 10 */
                             for (vote in VOTES) categorizedLabels.addOrCreate(subtitleItem, VoteItem(
                                 label = UserLabel(vote.id, vote.label, true),
-                                selected = vote.id == label
+                                selected = vote.id in selectedFilters
                             ).apply { onLabelClicked = ::onLabelClicked })
                             /* Any vote */
                             categorizedLabels.addOrCreate(subtitleItem, LabelItem(
                                 label = UserLabel(userLabel.id, getApplication<App>().getString(R.string.any_vote), true),
-                                selected = userLabel.id == label
+                                selected = selectedAsFilter
                             ).apply { onLabelClicked = ::onLabelClicked })
                         }
                         else -> categorizedLabels.addOrCreate(FilterSubtitleItem(R.drawable.ic_list_48dp, R.string.category_custom_labels), labelItem)
@@ -139,7 +142,7 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
     }
 
     private fun onLabelClicked(label: UserLabel) {
-        getVns(label = label.id)
+        getVns(selectedLabelId = label.id)
     }
 
     private fun <T> compare(comparator: Comparator<in T>, sorter: (Pair<Long, VN>) -> T) =
