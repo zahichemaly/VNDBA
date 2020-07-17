@@ -637,7 +637,7 @@
     },
     {
       "id": "23:1881907208603431416",
-      "lastPropertyId": "2:117533857002110246",
+      "lastPropertyId": "3:4749450425604163961",
       "name": "UserLabelDao",
       "properties": [
         {
@@ -650,6 +650,12 @@
           "id": "2:117533857002110246",
           "name": "label",
           "type": 9
+        },
+        {
+          "id": "3:4749450425604163961",
+          "name": "_private",
+          "type": 1,
+          "flags": 4
         }
       ],
       "relations": []

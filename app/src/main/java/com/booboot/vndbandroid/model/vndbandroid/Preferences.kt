@@ -18,5 +18,7 @@ object Preferences : KotprefModel() {
     var loginHelpSeen by booleanPref(false, key = "LOGIN_HELP_SEEN")
     var shouldResetPreferences by booleanPref(true, key = "SHOULD_RESET_PREFERENCES")
     var useSharedTransitions by booleanPref(true, key = context.getString(R.string.pref_key_shared_transitions))
+
     val selectedFilters by stringSetPref(key = "SELECTED_FILTERS")
+    var resetFiltersAtStartup by booleanPref(true, key = context.getString(R.string.pref_key_reset_filters_at_startup))
 }
