@@ -1,6 +1,8 @@
 package com.booboot.vndbandroid.model.vndbandroid
 
 import com.booboot.vndbandroid.extensions.emptyOrAny
+import com.booboot.vndbandroid.model.vndb.Label.Companion.NO_VOTE
+import com.booboot.vndbandroid.model.vndb.Label.Companion.VOTED
 import com.booboot.vndbandroid.model.vndb.Label.Companion.VOTELISTS
 import com.booboot.vndbandroid.model.vndb.Label.Companion.voteIdToVote
 import com.booboot.vndbandroid.model.vndb.UserLabel
@@ -17,7 +19,12 @@ data class AccountItems(
         val (votes, others) = selectedFilters.partition { labelId -> labelId in VOTELISTS }
         return votes
             .emptyOrAny { labelId -> Vote.outOf10(userList[vnId]?.vote).toLong() == voteIdToVote(labelId) }
-            .and(others.all { labelId -> labelId in userList[vnId]?.labelIds() ?: setOf() })
+            .and(others.all { labelId ->
+                when (labelId) {
+                    NO_VOTE.id -> VOTED.id !in userList[vnId]?.labelIds() ?: setOf()
+                    else -> labelId in userList[vnId]?.labelIds() ?: setOf()
+                }
+            })
     }
 
     fun deepCopy() = copy(

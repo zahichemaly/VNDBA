@@ -11,8 +11,10 @@ import com.booboot.vndbandroid.extensions.lowerCase
 import com.booboot.vndbandroid.extensions.plusAssign
 import com.booboot.vndbandroid.extensions.upperCase
 import com.booboot.vndbandroid.model.vndb.Label.Companion.NO_LABELS
+import com.booboot.vndbandroid.model.vndb.Label.Companion.NO_VOTE
 import com.booboot.vndbandroid.model.vndb.Label.Companion.STATUSES
 import com.booboot.vndbandroid.model.vndb.Label.Companion.VOTED
+import com.booboot.vndbandroid.model.vndb.Label.Companion.VOTELISTS
 import com.booboot.vndbandroid.model.vndb.Label.Companion.VOTES
 import com.booboot.vndbandroid.model.vndb.Label.Companion.WISHLISTS
 import com.booboot.vndbandroid.model.vndb.UserLabel
@@ -106,27 +108,27 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
             }
 
             val categorizedLabels = linkedMapOf<FilterSubtitleItem, MutableList<Item>>()
+            val addLabel = { group: FilterSubtitleItem, userLabel: UserLabel, selected: Boolean ->
+                val labelItem = when (userLabel.id) {
+                    in VOTELISTS -> VoteItem(userLabel, selected).apply { onLabelClicked = ::onLabelClicked }
+                    else -> LabelItem(userLabel, selected).apply { onLabelClicked = ::onLabelClicked }
+                }
+                categorizedLabels.addOrCreate(group, labelItem)
+            }
             val labelsJob = async {
                 accountItems.userLabels.values.forEach { userLabel ->
                     val selectedAsFilter = userLabel.id in selectedFilters
-                    val labelItem = LabelItem(userLabel, selectedAsFilter).apply { onLabelClicked = ::onLabelClicked }
-                    when {
-                        userLabel.id in STATUSES -> categorizedLabels.addOrCreate(FilterSubtitleItem(R.drawable.ic_list_48dp, R.string.status), labelItem)
-                        userLabel.id in WISHLISTS -> categorizedLabels.addOrCreate(FilterSubtitleItem(R.drawable.ic_wishlist, R.string.wishlist), labelItem)
-                        userLabel.id == VOTED.id -> {
+                    when (userLabel.id) {
+                        in STATUSES -> addLabel(FilterSubtitleItem(R.drawable.ic_list_48dp, R.string.status), userLabel, selectedAsFilter)
+                        in WISHLISTS -> addLabel(FilterSubtitleItem(R.drawable.ic_wishlist, R.string.wishlist), userLabel, selectedAsFilter)
+                        VOTED.id -> {
                             val subtitleItem = FilterSubtitleItem(R.drawable.ic_format_list_numbered_48dp, R.string.votes)
                             /* Votes from 1 to 10 */
-                            for (vote in VOTES) categorizedLabels.addOrCreate(subtitleItem, VoteItem(
-                                label = UserLabel(vote.id, vote.label, true),
-                                selected = vote.id in selectedFilters
-                            ).apply { onLabelClicked = ::onLabelClicked })
-                            /* Any vote */
-                            categorizedLabels.addOrCreate(subtitleItem, LabelItem(
-                                label = UserLabel(userLabel.id, getApplication<App>().getString(R.string.any_vote), true),
-                                selected = selectedAsFilter
-                            ).apply { onLabelClicked = ::onLabelClicked })
+                            for (vote in VOTES) addLabel(subtitleItem, UserLabel(vote.id, vote.label), vote.id in selectedFilters)
+                            addLabel(subtitleItem, UserLabel(userLabel.id, getApplication<App>().getString(R.string.any_vote)), selectedAsFilter)
+                            addLabel(subtitleItem, UserLabel(NO_VOTE.id, NO_VOTE.label), NO_VOTE.id in selectedFilters)
                         }
-                        else -> categorizedLabels.addOrCreate(FilterSubtitleItem(R.drawable.ic_list_48dp, R.string.category_custom_labels), labelItem)
+                        else -> addLabel(FilterSubtitleItem(R.drawable.ic_list_48dp, R.string.category_custom_labels), userLabel, selectedAsFilter)
                     }
                 }
             }

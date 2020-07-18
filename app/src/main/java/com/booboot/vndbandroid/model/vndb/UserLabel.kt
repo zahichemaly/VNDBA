@@ -15,7 +15,7 @@ import com.squareup.moshi.JsonClass
 data class UserLabel(
     var id: Long = 0,
     var label: String,
-    var private: Boolean
+    var private: Boolean = true
 ) {
     @ColorRes
     fun color() = when (id) {
