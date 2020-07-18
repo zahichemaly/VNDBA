@@ -1,3 +1,8 @@
+### **This app is currently under heavy development. No ETA for the next stable version.**  
+[You can find the last legacy versions here](https://gitlab.com/thomas_herbeth/VNDBA/-/releases), however they're **no longer supported and may not work.**
+
+-----
+
 **Questions, bugs, suggestions? Feel free to contact me at vndba.app@gmail.com**  
 Gitlab is now the official supported repository for this project. Issues and merge requests must be submitted at https://gitlab.com/thomas_herbeth/VNDBA
 
@@ -28,7 +33,7 @@ This project is an open-source Android client for the Visual Novel Database (VND
 - VNDB.org database statistics.
 
 ### Compatibility
-  - Android : 5.0+
+  - Android : 6.0+
 
 ### Permissions
 We're trying to keep the required permissions to a minimum. Here are the current ones:
@@ -37,19 +42,12 @@ We're trying to keep the required permissions to a minimum. Here are the current
   - WRITE_EXTERNAL_STORAGE : to export screenshots to the device
 
 ### Screenshots
-<p align="center">
-  <img src="http://image.noelshack.com/fichiers/2017/01/1483793022-6-1.png" width="35%"/>
-  <img src="http://image.noelshack.com/fichiers/2017/01/1483793017-6-2.png" width="35%"/>
-  <img src="http://image.noelshack.com/fichiers/2017/01/1483793023-6-3.png" width="35%"/>
-  <img src="http://image.noelshack.com/fichiers/2017/01/1483793018-6-4.png" width="35%"/>
-  <img src="http://image.noelshack.com/fichiers/2017/01/1483793019-6-5.png" width="35%"/>
-  <img src="http://image.noelshack.com/fichiers/2017/01/1483793022-6-6.png" width="35%"/>
-</p>
+TBA
 
 ### License
 ```
 VNDBA ‒ Android client for the Visual Novel Database (VNDB - https://vndb.org/)
-Copyright (C) 2016-2019  Thomas Herbeth
+Copyright (C) 2016-2020  Thomas Herbeth
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 3 of the License, or
