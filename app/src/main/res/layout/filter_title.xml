@@ -11,7 +11,7 @@
     android:clickable="true"
     android:focusable="true"
     android:gravity="center_vertical"
-    android:padding="@dimen/bottom_sheet_side_margin">
+    android:padding="@dimen/bottom_sheet_total_margin">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/iconView"

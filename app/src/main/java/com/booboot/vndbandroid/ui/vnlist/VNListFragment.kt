@@ -1,15 +1,12 @@
 package com.booboot.vndbandroid.ui.vnlist
 
-import android.graphics.Rect
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.addPaddingBottomIfCanScroll
@@ -44,7 +41,6 @@ import com.booboot.vndbandroid.ui.filters.SortItem
 import com.booboot.vndbandroid.util.GridAutofitLayoutManager
 import com.booboot.vndbandroid.util.Pixels
 import com.google.android.flexbox.AlignItems
-import com.google.android.flexbox.FlexboxItemDecoration
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -115,17 +111,6 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
             alignItems = AlignItems.CENTER
             justifyContent = JustifyContent.FLEX_START
         }
-        filters.addItemDecoration(object : FlexboxItemDecoration(activity) {
-            override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) =
-                if (view.id !in setOf(R.id.labelButton, R.id.voteButton, R.id.sortButton)) {
-                    outRect.set(0, 0, 0, 0)
-                } else {
-                    super.getItemOffsets(outRect, view, parent, state)
-                }
-        }.apply {
-            setDrawable(ContextCompat.getDrawable(activity, R.drawable.flexbox_divider_8dp))
-            setOrientation(FlexboxItemDecoration.VERTICAL)
-        })
         filters.adapter = filtersAdapter
         filters.addPaddingBottomIfCanScroll(viewLifecycleOwner, Pixels.px(16), dimen(R.dimen.bottom_sheet_peek))
     }

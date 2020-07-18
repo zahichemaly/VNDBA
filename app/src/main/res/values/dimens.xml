@@ -18,6 +18,8 @@
     <dimen name="floating_search_bar_height">78dp</dimen>
     <dimen name="vertical_space_right_drawer">12dp</dimen>
 
-    <dimen name="bottom_sheet_side_margin">12dp</dimen>
-    <dimen name="bottom_sheet_side_margin_negative">-12dp</dimen>
+    <dimen name="bottom_sheet_total_margin">14dp</dimen>
+    <dimen name="bottom_sheet_internal_margin">4dp</dimen>
+    <dimen name="bottom_sheet_side_margin">10dp</dimen> <!-- = bottom_sheet_total_margin - bottom_sheet_internal_margin -->
+    <dimen name="bottom_sheet_side_margin_negative">-10dp</dimen>
 </resources>
