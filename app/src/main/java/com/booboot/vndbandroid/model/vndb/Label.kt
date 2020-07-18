@@ -22,9 +22,9 @@ data class Label(
 
         /* Custom labels */
         private const val VOTE_ID = -20100L
-        val NO_VOTE = Label(-30100L, "No vote")
-        val NO_LABELS = -30101L
-        val CLEAR_LABELS = -30102L
+        private val NO_VOTE = Label(-30100L, "No vote")
+        const val NO_LABELS = -30101L
+        const val CLEAR_FILTERS = -30102L
         val VOTES = mutableListOf<Label>().apply { for (i in 1..10) add(Label(VOTE_ID + i, "$i")) }
 
         /* Notable collections of label ids */

@@ -141,8 +141,8 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
         }
     }
 
-    private fun onLabelClicked(label: UserLabel) {
-        getVns(selectedLabelId = label.id)
+    fun onLabelClicked(labelId: Long) {
+        getVns(selectedLabelId = labelId)
     }
 
     private fun <T> compare(comparator: Comparator<in T>, sorter: (Pair<Long, VN>) -> T) =

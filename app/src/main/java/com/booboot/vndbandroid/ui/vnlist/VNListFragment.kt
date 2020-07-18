@@ -36,6 +36,7 @@ import com.booboot.vndbandroid.model.vndbandroid.SORT_TITLE
 import com.booboot.vndbandroid.model.vndbandroid.SORT_VOTE
 import com.booboot.vndbandroid.model.vndbandroid.VnlistData
 import com.booboot.vndbandroid.ui.base.BaseFragment
+import com.booboot.vndbandroid.ui.filters.ClearFiltersItem
 import com.booboot.vndbandroid.ui.filters.FilterCheckboxItem
 import com.booboot.vndbandroid.ui.filters.SortItem
 import com.booboot.vndbandroid.util.GridAutofitLayoutManager
@@ -145,7 +146,8 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
             sortItem.onSortClicked = ::onSortClicked
         })
 
-        viewModel.filterSection.update(filterData.categorizedLabels.flatMap { (subtitle, labels) ->
+        viewModel.filterSection.update(listOf(ClearFiltersItem().apply { onLabelClicked = viewModel::onLabelClicked })
+            + filterData.categorizedLabels.flatMap { (subtitle, labels) ->
             listOf(subtitle) + labels
         })
     }

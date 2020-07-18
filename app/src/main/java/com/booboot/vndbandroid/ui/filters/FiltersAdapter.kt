@@ -6,6 +6,7 @@ import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.selectIf
+import com.booboot.vndbandroid.model.vndb.Label.Companion.CLEAR_FILTERS
 import com.booboot.vndbandroid.model.vndb.UserLabel
 import com.xwray.groupie.ExpandableGroup
 import com.xwray.groupie.ExpandableItem
@@ -109,7 +110,7 @@ data class LabelItem(
     var label: UserLabel,
     val selected: Boolean
 ) : Item() {
-    var onLabelClicked: (UserLabel) -> Unit = {}
+    var onLabelClicked: (Long) -> Unit = {}
 
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
         viewHolder.apply {
@@ -118,7 +119,7 @@ data class LabelItem(
             labelButton.setTextColor(color)
             labelButton.strokeColor = ColorStateList.valueOf(color)
             labelButton.selectIf(selected, if (label.color() == R.color.textColorPrimary) R.color.textColorPrimaryReverse else R.color.white)
-            labelButton.setOnClickListener { onLabelClicked(label) }
+            labelButton.setOnClickListener { onLabelClicked(label.id) }
         }
     }
 
@@ -130,16 +131,29 @@ data class VoteItem(
     var label: UserLabel,
     val selected: Boolean
 ) : Item() {
-    var onLabelClicked: (UserLabel) -> Unit = {}
+    var onLabelClicked: (Long) -> Unit = {}
 
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
         viewHolder.apply {
             voteButton.text = label.label
             voteButton.selectIf(selected)
-            voteButton.setOnClickListener { onLabelClicked(label) }
+            voteButton.setOnClickListener { onLabelClicked(label.id) }
         }
     }
 
     override fun getId() = label.id
     override fun getLayout() = R.layout.vote_button
+}
+
+data class ClearFiltersItem(val _id: Long = CLEAR_FILTERS) : Item() {
+    var onLabelClicked: (Long) -> Unit = {}
+
+    override fun bind(viewHolder: GroupieViewHolder, position: Int) {
+        viewHolder.apply {
+            labelButton.setOnClickListener { onLabelClicked(CLEAR_FILTERS) }
+        }
+    }
+
+    override fun getId() = _id
+    override fun getLayout() = R.layout.clear_filters_item
 }

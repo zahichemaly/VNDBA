@@ -141,4 +141,5 @@ Check your filters or add a new one!</string>
     <string name="votes">Votes</string>
     <string name="category_custom_labels">My labels</string>
     <string name="any_vote">Any vote</string>
+    <string name="clear_all_filters">Clear all filters</string>
 </resources>

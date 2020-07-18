@@ -5,6 +5,7 @@ import com.booboot.vndbandroid.dao.UserLabelDao
 import com.booboot.vndbandroid.extensions.get
 import com.booboot.vndbandroid.extensions.save
 import com.booboot.vndbandroid.model.vndb.Label.Companion.ALL_VOTES
+import com.booboot.vndbandroid.model.vndb.Label.Companion.CLEAR_FILTERS
 import com.booboot.vndbandroid.model.vndb.Label.Companion.NO_LABELS
 import com.booboot.vndbandroid.model.vndb.Label.Companion.STATUSES
 import com.booboot.vndbandroid.model.vndb.Label.Companion.VOTELISTS
@@ -41,6 +42,7 @@ open class UserLabelsRepository @Inject constructor(var boxStore: BoxStore, var 
 
     fun selectAsFilter(labelId: Long): Set<Long> {
         when {
+            labelId == CLEAR_FILTERS -> Preferences.selectedFilters.clear()
             labelId != NO_LABELS -> Preferences.bulk {
                 when (val labelIdString = labelId.toString()) {
                     in selectedFilters -> selectedFilters.remove(labelIdString)
