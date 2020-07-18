@@ -6,5 +6,6 @@ import com.xwray.groupie.kotlinandroidextensions.Item
 data class FilterData(
     @SortOptions val sort: Long,
     val reverseSort: Boolean,
-    val categorizedLabels: MutableMap<FilterSubtitleItem, MutableList<Item>>
+    val categorizedLabels: MutableMap<FilterSubtitleItem, MutableList<Item>>,
+    val selectedFilters: Set<Long>
 )

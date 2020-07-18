@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -20,6 +21,7 @@ import com.booboot.vndbandroid.extensions.onStateChanged
 import com.booboot.vndbandroid.extensions.plusAssign
 import com.booboot.vndbandroid.extensions.postponeEnterTransitionIfExists
 import com.booboot.vndbandroid.extensions.removeFocus
+import com.booboot.vndbandroid.extensions.setNumberOverflow
 import com.booboot.vndbandroid.extensions.setupStatusBar
 import com.booboot.vndbandroid.extensions.setupToolbar
 import com.booboot.vndbandroid.extensions.toggleBottomSheet
@@ -122,26 +124,29 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
         adapter.sort = Preferences.sort
         adapter.data = vnlistData
 
+        groupVnFound.isVisible = true
+        numberVnFound.text = adapter.itemCount.toString()
+
         view?.post {
             startPostponedEnterTransition()
         }
     }
 
-    private fun showFilters(filterData: FilterData) {
+    private fun showFilters(filterData: FilterData) = filterData.run {
         viewModel.sortSection.update(listOf(
-            FilterCheckboxItem(-3, R.string.reverse_order, filterData.reverseSort).apply {
+            FilterCheckboxItem(-3, R.string.reverse_order, reverseSort).apply {
                 onClicked = { viewModel.getVns(reverseSort = !selected) }
             }
         ) + listOf(
-            SortItem(SORT_ID, R.string.id, filterData.sort == SORT_ID),
-            SortItem(SORT_TITLE, R.string.title, filterData.sort == SORT_TITLE),
-            SortItem(SORT_RELEASE_DATE, R.string.release_date, filterData.sort == SORT_RELEASE_DATE),
-            SortItem(SORT_LENGTH, R.string.length, filterData.sort == SORT_LENGTH),
-            SortItem(SORT_POPULARITY, R.string.popularity, filterData.sort == SORT_POPULARITY),
-            SortItem(SORT_RATING, R.string.rating, filterData.sort == SORT_RATING),
-            SortItem(SORT_STATUS, R.string.status, filterData.sort == SORT_STATUS),
-            SortItem(SORT_VOTE, R.string.vote, filterData.sort == SORT_VOTE),
-            SortItem(SORT_PRIORITY, R.string.priority, filterData.sort == SORT_PRIORITY)
+            SortItem(SORT_ID, R.string.id, sort == SORT_ID),
+            SortItem(SORT_TITLE, R.string.title, sort == SORT_TITLE),
+            SortItem(SORT_RELEASE_DATE, R.string.release_date, sort == SORT_RELEASE_DATE),
+            SortItem(SORT_LENGTH, R.string.length, sort == SORT_LENGTH),
+            SortItem(SORT_POPULARITY, R.string.popularity, sort == SORT_POPULARITY),
+            SortItem(SORT_RATING, R.string.rating, sort == SORT_RATING),
+            SortItem(SORT_STATUS, R.string.status, sort == SORT_STATUS),
+            SortItem(SORT_VOTE, R.string.vote, sort == SORT_VOTE),
+            SortItem(SORT_PRIORITY, R.string.priority, sort == SORT_PRIORITY)
         ).onEach { sortItem ->
             sortItem.onSortClicked = ::onSortClicked
         })
@@ -150,6 +155,9 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
             + filterData.categorizedLabels.flatMap { (subtitle, labels) ->
             listOf(subtitle) + labels
         })
+
+        groupActiveFilters.isVisible = selectedFilters.isNotEmpty()
+        numberActiveFilters.setNumberOverflow(selectedFilters.size)
     }
 
     override fun onRefresh() {

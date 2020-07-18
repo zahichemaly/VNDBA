@@ -138,7 +138,7 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
 
             val diffResult = DiffUtil.calculateDiff(VNDiffCallback(vnlistData.value?.items ?: AccountItems(), accountItems))
             vnlistData += VnlistData(accountItems, diffResult)
-            filterData += FilterData(sort, reverseSort, categorizedLabels)
+            filterData += FilterData(sort, reverseSort, categorizedLabels, selectedFilters)
             scrollToTopData += scrollToTop
         }
     }
