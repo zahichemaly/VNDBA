@@ -41,6 +41,8 @@ class App : MultiDexApplication() {
         AppCompatDelegate.setDefaultNightMode(Preferences.nightMode)
         Notifications.createNotificationChannels(this)
 
+        if (Preferences.resetFiltersAtStartup) Preferences.selectedFilters.clear()
+
         val core = CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG || Preferences.gdprCrashlytics != YES).build()
         Fabric.with(this, Crashlytics.Builder().core(core).build())
 

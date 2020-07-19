@@ -2,6 +2,7 @@ package com.booboot.vndbandroid.model.vndb
 
 import androidx.annotation.ColorRes
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.extensions.lowerCase
 import com.booboot.vndbandroid.model.vndbandroid.ApiFlags
 import com.booboot.vndbandroid.model.vndbandroid.FLAGS_NOT_EXISTS
 import com.squareup.moshi.JsonClass
@@ -71,4 +72,6 @@ data class VN(
         && votecount == other.votecount
         && released == other.released
         && length == other.length
+
+    fun filterTitle(filter: String) = filter.isEmpty() || filter in title.lowerCase()
 }

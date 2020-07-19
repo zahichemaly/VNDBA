@@ -30,7 +30,9 @@ class TextInputEditText : TextInputEditText {
             if (actionId == IME_ACTION_DONE) clearFocus()
         }
         with(context.obtainStyledAttributes(attrs, R.styleable.TextInputEditText)) {
-            spaceAboveKeyboard = getDimensionPixelSize(R.styleable.TextInputEditText_spaceAboveKeyboard, Pixels.px(48))
+            if (!isInEditMode) {
+                spaceAboveKeyboard = getDimensionPixelSize(R.styleable.TextInputEditText_spaceAboveKeyboard, Pixels.px(48))
+            }
         }
     }
 

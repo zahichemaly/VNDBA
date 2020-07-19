@@ -18,3 +18,7 @@ fun TextView.onSubmitListener(action: (Int) -> Unit) {
         false
     }
 }
+
+fun TextView.setNumberOverflow(n: Int, overflow: Int = 99) {
+    text = if (n > overflow) "99+" else n.toString()
+}

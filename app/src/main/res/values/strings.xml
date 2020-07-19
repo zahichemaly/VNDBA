@@ -1,56 +1,31 @@
 <resources>
     <string name="app_name">VNDBA</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="action_settings">Settings</string>
     <string name="action_search">Search</string>
-    <string name="action_filter">Filter</string>
     <string name="search_hint">Search a new visual novel</string>
-    <string name="close">Close</string>
     <string name="my_account">My account</string>
     <string name="my_visual_novel_list">My VN list</string>
-    <string name="my_votes">My votes</string>
-    <string name="my_wishlist">My wishlist</string>
     <string name="database_statistics">Database Statistics</string>
     <string name="preferences">Preferences</string>
     <string name="logout">Logout</string>
-    <string name="action_sort">Sort</string>
-    <string name="view_on_vndb_org">View on VNDB.org</string>
-    <string name="set_spoiler_level_for_this_vn">Set spoiler level for this VN</string>
     <string name="rankings">Rankings</string>
     <string name="top">Top</string>
     <string name="popular">Popular</string>
-    <string name="title_new">New</string>
     <string name="newly_released">Newly released</string>
     <string name="newly_added">Newly added</string>
     <string name="most_voted">Most voted</string>
-    <string name="other_vote_explanation">Please input your vote as a number between 1 and 10. One digit after the decimal is allowed, for example: 8.6 or 7.3.</string>
     <string name="sign_in">Sign in</string>
-    <string name="signing_in">Signing in, please be patient…</string>
     <string name="throttle_warning">VNDB.org is a bit busy right now, so it may take some time to complete your request. Please wait a bit or try again in %d minutes!</string>
     <string name="about">About</string>
     <string name="customactivityoncrash_error_activity_error_occurred_explanation">An unexpected error occurred.\nSorry for the inconvenience.\nThe error details have been sent to us and we\'ll take a look as soon as possible!</string>
     <string name="sign_up_text">Don\'t have a VNDB account yet?</string>
-    <string name="action_send">Send</string>
-    <string name="feedback">Feedback</string>
-    <string name="send_a_feedback">Send a feedback</string>
-    <string name="action_rate">Rate the app</string>
     <string name="action_share">Share</string>
-    <string name="include_all_tags">Include all these tags</string>
-    <string name="include_one_tags">Include at least one of these tags</string>
-    <string name="exclude_all_tags">Exclude all these tags</string>
     <string name="my_recommendations">My recommendations</string>
-    <string name="recommendations_private_warning">We haven\'t found your recommendations… Don\'t forget to make your lists public (by unchecking \"Don\'t allow other people to see my visual novel list\" in your VNDB.org\'s preferences), then refresh this page (it can take up to 48 hours to get effective so don\'t worry)!</string>
     <string name="bullet">" • "</string>
     <string name="dash">" - "</string>
-    <string name="action_options">Options</string>
-    <string name="voice_actor">Voice Actor</string>
     <string name="password">Password</string>
     <string name="login">Login</string>
     <string name="action_filter_hint">Filter your VN list…</string>
     <string name="genres">Genres</string>
-    <string name="popular_tags">Popular tags</string>
-    <string name="all_tags">All tags</string>
     <string name="sexual_content">Sexual</string>
     <string name="content">Content</string>
     <string name="technical">Technical</string>
@@ -60,13 +35,6 @@
     <string name="default_notification_channel_name">Default</string>
     <string name="default_notification_channel_description">Default notifications.</string>
     <string name="action_delete">Delete</string>
-    <string name="dark">Dark</string>
-    <string name="light">Light</string>
-    <string name="automatic">Automatic</string>
-    <string name="system">System</string>
-    <string name="dark_mode_automatic_subtitle">Changes automatically based on the time of day.</string>
-    <string name="dark_mode">Dark mode</string>
-    <string name="dark_mode_system_subtitle">Matches Android system\'s settings.</string>
     <string name="percent" translatable="false">%.1f%%</string>
     <string name="x_votes">%d votes</string>
     <string name="popularity">Popularity</string>
@@ -98,29 +66,21 @@
     <string name="custom_vote">Custom vote</string>
     <string name="wishlist">Wishlist</string>
     <string name="high">High</string>
-    <string name="medium">Medium</string>
-    <string name="low">Low</string>
     <string name="blacklist">Blacklist</string>
     <string name="add_notes">Add notes</string>
-    <string name="sort_vns_by">Sort VNs by…</string>
+    <string name="sort_vns_by">Sort my VNs by…</string>
     <string name="id">ID</string>
     <string name="release_date">Release date</string>
     <string name="length">Length</string>
     <string name="rating">Rating</string>
     <string name="priority">Priority</string>
     <string name="reverse_order">Reverse order</string>
-    <string name="yuki">Yuki</string>
-    <string name="yuki_vndba_guide">Yuki - VNDBA\'s guide</string>
     <string name="login_step_welcome">"Hello and welcome to VNDBA! I am here to help you track your visual novels!
 
 Before we begin, I would appreciate your consent for sending crash info in case something goes wrong. That would help me a lot to improve the app! In any case, you'll be able to change your choice at anytime in your preferences!
 
 Are you okay with it?"</string>
-    <string name="login_step_signin">Mmh… I can\'t seem to remember you… Who are you again?</string>
     <string name="login_step_onboarding">By the way, if you happen to be lost or want more info on how to use the app, just call me by tapping the Help button on any page!</string>
-    <string name="login_step_loading">Sorry, I haven\'t prepared everything yet… Thank you for waiting~!</string>
-    <string name="login_step_ok">Oh, looks like things are ready, see you soon~!</string>
-    <string name="login_step_error">Fuee~, looks like something went wrong: %s Could you please try again?</string>
     <string name="generic_error">An unexpected error occurred.</string>
     <string name="sign_up">Sign up</string>
     <string name="loading">Loading…</string>
@@ -131,8 +91,15 @@ Are you okay with it?"</string>
 Check your filters or add a new one!</string>
     <string name="empty_relations_text">This VN has no relation.</string>
     <string name="empty_tags_text">This VN has no tags.</string>
-    <string name="advanced_search">Advanced search</string>
-    <string name="start_from_page">Start from page</string>
     <string name="action_advanced_search">Advanced search</string>
     <string name="empty_search_text">No results found. Try to change your query or advanced search parameters.</string>
+    <string name="advanced_filters">Advanced filters</string>
+    <string name="filter_vns_by">Filter my VNs by…</string>
+    <string name="title">Title</string>
+    <string name="votes">Votes</string>
+    <string name="category_custom_labels">My labels</string>
+    <string name="any_vote">Any vote</string>
+    <string name="clear_all_filters">Clear all filters</string>
+    <string name="visual_novels_found">visuel novels found</string>
+    <string name="active_filters">active filters</string>
 </resources>

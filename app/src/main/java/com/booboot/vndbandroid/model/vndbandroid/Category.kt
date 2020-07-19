@@ -1,24 +1,23 @@
 package com.booboot.vndbandroid.model.vndbandroid
 
-import java.util.ArrayList
-import java.util.LinkedHashMap
+import java.util.*
 
 object Category {
     val CATEGORIES = LinkedHashMap<String, String>()
     var CATEGORIES_KEYS: List<String>
 
     init {
-        CATEGORIES.put("tech", "Technical")
-        CATEGORIES.put("cont", "Content")
-        CATEGORIES.put("ero", "Sexual content")
+        CATEGORIES["tech"] = "Technical"
+        CATEGORIES["cont"] = "Content"
+        CATEGORIES["ero"] = "Sexual content"
 
-        CATEGORIES.put("director", "Director")
-        CATEGORIES.put("songs", "Vocals")
-        CATEGORIES.put("music", "Composer")
-        CATEGORIES.put("scenario", "Scenario")
-        CATEGORIES.put("art", "Artist")
-        CATEGORIES.put("chardesign", "Character design")
-        CATEGORIES.put("staff", "Staff")
+        CATEGORIES["director"] = "Director"
+        CATEGORIES["songs"] = "Vocals"
+        CATEGORIES["music"] = "Composer"
+        CATEGORIES["scenario"] = "Scenario"
+        CATEGORIES["art"] = "Artist"
+        CATEGORIES["chardesign"] = "Character design"
+        CATEGORIES["staff"] = "Staff"
 
         CATEGORIES_KEYS = ArrayList(CATEGORIES.keys)
     }

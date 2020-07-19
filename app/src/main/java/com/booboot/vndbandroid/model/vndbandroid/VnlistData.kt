@@ -1,6 +1,8 @@
 package com.booboot.vndbandroid.model.vndbandroid
 
+import androidx.recyclerview.widget.DiffUtil
+
 data class VnlistData(
-    val tabs: List<HomeTab>,
-    val items: Map<Long, AccountItems>
+    val items: AccountItems = AccountItems(),
+    var diffResult: DiffUtil.DiffResult? = null
 )

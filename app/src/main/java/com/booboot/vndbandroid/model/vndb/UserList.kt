@@ -20,7 +20,7 @@ data class UserList(
 
     fun labels(group: Set<Long>) = labels.filter { it.id in group }
 
-    fun firstStatus() = labels(STATUSES).getOrNull(0)
+    fun firstStatus() = labels.find { it.id in STATUSES }
 
-    fun firstWishlist() = labels(WISHLISTS).getOrNull(0)
+    fun firstWishlist() = labels.find { it.id in WISHLISTS }
 }

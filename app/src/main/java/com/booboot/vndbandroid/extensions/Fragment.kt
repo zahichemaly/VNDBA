@@ -5,6 +5,7 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.annotation.DimenRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
@@ -15,8 +16,8 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.model.vndbandroid.Preferences
 import com.booboot.vndbandroid.ui.home.HomeActivity
+import kotlinx.android.synthetic.main.floating_search_toolbar.*
 import kotlinx.android.synthetic.main.home_activity.*
-import kotlinx.android.synthetic.main.home_tabs_fragment.*
 
 fun Fragment.home() = activity as? HomeActivity?
 
@@ -25,8 +26,8 @@ fun Fragment.setupToolbar() {
     home()?.setupActionBarWithNavController(findNavController(), home()?.drawer)
 }
 
-fun Fragment.setupStatusBar(drawBehind: Boolean = false, _toolbar: View? = null) = view?.post {
-    val activity = activity ?: return@post
+fun Fragment.setupStatusBar(drawBehind: Boolean = false, _toolbar: View? = null) {
+    val activity = activity ?: return
     val toolbar = if (!drawBehind) {
         activity.window.statusBarColor = Color.TRANSPARENT
         view
@@ -55,4 +56,6 @@ fun Fragment.postponeEnterTransitionIfExists() {
 
 fun Fragment.removeFocus() = activity?.removeFocus()
 
-fun Fragment.statusBarHeight() = context?.statusBarHeight() ?: 0
+fun Fragment.statusBarHeight() = resources.statusBarHeight()
+
+fun Fragment.dimen(@DimenRes resId: Int) = resources.getDimensionPixelSize(resId)

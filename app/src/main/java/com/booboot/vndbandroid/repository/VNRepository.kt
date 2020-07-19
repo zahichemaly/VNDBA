@@ -29,7 +29,7 @@ class VNRepository @Inject constructor(var boxStore: BoxStore, private var vndbS
         .get()
 
     override suspend fun getItems(ids: Set<Long>, flags: Int, cachePolicy: CachePolicy<Map<Long, VN>>) = cachePolicy
-        .fetchFromMemory { items }
+        .fetchFromMemory { items.filter { it.value.id in ids } }
         .fetchFromDatabase {
             boxStore.get<VNDao, Map<Long, VN>> { it.get(ids).map { vnDao -> vnDao.toBo(flags) }.associateBy { vn -> vn.id } }
         }

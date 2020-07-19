@@ -8,14 +8,9 @@
 
     <fragment
         android:id="@+id/vnlistFragment"
-        android:name="com.booboot.vndbandroid.ui.hometabs.HomeTabsFragment"
+        android:name="com.booboot.vndbandroid.ui.vnlist.VNListFragment"
         android:label="@string/my_visual_novel_list"
-        tools:layout="@layout/home_tabs_fragment">
-        <argument
-            android:name="listType"
-            android:defaultValue="1"
-            app:argType="integer" />
-    </fragment>
+        tools:layout="@layout/vnlist_fragment" />
 
     <fragment
         android:id="@+id/preferencesFragment"

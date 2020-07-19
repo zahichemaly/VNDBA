@@ -1,13 +1,10 @@
 package com.booboot.vndbandroid.model.vndbandroid
 
-/**
- * Just a class to wrap results together, to be displayed in TagsFragment.
- */
-data class VNDetailsTags(
-    val all: MutableMap<String, List<VNTag>> = mutableMapOf()
+class Sections<T>(
+    val all: MutableMap<String, List<T>> = mutableMapOf()
 ) {
-    fun copy(): VNDetailsTags {
-        val res = VNDetailsTags()
+    fun copy(): Sections<T> {
+        val res = Sections<T>()
         all.forEach {
             res.all[it.key] = it.value.toMutableList()
         }
@@ -18,8 +15,8 @@ data class VNDetailsTags(
         var i = 0
         all.forEach {
             if (i++ == position) return it.key
-            it.value.forEach {
-                if (i++ == position) return it
+            it.value.forEach { vnTag ->
+                if (i++ == position) return vnTag
             }
         }
         return null

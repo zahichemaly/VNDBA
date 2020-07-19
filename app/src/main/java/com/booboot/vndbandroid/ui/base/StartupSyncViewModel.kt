@@ -13,6 +13,7 @@ import com.booboot.vndbandroid.repository.AccountRepository
 import com.booboot.vndbandroid.repository.CachePolicy
 import com.booboot.vndbandroid.repository.TagsRepository
 import com.booboot.vndbandroid.repository.TraitsRepository
+import com.booboot.vndbandroid.repository.UserLabelsRepository
 import com.booboot.vndbandroid.repository.UserListRepository
 import com.booboot.vndbandroid.repository.VNRepository
 import io.objectbox.BoxStore
@@ -22,6 +23,7 @@ import javax.inject.Inject
 
 abstract class StartupSyncViewModel constructor(application: Application) : BaseViewModel(application) {
     @Inject lateinit var userListRepository: UserListRepository
+    @Inject lateinit var userLabelsRepository: UserLabelsRepository
     @Inject lateinit var vnRepository: VNRepository
     @Inject lateinit var accountRepository: AccountRepository
     @Inject lateinit var tagsRepository: TagsRepository
@@ -36,9 +38,11 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
         val traitsJob = async { traitsRepository.getItems(CachePolicy(true)) }
         val userListJob = async { userListRepository.getItems(CachePolicy(false)) }
         val oldUserListJob = async { userListRepository.getItems(CachePolicy(cacheOnly = true)) }
+        val userLabelsJob = async { userLabelsRepository.getItems(CachePolicy(false)) }
 
         val userList = userListJob.await()
         val oldUserList = oldUserListJob.await()
+        userLabelsJob.await()
 
         val allIds = userList.keys
         val newIds = allIds.minus(oldUserList.keys)

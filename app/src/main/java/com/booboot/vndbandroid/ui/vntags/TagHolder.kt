@@ -6,27 +6,19 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.booboot.vndbandroid.model.vndb.Tag
 import com.booboot.vndbandroid.model.vndbandroid.VNTag
-import com.google.android.material.button.MaterialButton
+import kotlinx.android.extensions.LayoutContainer
+import kotlinx.android.synthetic.main.tag_chip.*
 
-class TagHolder(itemView: View, private val callback: TagsAdapter.Callback) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
-    private lateinit var vnTag: VNTag
-
-    init {
-        itemView.setOnClickListener(this)
-    }
-
-    fun onBind(vnTag: VNTag) = with(itemView) {
-        this@TagHolder.vnTag = vnTag
-
-        this as MaterialButton
-        val color = ContextCompat.getColor(context, Tag.getScoreColor(vnTag.infos))
-        text = vnTag.tag.name
-        setTextColor(color)
-        rippleColor = ColorStateList.valueOf(color)
-        strokeColor = ColorStateList.valueOf(color)
-    }
-
-    override fun onClick(v: View?) {
-        callback.onChipClicked(vnTag)
+class TagHolder(
+    override val containerView: View,
+    private val onTagClicked: (VNTag) -> Unit
+) : RecyclerView.ViewHolder(containerView), LayoutContainer {
+    fun onBind(vnTag: VNTag) {
+        val color = ContextCompat.getColor(containerView.context, Tag.getScoreColor(vnTag.infos))
+        tag.text = vnTag.tag.name
+        tag.setTextColor(color)
+        tag.rippleColor = ColorStateList.valueOf(color)
+        tag.strokeColor = ColorStateList.valueOf(color)
+        tag.setOnClickListener { onTagClicked(vnTag) }
     }
 }

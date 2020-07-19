@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.hideCustomError
 import com.booboot.vndbandroid.extensions.hideKeyboard
@@ -33,7 +33,7 @@ class LoginActivity : BaseActivity() {
         setContentView(R.layout.login_activity)
         setLightStatusAndNavigation()
 
-        viewModel = ViewModelProviders.of(this).get(LoginViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
         viewModel.loadingData.observeNonNull(this, ::showLoading)
         viewModel.syncData.observeNonNull(this) { goToHome() }
         viewModel.errorData.observe(this, Observer { toggleError(it) })

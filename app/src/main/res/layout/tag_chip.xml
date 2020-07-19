@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/buttonPlaying"
+    android:id="@+id/tag"
     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -13,4 +13,4 @@
     android:textSize="12sp"
     app:rippleColor="@color/playing"
     app:strokeColor="@color/playing"
-    tools:text="Romantic " />
+    tools:text="Romantic" />
