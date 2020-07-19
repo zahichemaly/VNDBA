@@ -9,7 +9,6 @@ import com.booboot.vndbandroid.diff.VNDiffCallback
 import com.booboot.vndbandroid.extensions.addOrCreate
 import com.booboot.vndbandroid.extensions.lowerCase
 import com.booboot.vndbandroid.extensions.plusAssign
-import com.booboot.vndbandroid.extensions.upperCase
 import com.booboot.vndbandroid.model.vndb.Label.Companion.NO_LABELS
 import com.booboot.vndbandroid.model.vndb.Label.Companion.NO_VOTE
 import com.booboot.vndbandroid.model.vndb.Label.Companion.STATUSES
@@ -89,7 +88,7 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
 
             val sortJob = async {
                 val sorter: Comparator<(Pair<Long, VN>)> = when (Preferences.sort) {
-                    SORT_TITLE -> compare(nullsLast()) { (_, vn) -> vn.title.trim().upperCase() }
+                    SORT_TITLE -> compare(nullsLast()) { (_, vn) -> vn.title.trimStart().lowerCase() }
                     SORT_RELEASE_DATE -> compare(nullsFirst()) { (_, vn) -> vn.released }
                     SORT_LENGTH -> compare(nullsLast()) { (_, vn) -> vn.length }
                     SORT_POPULARITY -> compare(nullsLast()) { (_, vn) -> vn.popularity }
