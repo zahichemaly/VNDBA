@@ -4,12 +4,9 @@
     <color name="colorBackground">#303030</color>
     <color name="cardDividerColor">@color/medium_gray</color>
     <color name="tabBackgroundColor">@color/transparentBlack</color>
-    <color name="transparent80Primary">@color/transparent80Black</color>
     <color name="slideshowBackground">@color/black</color>
     <color name="textColorPrimary">@color/white</color>
     <color name="textColorPrimaryReverse">@color/textColorPrimaryBlack</color>
 
     <!-- Misc colors -->
-    <color name="sortSection">#7ecb20</color>
-    <color name="filterSection">#b47cff</color>
 </resources>
