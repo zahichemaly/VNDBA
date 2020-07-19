@@ -73,5 +73,5 @@ data class VN(
         && released == other.released
         && length == other.length
 
-    fun filterTitle(filter: String) = filter.isEmpty() || title.trim().lowerCase().contains(filter)
+    fun filterTitle(filter: String) = filter.isEmpty() || filter in title.lowerCase()
 }

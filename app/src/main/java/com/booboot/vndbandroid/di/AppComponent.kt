@@ -24,7 +24,7 @@ interface AppComponent {
     fun inject(loginViewModel: LoginViewModel)
     fun inject(homeActivity: HomeActivity)
     fun inject(homeViewModel: HomeViewModel)
-    fun inject(VNListViewModel: VNListViewModel)
+    fun inject(vnListViewModel: VNListViewModel)
     fun inject(vnDetailsViewModel: VNDetailsViewModel)
     fun inject(tagsViewModel: TagsViewModel)
     fun inject(summaryViewModel: SummaryViewModel)
