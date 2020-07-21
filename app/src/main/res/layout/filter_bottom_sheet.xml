@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.booboot.vndbandroid.util.view.FrameLayoutKeyboardSupport
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -11,9 +11,10 @@
     android:background="@drawable/bottom_sheet_background"
     android:elevation="@dimen/bottom_sheet_elevation"
     android:fillViewport="true"
+    android:orientation="vertical"
     app:behavior_hideable="false"
     app:behavior_peekHeight="@dimen/bottom_sheet_peek"
-    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+    app:layout_behavior="com.booboot.vndbandroid.util.view.LockableBottomSheetBehavior">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -134,17 +135,15 @@
             android:visibility="gone"
             app:constraint_referenced_ids="numberActiveFilters,textActiveFilters"
             tools:visibility="visible" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/filters"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:clipToPadding="false"
-            android:paddingHorizontal="@dimen/bottom_sheet_side_margin"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/bottomSheetHeader"
-            tools:listitem="@layout/filter_title" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
-</com.booboot.vndbandroid.util.view.FrameLayoutKeyboardSupport>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/filters"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingHorizontal="@dimen/bottom_sheet_side_margin"
+        android:paddingBottom="16dp"
+        tools:listitem="@layout/filter_title" />
+</LinearLayout>

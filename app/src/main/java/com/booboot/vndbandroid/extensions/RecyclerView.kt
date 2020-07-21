@@ -1,16 +1,11 @@
 package com.booboot.vndbandroid.extensions
 
-import android.util.Log
+import android.annotation.SuppressLint
+import android.view.MotionEvent
 import android.view.View
-import android.view.ViewTreeObserver
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.OnLifecycleEvent
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.booboot.vndbandroid.R
-import com.booboot.vndbandroid.util.Pixels
+import com.booboot.vndbandroid.util.view.LockableBottomSheetBehavior
 
 fun <T : View> RecyclerView.hideOnBottom(fab: T?) {
     addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -28,23 +23,15 @@ fun <T : View> RecyclerView.hideOnBottom(fab: T?) {
     })
 }
 
-fun RecyclerView?.addPaddingBottomIfCanScroll(lifecycleOwner: LifecycleOwner, basePadding: Int, extraPadding: Int) {
-    val filtersOnPreDrawListener = ViewTreeObserver.OnPreDrawListener {
-        if (this != null) {
-            var filtersPadding = basePadding
-            if (canScrollVertically(1) || canScrollVertically(-1)) {
-                filtersPadding += extraPadding
-            }
-            setPaddingBottom(filtersPadding)
+@SuppressLint("ClickableViewAccessibility")
+fun RecyclerView.fixScrollWithBottomSheet(bottomSheetBehavior: LockableBottomSheetBehavior<*>?) = setOnTouchListener { _, event ->
+    when (event.action) {
+        MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
+            if (computeVerticalScrollOffset() > 0) bottomSheetBehavior?.locked = true
         }
-        true
+        MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+            bottomSheetBehavior?.locked = false
+        }
     }
-
-    this?.viewTreeObserver?.addOnPreDrawListener(filtersOnPreDrawListener)
-    lifecycleOwner.lifecycle.addObserver(object : LifecycleObserver {
-        @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-        fun onDestroy() {
-            this@addPaddingBottomIfCanScroll?.viewTreeObserver?.removeOnPreDrawListener(filtersOnPreDrawListener)
-        }
-    })
+    false
 }

@@ -10,9 +10,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.booboot.vndbandroid.R
-import com.booboot.vndbandroid.extensions.addPaddingBottomIfCanScroll
-import com.booboot.vndbandroid.extensions.dimen
 import com.booboot.vndbandroid.extensions.fastScroll
+import com.booboot.vndbandroid.extensions.fixScrollWithBottomSheet
 import com.booboot.vndbandroid.extensions.getThemeColor
 import com.booboot.vndbandroid.extensions.home
 import com.booboot.vndbandroid.extensions.observeNonNull
@@ -43,6 +42,7 @@ import com.booboot.vndbandroid.ui.filters.FilterCheckboxItem
 import com.booboot.vndbandroid.ui.filters.SortItem
 import com.booboot.vndbandroid.util.GridAutofitLayoutManager
 import com.booboot.vndbandroid.util.Pixels
+import com.booboot.vndbandroid.util.view.LockableBottomSheetBehavior
 import com.google.android.flexbox.AlignItems
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
@@ -56,7 +56,7 @@ import kotlinx.android.synthetic.main.vnlist_fragment.*
 
 class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRefreshListener {
     override val layout: Int = R.layout.vnlist_fragment
-    lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
+    lateinit var bottomSheetBehavior: LockableBottomSheetBehavior<*>
     private val adapter by lazy { VNAdapter(::onVnClicked) }
     private val filtersAdapter = GroupAdapter<GroupieViewHolder>()
 
@@ -88,7 +88,7 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
             postponeEnterTransitionIfExists()
         }
 
-        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet) as LockableBottomSheetBehavior<*>
         bottomSheetBehavior.onStateChanged(
             onCollapsed = {
                 removeFocus()
@@ -115,7 +115,7 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
             justifyContent = JustifyContent.FLEX_START
         }
         filters.adapter = filtersAdapter
-        filters.addPaddingBottomIfCanScroll(viewLifecycleOwner, Pixels.px(16), dimen(R.dimen.bottom_sheet_peek))
+        filters.fixScrollWithBottomSheet(bottomSheetBehavior)
     }
 
     private fun update() = viewModel.getVns(scrollToTop = false)
