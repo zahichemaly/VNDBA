@@ -11,4 +11,8 @@ abstract class Repository<T> {
     open suspend fun setItems(items: Map<Long, T>) {
         throw Throwable("not implemented")
     }
+
+    fun clear() {
+        items.clear()
+    }
 }

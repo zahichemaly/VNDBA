@@ -3,6 +3,7 @@ package com.booboot.vndbandroid.repository
 import android.text.TextUtils
 import com.booboot.vndbandroid.api.VNDBServer
 import com.booboot.vndbandroid.dao.VNDao
+import com.booboot.vndbandroid.di.BoxManager
 import com.booboot.vndbandroid.extensions.get
 import com.booboot.vndbandroid.extensions.save
 import com.booboot.vndbandroid.model.vndb.Options
@@ -13,17 +14,16 @@ import com.booboot.vndbandroid.model.vndbandroid.FLAGS_FULL
 import com.booboot.vndbandroid.model.vndbandroid.FLAGS_NOT_EXISTS
 import com.booboot.vndbandroid.util.type
 import com.squareup.moshi.Moshi
-import io.objectbox.BoxStore
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.ceil
 
 @Singleton
-class VNRepository @Inject constructor(var boxStore: BoxStore, private var vndbServer: VNDBServer, var moshi: Moshi) : Repository<VN>() {
+class VNRepository @Inject constructor(var boxManager: BoxManager, private var vndbServer: VNDBServer, var moshi: Moshi) : Repository<VN>() {
     override suspend fun getItems(cachePolicy: CachePolicy<Map<Long, VN>>) = cachePolicy
         .fetchFromMemory { items }
         .fetchFromDatabase {
-            boxStore.get<VNDao, Map<Long, VN>> { it.all.map { vnDao -> vnDao.toBo() }.associateBy { vn -> vn.id } }
+            boxManager.boxStore.get<VNDao, Map<Long, VN>> { it.all.map { vnDao -> vnDao.toBo() }.associateBy { vn -> vn.id } }
         }
         .putInMemory { items.putAll(it) }
         .get()
@@ -31,7 +31,7 @@ class VNRepository @Inject constructor(var boxStore: BoxStore, private var vndbS
     override suspend fun getItems(ids: Set<Long>, flags: Int, cachePolicy: CachePolicy<Map<Long, VN>>) = cachePolicy
         .fetchFromMemory { items.filter { it.value.id in ids } }
         .fetchFromDatabase {
-            boxStore.get<VNDao, Map<Long, VN>> { it.get(ids).map { vnDao -> vnDao.toBo(flags) }.associateBy { vn -> vn.id } }
+            boxManager.boxStore.get<VNDao, Map<Long, VN>> { it.get(ids).map { vnDao -> vnDao.toBo(flags) }.associateBy { vn -> vn.id } }
         }
         .fetchFromNetwork {
             val dbVns = it?.toMutableMap() ?: mutableMapOf()
@@ -105,10 +105,10 @@ class VNRepository @Inject constructor(var boxStore: BoxStore, private var vndbS
             if (cachePolicy.enabled) items.putAll(it.filter { item -> item.value.flags > items[item.key]?.flags ?: FLAGS_NOT_EXISTS })
         }
         .putInDatabase {
-            if (cachePolicy.enabled) boxStore.save {
+            if (cachePolicy.enabled) boxManager.boxStore.save {
                 it.mapNotNull {
                     if (it.value.flags > items[it.key]?.flags ?: FLAGS_NOT_EXISTS)
-                        VNDao(it.value, boxStore)
+                        VNDao(it.value, boxManager.boxStore)
                     else null
                 }
             }
@@ -117,7 +117,7 @@ class VNRepository @Inject constructor(var boxStore: BoxStore, private var vndbS
 
     override suspend fun setItems(items: Map<Long, VN>) {
         this@VNRepository.items.putAll(items)
-        boxStore.save { items.map { VNDao(it.value, boxStore) } }
+        boxManager.boxStore.save { items.map { VNDao(it.value, boxManager.boxStore) } }
     }
 
     override suspend fun getItem(id: Long, cachePolicy: CachePolicy<VN>) =

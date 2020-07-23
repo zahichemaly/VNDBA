@@ -2,11 +2,12 @@ package com.booboot.vndbandroid.di
 
 import com.booboot.vndbandroid.ui.home.HomeActivity
 import com.booboot.vndbandroid.ui.home.HomeViewModel
-import com.booboot.vndbandroid.ui.vnlist.VNListViewModel
 import com.booboot.vndbandroid.ui.login.LoginViewModel
+import com.booboot.vndbandroid.ui.logout.LogoutViewModel
 import com.booboot.vndbandroid.ui.search.SearchViewModel
 import com.booboot.vndbandroid.ui.slideshow.SlideshowViewModel
 import com.booboot.vndbandroid.ui.vndetails.VNDetailsViewModel
+import com.booboot.vndbandroid.ui.vnlist.VNListViewModel
 import com.booboot.vndbandroid.ui.vnrelations.RelationsViewModel
 import com.booboot.vndbandroid.ui.vnsummary.SummaryViewModel
 import com.booboot.vndbandroid.ui.vntags.TagsViewModel
@@ -16,7 +17,6 @@ import javax.inject.Singleton
 @Singleton
 @Component(modules = [
     AppModule::class,
-    DatabaseModule::class,
     ApiModule::class,
     JSONModule::class
 ])
@@ -31,4 +31,5 @@ interface AppComponent {
     fun inject(relationsViewModel: RelationsViewModel)
     fun inject(slideshowViewModel: SlideshowViewModel)
     fun inject(searchViewModel: SearchViewModel)
+    fun inject(logoutViewModel: LogoutViewModel)
 }

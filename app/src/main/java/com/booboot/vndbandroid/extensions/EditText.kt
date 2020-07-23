@@ -32,11 +32,14 @@ fun EditText.setTextChangedListener(onTextChanged: (String) -> Unit): TextWatche
         }
     }
 
-    val oldTextWatcher = getTag(R.id.tagTextWatcher) as? TextWatcher
-    removeTextChangedListener(oldTextWatcher)
-
+    removeTextChangedListener()
     setTag(R.id.tagTextWatcher, textWatcher)
     addTextChangedListener(textWatcher)
 
     return textWatcher
+}
+
+fun EditText.removeTextChangedListener() {
+    val oldTextWatcher = getTag(R.id.tagTextWatcher) as? TextWatcher
+    removeTextChangedListener(oldTextWatcher)
 }

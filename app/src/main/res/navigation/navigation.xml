@@ -15,8 +15,14 @@
     <fragment
         android:id="@+id/preferencesFragment"
         android:name="com.booboot.vndbandroid.ui.preferences.PreferencesFragment"
-        android:label="PreferencesFragment"
+        android:label="@string/preferences"
         tools:layout="@layout/preferences_fragment" />
+
+    <fragment
+        android:id="@+id/logoutFragment"
+        android:name="com.booboot.vndbandroid.ui.logout.LogoutFragment"
+        android:label="@string/logout"
+        tools:layout="@layout/logout_fragment" />
 
     <fragment
         android:id="@+id/vnDetailsFragment"

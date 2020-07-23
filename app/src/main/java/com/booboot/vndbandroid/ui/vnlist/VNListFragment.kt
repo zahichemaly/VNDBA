@@ -161,7 +161,7 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
     }
 
     override fun onRefresh() {
-        home()?.startupSync()
+        home()?.viewModel?.startupSync()
     }
 
     override fun scrollToTop() {

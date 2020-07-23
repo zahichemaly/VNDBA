@@ -1,10 +1,11 @@
 package com.booboot.vndbandroid.util
 
 import android.content.Context
+import android.util.TypedValue
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import android.util.TypedValue
+import kotlin.math.max
 
 class GridAutofitLayoutManager : GridLayoutManager {
     private var mColumnWidth: Int = 0
@@ -31,8 +32,8 @@ class GridAutofitLayoutManager : GridLayoutManager {
      *  do so.
      */
     private fun checkedColumnWidth(context: Context, columnWidth: Int): Int =
-            if (columnWidth <= 0) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 48f, context.resources.displayMetrics).toInt()
-            else columnWidth
+        if (columnWidth <= 0) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 48f, context.resources.displayMetrics).toInt()
+        else columnWidth
 
     override fun onLayoutChildren(recycler: RecyclerView.Recycler?, state: RecyclerView.State) {
         val width = width
@@ -43,7 +44,7 @@ class GridAutofitLayoutManager : GridLayoutManager {
             } else {
                 height - paddingTop - paddingBottom
             }
-            val spanCount = Math.max(1, totalSpace / mColumnWidth)
+            val spanCount = max(1, totalSpace / mColumnWidth)
             setSpanCount(spanCount)
             mColumnWidthChanged = false
         }

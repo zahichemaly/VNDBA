@@ -61,20 +61,9 @@ class HomeActivity : BaseActivity() {
         }
     }
 
-    fun startupSync() = viewModel.startupSync()
-
     private fun showAccount(accountItems: AccountItems) {
         Track.tag(accountItems)
         setMenuCounter(R.id.vnlistFragment, accountItems.userList.size)
-    }
-
-    // TODO make this work with setupWithNavController without opening a Fragment
-    private fun logout(): Boolean {
-        // TODO clear all
-        viewModel.logout()
-        startActivity(Intent(this, LoginActivity::class.java))
-        finish()
-        return true
     }
 
     override fun onCreateOptionsMenu(menu: Menu) = true

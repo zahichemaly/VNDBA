@@ -2,6 +2,7 @@ package com.booboot.vndbandroid.ui.base
 
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
+import com.booboot.vndbandroid.di.BoxManager
 import com.booboot.vndbandroid.extensions.asyncLazy
 import com.booboot.vndbandroid.extensions.plusAssign
 import com.booboot.vndbandroid.extensions.transaction
@@ -16,7 +17,6 @@ import com.booboot.vndbandroid.repository.TraitsRepository
 import com.booboot.vndbandroid.repository.UserLabelsRepository
 import com.booboot.vndbandroid.repository.UserListRepository
 import com.booboot.vndbandroid.repository.VNRepository
-import io.objectbox.BoxStore
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
@@ -28,7 +28,7 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
     @Inject lateinit var accountRepository: AccountRepository
     @Inject lateinit var tagsRepository: TagsRepository
     @Inject lateinit var traitsRepository: TraitsRepository
-    @Inject lateinit var boxStore: BoxStore
+    @Inject lateinit var boxManager: BoxManager
 
     val accountData: MutableLiveData<AccountItems> = MutableLiveData()
     val syncData: MutableLiveData<SyncData> = MutableLiveData()
@@ -56,7 +56,7 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
             hasListChanged -> emptyMap() // no new VNs but status of existing VNs have changed
             else -> null // nothing new: skipping DB update with an empty result
         }?.let { vns ->
-            boxStore.transaction(
+            boxManager.boxStore.transaction(
                 asyncLazy { userListRepository.setItems(userList) },
                 asyncLazy { vnRepository.setItems(vns) }
             )

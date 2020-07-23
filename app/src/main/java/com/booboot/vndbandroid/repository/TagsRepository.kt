@@ -3,6 +3,7 @@ package com.booboot.vndbandroid.repository
 import android.app.Application
 import com.booboot.vndbandroid.api.VNDBService
 import com.booboot.vndbandroid.dao.TagDao
+import com.booboot.vndbandroid.di.BoxManager
 import com.booboot.vndbandroid.extensions.get
 import com.booboot.vndbandroid.extensions.save
 import com.booboot.vndbandroid.extensions.saveToDisk
@@ -13,7 +14,6 @@ import com.booboot.vndbandroid.model.vndb.Tag
 import com.booboot.vndbandroid.model.vndbandroid.Expiration
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
-import io.objectbox.BoxStore
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -22,12 +22,12 @@ class TagsRepository @Inject constructor(
     private var vndbService: VNDBService,
     var moshi: Moshi,
     var app: Application,
-    var boxStore: BoxStore
+    var boxManager: BoxManager
 ) : Repository<Tag>() {
     override suspend fun getItems(cachePolicy: CachePolicy<Map<Long, Tag>>) = cachePolicy
         .fetchFromMemory { items }
         .fetchFromDatabase {
-            boxStore.get<TagDao, Map<Long, Tag>> { it.all.map { tagDao -> tagDao.toBo() }.associateBy { tag -> tag.id } }
+            boxManager.boxStore.get<TagDao, Map<Long, Tag>> { it.all.map { tagDao -> tagDao.toBo() }.associateBy { tag -> tag.id } }
         }
         .fetchFromNetwork {
             vndbService
@@ -44,7 +44,7 @@ class TagsRepository @Inject constructor(
         }
         .putInMemory { items = it.toMutableMap() }
         .putInDatabase {
-            boxStore.save(true) { it.map { TagDao(it.value, boxStore) } }
+            boxManager.boxStore.save(true) { it.map { TagDao(it.value, boxManager.boxStore) } }
         }
         .isExpired { System.currentTimeMillis() > Expiration.tags }
         .putExpiration { Expiration.tags = System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7 }
