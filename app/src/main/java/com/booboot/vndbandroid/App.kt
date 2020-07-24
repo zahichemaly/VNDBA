@@ -3,6 +3,7 @@ package com.booboot.vndbandroid
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkRequest
+import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDexApplication
 import androidx.preference.PreferenceManager
@@ -31,17 +32,26 @@ class App : MultiDexApplication() {
 
         appComponent = DaggerAppComponent.builder().appModule(AppModule(this)).build()
         Kotpref.init(this)
+        PreferenceManager.setDefaultValues(this, Preferences.kotprefName, Context.MODE_PRIVATE, R.xml.app_preferences, Preferences.shouldResetPreferences)
+        Preferences.shouldResetPreferences = false
+
+        if (Preferences.needUpgradeFromV2) {
+            deleteDatabase("VNDB_ANDROID")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                deleteSharedPreferences("VNDB_ANDROID_PREFS")
+            }
+            cacheDir.deleteRecursively()
+            Preferences.needUpgradeFromV2 = false
+        }
+
+        if (Preferences.resetFiltersAtStartup) Preferences.selectedFilters.clear()
 
         CaocConfig.Builder.create()
             .errorDrawable(R.mipmap.ic_launcher)
             .apply()
 
-        PreferenceManager.setDefaultValues(this, Preferences.kotprefName, Context.MODE_PRIVATE, R.xml.app_preferences, Preferences.shouldResetPreferences)
-        Preferences.shouldResetPreferences = false
         AppCompatDelegate.setDefaultNightMode(Preferences.nightMode)
         Notifications.createNotificationChannels(this)
-
-        if (Preferences.resetFiltersAtStartup) Preferences.selectedFilters.clear()
 
         val core = CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG || Preferences.gdprCrashlytics != YES).build()
         Fabric.with(this, Crashlytics.Builder().core(core).build())
