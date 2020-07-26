@@ -6,6 +6,7 @@ import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.inflate
 import com.booboot.vndbandroid.model.vndb.VN
+import com.booboot.vndbandroid.model.vndbandroid.SORT_ID
 import com.booboot.vndbandroid.model.vndbandroid.SORT_LENGTH
 import com.booboot.vndbandroid.model.vndbandroid.SORT_POPULARITY
 import com.booboot.vndbandroid.model.vndbandroid.SORT_PRIORITY
@@ -36,7 +37,7 @@ class VNAdapter(
             onUpdateInternal()
             value.diffResult?.dispatchUpdatesTo(this) ?: notifyChanged()
         }
-    @SortOptions var sort = -1L
+    @SortOptions var sort = SORT_ID
 
     init {
         setHasStableIds(true)
