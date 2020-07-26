@@ -2,6 +2,7 @@ package com.booboot.vndbandroid.model.vndb
 
 import com.booboot.vndbandroid.model.vndb.Label.Companion.STATUSES
 import com.booboot.vndbandroid.model.vndb.Label.Companion.WISHLISTS
+import com.booboot.vndbandroid.ui.vnlist.VNLabelItem
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
@@ -16,6 +17,8 @@ data class UserList(
     var finished: String? = null,
     var labels: Set<Label> = hashSetOf()
 ) {
+    @Transient var labelItems = listOf<VNLabelItem>()
+
     fun labelIds() = labels.map { it.id }.toSet()
 
     fun labels(group: Set<Long>) = labels.filter { it.id in group }

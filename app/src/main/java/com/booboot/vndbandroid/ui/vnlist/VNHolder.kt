@@ -6,18 +6,33 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.showNsfwImage
+import com.booboot.vndbandroid.model.vndb.Label
 import com.booboot.vndbandroid.model.vndb.UserList
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndbandroid.Vote
 import com.booboot.vndbandroid.util.Utils
+import com.google.android.flexbox.AlignItems
+import com.google.android.flexbox.FlexboxLayoutManager
+import com.google.android.flexbox.JustifyContent
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
+import com.xwray.groupie.kotlinandroidextensions.Item
 import kotlinx.android.extensions.LayoutContainer
+import kotlinx.android.synthetic.main.label_tag.*
 import kotlinx.android.synthetic.main.nsfw_tag.*
 import kotlinx.android.synthetic.main.vn_card.*
 
 class VNHolder(override val containerView: View, private val onVnClicked: (View, VN) -> Unit) : RecyclerView.ViewHolder(containerView), LayoutContainer {
     val adapter = GroupAdapter<GroupieViewHolder>()
+
+    init {
+        labels.adapter = adapter
+        labels.layoutManager = FlexboxLayoutManager(containerView.context).apply {
+            alignItems = AlignItems.CENTER
+            justifyContent = JustifyContent.CENTER
+        }
+        labels.suppressLayout(true)
+    }
 
     fun bind(
         vn: VN,
@@ -56,5 +71,20 @@ class VNHolder(override val containerView: View, private val onVnClicked: (View,
         votesButton.isVisible = userList?.vote != null
         votesButton.text = Vote.toShortString(userList?.vote)
         votesButton.background = ContextCompat.getDrawable(containerView.context, Vote.getDrawableColor10(userList?.vote))
+
+        adapter.update(userList?.labelItems ?: listOf())
     }
+}
+
+data class VNLabelItem(var label: Label) : Item() {
+    override fun bind(viewHolder: GroupieViewHolder, position: Int) {
+        viewHolder.apply {
+            tagText.text = label.label
+            tagText.setTextColor(label.textColor(containerView.context))
+            tagText.setBackgroundColor(label.backgroundColor(containerView.context))
+        }
+    }
+
+    override fun getId() = label.id
+    override fun getLayout() = R.layout.label_tag
 }
