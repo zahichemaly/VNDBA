@@ -36,17 +36,19 @@ abstract class StartupSyncViewModel constructor(application: Application) : Base
     protected suspend fun startupSyncInternal() = coroutineScope {
         val tagsJob = async { tagsRepository.getItems(CachePolicy(true)) }
         val traitsJob = async { traitsRepository.getItems(CachePolicy(true)) }
-        val userListJob = async { userListRepository.getItems(CachePolicy(false)) }
         val oldUserListJob = async { userListRepository.getItems(CachePolicy(cacheOnly = true)) }
+        val userListJob = async { userListRepository.getItems(CachePolicy(false)) }
+        val oldUserLabelsJob = async { userLabelsRepository.getItems(CachePolicy(cacheOnly = true)) }
         val userLabelsJob = async { userLabelsRepository.getItems(CachePolicy(false)) }
 
         val userList = userListJob.await()
         val oldUserList = oldUserListJob.await()
-        userLabelsJob.await()
+        val userLabels = userLabelsJob.await()
+        val oldUserLabels = oldUserLabelsJob.await()
 
         val allIds = userList.keys
         val newIds = allIds.minus(oldUserList.keys)
-        val hasListChanged = userList != oldUserList
+        val hasListChanged = userList != oldUserList || userLabels != oldUserLabels
 
         val hasAccountChanged = when {
             allIds.isEmpty() -> emptyMap() // empty account
