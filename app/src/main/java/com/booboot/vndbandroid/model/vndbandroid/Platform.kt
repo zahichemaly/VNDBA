@@ -1,12 +1,21 @@
 package com.booboot.vndbandroid.model.vndbandroid
 
+import android.content.Context
+import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.model.vndb.Label
 
 data class Platform(
     val text: String = "",
     @ColorRes val color: Int = 0
-)
+) {
+    @ColorInt
+    fun textColor(context: Context) = Label.textColor(context, color)
+
+    @ColorInt
+    fun backgroundColor(context: Context) = Label.backgroundColor(context, color)
+}
 
 val PLATFORMS = mapOf(
     "web" to Platform("Web", R.color.web),
