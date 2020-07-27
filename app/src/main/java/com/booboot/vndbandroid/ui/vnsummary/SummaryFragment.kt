@@ -11,9 +11,6 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import com.booboot.vndbandroid.R
-import com.booboot.vndbandroid.extensions.adjustAlpha
-import com.booboot.vndbandroid.extensions.darken
-import com.booboot.vndbandroid.extensions.dayNightTheme
 import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.openURL
@@ -69,9 +66,8 @@ class SummaryFragment : BaseFragment<SummaryViewModel>() {
                     context?.let { ctx ->
                         val platform = PLATFORMS[it] ?: return@inflate
                         view.tagText.text = platform.text
-                        val color = ContextCompat.getColor(ctx, platform.color)
-                        view.tagText.setTextColor(if (ctx.dayNightTheme() == "light") color.darken() else color)
-                        view.tagText.setBackgroundColor(color.adjustAlpha(0.157f))
+                        view.tagText.setTextColor(platform.textColor(ctx))
+                        view.tagText.setBackgroundColor(platform.backgroundColor(ctx))
                         platforms?.addView(view)
                     }
                 }

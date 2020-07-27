@@ -104,6 +104,8 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
                     .toList()
                     .sortedWith(sorter)
                     .toMap()
+
+                accountItems.userList.values.forEach { userList -> userList.setLabelItems() }
             }
 
             val categorizedLabels = linkedMapOf<FilterSubtitleItem, MutableList<Item>>()

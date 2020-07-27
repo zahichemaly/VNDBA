@@ -1,7 +1,14 @@
 package com.booboot.vndbandroid.model.vndb
 
+import android.content.Context
+import androidx.annotation.ColorInt
+import androidx.annotation.ColorRes
+import androidx.core.content.ContextCompat
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.extensions.adjustAlpha
+import com.booboot.vndbandroid.extensions.darken
+import com.booboot.vndbandroid.extensions.dayNightTheme
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
@@ -47,7 +54,37 @@ data class Label(
         }
 
         fun voteIdToVote(voteId: Long) = voteId - VOTE_ID
+
+        @ColorInt
+        fun textColor(context: Context, @ColorRes colorRes: Int): Int {
+            val color = ContextCompat.getColor(context, colorRes)
+            return if (context.dayNightTheme() == "light") color.darken() else color
+        }
+
+        @ColorInt
+        fun backgroundColor(context: Context, @ColorRes colorRes: Int): Int {
+            val color = ContextCompat.getColor(context, colorRes)
+            return color.adjustAlpha(0.157f)
+        }
     }
+
+    @ColorRes
+    fun baseTextColor() = when (id) {
+        PLAYING.id -> R.color.green
+        FINISHED.id -> R.color.finished
+        STALLED.id -> R.color.stalled
+        DROPPED.id -> R.color.dropped
+        UNKNOWN.id -> R.color.unknown
+        WISHLIST.id -> R.color.playing
+        BLACKLIST.id -> R.color.unknown
+        else -> R.color.textColorPrimary
+    }
+
+    @ColorInt
+    fun textColor(context: Context) = textColor(context, baseTextColor())
+
+    @ColorInt
+    fun backgroundColor(context: Context) = backgroundColor(context, baseTextColor())
 
     override fun compareTo(other: Label): Int {
         var index = ALL.indexOf(id).toLong()
