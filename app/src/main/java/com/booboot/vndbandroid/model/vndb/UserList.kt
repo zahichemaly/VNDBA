@@ -26,4 +26,8 @@ data class UserList(
     fun firstStatus() = labels.find { it.id in STATUSES }
 
     fun firstWishlist() = labels.find { it.id in WISHLISTS }
+
+    fun setLabelItems() {
+        labelItems = labels.filterNot { it.id == Label.VOTED.id }.take(7).map { VNLabelItem(it) }
+    }
 }

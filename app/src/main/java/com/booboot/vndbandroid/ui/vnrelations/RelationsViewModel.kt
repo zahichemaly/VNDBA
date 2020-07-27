@@ -6,9 +6,9 @@ import androidx.recyclerview.widget.DiffUtil
 import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.diff.RelationsDiffCallback
 import com.booboot.vndbandroid.extensions.plusAssign
-import com.booboot.vndbandroid.model.vndbandroid.AccountItems
 import com.booboot.vndbandroid.model.vndb.RELATIONS
 import com.booboot.vndbandroid.model.vndb.VN
+import com.booboot.vndbandroid.model.vndbandroid.AccountItems
 import com.booboot.vndbandroid.model.vndbandroid.FLAGS_DETAILS
 import com.booboot.vndbandroid.repository.AccountRepository
 import com.booboot.vndbandroid.repository.VNRepository
@@ -28,12 +28,14 @@ class RelationsViewModel constructor(application: Application) : BaseViewModel(a
     fun loadVn(vnId: Long, oldRelationsData: RelationsData, force: Boolean = true) = coroutine(DISPOSABLE_VN, !force && relationsData.value != null) {
         val accountItemsJob = async { accountRepository.getItems() }
         val vnJob = async { vnRepository.getItem(vnId) }
-        val accountItems = accountItemsJob.await()
         val vn = vnJob.await()
-        val accountItemsCopy = accountItems.deepCopy()
+
+        val accountItems = accountItemsJob.await().deepCopy()
+        accountItems.userList.values.forEach { userList -> userList.setLabelItems() }
+
         val relations = vnRepository.getItems(vn.relations.mapTo(hashSetOf()) { it.id }, FLAGS_DETAILS)
         vn.relations = vn.relations.sortedWith(compareBy { RELATIONS.keys.indexOf(it.relation) })
-        relationsData += RelationsData(vn, accountItemsCopy, relations).apply {
+        relationsData += RelationsData(vn, accountItems, relations).apply {
             val diffCallback = RelationsDiffCallback(oldRelationsData, this)
             diffResult = DiffUtil.calculateDiff(diffCallback)
         }
