@@ -99,6 +99,7 @@
             android:layout_height="56dp"
             android:nestedScrollingEnabled="false"
             android:paddingHorizontal="4dp"
+            android:scrollbars="none"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/image"
             app:layout_constraintTop_toBottomOf="@id/divider"
