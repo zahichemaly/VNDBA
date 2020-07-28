@@ -68,11 +68,19 @@ class VNHolder(override val containerView: View, private val onVnClicked: (View,
 
         title.text = titleText
         subtitle.text = subtitleText
-        votesButton.isVisible = userList?.vote != null
-        votesButton.text = Vote.toShortString(userList?.vote)
-        votesButton.background = ContextCompat.getDrawable(containerView.context, Vote.getDrawableColor10(userList?.vote))
+        voteButton.isVisible = userList?.vote != null
+        voteButton.text = Vote.toShortString(userList?.vote)
+        voteButton.background = ContextCompat.getDrawable(containerView.context, Vote.getDrawableColor10(userList?.vote))
 
-        adapter.update(userList?.labelItems ?: listOf())
+        val showLabels = userList != null && userList.labelItems.isNotEmpty()
+        labels.isVisible = showLabels
+        noLabelText.isVisible = !showLabels
+
+        when {
+            userList == null -> noLabelText.setText(R.string.not_in_your_list)
+            userList.labelItems.isEmpty() -> noLabelText.setText(R.string.no_labels)
+            else -> adapter.update(userList.labelItems)
+        }
     }
 }
 

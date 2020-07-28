@@ -81,17 +81,19 @@
             app:layout_constraintTop_toBottomOf="@id/subtitle" />
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/noLabelText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:textAlignment="center"
             android:textColor="?android:attr/textColorSecondary"
             android:textSize="14sp"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/image"
             app:layout_constraintTop_toBottomOf="@id/divider"
-            tools:text="Not in your list" />
+            tools:text="Not in your list"
+            tools:visibility="visible" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/labels"
@@ -108,7 +110,7 @@
             tools:orientation="horizontal" />
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/votesButton"
+            android:id="@+id/voteButton"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="@drawable/rounded_green_background"

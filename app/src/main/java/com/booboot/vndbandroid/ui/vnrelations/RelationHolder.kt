@@ -4,6 +4,7 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.showNsfwImage
 import com.booboot.vndbandroid.model.vndb.RELATIONS
 import com.booboot.vndbandroid.model.vndb.Relation
@@ -41,10 +42,18 @@ class RelationHolder(override val containerView: View, private val onClick: (Vie
             image.showNsfwImage(it.image, it.image_nsfw, nsfwTag)
         }
 
-        votesButton.isVisible = userList?.vote != null
-        votesButton.text = Vote.toShortString(userList?.vote)
-        votesButton.background = ContextCompat.getDrawable(containerView.context, Vote.getDrawableColor10(userList?.vote))
+        voteButton.isVisible = userList?.vote != null
+        voteButton.text = Vote.toShortString(userList?.vote)
+        voteButton.background = ContextCompat.getDrawable(containerView.context, Vote.getDrawableColor10(userList?.vote))
 
-        adapter.update(userList?.labelItems ?: listOf())
+        val showLabels = userList != null && userList.labelItems.isNotEmpty()
+        labels.isVisible = showLabels
+        noLabelText.isVisible = !showLabels
+
+        when {
+            userList == null -> noLabelText.setText(R.string.not_in_your_list)
+            userList.labelItems.isEmpty() -> noLabelText.setText(R.string.no_labels)
+            else -> adapter.update(userList.labelItems)
+        }
     }
 }
