@@ -1,12 +1,10 @@
 stages:
   - deploy
   - build
-  - test
 
 variables:
   ANDROID_COMPILE_SDK: "29"
-  ANDROID_BUILD_TOOLS: "29.0.2"
-  RUBY_VERSION: "2.6.5"
+  ANDROID_BUILD_TOOLS: "29.0.3"
 
 image: openjdk:8-jdk
 
@@ -33,21 +31,15 @@ pages:
     paths:
       - .gradle/wrapper
       - .gradle/caches
-      - .apt/
-      - .gem/
   before_script:
-    # Configuring apt chaching
-    - export APT_DIR=$CI_PROJECT_DIR/.apt && export APT_STATE_LISTS=$APT_DIR/lists && export APT_CACHE_ARCHIVES=$APT_DIR/archives
-    - printf "dir::state::lists    ${APT_STATE_LISTS};\ndir::cache::archives    ${APT_CACHE_ARCHIVES};\n" > /etc/apt/apt.conf
-    - mkdir -p "${APT_STATE_LISTS}/partial" && mkdir -p "${APT_CACHE_ARCHIVES}/partial"
-    - apt-get update -y && apt-get install -y -qq wget tar unzip lib32stdc++6 lib32z1 git rsync ruby-full build-essential g++ > /dev/null
+    # Configuring apt
+    - apt-get update -y && apt-get install -y -qq wget tar unzip lib32stdc++6 lib32z1 git rsync > /dev/null
 
     # Setting environment variables
     - export ANDROID_HOME=$CI_PROJECT_DIR/.android-sdk
     - export GRADLE_USER_HOME=`pwd`/.gradle
     - export LC_ALL=fr_FR.UTF-8
     - export LANG=fr_FR.UTF-8
-    - export FASTLANE_DISABLE_OUTPUT_FORMAT=1
     - export PATH=${PATH}:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/emulator:${ANDROID_HOME}/bin
 
     # Installing Android SDK
@@ -73,23 +65,11 @@ pages:
     - rsync -a $PRIVATE_DIR/* . > /dev/null
     - rm -rf $PRIVATE_DIR
 
-    # Installing Fastlane
-    - gem install bundler --no-ri --no-rdoc > /dev/null
-    - bundle install > /dev/null
-
 build:
   <<: *build_template
   script:
-    - bundle exec fastlane build
-    - mv app/build/outputs/apk/release/app-release.apk .
+    - ./gradlew bundleRelease
+    - mv app/build/outputs/bundle/release/app-release.aab .
   artifacts:
     paths:
-      - app-release.apk
-
-unitTests:
-  stage: test
-  tags:
-    - docker
-  script:
-    - ./gradlew test
-  when: manual
+      - app-release.aab
