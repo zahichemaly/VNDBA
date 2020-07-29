@@ -74,7 +74,7 @@ pages:
 build:
   <<: *build_template
   script:
-    - gradlew bundleRelease
+    - ./gradlew bundleRelease
     - mv app/build/outputs/bundle/release/app-release.aab .
   artifacts:
     paths:
