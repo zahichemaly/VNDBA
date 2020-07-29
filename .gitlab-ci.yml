@@ -27,17 +27,17 @@ pages:
   stage: build
   tags:
     - docker
-  cache:
-    paths:
-      - .gradle/wrapper
-      - .gradle/caches
-      - .apt/
-      - .gem/
+#  cache:
+#    paths:
+#      - .gradle/wrapper
+#      - .gradle/caches
+#      - .apt/
+#      - .gem/
   before_script:
     # Configuring apt chaching
-    - export APT_DIR=$CI_PROJECT_DIR/.apt && export APT_STATE_LISTS=$APT_DIR/lists && export APT_CACHE_ARCHIVES=$APT_DIR/archives
-    - printf "dir::state::lists    ${APT_STATE_LISTS};\ndir::cache::archives    ${APT_CACHE_ARCHIVES};\n" > /etc/apt/apt.conf
-    - mkdir -p "${APT_STATE_LISTS}/partial" && mkdir -p "${APT_CACHE_ARCHIVES}/partial"
+#    - export APT_DIR=$CI_PROJECT_DIR/.apt && export APT_STATE_LISTS=$APT_DIR/lists && export APT_CACHE_ARCHIVES=$APT_DIR/archives
+#    - printf "dir::state::lists    ${APT_STATE_LISTS};\ndir::cache::archives    ${APT_CACHE_ARCHIVES};\n" > /etc/apt/apt.conf
+#    - mkdir -p "${APT_STATE_LISTS}/partial" && mkdir -p "${APT_CACHE_ARCHIVES}/partial"
     - apt-get update -y && apt-get install -y -qq wget tar unzip lib32stdc++6 lib32z1 git rsync > /dev/null
 
     # Setting environment variables
@@ -45,7 +45,6 @@ pages:
     - export GRADLE_USER_HOME=`pwd`/.gradle
     - export LC_ALL=fr_FR.UTF-8
     - export LANG=fr_FR.UTF-8
-    - export FASTLANE_DISABLE_OUTPUT_FORMAT=1
     - export PATH=${PATH}:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/emulator:${ANDROID_HOME}/bin
 
     # Installing Android SDK
