@@ -62,7 +62,7 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="250dp">
+        android:layout_marginTop="@dimen/bottom_sheet_margin_top">
 
         <include layout="@layout/filter_bottom_sheet" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
