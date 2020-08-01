@@ -111,8 +111,8 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
             val categorizedLabels = linkedMapOf<FilterSubtitleItem, MutableList<Item>>()
             val addLabel = { group: FilterSubtitleItem, userLabel: UserLabel, selected: Boolean ->
                 val labelItem = when (userLabel.id) {
-                    in VOTELISTS -> VoteItem(userLabel, selected).apply { onLabelClicked = ::onLabelClicked }
-                    else -> LabelItem(userLabel, selected).apply { onLabelClicked = ::onLabelClicked }
+                    in VOTELISTS -> VoteItem(userLabel, selected, ::onLabelClicked)
+                    else -> LabelItem(userLabel, selected, ::onLabelClicked)
                 }
                 categorizedLabels.addOrCreate(group, labelItem)
             }

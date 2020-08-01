@@ -107,10 +107,10 @@ data class FilterSubtitleItem(
 }
 
 data class LabelItem(
-    var label: UserLabel,
-    val selected: Boolean
+    val label: UserLabel,
+    val selected: Boolean,
+    val onLabelClicked: (Long) -> Unit = {}
 ) : Item() {
-    var onLabelClicked: (Long) -> Unit = {}
 
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
         viewHolder.apply {
@@ -128,11 +128,10 @@ data class LabelItem(
 }
 
 data class VoteItem(
-    var label: UserLabel,
-    val selected: Boolean
+    val label: UserLabel,
+    val selected: Boolean,
+    val onLabelClicked: (Long) -> Unit = {}
 ) : Item() {
-    var onLabelClicked: (Long) -> Unit = {}
-
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
         viewHolder.apply {
             voteButton.text = label.label
