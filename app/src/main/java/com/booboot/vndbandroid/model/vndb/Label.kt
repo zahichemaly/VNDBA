@@ -69,8 +69,8 @@ data class Label(
     }
 
     @ColorRes
-    fun baseTextColor() = when (id) {
-        PLAYING.id -> R.color.green
+    fun buttonColor() = when (id) {
+        PLAYING.id -> R.color.playing
         FINISHED.id -> R.color.finished
         STALLED.id -> R.color.stalled
         DROPPED.id -> R.color.dropped
@@ -81,10 +81,10 @@ data class Label(
     }
 
     @ColorInt
-    fun textColor(context: Context) = textColor(context, baseTextColor())
+    fun textColor(context: Context) = textColor(context, buttonColor())
 
     @ColorInt
-    fun backgroundColor(context: Context) = backgroundColor(context, baseTextColor())
+    fun backgroundColor(context: Context) = backgroundColor(context, buttonColor())
 
     override fun compareTo(other: Label): Int {
         var index = ALL.indexOf(id).toLong()
