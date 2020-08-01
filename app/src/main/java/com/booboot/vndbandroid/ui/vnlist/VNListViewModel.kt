@@ -108,15 +108,16 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
                 accountItems.userList.values.forEach { userList -> userList.setLabelItems() }
             }
 
-            val categorizedLabels = linkedMapOf<FilterSubtitleItem, MutableList<Item>>()
-            val addLabel = { group: FilterSubtitleItem, userLabel: UserLabel, selected: Boolean ->
-                val labelItem = when (userLabel.id) {
-                    in VOTELISTS -> VoteItem(userLabel, selected, ::onLabelClicked)
-                    else -> LabelItem(userLabel, selected, ::onLabelClicked)
+            val categorizedLabelsJob = async {
+                val categorizedLabels = linkedMapOf<FilterSubtitleItem, MutableList<Item>>()
+                val addLabel = { group: FilterSubtitleItem, userLabel: UserLabel, selected: Boolean ->
+                    val labelItem = when (userLabel.id) {
+                        in VOTELISTS -> VoteItem(userLabel, selected, ::onLabelClicked)
+                        else -> LabelItem(userLabel, selected, ::onLabelClicked)
+                    }
+                    categorizedLabels.addOrCreate(group, labelItem)
                 }
-                categorizedLabels.addOrCreate(group, labelItem)
-            }
-            val labelsJob = async {
+
                 accountItems.userLabels.values.forEach { userLabel ->
                     val selectedAsFilter = userLabel.id in selectedFilters
                     when (userLabel.id) {
@@ -132,14 +133,14 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
                         else -> addLabel(FilterSubtitleItem(R.drawable.ic_list_48dp, R.string.category_custom_labels), userLabel, selectedAsFilter)
                     }
                 }
+                categorizedLabels
             }
 
             sortJob.await()
-            labelsJob.await()
 
             val diffResult = DiffUtil.calculateDiff(VNDiffCallback(vnlistData.value?.items ?: AccountItems(), accountItems))
             vnlistData += VnlistData(accountItems, diffResult)
-            filterData += FilterData(sort, reverseSort, categorizedLabels, selectedFilters)
+            filterData += FilterData(sort, reverseSort, categorizedLabelsJob.await(), selectedFilters)
             scrollToTopData += scrollToTop
         }
     }
