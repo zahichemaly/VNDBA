@@ -128,7 +128,7 @@
             tools:text="8" />
 
         <!--            <com.booboot.vndbandroid.util.view.TextInputEditText-->
-        <!--                android:id="@+id/textNotes"-->
+        <!--                android:id="@+id/textNotes"--> 
         <!--                android:layout_width="0dp"-->
         <!--                android:layout_height="wrap_content"-->
         <!--                android:layout_marginStart="16dp"-->
