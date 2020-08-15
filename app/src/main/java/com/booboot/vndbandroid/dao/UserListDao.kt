@@ -1,5 +1,6 @@
 package com.booboot.vndbandroid.dao
 
+import com.booboot.vndbandroid.extensions.removeRelations
 import com.booboot.vndbandroid.model.vndb.UserList
 import io.objectbox.BoxStore
 import io.objectbox.annotation.Entity
@@ -29,7 +30,14 @@ class UserListDao() {
         started = userList.started
         finished = userList.finished
 
+        /**
+         * attach() is mandatory because of self-assigned IDs, but also retrieves the ToMany relations from the DB.
+         * If we simply add() new relations, they will be stacking up with the old ones; we don't want that, so we have to remove these relations.
+         * /!\ Don't call clear() because it removes the related entities! Call remove() to only remove relations.
+         * See https://docs.objectbox.io/relations#updating-tomany
+         */
         boxStore.boxFor<UserListDao>().attach(this)
+        labels.removeRelations()
         userList.labels.forEach { labels.add(LabelDao(it)) }
 
         boxStore.boxFor<LabelDao>().put(labels)
