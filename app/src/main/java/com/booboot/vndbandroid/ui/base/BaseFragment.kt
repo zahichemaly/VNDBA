@@ -55,8 +55,7 @@ abstract class BaseFragment<T : BaseViewModel> : Fragment() {
         Snackbar.make(view, message, Snackbar.LENGTH_LONG).show()
     }
 
-    open fun showLoading(loading: Int?) {
-        loading ?: return
+    open fun showLoading(loading: Int) {
         progressBar?.visibility = if (loading > 0) View.VISIBLE else View.GONE
         refreshLayout?.isRefreshing = loading > 0
     }

@@ -151,9 +151,9 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
             sortItem.onSortClicked = ::onSortClicked
         })
 
-        viewModel.filterSection.update(listOf(ClearFiltersItem().apply { onLabelClicked = viewModel::onLabelClicked })
-            + filterData.categorizedLabels.flatMap { (subtitle, labels) ->
-            listOf(subtitle) + labels
+        viewModel.filterSection.update(listOf(ClearFiltersItem(onLabelClicked = viewModel::onLabelClicked))
+            + filterData.categorizedLabels.flatMap { (subtitle, items) ->
+            listOf(subtitle) + items
         })
 
         groupActiveFilters.isVisible = selectedFilters.isNotEmpty()

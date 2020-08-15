@@ -1,5 +1,13 @@
 package com.booboot.vndbandroid.extensions
 
+import com.booboot.vndbandroid.R
+import com.booboot.vndbandroid.model.vndb.Label
+import com.booboot.vndbandroid.model.vndb.UserLabel
+import com.booboot.vndbandroid.model.vndbandroid.AccountItems
+import com.booboot.vndbandroid.ui.filters.FilterSubtitleItem
+import com.booboot.vndbandroid.ui.filters.LabelItem
+import com.booboot.vndbandroid.ui.filters.VoteItem
+import com.xwray.groupie.kotlinandroidextensions.Item
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
@@ -29,4 +37,30 @@ suspend fun <T> catchAndRethrow(onError: (Throwable) -> Unit, block: suspend () 
 } catch (t: Throwable) {
     onError(t)
     throw t
+}
+
+fun CoroutineScope.categorizeLabels(
+    accountItems: AccountItems,
+    onLabelClicked: (UserLabel) -> Unit,
+    onVoteClicked: (UserLabel) -> Unit,
+    isLabelSelected: (Long) -> Boolean,
+    isVoteSelected: (Long) -> Boolean,
+    addCustomVotes: (LinkedHashMap<FilterSubtitleItem, MutableList<Item>>, FilterSubtitleItem, UserLabel) -> Unit
+) = async {
+    val categorizedLabels = linkedMapOf<FilterSubtitleItem, MutableList<Item>>()
+    accountItems.userLabels.values.forEach { userLabel ->
+        val selected = isLabelSelected(userLabel.id)
+        when (userLabel.id) {
+            in Label.STATUSES -> categorizedLabels.addOrCreate(FilterSubtitleItem(R.drawable.ic_list_48dp, R.string.status), LabelItem(userLabel, selected, onLabelClicked))
+            in Label.WISHLISTS -> categorizedLabels.addOrCreate(FilterSubtitleItem(R.drawable.ic_wishlist, R.string.wishlist), LabelItem(userLabel, selected, onLabelClicked))
+            Label.VOTED.id -> {
+                val subtitleItem = FilterSubtitleItem(R.drawable.ic_format_list_numbered_48dp, R.string.votes)
+                /* Votes from 1 to 10 */
+                for (vote in Label.VOTES) categorizedLabels.addOrCreate(subtitleItem, VoteItem(UserLabel(vote.id, vote.label), isVoteSelected(vote.id), onVoteClicked))
+                addCustomVotes(categorizedLabels, subtitleItem, userLabel)
+            }
+            else -> categorizedLabels.addOrCreate(FilterSubtitleItem(R.drawable.ic_list_48dp, R.string.category_custom_labels), LabelItem(userLabel, selected, onLabelClicked))
+        }
+    }
+    categorizedLabels
 }

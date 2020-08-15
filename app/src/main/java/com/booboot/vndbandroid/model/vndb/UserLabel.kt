@@ -6,9 +6,11 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class UserLabel(
     var id: Long = 0,
-    var label: String,
+    var label: String = "",
     var private: Boolean = true
 ) {
     @ColorRes
-    fun color() = Label(id, label).buttonColor()
+    fun color() = toLabel().buttonColor()
+
+    fun toLabel() = Label(id, label)
 }

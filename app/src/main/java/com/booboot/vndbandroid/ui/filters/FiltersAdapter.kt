@@ -109,7 +109,7 @@ data class FilterSubtitleItem(
 data class LabelItem(
     val label: UserLabel,
     val selected: Boolean,
-    val onLabelClicked: (Long) -> Unit = {}
+    val onLabelClicked: (UserLabel) -> Unit = {}
 ) : Item() {
 
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
@@ -119,7 +119,7 @@ data class LabelItem(
             labelButton.setTextColor(color)
             labelButton.strokeColor = ColorStateList.valueOf(color)
             labelButton.selectIf(selected, if (label.color() == R.color.textColorPrimary) R.color.textColorPrimaryReverse else R.color.white)
-            labelButton.setOnClickListener { onLabelClicked(label.id) }
+            labelButton.setOnClickListener { onLabelClicked(label) }
         }
     }
 
@@ -130,13 +130,13 @@ data class LabelItem(
 data class VoteItem(
     val label: UserLabel,
     val selected: Boolean,
-    val onLabelClicked: (Long) -> Unit = {}
+    val onLabelClicked: (UserLabel) -> Unit = {}
 ) : Item() {
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
         viewHolder.apply {
             voteButton.text = label.label
             voteButton.selectIf(selected)
-            voteButton.setOnClickListener { onLabelClicked(label.id) }
+            voteButton.setOnClickListener { onLabelClicked(label) }
         }
     }
 
@@ -144,12 +144,10 @@ data class VoteItem(
     override fun getLayout() = R.layout.vote_button
 }
 
-data class ClearFiltersItem(val _id: Long = CLEAR_FILTERS) : Item() {
-    var onLabelClicked: (Long) -> Unit = {}
-
+data class ClearFiltersItem(val _id: Long = CLEAR_FILTERS, val onLabelClicked: (UserLabel) -> Unit) : Item() {
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
         viewHolder.apply {
-            labelButton.setOnClickListener { onLabelClicked(CLEAR_FILTERS) }
+            labelButton.setOnClickListener { onLabelClicked(UserLabel(id = CLEAR_FILTERS)) }
         }
     }
 

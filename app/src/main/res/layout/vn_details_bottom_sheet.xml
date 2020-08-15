@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.booboot.vndbandroid.util.view.FrameLayoutKeyboardSupport
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -11,473 +11,152 @@
     android:background="@drawable/bottom_sheet_background"
     android:elevation="@dimen/bottom_sheet_elevation"
     android:fillViewport="true"
+    android:orientation="vertical"
     app:behavior_hideable="false"
     app:behavior_peekHeight="@dimen/bottom_sheet_peek"
-    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+    app:layout_behavior="com.booboot.vndbandroid.util.view.LockableBottomSheetBehavior">
 
-    <androidx.core.widget.NestedScrollView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clipToPadding="false"
-            android:paddingBottom="16dp">
+        <View
+            android:id="@+id/bottomSheetHeader"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/bottom_sheet_peek"
+            android:background="@drawable/bottom_sheet_header_background"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <View
-                android:id="@+id/bottomSheetHeader"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/bottom_sheet_peek"
-                android:background="@drawable/bottom_sheet_header_background"
-                android:clickable="true"
-                android:focusable="true"
-                android:foreground="?attr/selectableItemBackground"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iconArrow"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_marginStart="12dp"
+            app:layout_constraintBottom_toBottomOf="@id/bottomSheetHeader"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/bottomSheetHeader"
+            app:srcCompat="@drawable/ic_keyboard_arrow_down_white_24dp"
+            app:tint="@color/transparent80White" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/textAddToList"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/add_to_your_lists"
+            android:textColor="@color/transparent80White"
+            app:layout_constraintBottom_toBottomOf="@id/iconArrow"
+            app:layout_constraintEnd_toStartOf="@id/statusLayout"
+            app:layout_constraintStart_toEndOf="@id/iconArrow"
+            app:layout_constraintTop_toTopOf="@id/iconArrow" />
+
+        <RelativeLayout
+            android:id="@+id/statusLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:gravity="center"
+            app:layout_constraintBottom_toBottomOf="@id/bottomSheetHeader"
+            app:layout_constraintEnd_toStartOf="@id/votesButton"
+            app:layout_constraintTop_toTopOf="@id/bottomSheetHeader">
 
             <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/iconArrow"
+                android:id="@+id/iconStatus"
                 android:layout_width="22dp"
                 android:layout_height="22dp"
-                android:layout_marginStart="12dp"
-                app:layout_constraintBottom_toBottomOf="@id/bottomSheetHeader"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/bottomSheetHeader"
-                app:srcCompat="@drawable/ic_keyboard_arrow_down_white_24dp"
+                app:srcCompat="@drawable/ic_list_48dp"
                 app:tint="@color/transparent80White" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/textAddToList"
-                android:layout_width="0dp"
+                android:id="@+id/textStatus"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignTop="@id/iconStatus"
+                android:layout_alignBottom="@id/iconStatus"
                 android:layout_marginStart="8dp"
-                android:text="@string/add_to_your_lists"
+                android:layout_toEndOf="@id/iconStatus"
+                android:gravity="center"
                 android:textColor="@color/transparent80White"
-                app:layout_constraintBottom_toBottomOf="@id/iconArrow"
-                app:layout_constraintEnd_toStartOf="@id/statusLayout"
-                app:layout_constraintStart_toEndOf="@id/iconArrow"
-                app:layout_constraintTop_toTopOf="@id/iconArrow" />
+                android:textSize="14sp"
+                android:textStyle="bold"
+                tools:text="Finished" />
 
-            <RelativeLayout
-                android:id="@+id/statusLayout"
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iconWishlist"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_below="@id/iconStatus"
+                android:layout_marginTop="6dp"
+                app:srcCompat="@drawable/ic_wishlist"
+                app:tint="@color/transparent80White" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/textWishlist"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="24dp"
+                android:layout_alignTop="@id/iconWishlist"
+                android:layout_alignBottom="@id/iconWishlist"
+                android:layout_marginStart="8dp"
+                android:layout_toEndOf="@id/iconWishlist"
                 android:gravity="center"
-                app:layout_constraintBottom_toBottomOf="@id/bottomSheetHeader"
-                app:layout_constraintEnd_toStartOf="@id/votesButton"
-                app:layout_constraintTop_toTopOf="@id/bottomSheetHeader">
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/iconStatus"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    app:srcCompat="@drawable/ic_list_48dp"
-                    app:tint="@color/transparent80White" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/textStatus"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignTop="@id/iconStatus"
-                    android:layout_alignBottom="@id/iconStatus"
-                    android:layout_marginStart="8dp"
-                    android:layout_toEndOf="@id/iconStatus"
-                    android:gravity="center"
-                    android:textColor="@color/transparent80White"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    tools:text="Finished" />
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/iconWishlist"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    android:layout_below="@id/iconStatus"
-                    android:layout_marginTop="6dp"
-                    app:srcCompat="@drawable/ic_wishlist"
-                    app:tint="@color/transparent80White" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/textWishlist"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignTop="@id/iconWishlist"
-                    android:layout_alignBottom="@id/iconWishlist"
-                    android:layout_marginStart="8dp"
-                    android:layout_toEndOf="@id/iconWishlist"
-                    android:gravity="center"
-                    android:textColor="@color/transparent80White"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    tools:text="Blacklist" />
-
-            </RelativeLayout>
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/votesButton"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginEnd="12dp"
-                android:background="@drawable/rounded_green_background"
-                android:elevation="8dp"
-                android:gravity="center"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textSize="16sp"
+                android:textColor="@color/transparent80White"
+                android:textSize="14sp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@id/bottomSheetHeader"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/bottomSheetHeader"
-                tools:text="8" />
+                tools:text="Blacklist" />
 
-            <com.booboot.vndbandroid.util.view.TextInputEditText
-                android:id="@+id/textNotes"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:hint="@string/add_notes"
-                android:imeOptions="actionDone|flagNoExtractUi"
-                android:textSize="13sp"
-                android:textStyle="italic"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/bottomSheetHeader"
-                tools:text="Notes here which are going to be very long notes on multiple lines." />
+        </RelativeLayout>
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/iconContentStatus"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textNotes"
-                app:srcCompat="@drawable/ic_list_48dp" />
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/votesButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/rounded_green_background"
+            android:elevation="8dp"
+            android:gravity="center"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/bottomSheetHeader"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/bottomSheetHeader"
+            tools:text="8" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="@string/status"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@id/iconContentStatus"
-                app:layout_constraintStart_toEndOf="@id/iconContentStatus"
-                app:layout_constraintTop_toTopOf="@id/iconContentStatus" />
+        <!--            <com.booboot.vndbandroid.util.view.TextInputEditText-->
+        <!--                android:id="@+id/textNotes"-->
+        <!--                android:layout_width="0dp"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:layout_marginStart="16dp"-->
+        <!--                android:layout_marginTop="16dp"-->
+        <!--                android:layout_marginEnd="16dp"-->
+        <!--                android:clickable="true"-->
+        <!--                android:focusable="true"-->
+        <!--                android:hint="@string/add_notes"-->
+        <!--                android:imeOptions="actionDone|flagNoExtractUi"-->
+        <!--                android:textSize="13sp"-->
+        <!--                android:textStyle="italic"-->
+        <!--                app:layout_constraintEnd_toEndOf="parent"-->
+        <!--                app:layout_constraintStart_toStartOf="parent"-->
+        <!--                app:layout_constraintTop_toBottomOf="@id/bottomSheetHeader"-->
+        <!--                tools:text="Notes here which are going to be very long notes on multiple lines." />-->
 
-            <com.google.android.flexbox.FlexboxLayout
-                android:id="@+id/flexboxStatus"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                app:dividerDrawable="@drawable/flexbox_divider_8dp"
-                app:flexWrap="wrap"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@id/iconContentStatus"
-                app:layout_constraintTop_toBottomOf="@id/iconContentStatus"
-                app:showDividerVertical="middle">
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonPlaying"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:text="@string/playing"
-                    android:textAllCaps="false"
-                    android:textColor="@color/playing"
-                    android:textSize="12sp"
-                    app:rippleColor="@color/playing"
-                    app:strokeColor="@color/playing" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonFinished"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:text="@string/finished"
-                    android:textAllCaps="false"
-                    android:textColor="@color/finished"
-                    android:textSize="12sp"
-                    app:rippleColor="@color/finished"
-                    app:strokeColor="@color/finished" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonStalled"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:text="@string/stalled"
-                    android:textAllCaps="false"
-                    android:textColor="@color/stalled"
-                    android:textSize="12sp"
-                    app:rippleColor="@color/stalled"
-                    app:strokeColor="@color/stalled" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonDropped"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:text="@string/dropped"
-                    android:textAllCaps="false"
-                    android:textColor="@color/dropped"
-                    android:textSize="12sp"
-                    app:rippleColor="@color/dropped"
-                    app:strokeColor="@color/dropped" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonUnknown"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:text="@string/unknown"
-                    android:textAllCaps="false"
-                    android:textColor="@color/unknown"
-                    android:textSize="12sp"
-                    app:rippleColor="@color/unknown"
-                    app:strokeColor="@color/unknown" />
-            </com.google.android.flexbox.FlexboxLayout>
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/iconContentVote"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/flexboxStatus"
-                app:srcCompat="@drawable/ic_format_list_numbered_48dp" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/textContentVote"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="@string/vote"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@id/iconContentVote"
-                app:layout_constraintStart_toEndOf="@id/iconContentVote"
-                app:layout_constraintTop_toTopOf="@id/iconContentVote" />
-
-            <com.google.android.flexbox.FlexboxLayout
-                android:id="@+id/flexboxVote"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                app:alignItems="center"
-                app:dividerDrawable="@drawable/flexbox_divider_8dp"
-                app:flexWrap="wrap"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@id/iconContentVote"
-                app:layout_constraintTop_toBottomOf="@id/iconContentVote"
-                app:showDividerVertical="middle">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonVote1"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="40dp"
-                    android:layout_height="50dp"
-                    android:text="@string/_1"
-                    android:textAllCaps="false"
-                    android:textSize="14sp"
-                    app:cornerRadius="50dp"
-                    app:strokeColor="?attr/colorAccent" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonVote2"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="40dp"
-                    android:layout_height="50dp"
-                    android:text="@string/_2"
-                    android:textAllCaps="false"
-                    android:textSize="14sp"
-                    app:cornerRadius="50dp"
-                    app:strokeColor="?attr/colorAccent" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonVote3"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="40dp"
-                    android:layout_height="50dp"
-                    android:text="@string/_3"
-                    android:textAllCaps="false"
-                    android:textSize="14sp"
-                    app:cornerRadius="50dp"
-                    app:strokeColor="?attr/colorAccent" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonVote4"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="40dp"
-                    android:layout_height="50dp"
-                    android:text="@string/_4"
-                    android:textAllCaps="false"
-                    android:textSize="14sp"
-                    app:cornerRadius="50dp"
-                    app:strokeColor="?attr/colorAccent" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonVote5"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="40dp"
-                    android:layout_height="50dp"
-                    android:text="@string/_5"
-                    android:textAllCaps="false"
-                    android:textSize="14sp"
-                    app:cornerRadius="50dp"
-                    app:strokeColor="?attr/colorAccent" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonVote6"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="40dp"
-                    android:layout_height="50dp"
-                    android:text="@string/_6"
-                    android:textAllCaps="false"
-                    android:textSize="14sp"
-                    app:cornerRadius="50dp"
-                    app:strokeColor="?attr/colorAccent" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonVote7"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="40dp"
-                    android:layout_height="50dp"
-                    android:text="@string/_7"
-                    android:textAllCaps="false"
-                    android:textSize="14sp"
-                    app:cornerRadius="50dp"
-                    app:strokeColor="?attr/colorAccent" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonVote8"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="40dp"
-                    android:layout_height="50dp"
-                    android:text="@string/_8"
-                    android:textAllCaps="false"
-                    android:textSize="14sp"
-                    app:cornerRadius="50dp"
-                    app:strokeColor="?attr/colorAccent" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonVote9"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="40dp"
-                    android:layout_height="50dp"
-                    android:text="@string/_9"
-                    android:textAllCaps="false"
-                    android:textSize="14sp"
-                    app:cornerRadius="50dp"
-                    app:strokeColor="?attr/colorAccent" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonVote10"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="40dp"
-                    android:layout_height="50dp"
-                    android:padding="0dp"
-                    android:text="@string/_10"
-                    android:textAllCaps="false"
-                    android:textSize="14sp"
-                    app:cornerRadius="50dp"
-                    app:strokeColor="?attr/colorAccent" />
-
-                <com.booboot.vndbandroid.util.view.TextInputEditText
-                    android:id="@+id/inputCustomVote"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:hint="@string/custom_vote"
-                    android:imeOptions="actionDone|flagNoExtractUi"
-                    android:inputType="numberDecimal"
-                    android:maxLines="1"
-                    android:textAlignment="center"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="@id/iconContentStatus"
-                    app:layout_constraintTop_toBottomOf="@id/flexboxVote"
-                    tools:text="7.5" />
-
-            </com.google.android.flexbox.FlexboxLayout>
-
-            <androidx.constraintlayout.widget.Barrier
-                android:id="@+id/barrierVote"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:barrierDirection="bottom"
-                app:constraint_referenced_ids="flexboxVote,flexboxStatus" />
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/iconContentWishlist"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/barrierVote"
-                app:srcCompat="@drawable/ic_wishlist" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/textContentWishlist"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="@string/wishlist"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@id/iconContentWishlist"
-                app:layout_constraintStart_toEndOf="@id/iconContentWishlist"
-                app:layout_constraintTop_toTopOf="@id/iconContentWishlist" />
-
-            <com.google.android.flexbox.FlexboxLayout
-                android:id="@+id/flexboxWishlist"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                app:dividerDrawable="@drawable/flexbox_divider_8dp"
-                app:flexWrap="wrap"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@id/iconContentWishlist"
-                app:layout_constraintTop_toBottomOf="@id/iconContentWishlist"
-                app:showDividerVertical="middle">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonWishlistHigh"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:text="@string/high"
-                    android:textAllCaps="false"
-                    android:textColor="@color/playing"
-                    android:textSize="12sp"
-                    app:rippleColor="@color/playing"
-                    app:strokeColor="@color/playing" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonWishlistBlacklist"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:text="@string/blacklist"
-                    android:textAllCaps="false"
-                    android:textColor="@color/unknown"
-                    android:textSize="12sp"
-                    app:rippleColor="@color/unknown"
-                    app:strokeColor="@color/unknown" />
-            </com.google.android.flexbox.FlexboxLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.core.widget.NestedScrollView>
-</com.booboot.vndbandroid.util.view.FrameLayoutKeyboardSupport>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/filters"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingHorizontal="@dimen/bottom_sheet_side_margin"
+        android:paddingBottom="16dp"
+        tools:itemCount="25"
+        tools:layoutManager="com.google.android.flexbox.FlexboxLayoutManager"
+        tools:listitem="@layout/vn_details_bottom_sheet_sample"
+        tools:orientation="horizontal" />
+</LinearLayout>

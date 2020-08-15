@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
@@ -13,53 +12,48 @@ import androidx.navigation.fragment.findNavController
 import androidx.viewpager.widget.ViewPager
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.extensions.fixForFastScroll
+import com.booboot.vndbandroid.extensions.fixScrollWithBottomSheet
 import com.booboot.vndbandroid.extensions.home
 import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.onStateChanged
 import com.booboot.vndbandroid.extensions.openSlideshow
 import com.booboot.vndbandroid.extensions.postponeEnterTransitionIfExists
-import com.booboot.vndbandroid.extensions.preventLineBreak
 import com.booboot.vndbandroid.extensions.removeFocus
 import com.booboot.vndbandroid.extensions.replaceOnTabSelectedListener
-import com.booboot.vndbandroid.extensions.selectIf
 import com.booboot.vndbandroid.extensions.setStatusBarThemeForCollapsingToolbar
 import com.booboot.vndbandroid.extensions.setupStatusBar
 import com.booboot.vndbandroid.extensions.setupToolbar
 import com.booboot.vndbandroid.extensions.toggle
 import com.booboot.vndbandroid.extensions.toggleBottomSheet
-import com.booboot.vndbandroid.model.vndb.Label.Companion.BLACKLIST
-import com.booboot.vndbandroid.model.vndb.Label.Companion.DROPPED
-import com.booboot.vndbandroid.model.vndb.Label.Companion.FINISHED
-import com.booboot.vndbandroid.model.vndb.Label.Companion.PLAYING
-import com.booboot.vndbandroid.model.vndb.Label.Companion.STALLED
-import com.booboot.vndbandroid.model.vndb.Label.Companion.STATUSES
-import com.booboot.vndbandroid.model.vndb.Label.Companion.UNKNOWN
-import com.booboot.vndbandroid.model.vndb.Label.Companion.WISHLIST
-import com.booboot.vndbandroid.model.vndb.Label.Companion.WISHLISTS
 import com.booboot.vndbandroid.model.vndb.Screen
 import com.booboot.vndbandroid.model.vndb.VN
-import com.booboot.vndbandroid.model.vndbandroid.AccountItems
 import com.booboot.vndbandroid.model.vndbandroid.Vote
 import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.booboot.vndbandroid.ui.slideshow.SlideshowAdapter
 import com.booboot.vndbandroid.util.StopFocusStealingAppBarBehavior
+import com.booboot.vndbandroid.util.view.LockableBottomSheetBehavior
+import com.google.android.flexbox.AlignItems
+import com.google.android.flexbox.FlexboxLayoutManager
+import com.google.android.flexbox.JustifyContent
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.tabs.TabLayout
+import com.xwray.groupie.GroupAdapter
+import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 import kotlinx.android.synthetic.main.vn_details_bottom_sheet.*
 import kotlinx.android.synthetic.main.vn_details_fragment.*
 
 class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSelectedListener, View.OnClickListener, View.OnFocusChangeListener, ViewPager.OnPageChangeListener {
     override val layout = R.layout.vn_details_fragment
+
     /* Layout with CollapsingToolbarLayout doesn't work with adjustResize (Android bug : https://stackoverflow.com/a/39099510/4561039) */
     override val softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
     private lateinit var slideshowAdapter: SlideshowAdapter
     private var tabsAdapter: VNDetailsTabsAdapter? = null
+    private val bottomSheetAdapter = GroupAdapter<GroupieViewHolder>()
 
-    private var vnId: Long = 0
-
-    lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
-    private lateinit var bottomSheetButtons: List<View?>
+    lateinit var bottomSheetBehavior: LockableBottomSheetBehavior<*>
+//    private lateinit var bottomSheetButtons: List<View?>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,8 +67,18 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
         setupToolbar()
         appBarLayout.setStatusBarThemeForCollapsingToolbar(activity, collapsingToolbar, toolbar, content)
 
+        viewModel = ViewModelProvider(this).get(VNDetailsViewModel::class.java)
+        viewModel.restoreState(savedInstanceState)
+        viewModel.accountData = home()?.viewModel?.accountData ?: return
+        viewModel.loadingData.observeNonNull(this, ::showLoading)
+        viewModel.vnData.observeNonNull(this, ::showVn)
+        viewModel.userlistData.observeNonNull(this, ::showAccount)
+        home()?.viewModel?.accountData?.observeNonNull(this) { viewModel.getUserList(it) }
+        viewModel.errorData.observeOnce(this, ::showError)
+        viewModel.initErrorData.observeOnce(this, ::onInitError)
+
         arguments?.let { arguments ->
-            vnId = VNDetailsFragmentArgs.fromBundle(arguments).vnId
+            viewModel.vnId = VNDetailsFragmentArgs.fromBundle(arguments).vnId
             val vnImage = VNDetailsFragmentArgs.fromBundle(arguments).vnImage
             val vnImageNsfw = VNDetailsFragmentArgs.fromBundle(arguments).vnImageNsfw
 
@@ -87,15 +91,6 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
             }
         }
 
-        viewModel = ViewModelProvider(this).get(VNDetailsViewModel::class.java)
-        viewModel.restoreState(savedInstanceState)
-        viewModel.accountData = home()?.viewModel?.accountData ?: return
-        viewModel.loadingData.observeNonNull(this, ::showLoading)
-        viewModel.vnData.observeNonNull(this, ::showVn)
-        home()?.viewModel?.accountData?.observeNonNull(this, ::showAccount)
-        viewModel.errorData.observeOnce(this, ::showError)
-        viewModel.initErrorData.observeOnce(this, ::onInitError)
-
         if (tabsAdapter == null) {
             tabsAdapter = VNDetailsTabsAdapter(childFragmentManager)
         } else {
@@ -105,12 +100,12 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
         tabLayout.setupWithViewPager(viewPager)
 
         /* View groups */
-        bottomSheetButtons = listOf(textNotes, buttonPlaying, buttonFinished, buttonStalled, buttonDropped, buttonUnknown,
-            buttonVote1, buttonVote2, buttonVote3, buttonVote4, buttonVote5, buttonVote6, buttonVote7, buttonVote8, buttonVote9, buttonVote10, inputCustomVote,
-            buttonWishlistHigh, buttonWishlistBlacklist)
+//        bottomSheetButtons = listOf(textNotes, buttonPlaying, buttonFinished, buttonStalled, buttonDropped, buttonUnknown,
+//            buttonVote1, buttonVote2, buttonVote3, buttonVote4, buttonVote5, buttonVote6, buttonVote7, buttonVote8, buttonVote9, buttonVote10, inputCustomVote,
+//            buttonWishlistHigh, buttonWishlistBlacklist)
 
         /* Bottom sheet */
-        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet) as LockableBottomSheetBehavior<*>
         bottomSheetHeader.setOnClickListener(this)
         bottomSheetBehavior.onStateChanged(
             onCollapsed = {
@@ -123,18 +118,24 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
         appBarLayout.updateLayoutParams<CoordinatorLayout.LayoutParams> {
             behavior = StopFocusStealingAppBarBehavior(bottomSheet)
         }
-        textNotes.preventLineBreak()
-        bottomSheetButtons.forEach { it?.setOnClickListener(this@VNDetailsFragment) }
-        textNotes.onFocusChangeListener = this
-        inputCustomVote.onFocusChangeListener = this
+//        textNotes.preventLineBreak()
+//        bottomSheetButtons.forEach { it?.setOnClickListener(this@VNDetailsFragment) }
+//        textNotes.onFocusChangeListener = this
+//        inputCustomVote.onFocusChangeListener = this
 
-        slideshow.transitionName = "slideshow$vnId"
+        filters.layoutManager = FlexboxLayoutManager(activity).apply {
+            alignItems = AlignItems.CENTER
+            justifyContent = JustifyContent.FLEX_START
+        }
+        filters.adapter = bottomSheetAdapter
+        filters.fixScrollWithBottomSheet(bottomSheetBehavior)
 
-        viewModel.loadVn(vnId, false)
+        slideshow.transitionName = "slideshow${viewModel.vnId}"
+
+        viewModel.loadVn()
     }
 
-    private fun showVn(vn: VN?) {
-        vn ?: return
+    private fun showVn(vn: VN) {
         home()?.supportActionBar?.title = vn.title
 
         val screens = vn.image?.let { mutableListOf(Screen(image = it, nsfw = vn.image_nsfw)) } ?: mutableListOf()
@@ -148,57 +149,58 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
         tabLayout.replaceOnTabSelectedListener(this)
     }
 
-    private fun showAccount(items: AccountItems?) {
+    private fun showAccount(userListData: UserListData) = userListData.run {
         val activity = home() ?: return
-        items ?: return
 
-        val userList = items.userList[vnId]
-        val status = userList?.labels(STATUSES) ?: listOf()
-        val wishlist = userList?.labels(WISHLISTS) ?: listOf()
+        val firstStatus = userList?.firstStatus()
+        val firstWishlist = userList?.firstWishlist()
         val vote = Vote.toShortString(userList?.vote, null)
-        val labelIds = userList?.labelIds() ?: setOf()
+//        val labelIds = userList?.labelIds() ?: setOf()
 
         textAddToList.text = when (userList) {
             null -> getString(R.string.add_to_your_lists)
             else -> getString(R.string.edit_your_lists)
         }
 
-        textStatus.text = userList?.firstStatus()?.label
-        textWishlist.text = userList?.firstWishlist()?.label
+        textStatus.text = firstStatus?.label
+        textWishlist.text = firstWishlist?.label
         votesButton.text = vote ?: getString(R.string.dash)
 
-        iconStatus.toggle(status.isNotEmpty())
-        textStatus.toggle(status.isNotEmpty())
-        iconWishlist.toggle(wishlist.isNotEmpty())
-        textWishlist.toggle(wishlist.isNotEmpty())
+        iconStatus.toggle(firstStatus != null)
+        textStatus.toggle(firstStatus != null)
+        iconWishlist.toggle(firstWishlist != null)
+        textWishlist.toggle(firstWishlist != null)
 
         votesButton.background = ContextCompat.getDrawable(activity, Vote.getDrawableColor10(userList?.vote))
 
-        textNotes.setText(userList?.notes, TextView.BufferType.EDITABLE)
-        buttonPlaying.selectIf(PLAYING.id in labelIds)
-        buttonFinished.selectIf(FINISHED.id in labelIds)
-        buttonStalled.selectIf(STALLED.id in labelIds)
-        buttonDropped.selectIf(DROPPED.id in labelIds)
-        buttonUnknown.selectIf(UNKNOWN.id in labelIds)
-        buttonVote1.selectIf(userList?.vote == 10)
-        buttonVote2.selectIf(userList?.vote == 20)
-        buttonVote3.selectIf(userList?.vote == 30)
-        buttonVote4.selectIf(userList?.vote == 40)
-        buttonVote5.selectIf(userList?.vote == 50)
-        buttonVote6.selectIf(userList?.vote == 60)
-        buttonVote7.selectIf(userList?.vote == 70)
-        buttonVote8.selectIf(userList?.vote == 80)
-        buttonVote9.selectIf(userList?.vote == 90)
-        buttonVote10.selectIf(userList?.vote == 100)
-        inputCustomVote.setText(if (userList?.vote?.rem(10) == 0) null else vote)
-        buttonWishlistHigh.selectIf(WISHLIST.id in labelIds)
-        buttonWishlistBlacklist.selectIf(BLACKLIST.id in labelIds)
+        bottomSheetAdapter.updateAsync(categorizedLabels.flatMap { (subtitle, items) ->
+            listOf(subtitle) + items
+        })
+
+//        textNotes.setText(userList?.notes, TextView.BufferType.EDITABLE)
+//        buttonPlaying.selectIf(PLAYING.id in labelIds)
+//        buttonFinished.selectIf(FINISHED.id in labelIds)
+//        buttonStalled.selectIf(STALLED.id in labelIds)
+//        buttonDropped.selectIf(DROPPED.id in labelIds)
+//        buttonUnknown.selectIf(UNKNOWN.id in labelIds)
+//        buttonVote1.selectIf(userList?.vote == 10)
+//        buttonVote2.selectIf(userList?.vote == 20)
+//        buttonVote3.selectIf(userList?.vote == 30)
+//        buttonVote4.selectIf(userList?.vote == 40)
+//        buttonVote5.selectIf(userList?.vote == 50)
+//        buttonVote6.selectIf(userList?.vote == 60)
+//        buttonVote7.selectIf(userList?.vote == 70)
+//        buttonVote8.selectIf(userList?.vote == 80)
+//        buttonVote9.selectIf(userList?.vote == 90)
+//        buttonVote10.selectIf(userList?.vote == 100)
+//        inputCustomVote.setText(if (userList?.vote?.rem(10) == 0) null else vote)
+//        buttonWishlistHigh.selectIf(WISHLIST.id in labelIds)
+//        buttonWishlistBlacklist.selectIf(BLACKLIST.id in labelIds)
     }
 
-    override fun showLoading(loading: Int?) {
+    override fun showLoading(loading: Int) {
         super.showLoading(loading)
-        loading ?: return
-        bottomSheetButtons.forEach { it?.isEnabled = loading <= 0 }
+//        bottomSheetButtons.forEach { it?.isEnabled = loading <= 0 }
     }
 
     private fun onInitError(message: String) {
@@ -211,25 +213,25 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
         when (view.id) {
             R.id.bottomSheetHeader -> bottomSheet.toggleBottomSheet()
 
-            R.id.buttonPlaying -> viewModel.toggleLabel(PLAYING, STATUSES)
-            R.id.buttonFinished -> viewModel.toggleLabel(FINISHED, STATUSES)
-            R.id.buttonStalled -> viewModel.toggleLabel(STALLED, STATUSES)
-            R.id.buttonDropped -> viewModel.toggleLabel(DROPPED, STATUSES)
-            R.id.buttonUnknown -> viewModel.toggleLabel(UNKNOWN, STATUSES)
-
-            R.id.buttonVote1 -> viewModel.setVote(10)
-            R.id.buttonVote2 -> viewModel.setVote(20)
-            R.id.buttonVote3 -> viewModel.setVote(30)
-            R.id.buttonVote4 -> viewModel.setVote(40)
-            R.id.buttonVote5 -> viewModel.setVote(50)
-            R.id.buttonVote6 -> viewModel.setVote(60)
-            R.id.buttonVote7 -> viewModel.setVote(70)
-            R.id.buttonVote8 -> viewModel.setVote(80)
-            R.id.buttonVote9 -> viewModel.setVote(90)
-            R.id.buttonVote10 -> viewModel.setVote(100)
-
-            R.id.buttonWishlistHigh -> viewModel.toggleLabel(WISHLIST, WISHLISTS)
-            R.id.buttonWishlistBlacklist -> viewModel.toggleLabel(BLACKLIST, WISHLISTS)
+//            R.id.buttonPlaying -> viewModel.toggleLabel(PLAYING, STATUSES)
+//            R.id.buttonFinished -> viewModel.toggleLabel(FINISHED, STATUSES)
+//            R.id.buttonStalled -> viewModel.toggleLabel(STALLED, STATUSES)
+//            R.id.buttonDropped -> viewModel.toggleLabel(DROPPED, STATUSES)
+//            R.id.buttonUnknown -> viewModel.toggleLabel(UNKNOWN, STATUSES)
+//
+//            R.id.buttonVote1 -> viewModel.setVote(10)
+//            R.id.buttonVote2 -> viewModel.setVote(20)
+//            R.id.buttonVote3 -> viewModel.setVote(30)
+//            R.id.buttonVote4 -> viewModel.setVote(40)
+//            R.id.buttonVote5 -> viewModel.setVote(50)
+//            R.id.buttonVote6 -> viewModel.setVote(60)
+//            R.id.buttonVote7 -> viewModel.setVote(70)
+//            R.id.buttonVote8 -> viewModel.setVote(80)
+//            R.id.buttonVote9 -> viewModel.setVote(90)
+//            R.id.buttonVote10 -> viewModel.setVote(100)
+//
+//            R.id.buttonWishlistHigh -> viewModel.toggleLabel(WISHLIST, WISHLISTS)
+//            R.id.buttonWishlistBlacklist -> viewModel.toggleLabel(BLACKLIST, WISHLISTS)
         }
     }
 
@@ -237,12 +239,12 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
         if (hasFocus) return
 
         when (view.id) {
-            R.id.textNotes -> viewModel.setNotes(textNotes.text.toString())
-            R.id.inputCustomVote -> viewModel.setCustomVote(inputCustomVote.text.toString())
+//            R.id.textNotes -> viewModel.setNotes(textNotes.text.toString())
+//            R.id.inputCustomVote -> viewModel.setCustomVote(inputCustomVote.text.toString())
         }
     }
 
-    private fun onImageClicked(position: Int) = findNavController().openSlideshow(vnId, position)
+    private fun onImageClicked(position: Int) = findNavController().openSlideshow(viewModel.vnId, position)
 
     override fun onTabReselected(tab: TabLayout.Tab) {
         tabsAdapter?.getFragment(tab.position)?.scrollToTop()
