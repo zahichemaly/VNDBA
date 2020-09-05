@@ -53,7 +53,6 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
     private val bottomSheetAdapter = GroupAdapter<GroupieViewHolder>()
 
     lateinit var bottomSheetBehavior: LockableBottomSheetBehavior<*>
-//    private lateinit var bottomSheetButtons: List<View?>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,11 +98,6 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
         viewPager.adapter = tabsAdapter
         tabLayout.setupWithViewPager(viewPager)
 
-        /* View groups */
-//        bottomSheetButtons = listOf(textNotes, buttonPlaying, buttonFinished, buttonStalled, buttonDropped, buttonUnknown,
-//            buttonVote1, buttonVote2, buttonVote3, buttonVote4, buttonVote5, buttonVote6, buttonVote7, buttonVote8, buttonVote9, buttonVote10, inputCustomVote,
-//            buttonWishlistHigh, buttonWishlistBlacklist)
-
         /* Bottom sheet */
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet) as LockableBottomSheetBehavior<*>
         bottomSheetHeader.setOnClickListener { bottomSheet.toggleBottomSheet() }
@@ -118,10 +112,6 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
         appBarLayout.updateLayoutParams<CoordinatorLayout.LayoutParams> {
             behavior = StopFocusStealingAppBarBehavior(bottomSheet)
         }
-//        textNotes.preventLineBreak()
-//        bottomSheetButtons.forEach { it?.setOnClickListener(this@VNDetailsFragment) }
-//        textNotes.onFocusChangeListener = this
-//        inputCustomVote.onFocusChangeListener = this
 
         filters.layoutManager = FlexboxLayoutManager(activity).apply {
             alignItems = AlignItems.CENTER
@@ -155,7 +145,6 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
         val firstStatus = userList?.firstStatus()
         val firstWishlist = userList?.firstWishlist()
         val vote = Vote.toShortString(userList?.vote, null)
-//        val labelIds = userList?.labelIds() ?: setOf()
 
         textAddToList.text = when (userList) {
             null -> getString(R.string.add_to_your_lists)
@@ -179,31 +168,6 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
                     listOf(subtitle) + items
                 }
         )
-
-//        textNotes.setText(userList?.notes, TextView.BufferType.EDITABLE)
-//        buttonPlaying.selectIf(PLAYING.id in labelIds)
-//        buttonFinished.selectIf(FINISHED.id in labelIds)
-//        buttonStalled.selectIf(STALLED.id in labelIds)
-//        buttonDropped.selectIf(DROPPED.id in labelIds)
-//        buttonUnknown.selectIf(UNKNOWN.id in labelIds)
-//        buttonVote1.selectIf(userList?.vote == 10)
-//        buttonVote2.selectIf(userList?.vote == 20)
-//        buttonVote3.selectIf(userList?.vote == 30)
-//        buttonVote4.selectIf(userList?.vote == 40)
-//        buttonVote5.selectIf(userList?.vote == 50)
-//        buttonVote6.selectIf(userList?.vote == 60)
-//        buttonVote7.selectIf(userList?.vote == 70)
-//        buttonVote8.selectIf(userList?.vote == 80)
-//        buttonVote9.selectIf(userList?.vote == 90)
-//        buttonVote10.selectIf(userList?.vote == 100)
-//        inputCustomVote.setText(if (userList?.vote?.rem(10) == 0) null else vote)
-//        buttonWishlistHigh.selectIf(WISHLIST.id in labelIds)
-//        buttonWishlistBlacklist.selectIf(BLACKLIST.id in labelIds)
-    }
-
-    override fun showLoading(loading: Int) {
-        super.showLoading(loading)
-//        bottomSheetButtons.forEach { it?.isEnabled = loading <= 0 }
     }
 
     private fun onInitError(message: String) {
@@ -212,42 +176,7 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
         findNavController().popBackStack()
     }
 
-//    override fun onClick(view: View) {
-//        when (view.id) {
-//            R.id.bottomSheetHeader -> bottomSheet.toggleBottomSheet()
-
-//            R.id.buttonPlaying -> viewModel.toggleLabel(PLAYING, STATUSES)
-//            R.id.buttonFinished -> viewModel.toggleLabel(FINISHED, STATUSES)
-//            R.id.buttonStalled -> viewModel.toggleLabel(STALLED, STATUSES)
-//            R.id.buttonDropped -> viewModel.toggleLabel(DROPPED, STATUSES)
-//            R.id.buttonUnknown -> viewModel.toggleLabel(UNKNOWN, STATUSES)
-//
-//            R.id.buttonVote1 -> viewModel.setVote(10)
-//            R.id.buttonVote2 -> viewModel.setVote(20)
-//            R.id.buttonVote3 -> viewModel.setVote(30)
-//            R.id.buttonVote4 -> viewModel.setVote(40)
-//            R.id.buttonVote5 -> viewModel.setVote(50)
-//            R.id.buttonVote6 -> viewModel.setVote(60)
-//            R.id.buttonVote7 -> viewModel.setVote(70)
-//            R.id.buttonVote8 -> viewModel.setVote(80)
-//            R.id.buttonVote9 -> viewModel.setVote(90)
-//            R.id.buttonVote10 -> viewModel.setVote(100)
-//
-//            R.id.buttonWishlistHigh -> viewModel.toggleLabel(WISHLIST, WISHLISTS)
-//            R.id.buttonWishlistBlacklist -> viewModel.toggleLabel(BLACKLIST, WISHLISTS)
-//        }
-//    }
-
     private fun setNotes(notes: String?) = viewModel.setNotes(notes ?: "")
-
-//    override fun onFocusChange(view: View, hasFocus: Boolean) {
-//        if (hasFocus) return
-
-//        when (view.id) {
-//            R.id.textNotes -> viewModel.setNotes(textNotes.text.toString())
-//            R.id.inputCustomVote -> viewModel.setCustomVote(inputCustomVote.text.toString())
-//        }
-//    }
 
     private fun onImageClicked(position: Int) = findNavController().openSlideshow(viewModel.vnId, position)
 

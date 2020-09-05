@@ -61,35 +61,8 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
             { categorizedLabels, group, _ ->
                 val customVote = if (userList?.vote?.rem(10) == 0) null else Vote.toShortString(userList?.vote, null)
                 categorizedLabels.addOrCreate(group, CustomVoteItem(customVote, ::setCustomVote))
-//                categorizedLabels.addOrCreate(group, LabelItem(UserLabel(userLabel.id, App.context.getString(R.string.any_vote)), userLabel.id in selectedFilters, ::onLabelClicked))
-//                categorizedLabels.addOrCreate(group, LabelItem(UserLabel(Label.NO_VOTE.id, Label.NO_VOTE.label), Label.NO_VOTE.id in selectedFilters, ::onLabelClicked))
             }
         )
-
-//        val categorizedLabels = linkedMapOf<FilterSubtitleItem, MutableList<Item>>()
-//        val addLabel = { group: FilterSubtitleItem, userLabel: UserLabel, selected: Boolean ->
-//            val labelItem = when (userLabel.id) {
-//                in Label.VOTELISTS -> VoteItem(userLabel, selected, ::onVoteClicked)
-//                else -> LabelItem(userLabel, selected, ::onLabelClicked)
-//            }
-//            categorizedLabels.addOrCreate(group, labelItem)
-//        }
-//
-//        accountItems.userLabels.values.forEach { userLabel ->
-//            when (userLabel.id) {
-//                in Label.STATUSES -> addLabel(FilterSubtitleItem(R.drawable.ic_list_48dp, R.string.status), userLabel, userLabel.id in labelIds)
-//                in Label.WISHLISTS -> addLabel(FilterSubtitleItem(R.drawable.ic_wishlist, R.string.wishlist), userLabel, userLabel.id in labelIds)
-//                Label.VOTED.id -> {
-//                    val subtitleItem = FilterSubtitleItem(R.drawable.ic_format_list_numbered_48dp, R.string.votes)
-//                    /* Votes from 1 to 10 */
-//                    for (vote in Label.VOTES) addLabel(subtitleItem, UserLabel(vote.id, vote.label), userList?.vote == Label.voteIdToVoteOutOf100(vote.id))
-//                    val customVote = if (userList?.vote?.rem(10) == 0) null else Vote.toShortString(userList?.vote, null)
-//                    categorizedLabels.addOrCreate(subtitleItem, CustomVoteItem(customVote, ::setCustomVote))
-//                }
-//                else -> addLabel(FilterSubtitleItem(R.drawable.ic_list_48dp, R.string.category_custom_labels), userLabel, userLabel.id in labelIds)
-//            }
-//        }
-//
         userlistData += UserListData(userList, categorizedLabelsJob.await())
     }
 
@@ -114,19 +87,7 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
 
     private fun onVoteClicked(label: UserLabel) = setVote(Label.voteIdToVoteOutOf100(label.id))
 
-//    fun toggleLabel(label: Label, labelGroup: Set<Long> = emptySet()) {
-//        val userList = accountData.value?.userList?.get(vnId)
-//        val labels = when {
-//            userList?.labels == null -> setOf(label)
-//            label.id in userList.labelIds() -> userList.labels.filter { label.id != it.id }.toSet() // Remove if already present
-//            else -> userList.labels - userList.labels(labelGroup) + label // Remove other labels in the same group before adding it
-//        }
-//
-//        val newUserList = userList?.copy(labels = labels) ?: UserList(vn = vnId, labels = labels)
-//        setUserList(newUserList, mapOf("labels" to newUserList.labelIds()))
-//    }
-
-    fun setVote(_vote: Int, customVote: Boolean = false) {
+    private fun setVote(_vote: Int, customVote: Boolean = false) {
         val userList = accountData.value?.userList?.get(vnId)
         val vote = if (!customVote && _vote == userList?.vote) {
             /* Remove if already present ; Add otherwise */
@@ -142,7 +103,7 @@ class VNDetailsViewModel constructor(application: Application) : BaseViewModel(a
         }
     }
 
-    fun setCustomVote(voteText: String?) {
+    private fun setCustomVote(voteText: String?) {
         if (voteText?.isEmpty() != false) return
 
         val vote = voteText.toFloatOrNull()?.let {

@@ -112,33 +112,6 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
                     categorizedLabels.addOrCreate(group, LabelItem(UserLabel(NO_VOTE.id, NO_VOTE.label), NO_VOTE.id in selectedFilters, ::onLabelClicked))
                 }
             )
-//                async {
-//                val categorizedLabels = linkedMapOf<FilterSubtitleItem, MutableList<Item>>()
-//                val addLabel = { group: FilterSubtitleItem, userLabel: UserLabel, selected: Boolean ->
-//                    val labelItem = when (userLabel.id) {
-//                        in VOTELISTS -> VoteItem(userLabel, selected, ::onLabelClicked)
-//                        else -> LabelItem(userLabel, selected, ::onLabelClicked)
-//                    }
-//                    categorizedLabels.addOrCreate(group, labelItem)
-//                }
-//
-//                accountItems.userLabels.values.forEach { userLabel ->
-//                    val selectedAsFilter = userLabel.id in selectedFilters
-//                    when (userLabel.id) {
-//                        in STATUSES -> addLabel(FilterSubtitleItem(R.drawable.ic_list_48dp, R.string.status), userLabel, selectedAsFilter)
-//                        in WISHLISTS -> addLabel(FilterSubtitleItem(R.drawable.ic_wishlist, R.string.wishlist), userLabel, selectedAsFilter)
-//                        VOTED.id -> {
-//                            val subtitleItem = FilterSubtitleItem(R.drawable.ic_format_list_numbered_48dp, R.string.votes)
-//                            /* Votes from 1 to 10 */
-//                            for (vote in VOTES) addLabel(subtitleItem, UserLabel(vote.id, vote.label), vote.id in selectedFilters)
-//                            addLabel(subtitleItem, UserLabel(userLabel.id, getApplication<App>().getString(R.string.any_vote)), selectedAsFilter)
-//                            addLabel(subtitleItem, UserLabel(NO_VOTE.id, NO_VOTE.label), NO_VOTE.id in selectedFilters)
-//                        }
-//                        else -> addLabel(FilterSubtitleItem(R.drawable.ic_list_48dp, R.string.category_custom_labels), userLabel, selectedAsFilter)
-//                    }
-//                }
-//                categorizedLabels
-//            }
 
             sortJob.await()
 
