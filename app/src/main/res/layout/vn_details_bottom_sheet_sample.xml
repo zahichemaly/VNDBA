@@ -18,4 +18,9 @@
 
     <include layout="@layout/vote_button" />
 
+    <include
+        layout="@layout/vn_details_notes"
+        tools:layout_height="wrap_content"
+        tools:layout_width="5000dp" />
+
 </com.booboot.vndbandroid.util.view.HotViewFlipper>

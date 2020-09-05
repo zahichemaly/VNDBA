@@ -33,6 +33,7 @@ data class Label(
         const val NO_LABELS = -30101L
         const val CLEAR_FILTERS = -30102L
         const val CUSTOM_VOTE = -30103L
+        const val NOTES_ITEM = -30104L
         val VOTES = mutableListOf<Label>().apply { for (i in 1..10) add(Label(VOTE_ID + i, "$i")) }
 
         /* Notable collections of label ids */

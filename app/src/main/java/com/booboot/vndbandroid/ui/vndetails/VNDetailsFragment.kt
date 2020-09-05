@@ -43,7 +43,7 @@ import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 import kotlinx.android.synthetic.main.vn_details_bottom_sheet.*
 import kotlinx.android.synthetic.main.vn_details_fragment.*
 
-class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSelectedListener, View.OnClickListener, View.OnFocusChangeListener, ViewPager.OnPageChangeListener {
+class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSelectedListener, ViewPager.OnPageChangeListener {
     override val layout = R.layout.vn_details_fragment
 
     /* Layout with CollapsingToolbarLayout doesn't work with adjustResize (Android bug : https://stackoverflow.com/a/39099510/4561039) */
@@ -106,7 +106,7 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
 
         /* Bottom sheet */
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet) as LockableBottomSheetBehavior<*>
-        bottomSheetHeader.setOnClickListener(this)
+        bottomSheetHeader.setOnClickListener { bottomSheet.toggleBottomSheet() }
         bottomSheetBehavior.onStateChanged(
             onCollapsed = {
                 removeFocus()
@@ -173,9 +173,12 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
 
         votesButton.background = ContextCompat.getDrawable(activity, Vote.getDrawableColor10(userList?.vote))
 
-        bottomSheetAdapter.updateAsync(categorizedLabels.flatMap { (subtitle, items) ->
-            listOf(subtitle) + items
-        })
+        bottomSheetAdapter.updateAsync(
+            listOf(NotesItem(userList?.notes, ::setNotes)) +
+                categorizedLabels.flatMap { (subtitle, items) ->
+                    listOf(subtitle) + items
+                }
+        )
 
 //        textNotes.setText(userList?.notes, TextView.BufferType.EDITABLE)
 //        buttonPlaying.selectIf(PLAYING.id in labelIds)
@@ -209,9 +212,9 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
         findNavController().popBackStack()
     }
 
-    override fun onClick(view: View) {
-        when (view.id) {
-            R.id.bottomSheetHeader -> bottomSheet.toggleBottomSheet()
+//    override fun onClick(view: View) {
+//        when (view.id) {
+//            R.id.bottomSheetHeader -> bottomSheet.toggleBottomSheet()
 
 //            R.id.buttonPlaying -> viewModel.toggleLabel(PLAYING, STATUSES)
 //            R.id.buttonFinished -> viewModel.toggleLabel(FINISHED, STATUSES)
@@ -232,17 +235,19 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
 //
 //            R.id.buttonWishlistHigh -> viewModel.toggleLabel(WISHLIST, WISHLISTS)
 //            R.id.buttonWishlistBlacklist -> viewModel.toggleLabel(BLACKLIST, WISHLISTS)
-        }
-    }
+//        }
+//    }
 
-    override fun onFocusChange(view: View, hasFocus: Boolean) {
-        if (hasFocus) return
+    private fun setNotes(notes: String?) = viewModel.setNotes(notes ?: "")
 
-        when (view.id) {
+//    override fun onFocusChange(view: View, hasFocus: Boolean) {
+//        if (hasFocus) return
+
+//        when (view.id) {
 //            R.id.textNotes -> viewModel.setNotes(textNotes.text.toString())
 //            R.id.inputCustomVote -> viewModel.setCustomVote(inputCustomVote.text.toString())
-        }
-    }
+//        }
+//    }
 
     private fun onImageClicked(position: Int) = findNavController().openSlideshow(viewModel.vnId, position)
 

@@ -127,24 +127,6 @@
             app:layout_constraintTop_toTopOf="@id/bottomSheetHeader"
             tools:text="8" />
 
-        <!--            <com.booboot.vndbandroid.util.view.TextInputEditText-->
-        <!--                android:id="@+id/textNotes"--> 
-        <!--                android:layout_width="0dp"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:layout_marginStart="16dp"-->
-        <!--                android:layout_marginTop="16dp"-->
-        <!--                android:layout_marginEnd="16dp"-->
-        <!--                android:clickable="true"-->
-        <!--                android:focusable="true"-->
-        <!--                android:hint="@string/add_notes"-->
-        <!--                android:imeOptions="actionDone|flagNoExtractUi"-->
-        <!--                android:textSize="13sp"-->
-        <!--                android:textStyle="italic"-->
-        <!--                app:layout_constraintEnd_toEndOf="parent"-->
-        <!--                app:layout_constraintStart_toStartOf="parent"-->
-        <!--                app:layout_constraintTop_toBottomOf="@id/bottomSheetHeader"-->
-        <!--                tools:text="Notes here which are going to be very long notes on multiple lines." />-->
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -154,6 +136,7 @@
         android:layout_weight="1"
         android:clipToPadding="false"
         android:paddingHorizontal="@dimen/bottom_sheet_side_margin"
+        android:paddingTop="16dp"
         android:paddingBottom="16dp"
         tools:itemCount="25"
         tools:layoutManager="com.google.android.flexbox.FlexboxLayoutManager"
