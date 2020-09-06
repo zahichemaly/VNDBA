@@ -1,13 +1,21 @@
 package com.booboot.vndbandroid.extensions
 
-import com.xwray.groupie.Group
-import com.xwray.groupie.GroupAdapter
+import android.view.View
 import com.xwray.groupie.GroupieViewHolder
+import com.xwray.groupie.Item
+import kotlinx.android.extensions.CacheImplementation
+import kotlinx.android.extensions.ContainerOptions
+import kotlinx.android.extensions.LayoutContainer
 
-operator fun GroupAdapter<out GroupieViewHolder>.plusAssign(element: Group) = this.add(element)
+// Need to specify ContainerOptions in order for caching to work.
+// See: https://youtrack.jetbrains.com/oauth?state=%2Fissue%2FKT-28617
+@ContainerOptions(cache = CacheImplementation.HASH_MAP)
+open class CustomGroupieViewHolder(override val containerView: View) : GroupieViewHolder(containerView), LayoutContainer
 
-operator fun GroupAdapter<out GroupieViewHolder>.plusAssign(groups: Collection<Group>) = this.addAll(groups)
+abstract class CustomItem<T : CustomGroupieViewHolder> : Item<T> {
 
-operator fun GroupAdapter<out GroupieViewHolder>.minusAssign(element: Group) = this.remove(element)
+    constructor() : super()
+    constructor(id: Long) : super(id)
 
-operator fun GroupAdapter<out GroupieViewHolder>.minusAssign(groups: Collection<Group>) = this.removeAll(groups)
+    abstract override fun createViewHolder(itemView: View): T
+}

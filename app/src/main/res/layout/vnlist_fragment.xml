@@ -57,6 +57,7 @@
         app:elevation="0dp"
         app:hideOnScroll="true"
         app:hintText="@string/action_filter_hint"
+        app:layout_behavior=".util.StopFocusStealingAppBarBehavior"
         app:startIcon="@drawable/ic_filter_list_24dp" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout

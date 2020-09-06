@@ -7,15 +7,11 @@ import com.booboot.vndbandroid.App
 import com.booboot.vndbandroid.R
 import com.booboot.vndbandroid.diff.VNDiffCallback
 import com.booboot.vndbandroid.extensions.addOrCreate
+import com.booboot.vndbandroid.extensions.categorizeLabels
 import com.booboot.vndbandroid.extensions.lowerCase
 import com.booboot.vndbandroid.extensions.plusAssign
 import com.booboot.vndbandroid.model.vndb.Label.Companion.NO_LABELS
 import com.booboot.vndbandroid.model.vndb.Label.Companion.NO_VOTE
-import com.booboot.vndbandroid.model.vndb.Label.Companion.STATUSES
-import com.booboot.vndbandroid.model.vndb.Label.Companion.VOTED
-import com.booboot.vndbandroid.model.vndb.Label.Companion.VOTELISTS
-import com.booboot.vndbandroid.model.vndb.Label.Companion.VOTES
-import com.booboot.vndbandroid.model.vndb.Label.Companion.WISHLISTS
 import com.booboot.vndbandroid.model.vndb.UserLabel
 import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndbandroid.AccountItems
@@ -34,13 +30,10 @@ import com.booboot.vndbandroid.model.vndbandroid.VnlistData
 import com.booboot.vndbandroid.repository.AccountRepository
 import com.booboot.vndbandroid.repository.UserLabelsRepository
 import com.booboot.vndbandroid.ui.base.BaseViewModel
-import com.booboot.vndbandroid.ui.filters.FilterSubtitleItem
 import com.booboot.vndbandroid.ui.filters.FilterTitleItem
 import com.booboot.vndbandroid.ui.filters.LabelItem
-import com.booboot.vndbandroid.ui.filters.VoteItem
 import com.xwray.groupie.ExpandableGroup
 import com.xwray.groupie.Section
-import com.xwray.groupie.kotlinandroidextensions.Item
 import kotlinx.coroutines.async
 import javax.inject.Inject
 
@@ -108,33 +101,17 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
                 accountItems.userList.values.forEach { userList -> userList.setLabelItems() }
             }
 
-            val categorizedLabelsJob = async {
-                val categorizedLabels = linkedMapOf<FilterSubtitleItem, MutableList<Item>>()
-                val addLabel = { group: FilterSubtitleItem, userLabel: UserLabel, selected: Boolean ->
-                    val labelItem = when (userLabel.id) {
-                        in VOTELISTS -> VoteItem(userLabel, selected, ::onLabelClicked)
-                        else -> LabelItem(userLabel, selected, ::onLabelClicked)
-                    }
-                    categorizedLabels.addOrCreate(group, labelItem)
+            val categorizedLabelsJob = categorizeLabels(
+                accountItems,
+                ::onLabelClicked,
+                ::onLabelClicked,
+                { it in selectedFilters },
+                { it in selectedFilters },
+                { categorizedLabels, group, userLabel ->
+                    categorizedLabels.addOrCreate(group, LabelItem(UserLabel(userLabel.id, App.context.getString(R.string.any_vote)), userLabel.id in selectedFilters, ::onLabelClicked))
+                    categorizedLabels.addOrCreate(group, LabelItem(UserLabel(NO_VOTE.id, NO_VOTE.label), NO_VOTE.id in selectedFilters, ::onLabelClicked))
                 }
-
-                accountItems.userLabels.values.forEach { userLabel ->
-                    val selectedAsFilter = userLabel.id in selectedFilters
-                    when (userLabel.id) {
-                        in STATUSES -> addLabel(FilterSubtitleItem(R.drawable.ic_list_48dp, R.string.status), userLabel, selectedAsFilter)
-                        in WISHLISTS -> addLabel(FilterSubtitleItem(R.drawable.ic_wishlist, R.string.wishlist), userLabel, selectedAsFilter)
-                        VOTED.id -> {
-                            val subtitleItem = FilterSubtitleItem(R.drawable.ic_format_list_numbered_48dp, R.string.votes)
-                            /* Votes from 1 to 10 */
-                            for (vote in VOTES) addLabel(subtitleItem, UserLabel(vote.id, vote.label), vote.id in selectedFilters)
-                            addLabel(subtitleItem, UserLabel(userLabel.id, getApplication<App>().getString(R.string.any_vote)), selectedAsFilter)
-                            addLabel(subtitleItem, UserLabel(NO_VOTE.id, NO_VOTE.label), NO_VOTE.id in selectedFilters)
-                        }
-                        else -> addLabel(FilterSubtitleItem(R.drawable.ic_list_48dp, R.string.category_custom_labels), userLabel, selectedAsFilter)
-                    }
-                }
-                categorizedLabels
-            }
+            )
 
             sortJob.await()
 
@@ -145,8 +122,8 @@ class VNListViewModel constructor(application: Application) : BaseViewModel(appl
         }
     }
 
-    fun onLabelClicked(labelId: Long) {
-        getVns(selectedLabelId = labelId)
+    fun onLabelClicked(label: UserLabel) {
+        getVns(selectedLabelId = label.id)
     }
 
     private fun <T> compare(comparator: Comparator<in T>, sorter: (Pair<Long, VN>) -> T) =

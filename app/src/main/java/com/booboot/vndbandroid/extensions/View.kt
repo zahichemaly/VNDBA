@@ -39,9 +39,11 @@ fun EditText.setFocus() = post {
     showKeyboard()
 }
 
-fun View.removeFocus() {
-    clearFocus()
-    hideKeyboard()
+fun View.removeFocus(onlyIfFocused: Boolean = false) {
+    if (!onlyIfFocused || hasFocus()) {
+        clearFocus()
+        hideKeyboard()
+    }
 }
 
 fun View.scanForActivity() = context?.scanForActivity()

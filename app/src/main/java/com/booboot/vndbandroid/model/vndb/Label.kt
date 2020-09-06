@@ -14,7 +14,7 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class Label(
     var id: Long = 0,
-    var label: String
+    var label: String = ""
 ) : Comparable<Label> {
     companion object {
         /* VNDB official labels */
@@ -32,6 +32,8 @@ data class Label(
         val NO_VOTE = Label(-30100L, "No vote")
         const val NO_LABELS = -30101L
         const val CLEAR_FILTERS = -30102L
+        const val CUSTOM_VOTE = -30103L
+        const val NOTES_ITEM = -30104L
         val VOTES = mutableListOf<Label>().apply { for (i in 1..10) add(Label(VOTE_ID + i, "$i")) }
 
         /* Notable collections of label ids */
@@ -54,6 +56,8 @@ data class Label(
         }
 
         fun voteIdToVote(voteId: Long) = voteId - VOTE_ID
+
+        fun voteIdToVoteOutOf100(voteId: Long) = voteIdToVote(voteId).toInt() * 10
 
         @ColorInt
         fun textColor(context: Context, @ColorRes colorRes: Int): Int {
@@ -85,6 +89,12 @@ data class Label(
 
     @ColorInt
     fun backgroundColor(context: Context) = backgroundColor(context, buttonColor())
+
+    fun getGroup() = when (id) {
+        in STATUSES -> STATUSES
+        in WISHLISTS -> WISHLISTS
+        else -> linkedSetOf()
+    }
 
     override fun compareTo(other: Label): Int {
         var index = ALL.indexOf(id).toLong()

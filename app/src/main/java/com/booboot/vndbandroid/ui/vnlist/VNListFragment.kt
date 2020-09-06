@@ -17,7 +17,6 @@ import com.booboot.vndbandroid.extensions.home
 import com.booboot.vndbandroid.extensions.observeNonNull
 import com.booboot.vndbandroid.extensions.observeOnce
 import com.booboot.vndbandroid.extensions.onStateChanged
-import com.booboot.vndbandroid.extensions.plusAssign
 import com.booboot.vndbandroid.extensions.postponeEnterTransitionIfExists
 import com.booboot.vndbandroid.extensions.removeFocus
 import com.booboot.vndbandroid.extensions.setNumberOverflow
@@ -48,6 +47,7 @@ import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.xwray.groupie.GroupAdapter
+import com.xwray.groupie.groupiex.plusAssign
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 import kotlinx.android.synthetic.main.filter_bottom_sheet.*
 import kotlinx.android.synthetic.main.floating_search_toolbar.*
@@ -151,9 +151,9 @@ class VNListFragment : BaseFragment<VNListViewModel>(), SwipeRefreshLayout.OnRef
             sortItem.onSortClicked = ::onSortClicked
         })
 
-        viewModel.filterSection.update(listOf(ClearFiltersItem().apply { onLabelClicked = viewModel::onLabelClicked })
-            + filterData.categorizedLabels.flatMap { (subtitle, labels) ->
-            listOf(subtitle) + labels
+        viewModel.filterSection.update(listOf(ClearFiltersItem(onLabelClicked = viewModel::onLabelClicked))
+            + filterData.categorizedLabels.flatMap { (subtitle, items) ->
+            listOf(subtitle) + items
         })
 
         groupActiveFilters.isVisible = selectedFilters.isNotEmpty()
