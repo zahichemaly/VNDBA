@@ -4,9 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
-import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager.widget.ViewPager
@@ -31,7 +29,6 @@ import com.booboot.vndbandroid.model.vndb.VN
 import com.booboot.vndbandroid.model.vndbandroid.Vote
 import com.booboot.vndbandroid.ui.base.BaseFragment
 import com.booboot.vndbandroid.ui.slideshow.SlideshowAdapter
-import com.booboot.vndbandroid.util.StopFocusStealingAppBarBehavior
 import com.booboot.vndbandroid.util.view.LockableBottomSheetBehavior
 import com.google.android.flexbox.AlignItems
 import com.google.android.flexbox.FlexboxLayoutManager
@@ -109,9 +106,6 @@ class VNDetailsFragment : BaseFragment<VNDetailsViewModel>(), TabLayout.OnTabSel
             onExpanding = { iconArrow.setImageResource(R.drawable.ic_keyboard_arrow_up_white_24dp) }
         )
         appBarLayout.fixForFastScroll(viewPager)
-        appBarLayout.updateLayoutParams<CoordinatorLayout.LayoutParams> {
-            behavior = StopFocusStealingAppBarBehavior(bottomSheet)
-        }
 
         filters.layoutManager = FlexboxLayoutManager(activity).apply {
             alignItems = AlignItems.CENTER
